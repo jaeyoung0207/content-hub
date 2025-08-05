@@ -1,1 +1,1 @@
-echo "# first-repository" >> readme.md
+echo "# content-hub" >> README.md
