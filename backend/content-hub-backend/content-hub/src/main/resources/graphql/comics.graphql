@@ -1,0 +1,48 @@
+query($mediaId: Int)  {
+  Media(id: $mediaId, type: MANGA) {
+    id
+    description
+    genres
+    isAdult
+    volumes
+    chapters
+    status
+    type
+    siteUrl
+    title {
+      romaji
+      english
+      native
+      userPreferred
+    }
+    coverImage {
+      color
+      extraLarge
+      large
+      medium
+    }
+    characters {
+      nodes {
+        id
+        siteUrl
+        image {
+          large
+          medium
+        }
+        name {
+          full
+          native
+          userPreferred
+        }
+        age
+        gender
+        description
+      }
+    }
+    startDate {
+      year
+      month
+      day
+    }
+  }
+}

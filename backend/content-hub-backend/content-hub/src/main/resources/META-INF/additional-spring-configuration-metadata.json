@@ -1,0 +1,197 @@
+{"properties": [
+  {
+    "name": "tmdb.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.api.key'"
+  },
+  {
+    "name": "tmdb.api.token",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.read.token'"
+  },
+  {
+    "name": "tmdb.url.baseUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.baseUrl'"
+  },
+  {
+    "name": "tmdb.url.tvSearchPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvSearchPath'"
+  },
+  {
+    "name": "tmdb.url.tvGenrePath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvGenrePath'"
+  },
+  {
+    "name": "tmdb.url.movieGenrePath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieGenrePath'"
+  },
+  {
+    "name": "tmdb.url.movieSearchPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieSearchPath'"
+  },
+  {
+    "name": "tmdb.url.multiSearchPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.multiSearchPath'"
+  },
+  {
+    "name": "tmdb.url.tvCreditsPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvCreditsPath'"
+  },
+  {
+    "name": "tmdb.url.movieCreditsPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieCreditsPath'"
+  },
+  {
+    "name": "tmdb.url.tvDetailPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvDetailPath'"
+  },
+  {
+    "name": "tmdb.url.movieDetailPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieDetailPath'"
+  },
+  {
+    "name": "tmdb.url.tvWatchProvidersPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvWatchProvidersPath'"
+  },
+  {
+    "name": "tmdb.url.movieWatchProvidersPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieWatchProvidersPath'"
+  },
+  {
+    "name": "tmdb.url.tvRecommendationsPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvRecommendationsPath'"
+  },
+  {
+    "name": "tmdb.url.movieRecommendationsPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieRecommendationsPath'"
+  },
+  {
+    "name": "tmdb.url.tvSimilarPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.tvSimilarPath'"
+  },
+  {
+    "name": "tmdb.url.movieSimilarPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.movieSimilarPath'"
+  },
+  {
+    "name": "tmdb.custom.perMainPage",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.perMainPage'"
+  },
+  {
+    "name": "tmdb.custom.autoCompleteCount",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.autoCompleteCount'"
+  },
+  {
+    "name": "anilist.url.base-url",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.url.base-url'"
+  },
+  {
+    "name": "anilist.custom.perMainPage",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.custom.perMainPage'"
+  },
+  {
+    "name": "anilist.custom.perMorePage",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.custom.perMorePage'"
+  },
+  {
+    "name": "deepl.url.translate-path",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.url.translate-path'"
+  },
+  {
+    "name": "deepl.url.base-url",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.url.base-url'"
+  },
+  {
+    "name": "deepl.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.api.key'"
+  },
+  {
+    "name": "login.naver.clientId",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.clientId'"
+  },
+  {
+    "name": "login.naver.tokenIssueUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.tokenIssueUrl'"
+  },
+  {
+    "name": "login.naver.clientSecret",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.clientSecret'"
+  },
+  {
+    "name": "login.naver.redirectUri",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.redirectUri'"
+  },
+  {
+    "name": "login.naver.userInfoUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.userInfoUrl'"
+  },
+  {
+    "name": "login.kakao.clientSecret",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.clientSecret'"
+  },
+  {
+    "name": "login.kakao.tokenIssueUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.tokenIssueUrl'"
+  },
+  {
+    "name": "login.kakao.oidcUserInfoUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.oidcUserInfoUrl'"
+  },
+  {
+    "name": "login.kakao.userInfoUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.userInfoUrl'"
+  },
+  {
+    "name": "login.kakao.logoutUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.logoutUrl'"
+  },
+  {
+    "name": "app.url",
+    "type": "java.lang.String",
+    "description": "A description for 'app.url'"
+  },
+  {
+    "name": "app.maintenance.mode",
+    "type": "java.lang.String",
+    "description": "A description for 'app.maintenance.mode'"
+  },
+  {
+    "name": "app.comment.perPage",
+    "type": "java.lang.String",
+    "description": "A description for 'app.comment.perPage'"
+  }
+]}

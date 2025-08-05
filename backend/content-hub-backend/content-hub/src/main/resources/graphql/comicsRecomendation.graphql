@@ -1,0 +1,49 @@
+query Media($mediaId: Int, $page: Int, $perPage: Int) {
+  Media(id: $mediaId, type: MANGA) {
+    id
+    title {
+      english
+      native
+      romaji
+      userPreferred
+    }
+    relations {
+      nodes {
+        id
+        title {
+          english
+          native
+          romaji
+          userPreferred
+        }
+        coverImage {
+          color
+          extraLarge
+          large
+          medium
+        }
+        type
+      }
+    }
+    recommendations(page: $page, perPage: $perPage) {
+      nodes {
+        mediaRecommendation {
+          id
+          coverImage {
+            color
+            extraLarge
+            large
+            medium
+          }
+          title {
+            english
+            native
+            romaji
+            userPreferred
+          }
+          type
+        }
+      }
+    }
+  }
+}

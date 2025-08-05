@@ -1,0 +1,121 @@
+#spring.application.name=content-hub
+
+spring:
+  application:
+    name: content-hub
+  jackson:
+    #property-naming-strategy: SNAKE_CASE
+    property-naming-strategy: LOWER_CAMEL_CASE
+  graphql:
+    graphiql:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/content_hub
+    username: myuser
+    password: mypassword
+    # driver-class-name: org.postgresql.Driver # spring boot가 datasource.url의 값을 해석하여 알아서 설정해주기 때문에 지정해주지 않아도 된다
+  jpa:
+    hibernate:
+      ddl-auto: update  # create, update, validate, none 중 선택/ update: DB 테이블과 엔티티 매핑정보를 비교해 변경 사항만 수정,추가
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true  # SQL 로그 출력
+    open-in-view: false # true로 설정하면 View 렌더링 중에도 데이터베이스 쿼리가 실행될 수 있음
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          naver:  # 제공자 이름 (임의로 지정 가능)
+#            provider: naver
+#            client-id: 1dzs6yxigzox43oOLBqs
+#            client-secret: WQgNu48622
+#            scope: openid,profile
+#            client-authentication-method: client_secret_post
+#            authorization-grant-type: authorization_code
+#            redirect-uri: http://192.168.219.101:3000/login/oauth2/code/{registrationId} # 개발자센터에 해당 URL 등록 https://example.com/login/oauth2/code/naver
+#        provider:
+#          naver:
+#            issuer-uri: https://nid.naver.com  # Naver의 Issuer URI 
+
+#Server Config
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true # true의 경우, javascript에서 접근 불가
+        secure: false # 로컬 개발환경에선 false 가능 (https 아니면 true 쓰면 안 됨)
+        same-site: lax
+
+#Log Config
+logging:
+  level:
+    root: info
+
+#TMDB API Config
+tmdb:
+  api:
+    key: 8e92dcdda6bea8e495cdb9b35ab1e664
+    token: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZTkyZGNkZGE2YmVhOGU0OTVjZGI5YjM1YWIxZTY2NCIsIm5iZiI6MTc0NTAzMTQ5Ni4wNTUsInN1YiI6IjY4MDMxMTQ4NjFiMWM0YmIzMjlhNTA0OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.IJFQE9TgzRyibt963p8WkXtb53c7HuJ_PX2oVZNTN18
+    #key: ${TMDB_API_KEY}
+    #token: ${TMDB_API_TOKEN}
+  url: 
+    baseUrl: https://api.themoviedb.org
+    tvSearchPath: /3/search/tv
+    movieSearchPath: /3/search/movie
+    multiSearchPath: /3/search/multi
+    tvGenrePath: /3/genre/tv/list
+    movieGenrePath: /3/genre/movie/list
+    tvCreditsPath: /3/tv/%s/credits
+    movieCreditsPath: /3/movie/%s/credits
+    tvDetailPath: /3/tv/%s
+    movieDetailPath: /3/movie/%s
+    tvWatchProvidersPath: /3/tv/%s/watch/providers
+    movieWatchProvidersPath: /3/movie/%s/watch/providers
+    tvRecommendationsPath: /3/tv/%s/recommendations
+    movieRecommendationsPath: /3/movie/%s/recommendations
+    tvSimilarPath: /3/tv/%s/similar
+    movieSimilarPath: /3/movie/%s/similar
+  custom:
+    perMainPage: 8
+    autoCompleteCount: 15
+
+#Anilist API Config
+anilist:
+  url:
+    baseUrl: https://graphql.anilist.co
+  custom:
+    perMainPage: 12
+    perMorePage: 18
+
+#DeepL API Config
+deepl:
+  api:
+    key: b79e6d1a-09a9-40ad-a29b-018cab21e62b:fx
+    #key: ${DEEPL_API_KEY}
+  url:
+    baseUrl: https://api-free.deepl.com/v2
+    translatePath: /translate
+
+#Login Config
+login:
+  naver:
+    clientId: 1dzs6yxigzox43oOLBqs
+    clientSecret: WQgNu48622
+    tokenIssueUrl: https://nid.naver.com/oauth2.0/token
+    userInfoUrl: https://openapi.naver.com/v1/nid/me
+    #redirectUri: http://192.168.219.101:8080/login/naver
+  kakao:
+    clientSecret: tez0FBOO4zxXbVwUUsW1VqeEr8eD5mzS
+    tokenIssueUrl: https://kauth.kakao.com/oauth/token
+    oidcUserInfoUrl: https://kapi.kakao.com/v1/oidc/userinfo
+    userInfoUrl: https://kapi.kakao.com/v2/user/me
+    logoutUrl: https://kapi.kakao.com/v1/user/logout
+
+#Application Config
+app:
+  url: http://192.168.219.101:3000
+  maintenance:
+    mode: ${MAINTENANCE_MODE:false}
+  comment:
+    perPage: 20

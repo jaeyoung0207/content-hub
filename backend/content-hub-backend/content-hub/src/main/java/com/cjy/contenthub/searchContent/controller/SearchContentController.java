@@ -1,0 +1,705 @@
+package com.cjy.contenthub.searchContent.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.cjy.contenthub.common.api.dto.aniList.AniListMediaDto;
+import com.cjy.contenthub.common.api.dto.aniList.AniListPageInfoDto;
+import com.cjy.contenthub.common.api.dto.aniList.AniListResponseDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiResultsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.common.client.DeepLApiClient;
+import com.cjy.contenthub.common.client.TmdbApiGenreClient;
+import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.SessionUtil;
+import com.cjy.contenthub.searchContent.controller.dto.SearchContentComicsMediaResultDto;
+import com.cjy.contenthub.searchContent.controller.dto.SearchContentComicsResponseDto;
+import com.cjy.contenthub.searchContent.controller.dto.SearchContentTvResponseDto;
+import com.cjy.contenthub.searchContent.controller.dto.SearchContentVideoResponseDto;
+import com.cjy.contenthub.searchContent.helper.SearchContentHelper;
+
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+
+/**
+ * 검색 컨텐츠 API 컨트롤러 클래스
+ */
+@RestController
+@RequestMapping("/searchContent")
+@RequiredArgsConstructor
+@Slf4j
+public class SearchContentController {
+
+	/** TMDB API 통신용 WebClient 클래스 */
+	@Qualifier("tmdbWebClient")
+	private final WebClient tmdbWebClient;
+	
+	/** AniList API 통신용 WebClient 클래스 */
+	@Qualifier("anilistWebClient")
+	private final WebClient anilistWebClient;
+	
+	/** DeepL API 통신용 WebClient 클래스 */
+	@Qualifier("deeplWebClient")
+	private final WebClient deeplWebClient;
+	
+	/** TMDB API 장르 WebClient 클래스 */
+	private final TmdbApiGenreClient tmdbApiGenreClient;
+	
+	/** DeepL API 번역 WebClient 클래스 */
+	private final DeepLApiClient deeplApiGenreClient;
+	
+	/** 세션 유틸 클래스 */
+	private final SessionUtil session;
+
+	/** TMDB API TV시리즈 검색 API 패스 */
+	@Value("${tmdb.url.tvSearchPath}")
+	private String tvSearchPath;
+
+	/** TMDB API 영화 검색 API 패스 */
+	@Value("${tmdb.url.movieSearchPath}")
+	private String movieSearchPath;
+	
+	/** TMDB API 멀티(TV, 영화, 인물) 검색 API 패스 */
+	@Value("${tmdb.url.multiSearchPath}")
+	private String multiSearchPath;
+
+	/** TMDB API 페이지당 작품 표시 개수 */
+	@Value("${tmdb.custom.perMainPage}")
+	private int tmdbPerMainPage;
+	
+	/** TMDB API 자동완성 표시 개수 */
+	@Value("${tmdb.custom.autoCompleteCount}")
+	private int autoCompleteCount;
+	
+	/** AniList API 메인화면 작품 표시 개수 */
+	@Value("${anilist.custom.perMainPage}")
+	private int anilistPerMainPage;
+	
+	/** AniList API 전체보기화면 작품 표시 개수 */
+	@Value("${anilist.custom.perMorePage}")
+	private int anilistPerMorePage;
+
+	/** 리퀘스트 파라미터 키 : 검색어 */
+	private static final String PARAM_QUERY = "query";
+
+	/** 리퀘스트 파라미터 키 : 페이지 */
+	private static final String PARAM_PAGE = "page";
+	
+	/** 리퀘스트 파라미터 키 : 페이지당 표시 건수 */
+	private static final String PARAM_PER_PAGE = "perPage";
+	
+	/** 리퀘스트 파라미터 키 : 검색 */
+	private static final String PARAM_SEARCH = "search";
+
+	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
+	private static final String PARAM_INCLUDE_ADULT = "include_adult";
+
+	/** 리퀘스트 파라미터 키 : 언어 */
+	private static final String PARAM_LANGUAGE = "language";
+	
+	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
+	private static final String PARAM_IS_ADULT = "isAdult";
+	
+	/** 언어 : 한국어 */
+	private static final String LANGUAGE_KOREAN = "ko-KR";
+	
+	/** API 입구 판단용 파라미터 키 문자열  */
+	private static final String IS_MAIN_PAGE = "isMainPage";
+	
+	/**
+	 * 어플리케이션 기동시 ApplicationReadyEvent를 이용하여, 
+	 * 모든 빈 초기화 + 어플리케이션 준비 완료 후에 캐시화 로직을 실행
+	 * (@Cacheable 가 AOP 프록시로 동작하므로, 이 시점에서는 사용 가능)
+	 */
+	@EventListener(ApplicationReadyEvent.class)
+	public void initializeTMdbApiGenreInfo() {
+		// TMDB API 애니/영화 장르 정보 캐시화 
+		tmdbApiGenreClient.getTvGenres();
+		tmdbApiGenreClient.getMovieGenres();
+	}
+	
+	/**
+	 * TMDB API를 사용하여 TV 장르 정보 조회
+	 * 
+	 * @return TV 장르 정보 Map
+	 */
+	private Mono<Map<String, Integer>> getTvGenres() {
+		// 리액티브 컨트롤러에서 사용하기 위해 Mono로 감싸서 반환
+		return Mono.just(tmdbApiGenreClient.getTvGenres());
+	}
+	
+	/**
+	 * TMDB API를 사용하여 영화 장르 정보 조회
+	 * 
+	 * @return 영화 장르 정보 Map
+	 */
+	private Mono<Map<String, Integer>> getMovieGenres() {
+		// 리액티브 컨트롤러에서 사용하기 위해 Mono로 감싸서 반환
+		return Mono.just(tmdbApiGenreClient.getMovieGenres());
+	}
+	
+	/**
+	 * DeepL API를 사용하여 대상 문자열을 설정언어로 변역
+	 * 
+	 * @param keyword 번역할 문자열
+	 * @return 번역된 문자열
+	 */
+	private Mono<String> getTranslationText(String keyword) {
+		// 리액티브 컨트롤러에서 사용하기 위해 Mono로 감싸서 반환
+		return Mono.just(deeplApiGenreClient.translateText(
+				keyword, CommonConstants.API_LANGUAGE_JAPANESE, CommonConstants.API_LANGUAGE_KOREAN));
+	}
+	
+	/**
+	 * 애니메이션/드라마/영화 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @return Mono<ResponseEntity<List<String>>> 검색어 리스트
+	 */
+	@GetMapping(value = "/searchKeyword")
+	public Mono<ResponseEntity<List<String>>> searchKeyword(@RequestParam(PARAM_QUERY) String keyword) {
+		
+		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+		
+		// TV 장르와 영화 장르를 병렬로 묶어서 처리
+		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(tuple -> {
+			// 장르 맵 병합
+			Map<String, Integer> genreMap = tuple.getT1();
+			Map<String, Integer> movieGenreMap = tuple.getT2();
+			genreMap.putAll(movieGenreMap);
+
+			// 성인물 포함 플래그
+			boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+			// TMDB Multi API 실행 
+			return tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(multiSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchMultiDto.class)
+					.map(response -> {
+						// 검색 결과
+						List<TmdbSearchMultiResultsDto> resultList = response.getResults();
+                        // 검색 결과가 없는 경우, 빈 리스트 반환
+						if (CollectionUtils.isEmpty(resultList)) {
+							return ResponseEntity.ok(new ArrayList<>());
+						}
+						// 검색 결과에서 TV, 영화 정보만 추출
+						List<String> nameList = resultList.stream()
+								.filter(e -> !StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getMediaTypeValue())
+										&& !CollectionUtils.isEmpty(e.getGenreIds()) 
+										&& ((StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getMediaTypeValue())
+											&& (e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))
+													|| e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenre()))
+													|| e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenre()))
+												))
+										|| StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getMediaTypeValue())
+										)) // 인물 미디어 타입 제외 AND 장르 존재 AND ((TV 미디어 타입 AND (장르가 애니 or 드라마 or 연속극)) OR 영화 미디어 타입)
+								.map(e -> StringUtils.defaultIfEmpty(e.getName(), e.getTitle())) // 둘 중 하나만 들어가 있으므로, 한쪽이 empty면 다른 한쪽을 설정
+								.filter(StringUtils::isNotEmpty) // 빈 요소 제거
+								.distinct() // 중복 제거
+								.sorted() // 문자열 순으로 정렬
+								.collect(Collectors.toList());
+						// 키워드로 시작하는 검색결과가 먼저 오도록 정렬
+						List<String> sortedList = SearchContentHelper.sortKeywordList(nameList, keyword); 
+						// 표시개수 제한 후 결과값 반환
+						return ResponseEntity.ok(sortedList.stream().limit(autoCompleteCount).toList());
+
+					});
+		});
+	}
+	
+	/**
+	 * 애니메이션/드라마/영화 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @return Mono<ResponseEntity<SearchContentVideoResponseDto>> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
+	 */
+	@GetMapping(value = "/searchVideo")
+	public Mono<ResponseEntity<SearchContentVideoResponseDto>> searchVideo(@RequestParam(PARAM_QUERY) String keyword) {
+
+		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+
+		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
+			Map<String, Integer> tvGenreMap = genreTuple.getT1();
+			Map<String, Integer> movieGenreMap = genreTuple.getT2();
+			
+			// 성인물 포함 플래그
+			boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+			
+			// 애니, 드라마 정보 취득
+			Mono<SearchContentTvResponseDto> tvResponseMono = tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(tvSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, 1) // 첫번째 페이지 고정(기본값)
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchTvDto.class)
+					.map(response -> {
+						List<TmdbSearchTvResultsDto> aniList = new ArrayList<>();
+						List<TmdbSearchTvResultsDto> dramaList = new ArrayList<>();
+
+						// 애니/드라마 리스트 분배
+						for (TmdbSearchTvResultsDto results : response.getResults()) {
+							List<Integer> genreIds = results.getGenreIds();
+							if (!CollectionUtils.isEmpty(genreIds)) {
+								// 장르가 애니메이션인 경우
+								if (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
+									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode());
+									aniList.add(results);
+									// 장르가 드라마인 경우
+								} else if (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenre()))
+										|| genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenre()))) {
+									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());
+									dramaList.add(results);
+								}
+							}
+						}
+						// 애니/드라마/영화 리스트 저장
+						SearchContentTvResponseDto tvResponse = new SearchContentTvResponseDto();
+						int totalResults = response.getTotalResults();
+						// 애니 정보
+						tvResponse.setAniResults(aniList);
+						// 드라마 정보
+						tvResponse.setDramaResults(dramaList);
+						// 현재 페이지
+						tvResponse.setPage(response.getPage());
+						// 총 페이지 수
+						tvResponse.setTotalPages(response.getTotalPages());
+						// 총 건수
+						tvResponse.setTotalResults(totalResults);
+
+						return tvResponse;
+					});
+
+			// 영화 정보 취득
+			Mono<TmdbSearchMovieDto> movieResponseMono = tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(movieSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, 1) // 첫번째 페이지 고정(기본값)
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchMovieDto.class);
+			
+			// 비동기로 API실행(webClient사용)후 결과를 병렬처리
+			return Mono.zip(tvResponseMono, movieResponseMono).map(dtoTuple -> {
+				// TV 응답 DTO 
+				SearchContentTvResponseDto tvResponse = dtoTuple.getT1();
+				// 영화 응답 DTO
+				TmdbSearchMovieDto movieResponse = dtoTuple.getT2();
+				// 애니 검색 결과 리스트
+				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getAniResults()).orElse(new ArrayList<>());
+				// 드라마 검색 결과 리스트
+				List<TmdbSearchTvResultsDto> dramaResultList = Optional.ofNullable(tvResponse.getDramaResults()).orElse(new ArrayList<>());
+				// 영화 검색 결과 리스트
+				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
+				
+				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
+				List<TmdbSearchTvResultsDto> aniMovieList = new ArrayList<>();
+				List<TmdbSearchMovieResultsDto> filteredMovieList = new ArrayList<>();
+				// 영화 정보에서 애니메이션 정보 추출 
+				for (TmdbSearchMovieResultsDto movieResult : movieResultList) {
+					List<Integer> genreIds = movieResult.getGenreIds();
+					if (!CollectionUtils.isEmpty(genreIds)
+							&& genreIds.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
+						aniMovieList.add(SearchContentHelper.convertMovieToAni(movieResult));
+					} else {
+						movieResult.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
+						filteredMovieList.add(movieResult);
+					}
+				}
+				// 애니메니션 정보에 영화 애니메이션 정보 통합
+				aniResultList.addAll(aniMovieList);
+
+				// 애니 필터용 인덱스
+				AtomicInteger aniIndex = new AtomicInteger(0);
+				// 드라마 필터용 인덱스
+				AtomicInteger dramaIndex = new AtomicInteger(0);
+				// 영화 필터용 인덱스
+				AtomicInteger movieIndex = new AtomicInteger(0);
+				// 설정된 페이지당 작품 표시 개수 이상의 애니 정보가 있는지 여부
+				boolean isMoreAni = aniResultList.size() > tmdbPerMainPage;
+				// 설정된 페이지당 작품 표시 개수 이상의 드라마 정보가 있는지 여부
+				boolean isMoreDrama = dramaResultList.size() > tmdbPerMainPage;
+				// 설정된 페이지당 작품 표시 개수 이상의 영화 정보가 있는지 여부
+				boolean isMoreMovie = filteredMovieList.size() > tmdbPerMainPage;
+				
+				// 반환값 DTO
+				SearchContentVideoResponseDto videoResponse = SearchContentVideoResponseDto.builder()
+						// 애니 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
+						.aniResults(isMoreAni ? 
+								aniResultList.stream().filter(e -> aniIndex.incrementAndGet() <= tmdbPerMainPage).toList()
+								: aniResultList)
+						// 드라마 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
+						.dramaResults(isMoreDrama?
+								dramaResultList.stream().filter(e -> dramaIndex.incrementAndGet() <= tmdbPerMainPage).toList()
+								: dramaResultList)
+						// 영화 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
+						.movieResults(isMoreMovie ? 
+								filteredMovieList.stream().filter(e -> movieIndex.incrementAndGet() <= tmdbPerMainPage).toList() 
+								: filteredMovieList)
+						// 현재 페이지 < 총 페이지 or 애니 정보 건수 > 페이지 건수 표시 설정값 인지 판단
+						.isAniViewMore(tvResponse.getPage() < tvResponse.getTotalPages() || isMoreAni)
+						// 현재 페이지 < 총 페이지 or 드라마 정보 건수 > 페이지 건수 표시 설정값 인지 판단
+						.isDramaViewMore(tvResponse.getPage() < tvResponse.getTotalPages() || isMoreDrama)
+						// 현재 페이지 < 총 페이지 or 영화 정보 건수 > 페이지 건수 표시 설정값 인지 판단
+						.isMovieViewMore(movieResponse.getPage() < movieResponse.getTotalPages() || isMoreMovie)
+						// 현재 페이지
+						.page(tvResponse.getPage())
+						// 총 페이지 수
+						.totalPages(tvResponse.getTotalPages())
+						// 총 결과 수
+						.totalResults(tvResponse.getTotalResults())
+						.build();
+
+				// 비디오 응답 오브젝트 반환
+				return ResponseEntity.ok(videoResponse);
+			});
+			
+		});
+	}
+
+	/**
+	 * 애니 정보 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @param page 페이지
+	 * @return Mono<ResponseEntity<TmdbSearchTvDto>> 애니 정보 응답 오브젝트
+	 */
+	@GetMapping(value = "/searchAni")
+	public Mono<ResponseEntity<TmdbSearchTvDto>> searchAni(
+			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
+			@Nullable @RequestParam(PARAM_PAGE) Integer page
+			) {
+		
+		int currentPage = Optional.ofNullable(page).orElse(1);
+
+		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+
+		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
+			Map<String, Integer> aniGenreMap = genreTuple.getT1();
+			Map<String, Integer> movieGenreMap = genreTuple.getT2();
+			
+			// 성인물 포함 플래그
+			boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+			
+			// TV 애니 정보 조회
+			Mono<TmdbSearchTvDto> tvResponseMono = tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(tvSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, currentPage)
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchTvDto.class)
+					.map(response -> {
+						List<TmdbSearchTvResultsDto> aniList = new ArrayList<>();
+						// 애니 리스트 추출
+						for (TmdbSearchTvResultsDto results : response.getResults()) {
+							List<Integer> tvGenreIds = results.getGenreIds();
+							if (!CollectionUtils.isEmpty(tvGenreIds) 
+									&& tvGenreIds.contains(aniGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
+								results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode());
+								aniList.add(results);
+							}
+						}
+						// 애니 리스트 저장
+						TmdbSearchTvDto tvResponse = TmdbSearchTvDto.builder()
+								.results(aniList)
+								.page(response.getPage())
+								.totalPages(response.getTotalPages())
+								.totalResults(response.getTotalResults())
+								.build();
+
+						return tvResponse;
+					});
+
+			// 영화 정보 취득
+			Mono<TmdbSearchMovieDto> movieResponseMono = tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(movieSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, currentPage)
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchMovieDto.class);
+			
+			// 비동기로 API실행(webClient처리)후 결과를 병렬처리
+			return Mono.zip(tvResponseMono, movieResponseMono).map(tuple -> {
+				// TV 응답 DTO
+				TmdbSearchTvDto tvResponse = tuple.getT1();
+				// 영화 응답 DTO
+				TmdbSearchMovieDto movieResponse = tuple.getT2();
+				// 애니 검색 결과 리스트
+				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getResults()).orElse(new ArrayList<>());
+				// 영화 검색 결과 리스트
+				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
+			
+				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
+				List<TmdbSearchTvResultsDto> aniMovieList = new ArrayList<>();
+				for (TmdbSearchMovieResultsDto movieResult : movieResultList) {
+					List<Integer> movieGenreIds = movieResult.getGenreIds();
+					if (!CollectionUtils.isEmpty(movieGenreIds) 
+							&& movieGenreIds.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
+						aniMovieList.add(SearchContentHelper.convertMovieToAni(movieResult));
+					}
+				}
+				aniResultList.addAll(aniMovieList);
+
+				// 반환값 설정
+				TmdbSearchTvDto aniResponse = TmdbSearchTvDto.builder()
+						.results(aniResultList)
+						.page(currentPage)
+						.build();
+
+				// 애니 응답 오브젝트 반환
+				return ResponseEntity.ok(aniResponse);
+			});
+			
+		});
+	}
+
+	/**
+	 * 드라마 정보 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @param page 페이지
+	 * @return Mono<ResponseEntity<TmdbSearchTvDto>> 드라마 정보 응답 오브젝트
+	 */
+	@GetMapping(value = "/searchDrama")
+	public Mono<ResponseEntity<TmdbSearchTvDto>> searchDrama(
+			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
+			@Nullable @RequestParam(PARAM_PAGE) Integer page) {
+
+		// 드라마 장르 정보 취득
+		return getTvGenres().flatMap(tvGenreMap -> {
+			return tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(tvSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, session.getSessionBooleanValue(CommonConstants.ADULT_FLG))
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchTvDto.class)
+					.map(response -> {
+						// TV 정보 결과 리스트에서 드라마 정보만 추출
+						List<TmdbSearchTvResultsDto> resultList = new ArrayList<>();
+						for (TmdbSearchTvResultsDto results : response.getResults()) {
+							List<Integer> genreIds = results.getGenreIds();
+							if (!CollectionUtils.isEmpty(results.getGenreIds()) 
+									&& !genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))
+									&& (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenre()))
+											|| genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenre())))) {
+								results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());
+								resultList.add(results);
+							}
+						}
+						// 결과값 설정
+						TmdbSearchTvDto dramaResponse = TmdbSearchTvDto.builder()
+								.results(resultList)
+								.page(response.getPage())
+								.totalPages(response.getTotalPages())
+								.totalResults(response.getTotalResults())
+								.build();
+
+						// 드라마 응답 오브젝트 반환
+						return ResponseEntity.ok(dramaResponse);
+					});
+		});
+	}
+
+	/**
+	 * 영화 정보 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @param page 페이지
+	 * @return Mono<ResponseEntity<TmdbSearchMovieDto>> 영화 정보 응답 오브젝트
+	 */
+	@GetMapping(value = "/searchMovie")
+	public Mono<ResponseEntity<TmdbSearchMovieDto>> searchMovie(
+			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
+			@Nullable @RequestParam(PARAM_PAGE) Integer page
+			) {
+		
+		// 영화 장르 정보 취득
+		return getMovieGenres().flatMap(movieGenreMap -> {
+			// 영화 정보 조회
+			return tmdbWebClient.get()
+					.uri(builder -> builder
+							.path(movieSearchPath)
+							.queryParam(PARAM_QUERY, keyword)
+							.queryParam(PARAM_INCLUDE_ADULT, session.getSessionBooleanValue(CommonConstants.ADULT_FLG))
+							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
+							.build())
+					.retrieve()
+					.bodyToMono(TmdbSearchMovieDto.class)
+					.map(response -> {
+						// 영화 정보 결과 리스트에서 애니 정보만 제외
+						List<TmdbSearchMovieResultsDto> resultList = new ArrayList<>();
+						for (TmdbSearchMovieResultsDto results : response.getResults()) {
+							List<Integer> movieGenre = results.getGenreIds();
+							// 장르가 아예 없는 경우는 제외
+							if (movieGenre != null) {
+								if (CollectionUtils.isEmpty(movieGenre) // 장르가 빈 배열의 경우는 추가
+										|| (!CollectionUtils.isEmpty(movieGenre) 
+												&& !movieGenre.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre())))) {
+									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
+									resultList.add(results);
+								}
+							}
+						}
+						// 결과값 설정
+						TmdbSearchMovieDto movieResponse = TmdbSearchMovieDto.builder()
+								.results(resultList)
+								.page(response.getPage())
+								.totalPages(response.getTotalPages())
+								.totalResults(response.getTotalResults())
+								.build();
+						
+						// 영화 응답 오브젝트 반환
+						return ResponseEntity.ok(movieResponse);
+					});
+		});
+	}
+	
+	/**
+	 * 만화 정보 검색 API
+	 * 
+	 * @param keyword 검색어
+	 * @param page 페이지
+	 * @return Mono<ResponseEntity<SearchContentComicsResponseDto>> 만화 정보 응답 오브젝트
+	 */
+	@GetMapping(value = "/searchComics")
+	public Mono<ResponseEntity<SearchContentComicsResponseDto>> searchComics(
+			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
+			@Nullable @RequestParam(PARAM_PAGE) Integer page,
+			@RequestParam(IS_MAIN_PAGE) boolean isMainPage
+			) {
+		
+		// API를 어디서 불렀는지에 따라 표시 건수를 다르게 설정
+		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;
+		// 성인물 포함 플래그
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		
+		// 한글 검색어 -> 일본어로 번역후(DeepL API), AniList API 조회
+		return getTranslationText(keyword).flatMap(jaKeyword -> {
+			try {
+				// graphql 쿼리 파일 불러오기
+				String query = GraphqlUtil.loadQuery("comicsList.graphql");
+				// 리퀘스트 파라미터 작성
+				Map<String, Object> variables = new HashMap<>(Map.of(
+						PARAM_PAGE, Optional.ofNullable(page).orElse(1),
+						PARAM_PER_PAGE, perPage,
+						PARAM_SEARCH, jaKeyword
+						));
+				// 성인물 플래그가 false인 경우, 파라미터 추가
+				if (!isAdult) {
+					variables.put(PARAM_IS_ADULT, isAdult);
+				}
+				// graphql 쿼리에 리퀘스트 파라미터 적용
+				String requestBody = GraphqlUtil.buildRequestBody(query, variables);
+				// AniList API 실행
+				return anilistWebClient.post()
+						.bodyValue(requestBody)
+						.retrieve()
+						.bodyToMono(AniListResponseDto.class)
+						.map(response -> {
+							// 만화 정보가 없는 경우 빈 응답 반환
+							if (ObjectUtils.isEmpty(response.getData())
+									|| ObjectUtils.isEmpty(response.getData().getPage())
+									|| CollectionUtils.isEmpty(response.getData().getPage().getMedia())
+									|| ObjectUtils.isEmpty(response.getData().getPage().getPageInfo())) {
+								return ResponseEntity.ok(SearchContentComicsResponseDto.builder()
+										.page(0)
+										.totalPages(0)
+										.isComicsViewMore(false)
+										.comicsResults(new ArrayList<>())
+										.build());
+							}							
+							// 페이지 정보 설정
+							AniListPageInfoDto comicsPageDto = response.getData().getPage().getPageInfo();
+							int currentPage = comicsPageDto.getCurrentPage();
+							int lastPage = comicsPageDto.getLastPage();
+							// 미디어 결과 설정
+							List<AniListMediaDto> mediaList = response.getData().getPage().getMedia();
+							List<SearchContentComicsMediaResultDto> mediaResultList = new ArrayList<>();
+							for(AniListMediaDto media : mediaList) {
+								String mediaTitle = ObjectUtils.isNotEmpty(media.getTitle()) ? media.getTitle().getUserPreferred() : "";
+								String mediaLargeImage = ObjectUtils.isNotEmpty(media.getCoverImage()) ? media.getCoverImage().getLarge() : "";
+								String mediaExtraLargeImage = ObjectUtils.isNotEmpty(media.getCoverImage()) ? media.getCoverImage().getExtraLarge() : "";
+								SearchContentComicsMediaResultDto mediaResult = SearchContentComicsMediaResultDto.builder()
+										.id(media.getId())
+										.title(mediaTitle)
+										.backdropPath(mediaLargeImage)
+										.posterPath(mediaExtraLargeImage)
+										.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+										.build();
+								mediaResultList.add(mediaResult);
+							}
+							// 응답 데이터 재분배
+							SearchContentComicsResponseDto comicsResponse = SearchContentComicsResponseDto.builder()
+									.page(currentPage)
+									.totalPages(lastPage)
+									.isComicsViewMore(currentPage < lastPage)
+									.comicsResults(mediaResultList)
+									.build();
+							
+							// 만화 응답 오브젝트 반환
+							return ResponseEntity.ok(comicsResponse);
+						});
+			} catch (IOException e) {
+				return Mono.error(e);
+			}
+		});
+	}
+
+}

@@ -1,0 +1,25 @@
+query ($page: Int, $perPage: Int, $search: String, $isAdult: Boolean) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      lastPage
+      currentPage
+      hasNextPage
+    }
+    media(search: $search, type: MANGA, isAdult: $isAdult) {
+      id
+      title {
+        romaji
+        english
+        native
+        userPreferred
+      }
+      coverImage {
+        medium
+        large
+        extraLarge
+      }
+      isAdult
+    }
+  }
+}
