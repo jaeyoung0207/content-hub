@@ -7,8 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsTvDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentGetDataDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentSaveRequestDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentUpdateRequestDto;
@@ -91,7 +91,7 @@ public interface DetailMapper {
 	 */
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
-	DetailTvResponseDto detailTvToDetailTvResponse(TmdbDetailsTvDto apiResponse);
+	DetailTvResponseDto detailTvToDetailTvResponse(TmdbTvDetailsDto apiResponse);
 	
 	/**
 	 * TmdbDetailsMovieDto를 DetailMovieResponseDto로 변환
@@ -100,6 +100,6 @@ public interface DetailMapper {
 	 */
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
-	DetailMovieResponseDto detailMovieToDetailMovieResponse(TmdbDetailsMovieDto apiResponse);
+	DetailMovieResponseDto detailMovieToDetailMovieResponse(TmdbMovieDetailsDto apiResponse);
 
 }

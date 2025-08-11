@@ -3,7 +3,7 @@ package com.cjy.contenthub.common.exception;
 import lombok.Getter;
 
 /**
- * 비즈니스 로직에서 발생할 수 있는 예외를 처리하기 위한 유저 정의 예외 클래스
+ * 비즈니스 로직 예외 클래스
  */
 @Getter
 public class CommonBusinessException extends RuntimeException {
@@ -12,7 +12,7 @@ public class CommonBusinessException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	
 	/** 상태 코드 */
-	private Integer statusCode;
+	private final Integer statusCode;
 	
 	/**
 	 * 기본 생성자
@@ -21,6 +21,7 @@ public class CommonBusinessException extends RuntimeException {
 	 */
 	public CommonBusinessException(String message) {
 		super(message);
+		statusCode = null;
 	}
 
 	/**

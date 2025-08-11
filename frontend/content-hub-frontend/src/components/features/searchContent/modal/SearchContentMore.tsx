@@ -1,4 +1,4 @@
-import { MEDIA_TYPE, VIEW_MORE_TYPE, TMDB_API_IMAGE_DOMAIN, WIDTH_300, COMMON_IMAGES } from "@/components/common/constants/constants";
+import { MEDIA_TYPE, TMDB_API_IMAGE_DOMAIN, WIDTH_300, COMMON_IMAGES } from "@/components/common/constants/constants";
 import { CloseButtonUi } from "@/components/ui/common/CloseButtonUi";
 import { UseInfiniteQueryResultType, useSearchContentMore } from "./useSearchContentMore";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,7 @@ import { memo } from "react";
 import { LoadingUi } from "@/components/ui/LoadingUi";
 import { useNavigate } from "react-router-dom";
 import { SearchContentPropsType } from "../SearchContentPage";
-import { commonErrorHandler, isSearchTvType } from "@/components/common/utils/commonUtil";
+import { commonErrorHandler, detailUrlQuery, isSearchTvType } from "@/components/common/utils/commonUtil";
 
 /**
  * 전체보기 모달화면 컴포넌트 props 타입
@@ -71,7 +71,7 @@ export const SearchContentMore = memo(({ keyword, isAdult, mediaType }: SearchCo
             {
                 <div className="flex justify-center items-center fixed top-0 left-0 w-full h-full bg-black/30 z-50">
                     <div className="w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl overflow-auto mx-auto mt-10">
-                        <div className="mt-10 mb-10 p-4">
+                        <div className="mb-5 p-4">
                             {/* 닫기 버튼 */}
                             <CloseButtonUi modalClose={handleModalClose} />
                             {
@@ -111,19 +111,21 @@ export const SearchContentMore = memo(({ keyword, isAdult, mediaType }: SearchCo
  */
 const DisplayAllResults = memo(({ media, results, mediaType, keyword, isAdult }: SearchResultsModalPropsType) => {
 
-    // i18n 번역 함수
+    // navigate 훅
     const navigate = useNavigate();
+    // i18n 번역 함수
+    const {t} = useTranslation();
     // 상세보기 모달에서 사용할 썸네일 이미지 경로
     const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
 
     return (
         <div className="w-full">
-            {/* 미디어 이름 */}
-            <div className="text-5xl font-bold">
-                {media}
+            {/* 키워드 미디어 검색 결과 */}
+            <div className="text-3xl font-bold ml-5">
+                "{keyword}" {media} {t("info.searchResults")}
             </div>
             {/* 검색 결과 */}
-            <div className="flex flex-wrap items-start mt-8">
+            <div className="flex flex-wrap items-start mt-6">
                 {
                     results.pages.length !== 0 &&
                     results.pages.flat().map((items, index) => { // flat()을 이용하여 다차원 배열을 평탄화하여 1차원 배열로 만듦
@@ -132,7 +134,8 @@ const DisplayAllResults = memo(({ media, results, mediaType, keyword, isAdult }:
                                 key={"frame" + index}
                                 className={"ml-1 mr-1 block hover:font-bold cursor-pointer " + (mediaType === MEDIA_TYPE.COMICS ? "w-[190px]" : "w-[300px]")}
                                 onClick={commonErrorHandler(() => {
-                                    const detailUrl = `/search?keyword=${keyword}&isAdult=${isAdult}&viewMore=${VIEW_MORE_TYPE(mediaType)}&mediaType=${mediaType}&originalMediaType=${items.originalMediaType}&contentId=${items.id}&tabNo=${0}`;
+                                    // const detailUrl = `/search?keyword=${keyword}&isAdult=${isAdult}&viewMore=${VIEW_MORE_TYPE(mediaType)}&mediaType=${mediaType}&originalMediaType=${items.originalMediaType}&contentId=${items.id}&tabNo=${0}`;
+                                    const detailUrl = detailUrlQuery({ originalMediaType: items.originalMediaType!, contentId: String(items.id), tabNo: 0 });
                                     // 리다이렉트용 데이터 저장
                                     sessionStorage.setItem("redirectUrl", detailUrl);
                                     // 상세보기 모달 오픈
@@ -151,6 +154,7 @@ const DisplayAllResults = memo(({ media, results, mediaType, keyword, isAdult }:
                                         }}
                                         // 만화인 경우와 그 이외의 경우에 따라 이미지 크기를 다르게 설정
                                         className={(mediaType === MEDIA_TYPE.COMICS ? "w-[190px] h-[270px]" : "w-full h-[180px]") + " object-scale-down"}
+                                        alt={"Thumbnail Image"}
                                     />
                                 </li>
                                 {/* 제목 */}

@@ -33,7 +33,7 @@ public class CommonRestControllerAdvice {
 
 	/** 인증 에러 */
 	private static final String AUTHENTICATION_AUTHORIZATION_ERROR = "Authentication/Authorization Error";
-	
+
 	/** 입력값 검사 에러 */
 	private static final String VALIDATION_ERROR = "Validation Error";
 
@@ -46,6 +46,9 @@ public class CommonRestControllerAdvice {
 	/** 시스템 에러 */
 	private static final String SERVER_ERROR = "Server Error";
 
+	/** 시스템 에러 */
+	private static final String LOG_FORMAT = " : path={}, status={}, message={}";
+
 	/**
 	 * 인증/인가 관련 예외 처리
 	 * 
@@ -57,10 +60,10 @@ public class CommonRestControllerAdvice {
 		AuthenticationException.class, // 인증 실패
 		AccessDeniedException.class // 인가 실패
 	})
-	public ResponseEntity<?> handleAuthException(Exception ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleAuthException(Exception ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = ex instanceof AccessDeniedException
-		        ? HttpStatus.FORBIDDEN.value() : HttpStatus.UNAUTHORIZED.value();
+				? HttpStatus.FORBIDDEN.value() : HttpStatus.UNAUTHORIZED.value();
 		String message = ex.getMessage();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
@@ -68,7 +71,7 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(AUTHENTICATION_AUTHORIZATION_ERROR)
 				.build();
-		log.error(AUTHENTICATION_AUTHORIZATION_ERROR.concat(" : path={}, status={}, message={}"),
+		log.error(AUTHENTICATION_AUTHORIZATION_ERROR.concat(LOG_FORMAT),
 				path, statusCode, ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
@@ -88,52 +91,47 @@ public class CommonRestControllerAdvice {
 		BindException.class, // 바인딩 에러(유효성 검사 에러(MethodArgumentNotValidException)포함)
 		ConstraintViolationException.class // JSR-303/JSR-380 유효성 검사 실패
 	})
-	public ResponseEntity<?> handleValidationException(Exception ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleValidationException(Exception ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = HttpStatus.BAD_REQUEST.value();
 		String message = "";
-		// 예외 타입에 따라 메시지 구성
-		if (ex instanceof HttpMessageNotReadableException) {
+
+		// 예외 타입에 따라 메시지를 다르게 설정
+		switch (ex) {
 			// JSON 파싱 에러 처리
-			HttpMessageNotReadableException jsonParseEx = (HttpMessageNotReadableException) ex;
-			message = "JSON parsing error: " + jsonParseEx.getMessage();
-		} else if (ex instanceof MissingServletRequestParameterException) {
+			case HttpMessageNotReadableException jsonParseEx -> message = "JSON parsing error: " + jsonParseEx.getMessage();
+	
 			// 필수 파라미터가 누락된 경우
-			MissingServletRequestParameterException missingReqParamEx = (MissingServletRequestParameterException) ex;
-			message = "Missing parameter: " + missingReqParamEx.getParameterName();
-		} else if (ex instanceof MethodArgumentTypeMismatchException) {
+			case MissingServletRequestParameterException missingReqParamEx -> message = "Missing parameter: " + missingReqParamEx.getParameterName();
+	
 			// 타입 불일치 예외 처리
-			MethodArgumentTypeMismatchException typeMismatchEx = (MethodArgumentTypeMismatchException) ex;
-			message = "Type mismatch for parameter: " + typeMismatchEx.getName() + ", expected: "
-					+ typeMismatchEx.getRequiredType().getSimpleName();
-		} else if (ex instanceof BindException) {
+			case MethodArgumentTypeMismatchException typeMismatchEx -> 
+				message = "Type mismatch for parameter: " + typeMismatchEx.getName() + ", expected: "
+						+ typeMismatchEx.getRequiredType().getSimpleName();
+	
 			// 바인딩 에러 처리
 			// DTO 필드에 대한 유효성 검사(@Valid, @NotEmpty 등)에서 실패할 때 발생
-			// MethodArgumentNotValidException은 BindException의 하위 클래스이므로 BindException에서 처리
-			// 바인딩 에러에서 발생한 에러 메시지를 모두 통합
-			BindException bindEx = (BindException) ex;
-			message = bindEx.getBindingResult().getFieldErrors().stream()
+			case BindException bindEx -> message = bindEx.getBindingResult().getFieldErrors().stream()
 					.map(error -> error.getField() + ": " + error.getDefaultMessage())
 					.collect(Collectors.joining(", "));
-		} else if (ex instanceof ConstraintViolationException) {
+	
 			// JSR-303/JSR-380 유효성 검사 실패 처리
 			// 메서드 파라미터에 직접 @Validated를 붙여 유효성 검사를 할 때 실패하면 발생
-			// ConstraintViolationException에서 발생한 에러 메시지를 모두 통합
-			ConstraintViolationException constraintViolationEx = (ConstraintViolationException) ex;
-			message = constraintViolationEx.getConstraintViolations().stream()
+			case ConstraintViolationException constraintViolationEx -> 
+				message = constraintViolationEx.getConstraintViolations().stream()
 					.map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
 					.collect(Collectors.joining(", "));
-		} else {
-			// 기타 예외 처리
-			message = ex.getMessage();
+	
+			default -> message = ex.getMessage();
 		}
+
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
 				.status(String.valueOf(statusCode))
 				.message(message)
 				.name(VALIDATION_ERROR)
 				.build();
-		log.error(VALIDATION_ERROR.concat(" : path={}, status={}, message={}"), path, statusCode, message, ex);
+		log.error(VALIDATION_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
@@ -146,7 +144,7 @@ public class CommonRestControllerAdvice {
 	 * @return ResponseEntity<CommonErrorResponse>
 	 */
 	@ExceptionHandler(WebClientResponseException.class)
-	public ResponseEntity<?> handleException(WebClientResponseException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleException(WebClientResponseException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		String statusCode = String.valueOf(ex.getStatusCode());
 		String message = ex.getMessage();
@@ -158,7 +156,7 @@ public class CommonRestControllerAdvice {
 				.body(body)
 				.name(API_RESPONSE_ERROR)
 				.build();
-		log.error(API_RESPONSE_ERROR.concat(" : path={}, status={}, message={}, body={}"), path, statusCode, message, body, ex);
+		log.error(API_RESPONSE_ERROR.concat(LOG_FORMAT.concat(", body={}")), path, statusCode, message, body, ex);
 		return new ResponseEntity<>(errorResponse, ex.getStatusCode());
 	}
 
@@ -170,7 +168,7 @@ public class CommonRestControllerAdvice {
 	 * @return ResponseEntity<CommonErrorResponse>
 	 */
 	@ExceptionHandler(CommonBusinessException.class)
-	public ResponseEntity<?> handleException(CommonBusinessException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleException(CommonBusinessException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode();
 		String message = ex.getMessage();
@@ -180,7 +178,7 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
-		log.error(BUSINESS_ERROR.concat(" : path={}, status={}, message={}"), path, statusCode, message, ex);
+		log.error(BUSINESS_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -192,7 +190,7 @@ public class CommonRestControllerAdvice {
 	 * @return ResponseEntity<CommonErrorResponse>
 	 */
 	@ExceptionHandler(ResponseStatusException.class)
-	public ResponseEntity<?> handleException(ResponseStatusException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleException(ResponseStatusException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode().value();
 		String message = ex.getReason();
@@ -202,7 +200,7 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
-		log.error(BUSINESS_ERROR.concat(" (StatusException) : path={}, status={}, message={}"), path, statusCode, message, ex);
+		log.error(BUSINESS_ERROR.concat(" (StatusException)".concat(LOG_FORMAT)), path, statusCode, message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -214,7 +212,7 @@ public class CommonRestControllerAdvice {
 	 * @return ResponseEntity<CommonErrorResponse>
 	 */
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<?> handleException(Exception ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleException(Exception ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		String statusCode = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		String message = ex.getMessage();
@@ -224,7 +222,7 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(SERVER_ERROR)
 				.build();
-		log.error(SERVER_ERROR.concat(" : path={}, status={}, message={}"), path, statusCode, message, ex);
+		log.error(SERVER_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

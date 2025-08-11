@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 /**
- * 로그인 관련 API 컨트롤러
+ * 로그인 API 컨트롤러 클래스
  */
 @RestController
 @RequestMapping("/login")
@@ -218,10 +218,10 @@ public class LoginController {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(NaverIssueTokenDto.class)
-				.flatMap(updateResponse -> {
+				.flatMap(updateResponse -> 
 					// 네이버 프로필 조회 처리
-					return loginClient.getNaverUserInfo(request, updateResponse.getAccessToken(), updateResponse.getExpiresIn(), null);
-				});
+					loginClient.getNaverUserInfo(request, updateResponse.getAccessToken(), updateResponse.getExpiresIn(), null)
+				);
 	}
 
 	/**
@@ -451,9 +451,9 @@ public class LoginController {
 		// 유저 정보 가져오기 API 조회
 		return kakaoWebClient.get()
 				.uri(uri)
-				.headers(header -> {
-					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken));
-				})
+				.headers(header -> 
+					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
+				)
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.map(response -> {

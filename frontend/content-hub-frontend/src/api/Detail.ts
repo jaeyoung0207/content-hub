@@ -95,7 +95,6 @@ export class Detail<
     query: {
       /** @format int32 */
       series_id: number;
-      originalMediaType: string;
     },
     params: RequestParams = {},
   ) =>
@@ -158,7 +157,6 @@ export class Detail<
     query: {
       /** @format int32 */
       movie_id: number;
-      originalMediaType: string;
     },
     params: RequestParams = {},
   ) =>

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -103,6 +104,12 @@ public class LoginClient {
 			int expiresIn,
 			String[] cookieArray
 			) {
+		
+//		Mono.just(response)
+//		.contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
+//		.flatMap(context -> {
+//
+//		});
 
 		// 회원 프로필 조회 API 조회
 		return naverWebClient.get()
@@ -111,79 +118,77 @@ public class LoginClient {
 				.retrieve()
 				.bodyToMono(NaverProfileResultDto.class)
 				.flatMap(response -> {
-					// 응답이 존재하는 경우
-					if (StringUtils.equals(response.getResultcode(), PROFILE_API_SUCCESS)
-							&& ObjectUtils.isNotEmpty(response.getResponse())) {
-						// 프로필 정보
-						NaverProfileDataDto profile = response.getResponse();
-						// 유저 서비스 파라미터 설정
-						LoginUserServiceDto userServiceDto = mapper.profileDataDtoToUserServiceDto(profile);
-						userServiceDto.setProvider(LoginProviderEnum.NAVER.getProvider());
-
-						// user 등록 확인 후 등록
-						// Mono.fromRunnable()은 비동기 작업을 수행하고, 처리가 완료되면 Mono<Void>를 반환
-						return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
-								.then(Mono.fromSupplier(() -> {
-
-									// 유저 정보 설정
-									NaverUserDetails userDetails = new NaverUserDetails(profile);
-
-									// 권한 정보 설정 후 SecurityContextHolder에 저장
-									Authentication auth = new UsernamePasswordAuthenticationToken(
-											userDetails, null, userDetails.getAuthorities());
-									SecurityContextHolder.getContext().setAuthentication(auth);
-
-									// 세션에 유저 정보 저장
-									request.getSession().setAttribute(LoginProviderEnum.NAVER.getProviderUser(), userDetails);
-
-									String jwt;
-									Date expireDate;
-									try {
-										// 현재시각 설정
-										Date currentDate = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
-										// 만료시각 설정
-										Calendar calendar = Calendar.getInstance();
-										calendar.setTime(currentDate);
-										calendar.add(Calendar.SECOND, expiresIn);
-										expireDate = calendar.getTime();
-										// jwt 생성
-										jwt = jwtUtil.createToken(profile.getId(), LoginProviderEnum.NAVER.getProvider(), profile.getNickname(), currentDate, expireDate);
-									} catch (ParseException ex) {
-										throw new RuntimeException(ex);
-									}
-
-									// 만료시각 변환(Date -> String)
-									SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
-									String expireDateStr = sdf.format(expireDate);
-
-									// 유저 프로필 정보 매핑
-									LoginUserInfoDto userInfo = mapper.profileDataDtoToProfileDataDto(profile);
-									// 결과값 설정
-									LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
-											.resultcode(response.getResultcode())
-											.message(response.getMessage())
-											.userInfo(userInfo)
-											.accessToken(accessToken)
-											.jwt(jwt)
-											.expireDate(expireDateStr)
-											.build();
-									if (ObjectUtils.isNotEmpty(cookieArray) && cookieArray.length != 0) {
-										// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정(토큰 발급시) 
-										return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
-									} else {
-										// 파라미터에 쿠키가 존재하지 않는 경우(이미 있는 경우) 헤더 미설정(토큰 갱신시)
-										return ResponseEntity.ok().body(userResponse);
-									}
-								}));
-
-					} else {
+					
+					// 프로필 조회 API 응답 코드가 성공이 아닌 경우 예외 처리
+					if (!StringUtils.equals(response.getResultcode(), PROFILE_API_SUCCESS)) {
 						// 프로필 조회 API 에러 발생시 처리
-						Integer errorCode = NaverProfileErrorEnum.fromResultCode(response.getResultcode()).getHttpErrorCode();
+						Integer errorCode = NaverProfileErrorEnum.getNaverProfileError(response.getResultcode()).getHttpErrorCode();
 						throw new ResponseStatusException(
 								ObjectUtils.isNotEmpty(errorCode) ? HttpStatus.valueOf(errorCode) : null,
 										response.getMessage());
 					}
+					
+					// 프로필 정보
+					NaverProfileDataDto profile = response.getResponse();
+					// 유저 서비스 파라미터 설정
+					LoginUserServiceDto userServiceDto = mapper.profileDataDtoToUserServiceDto(profile);
+					userServiceDto.setProvider(LoginProviderEnum.NAVER.getProvider());
 
+					// user 등록 확인 후 등록
+					// Mono.fromRunnable()은 비동기 작업을 수행하고, 처리가 완료되면 Mono<Void>를 반환
+					return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
+							.then(Mono.fromSupplier(() -> {
+
+								// 유저 정보 설정
+								NaverUserDetails userDetails = new NaverUserDetails(profile);
+
+								// 권한 정보 설정 후 SecurityContextHolder에 저장
+								Authentication auth = new UsernamePasswordAuthenticationToken(
+										userDetails, null, userDetails.getAuthorities());
+								SecurityContextHolder.getContext().setAuthentication(auth);
+
+								// 세션에 유저 정보 저장
+								request.getSession().setAttribute(LoginProviderEnum.NAVER.getProviderUser(), userDetails);
+
+								String jwt;
+								Date expireDate;
+								try {
+									// 현재시각 설정
+									Date currentDate = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
+									// 만료시각 설정
+									Calendar calendar = Calendar.getInstance();
+									calendar.setTime(currentDate);
+									calendar.add(Calendar.SECOND, expiresIn);
+									expireDate = calendar.getTime();
+									// jwt 생성
+									jwt = jwtUtil.createToken(profile.getId(), LoginProviderEnum.NAVER.getProvider(), profile.getNickname(), currentDate, expireDate);
+								} catch (ParseException ex) {
+									throw new IllegalStateException("create JWT error!", ex);
+								}
+
+								// 만료시각 변환(Date -> String)
+								SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
+								String expireDateStr = sdf.format(expireDate);
+
+								// 유저 프로필 정보 매핑
+								LoginUserInfoDto userInfo = mapper.profileDataDtoToProfileDataDto(profile);
+								// 결과값 설정
+								LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
+										.resultcode(response.getResultcode())
+										.message(response.getMessage())
+										.userInfo(userInfo)
+										.accessToken(accessToken)
+										.jwt(jwt)
+										.expireDate(expireDateStr)
+										.build();
+								if (ObjectUtils.isNotEmpty(cookieArray) && cookieArray.length != 0) {
+									// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정(토큰 발급시) 
+									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
+								} else {
+									// 파라미터에 쿠키가 존재하지 않는 경우(이미 있는 경우) 헤더 미설정(토큰 갱신시)
+									return ResponseEntity.ok().body(userResponse);
+								}
+							}));
 				});
 	}
 
@@ -208,9 +213,9 @@ public class LoginClient {
 		// 유저 정보 가져오기 API 조회
 		return kakaoWebClient.get()
 				.uri(kakaoUserInfoUrl)
-				.headers(header -> {
-					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken));
-				})
+				.headers(header -> 
+					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
+				)
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.flatMap(response -> {
@@ -263,7 +268,7 @@ public class LoginClient {
 									// jwt 생성
 									jwt = jwtUtil.createToken(userId, LoginProviderEnum.KAKAO.getProvider(), profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
-									throw new RuntimeException(ex);
+									throw new IllegalStateException("create JWT error!", ex);
 								}
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()
@@ -275,10 +280,6 @@ public class LoginClient {
 								SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
 								String expireDateStr = sdf.format(expireDate);
 								
-//								DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
-//								String expireDateStr = dateFormatter
-//										.format(ZonedDateTime.ofInstant(expireDate.toInstant(), ZoneOffset.UTC));
-
 								// 결과값 설정
 								LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
 										.resultcode(PROFILE_API_SUCCESS)

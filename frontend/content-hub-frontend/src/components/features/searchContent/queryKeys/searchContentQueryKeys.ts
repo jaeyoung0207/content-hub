@@ -6,11 +6,11 @@
 export const searchContentQueryKeys = {
     // 검색 화면에서 검색 결과를 가져오기 위한 쿼리 키
     searchContent: {
-        search: (keyword: string, isAdult: string) => ["search", keyword, isAdult],
+        search: (keyword: string, isAdult: string) => ["search", keyword, isAdult] as const,
     },
     // 전체보기 화면의 검색 결과를 가져오기 위한 쿼리 키
     searchContentMore: {
-        searchMore: (keyword: string, mediaType: string) => ["searchConentMore", keyword, mediaType] as [string, string, string],
+        searchMore: (keyword: string, mediaType: string) => ["searchContentMore", keyword, mediaType] as const,
     },
 
 }

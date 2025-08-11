@@ -70,6 +70,7 @@ tmdb:
     movieCreditsPath: /3/movie/%s/credits
     tvDetailPath: /3/tv/%s
     movieDetailPath: /3/movie/%s
+    personDetailPath: /3/person/%s
     tvWatchProvidersPath: /3/tv/%s/watch/providers
     movieWatchProvidersPath: /3/movie/%s/watch/providers
     tvRecommendationsPath: /3/tv/%s/recommendations

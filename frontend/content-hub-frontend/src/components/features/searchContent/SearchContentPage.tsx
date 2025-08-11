@@ -25,7 +25,7 @@ export const SearchContentPage = () => {
     const [searchParams] = useSearchParams();
     const keyword = searchParams.get("keyword")!; // 검색어
     const isAdult = searchParams.get("isAdult")!; // 성인물 포함 여부
-    const mediaType = searchParams.get("mediaType"); // 미디어 타입
+    // const mediaType = searchParams.get("mediaType"); // 미디어 타입
     const viewMore = searchParams.get("viewMore"); // 전체보기 여부
     const originalMediaType = searchParams.get("originalMediaType"); // 원본 미디어 타입
     const contentId = searchParams.get("contentId"); // 콘텐츠 ID
@@ -38,15 +38,17 @@ export const SearchContentPage = () => {
             {
                 // 검색어, 성인물 포함 여부, 미디어 타입, 전체보기 여부가 존재하는 경우
                 // 전체보기 모달화면 컴포넌트를 렌더링
-                keyword && isAdult && mediaType && viewMore &&
-                <SearchContentMore keyword={keyword} isAdult={isAdult} mediaType={mediaType} />
+                // keyword && isAdult && mediaType && viewMore &&
+                // <SearchContentMore keyword={keyword} isAdult={isAdult} mediaType={mediaType} />
+                keyword && isAdult && viewMore &&
+                <SearchContentMore keyword={keyword} isAdult={isAdult} mediaType={viewMore} />
             }
-            {
+            {/* {
                 // 검색어, 성인물 포함 여부, 원본 미디어 타입, 콘텐츠 ID, 탭 번호가 존재하는 경우
                 // 상세 화면 컴포넌트를 렌더링
                 keyword && isAdult && originalMediaType && contentId && tabNo !== undefined &&
                 <Detail keyword={keyword} isAdult={isAdult} originalMediaType={originalMediaType} contentId={contentId} tabNo={tabNo} />
-            }
+            } */}
         </>
     )
 }

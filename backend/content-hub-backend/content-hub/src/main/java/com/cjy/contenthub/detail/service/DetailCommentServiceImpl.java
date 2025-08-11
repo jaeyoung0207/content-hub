@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,11 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.detail.helper.DetailHelper;
 import com.cjy.contenthub.detail.mapper.DetailMapper;
 import com.cjy.contenthub.detail.repository.DetailCommentRepository;
 import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
@@ -39,6 +38,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional(rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class DetailCommentServiceImpl implements DetailCommentService {
+	
+	/** 상세 페이지 헬퍼 클래스 */
+	private final DetailHelper helper;
 
 	/** 코멘트 엔티티 리포지토리 */	
 	private final DetailCommentRepository commentRepository;
@@ -142,66 +144,31 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	@Override
 	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String userId) {
 
-		// 코멘트 서비스 DTO 생성
-		DetailCommentServiceDto serviceDto = new DetailCommentServiceDto();
 		// 페이지 번호 설정
 		Integer commentPage = Optional.ofNullable(page).orElse(0);
 		// 페이지 요청을 위한 Pageable 객체 생성
 		Pageable pageble = PageRequest.of(commentPage, commentPerPage, Sort.by("createTime").descending());
 		// 코멘트 엔티티 조회
 		Page<DetailCommentViewEntity> commentEntityPage = commentViewRepository.findByOriginalMediaTypeAndApiId(originalMediaType, apiId, pageble);
-		// 조회된 코멘트 엔티티를 리스트로 변환
-		// 리스트의 변경이 가능하도록 stream().collect(Collectors.toList()) 사용
-		List<DetailCommentViewEntity> commentEntityList = commentEntityPage.isEmpty() ? new ArrayList<>() : commentEntityPage.stream().collect(Collectors.toList()); 
+		
+		// 조회된 코멘트 엔티티 리스트 생성
+		List<DetailCommentViewEntity> commentList = new ArrayList<>(commentEntityPage.getContent());
 
-		// 코멘트가 존재하는 경우
-		if (commentEntityList.size() != 0) {
-			// 유저ID가 존재하는 경우
-			if (StringUtils.isNotEmpty(userId)) {
-				// 코멘트 리스트에서 유저ID에 해당하는 코멘트를 추출
-				List<DetailCommentViewEntity> myCommentEntityList = commentEntityList.stream()
-						.filter(e -> StringUtils.equals(e.getUserId(), userId))
-						.collect(Collectors.toList());
-				// 첫번째 페이지의 경우
-				if (commentPage.equals(0)) {
-					// 유저코멘트가 존재하는 경우
-					if (!CollectionUtils.isEmpty(myCommentEntityList)) {
-						// 기존 코멘트 리스트에서 유저코멘트만 지움
-						commentEntityList.removeIf(e -> StringUtils.equals(e.getUserId(), userId));
-						// 유저 코멘트를 리스트의 첫번째 요소에 삽입
-						commentEntityList.add(0, myCommentEntityList.getFirst()); 
-					}
-					// 유저코멘트가 존재하지 않는 경우
-					else {
-						// 유저 코멘트 조회
-						DetailCommentViewEntity myCommentEntity = commentViewRepository.findByOriginalMediaTypeAndApiIdAndUserId(originalMediaType, apiId, userId);
-						// 유저 코멘트가 존재하는 경우
-						if (ObjectUtils.isNotEmpty(myCommentEntity)) {
-							// 리스트 첫번째 요소에 삽입
-							commentEntityList.add(0, myCommentEntity);
-						}
-					}
-				}
-				// 첫번째 페이지 이외의 경우
-				else {
-					// 유저코멘트가 존재하는 경우
-					if (!CollectionUtils.isEmpty(myCommentEntityList)) {
-						// 기존 코멘트리스트에서 유저코멘트 지움
-						commentEntityList.removeIf(e -> StringUtils.equals(e.getUserId(), userId));
-					}
-				}
-			}
+		// 코멘트 & 유저ID가 존재하는 경우
+		if (!commentList.isEmpty() && StringUtils.isNotEmpty(userId)) {
+			// 각 페이지당 코멘트 리스트 처리
+			helper.getCommentListPerPage(commentList, originalMediaType, apiId, commentPage, userId);
 		}
 		
 		// 서비스 DTO 리스트 생성
 		List<DetailCommentDataServiceDto> commentDatServiceDtoList = 
-				commentEntityList.size() == 0 ? new ArrayList<>() 
-						: mapper.commentEntityListToCommentServiceList(commentEntityList);
-		// 서비스 DTO에 반환값 설정
-		serviceDto.setDataList(commentDatServiceDtoList);
-		serviceDto.setTotalElements(commentEntityPage.getTotalElements());
+				commentList.isEmpty() ? new ArrayList<>() 
+						: mapper.commentEntityListToCommentServiceList(commentList);
 		// 서비스 DTO 반환
-		return serviceDto;
+		return DetailCommentServiceDto.builder()
+				.dataList(commentDatServiceDtoList)
+				.totalElements(commentEntityPage.getTotalElements())
+				.build();
 
 	}
 

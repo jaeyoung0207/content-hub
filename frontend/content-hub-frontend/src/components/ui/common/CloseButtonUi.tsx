@@ -14,7 +14,7 @@ type CloseButtonPropsType = {
 export const CloseButtonUi = ({ modalClose }: CloseButtonPropsType) => {
 
     return (
-        <div className="flex justify-end mr-3 mt-3">
+        <div className="flex justify-end mr-1 mt-1">
             <button className="w-10 h-10 border rounded-sm text-white bg-blue-600 cursor-pointer" onClick={modalClose}>X</button>
         </div>
     )

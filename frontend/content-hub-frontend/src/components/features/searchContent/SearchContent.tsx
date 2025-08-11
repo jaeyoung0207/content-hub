@@ -82,7 +82,7 @@ export const SearchContent = ({ keyword, isAdult }: SearchContentPropsType) => {
 
     return (
         <>
-            <div className="mt-36 w-sm lg:w-7xl">
+            <div className="mt-28 w-sm lg:w-7xl">
                 {/* 검색 결과 */}
                 {
                     isLoading
@@ -123,7 +123,9 @@ export const SearchContent = ({ keyword, isAdult }: SearchContentPropsType) => {
                     dramaSearchResults === undefined &&
                     movieSearchResults === undefined &&
                     comicsSearchResults === undefined &&
-                    <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">{t('info.beforeSearchMessage')}</div>
+                    <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">
+                        {t('info.beforeSearchMessage')}
+                    </div>
                 }
             </div>
         </>
@@ -144,14 +146,14 @@ const DisplayResults = memo(({ mediaName, results, isViewMore, mediaType, keywor
     return (
         <div>
             {/* 미디어 이름 */}
-            <div className="ml-6 mt-6 flex justify-between">
-                <div className="text-5xl font-bold">
+            <div className="ml-6 mt-6 flex justify-between items-center">
+                <div className="text-4xl font-bold">
                     {mediaName}
                 </div>
                 {
                     // 전체보기 링크
                     isViewMore &&
-                    <div className="mt-4 text-2xl hover:font-bold">
+                    <div className="text-xl hover:font-bold">
                         <Link to={viewMoreUrlQuery({ keyword: keyword, isAdult: isAdult, mediaType: mediaType })}>
                             {t("info.viewMore")} &gt;
                         </Link>
@@ -159,7 +161,7 @@ const DisplayResults = memo(({ mediaName, results, isViewMore, mediaType, keywor
                 }
             </div>
             {/* 검색 결과 */}
-            <div className="w-full flex flex-wrap items-start mt-8 ml-5">
+            <div className="w-full flex flex-wrap items-start mt-5 ml-5">
                 {
                     results.length !== 0 &&
                     results.map((items, index) => {
@@ -169,7 +171,7 @@ const DisplayResults = memo(({ mediaName, results, isViewMore, mediaType, keywor
                                 className={"ml-1 mr-1 block hover:font-bold cursor-pointer " + (mediaType === MEDIA_TYPE.COMICS ? "w-[200px]" : "w-[300px]")}
                                 onClick={commonErrorHandler(() => {
                                     // 상세화면 URL 생성
-                                    const detailUrl = detailUrlQuery({ keyword: keyword, isAdult: isAdult, originalMediaType: items.originalMediaType!, contentId: String(items.id), tabNo: "0" });
+                                    const detailUrl = detailUrlQuery({ originalMediaType: items.originalMediaType!, contentId: String(items.id), tabNo: 0 });
                                     // 상세화면 URL 저장
                                     sessionStorage.setItem("redirectUrl", detailUrl);
                                     // 상세화면 모달 오픈
@@ -188,10 +190,11 @@ const DisplayResults = memo(({ mediaName, results, isViewMore, mediaType, keywor
                                             e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
                                         }}
                                         className={(mediaType === MEDIA_TYPE.COMICS ? "w-[190px] h-[270px]" : "w-full h-[180px]") + " object-scale-down"}
+                                        alt={"Thumbnail Image"}
                                     />
                                 </li>
                                 {/* 제목 */}
-                                <li key={"title" + index} className="ml-1 mr-1 mb-4 text-xl">{
+                                <li key={"title" + index} className="ml-1 mr-1 mb-4 text-lg">{
                                     isSearchTvType(items, mediaType) ? items.name : items.title
                                 }</li>
                             </ul>

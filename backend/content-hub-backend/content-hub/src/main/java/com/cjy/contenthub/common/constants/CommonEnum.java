@@ -121,6 +121,42 @@ public class CommonEnum {
 	}
 	
 	/**
+	 * TMDB API 성별 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum TmdbGenderEnum {
+		
+		NOT_SPECIFIED(0, "불명"),
+		
+		FEMALE(1, "여성"),
+		
+		MALE(2, "남성"),
+		
+		NON_BINARY(3, "논바이너리");
+		
+		/** 성별 코드 */
+		private int genderCode;
+		
+		/** 성별 값 */
+		private String genderValue;
+		
+		/**
+		 * 성별 코드로부터 TmdbGenderEnum을 반환
+		 * 
+		 * @param genderCode 성별 코드
+		 * @return TmdbGenderEnum
+		 */
+		public static TmdbGenderEnum getGender(int genderCode) {
+			return Arrays.stream(values())
+					.filter(e -> e.genderCode == genderCode) // 성별 코드가 일치하는지 확인
+					.findFirst() // 첫 번째 일치하는 성별을 찾음
+					.orElse(NOT_SPECIFIED); // 기본값으로 NOT_SPECIFIED 반환
+		}
+		
+	}
+	
+	/**
 	 * AniList 미디어 타입 정의 enum
 	 */
 	@AllArgsConstructor
@@ -182,7 +218,7 @@ public class CommonEnum {
 		 * @param name 캐시 이름
 		 * @return CacheTypeEnum
 		 */
-		public static CacheTypeEnum fromCacheName(String name) {
+		public static CacheTypeEnum getCacheType(String name) {
 			return Arrays.stream(values())
 					.filter(e -> e.cacheName.equals(name)) // 캐시 이름이 일치하는지 확인
 					.findFirst() // 첫 번째 일치하는 캐시 타입을 찾음
@@ -237,7 +273,7 @@ public class CommonEnum {
 		private String resultErrorCode;
 		
 		/** 결과 에러 메시지 */
-		public static NaverProfileErrorEnum fromResultCode(String resultCode) {
+		public static NaverProfileErrorEnum getNaverProfileError(String resultCode) {
 			return Arrays.stream(values())
 					.filter(e -> e.resultErrorCode.equals(resultCode)) // 결과 에러 코드가 일치하는지 확인
 					.findFirst() // 첫 번째 일치하는 에러 코드를 찾음
@@ -271,7 +307,7 @@ public class CommonEnum {
 		 * @param resultCode 결과 코드
 		 * @return JwtValidateResultEnum
 		 */
-		public static JwtValidateResultEnum fromResultCode(String resultCode) {
+		public static JwtValidateResultEnum getJwtValidateResult(String resultCode) {
 			return Arrays.stream(values())
 					.filter(e -> e.jwtValidateResultCode.equals(resultCode)) // 결과 코드가 일치하는지 확인
 					.findFirst() // 첫 번째 일치하는 결과 코드를 찾음

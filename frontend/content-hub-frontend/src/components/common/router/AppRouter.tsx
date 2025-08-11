@@ -13,6 +13,9 @@ import { queryClientConfig } from "../config/queryClientConfig"
 import { Maintenance } from "../error/Maintenance"
 import { settings } from "../config/settings"
 import { KakaoLogin } from "@/components/features/login/KakaoLogin"
+import { Detail } from "@/components/features/detail/Detail"
+import { Person } from "@/components/features/person/Person"
+import { Character } from "@/components/features/character/Character"
 
 /**
  * AppBrowserRouter 컴포넌트 
@@ -55,6 +58,9 @@ const AppRouter = () => {
                         <Route element={<Layout />} >
                             <Route path='/' element={<Home />} />
                             <Route path='/search' element={<SearchContentPage />} />
+                            <Route path='/detail/:originalMediaType/:contentId' element={<Detail />} />
+                            <Route path='/person/:personId' element={<Person />} />
+                            <Route path='/character/:characterId' element={<Character />} />
                             <Route path='/login' element={<Login />} />
                             <Route path='/login/naver' element={<NaverLogin />} />
                             <Route path='/login/kakao' element={<KakaoLogin />} />

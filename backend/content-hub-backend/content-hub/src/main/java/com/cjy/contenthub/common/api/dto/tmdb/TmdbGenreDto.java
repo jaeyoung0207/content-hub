@@ -8,7 +8,7 @@ import lombok.Setter;
  * TMDB API 장르 Response DTO
  * 영화 및 TV 프로그램의 장르 정보를 담고 있는 DTO
  * 
- * @see <a href="https://developer.themoviedb.org/reference/genre-movie-list">TMDB Genres API 문서</a>
+ * @see <a href="https://developer.themoviedb.org/reference/genre-movie-list">TMDB Movie Genres API 문서</a>
  * @see <a href="https://developer.themoviedb.org/reference/genre-tv-list">TMDB TV Genres API 문서</a>
  */
 @Setter

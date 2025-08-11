@@ -2,6 +2,8 @@ package com.cjy.contenthub.detail.service.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +14,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class DetailCommentServiceDto {
 	
 	/** 전체 요소 수 */

@@ -72,8 +72,6 @@ export const useContentComment = (detailResult: DetailResponseType, originalMedi
 
     // 네비게이션 훅
     const navigate = useNavigate();
-    // 쿼리 클라이언트 훅
-    const queryClient = useQueryClient();
     // 로딩 상태
     const [isLoading, setIsLoading] = useState(false);
     // 코멘트 번호 상태
@@ -138,6 +136,8 @@ export const useContentComment = (detailResult: DetailResponseType, originalMedi
 
     // ================================================================================================== react query
 
+    // 쿼리 클라이언트 훅
+    const queryClient = useQueryClient();
     // API 인스턴스 생성
     const detailApi = new Detail();
 
@@ -163,7 +163,7 @@ export const useContentComment = (detailResult: DetailResponseType, originalMedi
         number | undefined // pageParam 타입 (보통 number | undefined)
     >({
         // useInfiniteQuery의 키 지정
-        queryKey: detailQueryKeys.detail.contentComment.list(originalMediaType, contentId),
+        queryKey: detailQueryKeys.detail.contentComment.list(originalMediaType, contentId) as [string, string, string, string],
         // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
         queryFn: async ({ pageParam = 0 }) => {
             const response = (await detailApi.getCommentList({
@@ -434,8 +434,7 @@ export const useContentComment = (detailResult: DetailResponseType, originalMedi
     }
 
     /**
-     * 코멘트 작성 버튼 클릭 시, 유저가 로그인하지 않은 경우 로그인 확인 모달을 열고,
-     * 유저가 로그인하지 않은 경우, 로그인 확인 모달을 열고, 로그인한 경우 코멘트 저장
+     * 코멘트 작성 버튼 클릭 시 처리
      */
     const handleSaveComment = () => {
         // 로딩 중이면 함수 종료

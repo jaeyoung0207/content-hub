@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import { SearchContent } from "@/api/SearchContent";
 import { ESC_KEY, MEDIA_TYPE } from "@/components/common/constants/constants";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { SearchContentCommonResultListType } from "../useSearchContent";
 import { useSearchParams } from "react-router-dom";
@@ -28,10 +28,6 @@ export type UseInfiniteQueryResultType = {
 
 /**
  * 전체보기 모달화면 훅
- * 검색어와 미디어 타입을 받아 해당 미디어의 검색 결과를 무한 스크롤로 보여주는 모달
- * 검색어와 미디어 타입에 따라 API를 호출하여 결과를 가져오고, 이를 화면에 렌더링
- * 모달 닫기 버튼을 클릭하면 모달이 닫히고, ESC 키를 누르면 모달이 닫히도록 구현
- * 무한 스크롤을 위해 ref를 사용하여 마지막 요소가 화면에 보일 때 다음 페이지를 로드
  * @param keyword 검색어
  * @param mediaType 미디어 타입 
  * @returns UseSearchConentModalReturnType
@@ -45,22 +41,19 @@ export const useSearchContentMore = (
 
     // URL 쿼리스트링 제어
     const [searchParams, setSearchParams] = useSearchParams();
-    // 상세화면이 열려있는지 판단
-    const isDetailOpen = searchParams.has("tabNo");
 
     // ================================================================================================== react hook
-
-    // const loocation = useLocation();
-    const queryClient = useQueryClient();
 
     // 무한스크롤 div태그 관찰용 state
     const [observeTarget, setObserveTarget] = useState<HTMLDivElement | null>(null);
 
     // ================================================================================================== react query
 
+    // 검색 API 인스턴스 생성
+    const searchContentApi = new SearchContent();
+
     // 전체보기 검색결과를 가져오기 위한 API 호출 함수
-    const judgeExecApi = async (pageParam: number) => {
-        const searchContentApi = new SearchContent();
+    const judgeExecApi = async (pageParam: number) => {        
         if (mediaType == MEDIA_TYPE.ANI) {
             // 애니메이션 검색 API 호출
             return (await searchContentApi.searchAni({ query: keyword, page: pageParam }, {})).data.results
@@ -93,7 +86,7 @@ export const useSearchContentMore = (
         number | undefined // pageParam 타입 (보통 number | undefined)
     >({
         // useInfiniteQuery의 키 지정
-        queryKey: searchContentQueryKeys.searchContentMore.searchMore(keyword, mediaType),
+        queryKey: searchContentQueryKeys.searchContentMore.searchMore(keyword, mediaType) as [string, string, string],
         // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
         queryFn: async ({ pageParam = 1 }) => {
             console.log("queryFn★★★★★");
@@ -137,12 +130,9 @@ export const useSearchContentMore = (
      * 모달 닫을 시 처리
      */
     const handleModalClose = () => {
-        // 닫는 순간에 ReactQuery에서 사용하고 있는 쿼리 삭제
-        queryClient.removeQueries({ queryKey: searchContentQueryKeys.searchContentMore.searchMore(keyword, mediaType) });
         // 리다이렉트 주소 삭제
         sessionStorage.removeItem("redirectUrl");
         // URL 쿼리스트링 제거
-        searchParams.delete("mediaType");
         searchParams.delete("viewMore");
         setSearchParams(searchParams); //  URL이 바뀌면 React Router가 감지해서 리렌더링 발생
     }
@@ -186,32 +176,25 @@ export const useSearchContentMore = (
      * 이벤트 리스너를 설정하는 useEffect
      * 배경 스크롤을 막고, ESC 키를 눌렀을 때 모달을 닫는 이벤트 리스너를 등록
      * 이벤트 리스너는 컴포넌트가 언마운트될 때 제거
-     * 상세화면이 열려있을 때에는 상세화면과의 중복처리를 방지하기 위해 이벤트 리스너 등록/제거를 하지 않음
-     * 실행조건: searchParams가 변경될 때
+     * 실행조건: 컴포넌트 마운트/언마운트 시
      */
     useEffect(() => {
         // ESC키 눌렀을 시 모달 종료
         const handleOnEscKey = (e: KeyboardEvent) => {
             e.key === ESC_KEY && handleModalClose();
         }
-        // 상세화면이 열려있지 않을 때
-        if (!isDetailOpen) {
-            // 배경 스크롤 막기
-            document.body.style.overflow = "hidden";
-            // ESC 키다운 이벤트리스너 등록
-            document.addEventListener("keydown", handleOnEscKey);
-        }
+        // 배경 스크롤 막기
+        document.body.style.overflow = "hidden";
+        // ESC 키다운 이벤트리스너 등록
+        document.addEventListener("keydown", handleOnEscKey);
 
         return (() => {
-            // 상세화면이 열려 있지 않을 때
-            if (!isDetailOpen) {
-                // 배경 스크롤 복원
-                document.body.style.removeProperty("overflow");
-                // ESC 키다운 이벤트리스너 제거
-                document.removeEventListener("keydown", handleOnEscKey);
-            }
+            // 배경 스크롤 복원
+            document.body.style.removeProperty("overflow");
+            // ESC 키다운 이벤트리스너 제거
+            document.removeEventListener("keydown", handleOnEscKey);
         });
-    }, [searchParams]); // 이 depth로 인해 상세화면 닫을시 useEffect가 실행되어 리렌더링 됨
+    }, []);
 
     // ================================================================================================== return
 

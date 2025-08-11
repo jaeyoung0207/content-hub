@@ -24,7 +24,6 @@ query($mediaId: Int)  {
     characters {
       nodes {
         id
-        siteUrl
         image {
           large
           medium
@@ -37,6 +36,17 @@ query($mediaId: Int)  {
         age
         gender
         description
+        bloodType
+        dateOfBirth {
+          day
+          month
+          year
+        }
+        favourites
+        isFavourite
+        isFavouriteBlocked
+        modNotes
+        siteUrl
       }
     }
     startDate {

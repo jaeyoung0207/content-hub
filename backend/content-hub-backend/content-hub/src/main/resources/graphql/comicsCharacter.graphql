@@ -1,0 +1,33 @@
+query Character($characterId: Int) {
+  Character(id: $characterId) {
+    age
+    bloodType
+    dateOfBirth {
+      day
+      month
+      year
+    }
+    description
+    favourites
+    gender
+    id
+    image {
+      large
+      medium
+    }
+    isFavourite
+    isFavouriteBlocked
+    modNotes
+    name {
+      alternative
+      alternativeSpoiler
+      first
+      full
+      last
+      middle
+      native
+      userPreferred
+    }
+    siteUrl
+  }
+}

@@ -30,11 +30,11 @@ export const Login = () => {
             <div className="mt-60">
                 <div className="flex justify-center">
                     {/* 네이버 로그인 버튼 */}
-                    <img className="w-[320px] h-[80px] cursor-pointer" src={naverLoginBtn} onClick={naverLogin} />
+                    <img className="w-[320px] h-[80px] cursor-pointer" src={naverLoginBtn} onClick={naverLogin} alt="네이버 로그인" />
                 </div>
                 <div className="mt-10 flex justify-center">
                     {/* 카카오 로그인 버튼 */}
-                    <img className="w-[320px] h-[80px] cursor-pointer" src={kakaoLoginBtn} onClick={kakaoLogin} />
+                    <img className="w-[320px] h-[80px] cursor-pointer" src={kakaoLoginBtn} onClick={kakaoLogin} alt="카카오 로그인" />
                 </div>
             </div>
         </>

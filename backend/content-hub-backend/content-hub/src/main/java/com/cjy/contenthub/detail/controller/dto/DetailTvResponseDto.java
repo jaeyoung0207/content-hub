@@ -2,7 +2,7 @@ package com.cjy.contenthub.detail.controller.dto;
 
 import java.math.BigDecimal;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsTvDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailTvResponseDto extends TmdbDetailsTvDto {
+public class DetailTvResponseDto extends TmdbTvDetailsDto {
 	
 	/** 링크 */
 	private String link;

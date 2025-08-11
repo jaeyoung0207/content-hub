@@ -11,10 +11,10 @@ const resources = {
   kr: {
     translation: {
       info: {
-        // 공통
+        /* 공통 */
         "login": "로그인",
         "logout": "로그아웃",
-        "ani": "애니",
+        "ani": "애니메이션",
         "comics": "만화",
         "movie": "영화",
         "drama": "드라마",
@@ -24,8 +24,12 @@ const resources = {
         "noSearchData": "검색 결과가 없습니다.",
         "viewMore": "전체보기",
         "loginConfirmMsg1": "로그인이 만료되었습니다. 로그인 하시겠습니까?",
-        "problemsOccurred" : "문제가 발생했습니다.",
-        // 상세화면
+        "notExist": "없음",
+        "description": "설명",
+        "colon": " : ",
+        /* 전체보기 */
+        "searchResults": "검색 결과",
+        /* 상세 화면 */
         "mediaInfo": "작품 정보",
         "review": "평가&리뷰",
         "recommend": "비슷한 작품",
@@ -34,22 +38,23 @@ const resources = {
         "cast": "출연진",
         "crew": "제작진",
         "characters": "캐릭터",
+        "role": " 역",
         "loginConfirmMsg2": "로그인이 필요합니다. 로그인 하시겠습니까?",
-        // 코멘트
+        /* 코멘트 관련 */
         "deleteConfirmMsg": "코멘트를 삭제하시겠습니까?",
         "requireComment": "코멘트를 입력해 주세요.",
-        // 버튼
+        /* 버튼 */
         "search": "검색",
         "save": "등록",
         "update": "수정",
         "delete": "삭제",
         "refresh": "새로고침",
         "toHome": "홈으로 돌아가기",
-        // 필터
+        /* 필터 */
         "mediaType": "검색 종류",
         "searchAdultContent": "성인물",
         "include": "포함",
-        // 작품 정보
+        /* 작품 정보 */
         "genre": "장르",
         "movieRating": "관람 등급",
         "adultContent": "성인용",
@@ -70,19 +75,38 @@ const resources = {
         "planned": "개봉 예정",
         "finished": "연재 종료",
         "releasing": "연재 중",
-        "homePage": "홈페이지",
+        "homepage": "홈페이지",
         "minutes": "분",
         "volume": "권",
         "notEndedYet": "미완",
         "userStarRating": "유저 평점",
         "ableToWatching": "볼 수 있는 곳",
-        // 점검 화면
+        /* 인물 정보 */
+        "singleCast": "출연작",
+        "singleCrew": "제작 참여작",
+        "gender": "성별",
+        "placeOfBirth": "출생지",
+        "birthday": "생일",
+        "deathday": "사망일",
+        "alsoKnownAs": "다른 이름",
+        "knownForDepartment": "전문 분야",
+        "adultActor": "성인 배우",
+        "castCount": "출연작 수",
+        "crewCount": "제작 참여작 수",
+        "biography": "약력",
+        "unknown": "불명",
+        "reference": "참고",
+        /* 캐릭터 정보 */
+        "age": "나이",
+        "bloodType": "혈액형",
+        /* 점검 화면 */
         "maintenanceTitle": "서비스 점검 중입니다.",
         "maintenanceMessage": "보다 나은 서비스를 제공하기 위해 시스템 점검을 진행하고 있습니다. <br/>점검이 완료되면 정상적으로 서비스 이용이 가능합니다.",
       },
       warn: {
         "searchEmpty": "검색어를 입력해 주세요.",
         "noData": "데이터가 없습니다.",
+        "noPersonId": "인물 정보가 없습니다.",
       },
       error : {
         "problemsOccurred" : "문제가 발생했습니다.",

@@ -28,13 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.cjy.contenthub.common.api.dto.aniList.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListMediaRecommendationDetailDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListRecommendationsNodeDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListRelationsNodeDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListResponseDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsTvDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListRecommendationsNodeDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListRelationsNodeDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
@@ -65,7 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
- * 상세 화면 컨트롤러
+ * 상세 화면 API 컨트롤러 클래스
  */
 @RestController
 @RequestMapping("/detail")
@@ -180,6 +180,18 @@ public class DetailController {
 
 	/** 크레딧 : credits */
 	private static final String CREDITS = "credits";
+	
+	/** 첫번째 페이지 번호 */
+	private static final int FIRST_PAGE_NO = 1;
+	
+	/** TMDB TV API Error */
+	private static final String TMDB_TV_API_ERROR_MSG = "TMDB TV API Error";
+	
+	/** TMDB Movie API Error */
+	private static final String TMDB_MOVIE_API_ERROR_MSG = "TMDB Movie API Error";
+	
+	/** AniList API Error */
+	private static final String ANILIST_API_ERROR_MSG = "AniList API Error";
 
 	/**
 	 * 코멘트 등록 API
@@ -303,12 +315,11 @@ public class DetailController {
 	 */
 	@GetMapping(value = "/getTvDetail")
 	public Mono<ResponseEntity<DetailTvResponseDto>> getTvDetail(
-			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
-			@NotEmpty @RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType
-			) throws IOException, InterruptedException {
+			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId
+			) {
 
 		// TMDB TV 상세 조회
-		Mono<TmdbDetailsTvDto> detailMono = tmdbWebClient.get()
+		Mono<TmdbTvDetailsDto> detailMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(tvDetailPath, seriesId))
 						.queryParam(PARAM_TV_SERIES_ID, seriesId)
@@ -316,7 +327,7 @@ public class DetailController {
 						.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
-				.bodyToMono(TmdbDetailsTvDto.class);
+				.bodyToMono(TmdbTvDetailsDto.class);
 		// TMDB 시청 제공자 조회
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
 				.uri(builder -> builder
@@ -329,11 +340,9 @@ public class DetailController {
 		// TV 상세 조회 결과와 시청 제공자 조회 결과를 병합하여 반환
 		return Mono.zip(detailMono, watchProvidersMono).map(tuple -> {
 			// TMDB TV 상세 DTO
-			TmdbDetailsTvDto detailResponse = tuple.getT1();
+			TmdbTvDetailsDto detailResponse = tuple.getT1();
 			// TMDB 시청 제공자 DTO
 			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT2();
-			// 유저 평균 평점 취득
-			//			BigDecimal starRatingAverage = service.getStarRatingAverage(originalMediaType, String.valueOf(seriesId));
 			// 시청 제공자 링크 취득
 			String link = Optional.ofNullable(watchProvidersResponse.getResults())
 					.map(results -> results.getKr())
@@ -344,7 +353,6 @@ public class DetailController {
 			// TMDB TV 상세 DTO를 응답 DTO로 변환
 			DetailTvResponseDto response = mapper.detailTvToDetailTvResponse(detailResponse);
 			response.setLink(link);
-			//			response.setStarRatingAverage(starRatingAverage);
 
 			// 응답 DTO 반환
 			return ResponseEntity.ok(response);
@@ -360,12 +368,11 @@ public class DetailController {
 	 */
 	@GetMapping(value = "/getMovieDetail")
 	public Mono<ResponseEntity<DetailMovieResponseDto>> getMovieDetail(
-			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId,
-			@NotEmpty @RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType
-			) throws IOException, InterruptedException {
+			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId
+			) {
 
 		// TMDB 영화 상세 조회
-		Mono<TmdbDetailsMovieDto> detailMono = tmdbWebClient.get()
+		Mono<TmdbMovieDetailsDto> detailMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(movieDetailPath, movieId))
 						.queryParam(PARAM_MOVIE_ID, movieId)
@@ -373,7 +380,7 @@ public class DetailController {
 						.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
-				.bodyToMono(TmdbDetailsMovieDto.class);
+				.bodyToMono(TmdbMovieDetailsDto.class);
 
 		// TMDB 시청 제공자 취득
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
@@ -387,11 +394,9 @@ public class DetailController {
 		// 영화 상세 조회 결과와 시청 제공자 조회 결과를 병합하여 반환 
 		return Mono.zip(detailMono, watchProvidersMono).map(tuple -> {
 			// TMDB 영화 상세 DTO
-			TmdbDetailsMovieDto detailResponse = tuple.getT1();
+			TmdbMovieDetailsDto detailResponse = tuple.getT1();
 			// TMDB 시청 제공자 DTO
 			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT2();
-			// 유저 평균 평점 조회
-			//			BigDecimal starRatingAverage = service.getStarRatingAverage(originalMediaType, String.valueOf(movieId));
 			// 시청 제공자 링크 취득
 			String link = Optional.ofNullable(watchProvidersResponse.getResults())
 					.map(results -> results.getKr())
@@ -401,7 +406,6 @@ public class DetailController {
 			// TMDB 영화 상세 DTO를 응답 DTO로 변환
 			DetailMovieResponseDto respoonse = mapper.detailMovieToDetailMovieResponse(detailResponse);
 			respoonse.setLink(link);
-			//			respoonse.setStarRatingAverage(starRatingAverage);
 
 			// 응답 DTO 반환
 			return ResponseEntity.ok(respoonse);
@@ -413,11 +417,12 @@ public class DetailController {
 	 * 
 	 * @param comicsId Comics ID
 	 * @return ResponseEntity<DetailComicsResponseDto> Comics 상세 응답 DTO
+	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@GetMapping(value = "/getComicsDetail")
 	public Mono<ResponseEntity<DetailComicsResponseDto>> getComicsDetail(
 			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId
-			) throws IOException, InterruptedException {
+			) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comics.graphql");
@@ -501,11 +506,11 @@ public class DetailController {
 									}
 									// 나머지는 공통 예외 처리로 보냄
 									return Mono.error(new WebClientResponseException(
-											"TMDB Movie API Error", response.statusCode().value(), null, null, body.getBytes(), null));
+											TMDB_TV_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 								}))
 								.bodyToMono(TmdbRecommendationsTvDto.class);
 					}
-					return Mono.error(new WebClientResponseException("TMDB Movie API Error", ex.getStatusCode().value(),
+					return Mono.error(new WebClientResponseException(TMDB_TV_API_ERROR_MSG, ex.getStatusCode().value(),
 							null, null, ex.getResponseBodyAsByteArray(), null));
 				})
 				.flatMap(response -> {
@@ -565,12 +570,11 @@ public class DetailController {
 									}
 									// 나머지는 공통 예외 처리로 보냄
 									return Mono.error(new WebClientResponseException(
-											"TMDB Movie API Error", response.statusCode().value(), null, null, body.getBytes(), null));
+											TMDB_MOVIE_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 								}))
 								.bodyToMono(TmdbRecommendationsMovieDto.class);
-//								.map(ResponseEntity::ok);
 					}
-					return Mono.error(new WebClientResponseException("TMDB Movie API Error", ex.getStatusCode().value(),
+					return Mono.error(new WebClientResponseException(TMDB_MOVIE_API_ERROR_MSG, ex.getStatusCode().value(),
 							null, null, ex.getResponseBodyAsByteArray(), null));
 				})
 				.flatMap(response -> {
@@ -635,7 +639,7 @@ public class DetailController {
 					}
 					// 나머지는 공통 예외 처리로 보냄
 					return Mono.error(new WebClientResponseException(
-							"AniList API Error", response.statusCode().value(), null, null, body.getBytes(), null));
+							ANILIST_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 				}))
 				.bodyToMono(AniListResponseDto.class)
 				.map(response -> {
@@ -648,48 +652,13 @@ public class DetailController {
 						List<DetailComicsRecommendationsResultDto> results = new ArrayList<>();
 						// 응답 데이터에서 미디어 추천 데이터 추출
 						AniListMediaDto media =  response.getData().getMedia();
-
-						// 관련 작품이 존재하고, 페이지 번호가 1인 경우, 관련 작품 노드 리스트를 첫번째 리스트에 추가
-						if (ObjectUtils.isNotEmpty(media.getRelations()) 
-								&& ObjectUtils.isNotEmpty(media.getRelations().getNodes()) 
-								&& page == 1) {
-							// 관련 작품 노드 리스트에서 미디어 타입이 만화인 것만 추출
-							List<AniListRelationsNodeDto> relationNodes = media.getRelations().getNodes().stream()
-									.filter(e -> StringUtils.equals(e.getType(), CommonEnum.AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
-									.collect(Collectors.toList());
-							// 관련 작품 데이터 재분배
-							for (AniListRelationsNodeDto node  : relationNodes) {
-								// 관련 작품 상세 DTO 생성
-								results.add(DetailComicsRecommendationsResultDto.builder()
-										.id(node.getId())
-										.title(node.getTitle().getUserPreferred())
-										.backdropPath(node.getCoverImage().getLarge())
-										.posterPath(node.getCoverImage().getExtraLarge())
-										.build());
-							}
+						
+						// 첫번째 페이지인 경우, 관련 작품 노드 리스트를 추가
+						if (page == FIRST_PAGE_NO) {
+							helper.getComicsRelations(media, results);
 						}
-
-						// 추천 작품이 존재하는 경우
-						if (ObjectUtils.isNotEmpty(media.getRecommendations())
-								&& ObjectUtils.isNotEmpty(media.getRecommendations().getNodes())) {							
-							// 추천 작품 노드 리스트에서 미디어 타입이 만화인 것만 추출
-							List<AniListRecommendationsNodeDto> recomendationNodes = media.getRecommendations().getNodes().stream()
-									.filter(e -> StringUtils.equals(e.getMediaRecommendation().getType(), CommonEnum.AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
-									.collect(Collectors.toList());
-							// 추천 작품 데이터 재분배
-							for (AniListRecommendationsNodeDto node : recomendationNodes) {
-								// 추천 작품 상세 DTO 생성
-								AniListMediaRecommendationDetailDto mediaRecommendationDetail = node.getMediaRecommendation();
-								if (ObjectUtils.isNotEmpty(mediaRecommendationDetail)) {
-									results.add(DetailComicsRecommendationsResultDto.builder()
-											.id(mediaRecommendationDetail.getId())
-											.title(mediaRecommendationDetail.getTitle().getUserPreferred())
-											.backdropPath(mediaRecommendationDetail.getCoverImage().getLarge())
-											.posterPath(mediaRecommendationDetail.getCoverImage().getExtraLarge())
-											.build());
-								}
-							}
-						}
+						// 추천 작품 설정
+						helper.getComicsRecommendations(media, results);
 
 						// 추천 작품 응답 DTO 설정
 						recommendationResponse = DetailComicsRecommendationsResponseDto.builder()

@@ -2,8 +2,8 @@ package com.cjy.contenthub.detail.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.aniList.AniListCharactersDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbDetailsCommonDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbVideoDetailsDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class DetailComicsResponseDto extends TmdbDetailsCommonDto {
+public class DetailComicsResponseDto extends TmdbVideoDetailsDto {
 	
 	/** 만화 제목 */
 	private String title;

@@ -68,7 +68,7 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 				String validateResult = jwtUtil.validateToken(jwt);
 				// 유효하지 않은 토큰인 경우, AccountExpiredException 예외를 발생시킴
 				if (!JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode().equals(validateResult)) {
-					throw new AccountExpiredException(JwtValidateResultEnum.fromResultCode(validateResult).getJwtValidateResultMsg());
+					throw new AccountExpiredException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
 				}
 			} catch (JwtException ex) {
 				throw new AccountExpiredException("JWT 파싱 중 에러", ex);

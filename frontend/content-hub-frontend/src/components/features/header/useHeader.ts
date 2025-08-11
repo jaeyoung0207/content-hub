@@ -62,7 +62,6 @@ type useHeaderReturnType = {
 
 /**
  * 헤더 컴포넌트의 상태와 동작을 관리하는 훅
- * 헤더 컴포넌트에서 홈버튼 클릭, 검색어 입력, 필터 박스 오픈, 로그인/로그아웃 등의 기능을 구현
  */
 export const useHeader = (): useHeaderReturnType => {
 
@@ -81,8 +80,6 @@ export const useHeader = (): useHeaderReturnType => {
 
     // navigate 훅
     const navigate = useNavigate();
-    // react query 클라이언트 훅
-    const queryClient = useQueryClient();
 
     // 쿠키 훅: 리프레시 토큰
     const [refreshTokenCookie] = useCookies<string>(["refreshToken"]);
@@ -189,10 +186,14 @@ export const useHeader = (): useHeaderReturnType => {
 
     // ================================================================================================== react query
 
-    // 공통 API 요청 클래스
+    // react query 클라이언트 훅
+    const queryClient = useQueryClient();
+    // 공통 API 인스턴스 생성
     const commonApi = new Common();
-    // 검색 API 요청 클래스
+    // 검색 API 인스턴스 생성
     const searchContentApi = new SearchContent();
+    // 로그인 API 인스턴스 생성
+    const loginApi = new Login();
 
     /**
      * 성인물 검색 플래그 설정 API 호출
@@ -509,8 +510,6 @@ export const useHeader = (): useHeaderReturnType => {
         firstLoadRef.current = true;
         // 재로그인 처리
         if (refreshTokenCookie.refreshToken) {
-            // 로그인 API 인스턴스 생성
-            const loginApi = new Login();
             // 쿠키의 provider가 NAVER인 경우
             if (providerCookie.provider === LOGIN_PROVIDER.NAVER) {
                 queryClient.fetchQuery({

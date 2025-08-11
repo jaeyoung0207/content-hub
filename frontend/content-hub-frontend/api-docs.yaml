@@ -211,6 +211,25 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TmdbSearchTvDto"
+  /person/details:
+    get:
+      tags:
+      - person-controller
+      operationId: getPersonDetails
+      parameters:
+      - name: personId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PersonResponseDto"
   /login/updateNaverLoginInfo:
     get:
       tags:
@@ -418,11 +437,6 @@ paths:
         schema:
           type: integer
           format: int32
-      - name: originalMediaType
-        in: query
-        required: true
-        schema:
-          type: string
       responses:
         "200":
           description: OK
@@ -490,11 +504,6 @@ paths:
         schema:
           type: integer
           format: int32
-      - name: originalMediaType
-        in: query
-        required: true
-        schema:
-          type: string
       responses:
         "200":
           description: OK
@@ -580,6 +589,25 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/DetailComicsResponseDto"
+  /character/getCharacter:
+    get:
+      tags:
+      - character-controller
+      operationId: getCharacter
+      parameters:
+      - name: characterId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AniListCharactersNodesDto"
   /detail/deleteComment:
     delete:
       tags:
@@ -687,11 +715,11 @@ components:
         totalResults:
           type: integer
           format: int32
-        aniViewMore:
-          type: boolean
         dramaViewMore:
           type: boolean
         movieViewMore:
+          type: boolean
+        aniViewMore:
           type: boolean
     TmdbSearchMovieResultsDto:
       type: object
@@ -869,6 +897,149 @@ components:
           format: int32
         comicsViewMore:
           type: boolean
+    PersonCreditsCastDto:
+      type: object
+      properties:
+        adult:
+          type: boolean
+        backdrop_path:
+          type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+        id:
+          type: integer
+          format: int32
+        originalLanguage:
+          type: string
+        overview:
+          type: string
+        popularity:
+          type: number
+        posterPath:
+          type: string
+        voteAverage:
+          type: number
+        voteCount:
+          type: integer
+          format: int32
+        character:
+          type: string
+        creditId:
+          type: string
+        originalTitle:
+          type: string
+        releaseDate:
+          type: string
+        releaseYear:
+          type: string
+        title:
+          type: string
+        episodeCount:
+          type: integer
+          format: int32
+        mediaType:
+          type: string
+    PersonCreditsCrewDto:
+      type: object
+      properties:
+        adult:
+          type: boolean
+        backdrop_path:
+          type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+        id:
+          type: integer
+          format: int32
+        originalLanguage:
+          type: string
+        overview:
+          type: string
+        popularity:
+          type: number
+        posterPath:
+          type: string
+        voteAverage:
+          type: number
+        voteCount:
+          type: integer
+          format: int32
+        creditId:
+          type: string
+        department:
+          type: string
+        job:
+          type: string
+        originalTitle:
+          type: string
+        releaseDate:
+          type: string
+        releaseYear:
+          type: string
+        title:
+          type: string
+        episodeCount:
+          type: integer
+          format: int32
+        mediaType:
+          type: string
+    PersonResponseDto:
+      type: object
+      properties:
+        adult:
+          type: boolean
+        alsoKnownAs:
+          type: array
+          items:
+            type: string
+        biography:
+          type: string
+        birthday:
+          type: string
+        deathday:
+          type: string
+        gender:
+          type: integer
+          format: int32
+        homepage:
+          type: string
+        id:
+          type: integer
+          format: int32
+        imdb_id:
+          type: string
+        knownForDepartment:
+          type: string
+        name:
+          type: string
+        placeOfBirth:
+          type: string
+        popularity:
+          type: number
+        profilePath:
+          type: string
+        genderValue:
+          type: string
+        castCount:
+          type: integer
+          format: int32
+        crewCount:
+          type: integer
+          format: int32
+        cast:
+          type: array
+          items:
+            $ref: "#/components/schemas/PersonCreditsCastDto"
+        crew:
+          type: array
+          items:
+            $ref: "#/components/schemas/PersonCreditsCrewDto"
     LoginUserInfoDto:
       type: object
       properties:
@@ -972,11 +1143,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
-        leapMonth:
+        emailVerified:
           type: boolean
         emailValid:
           type: boolean
-        emailVerified:
+        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1128,12 +1299,41 @@ components:
         type:
           type: string
         credits:
-          $ref: "#/components/schemas/TmdbCreditsDto"
+          $ref: "#/components/schemas/TmdbVideoCreditsDto"
         link:
           type: string
         starRatingAverage:
           type: number
-    TmdbCreditsCastDto:
+    TmdbGenreDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    TmdbTvSeasonDto:
+      type: object
+      properties:
+        airDate:
+          type: string
+        episodeCount:
+          type: integer
+          format: int32
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        overview:
+          type: string
+        posterPath:
+          type: string
+        seasonNumber:
+          type: string
+        voteAverage:
+          type: number
+    TmdbVideoCreditsCastDto:
       type: object
       properties:
         adult:
@@ -1164,7 +1364,7 @@ components:
         order:
           type: integer
           format: int32
-    TmdbCreditsCrewDto:
+    TmdbVideoCreditsCrewDto:
       type: object
       properties:
         adult:
@@ -1191,46 +1391,17 @@ components:
           type: string
         job:
           type: string
-    TmdbCreditsDto:
+    TmdbVideoCreditsDto:
       type: object
       properties:
         cast:
           type: array
           items:
-            $ref: "#/components/schemas/TmdbCreditsCastDto"
+            $ref: "#/components/schemas/TmdbVideoCreditsCastDto"
         crew:
           type: array
           items:
-            $ref: "#/components/schemas/TmdbCreditsCrewDto"
-    TmdbGenreDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int32
-        name:
-          type: string
-    TmdbTvSeasonDto:
-      type: object
-      properties:
-        airDate:
-          type: string
-        episodeCount:
-          type: integer
-          format: int32
-        id:
-          type: integer
-          format: int32
-        name:
-          type: string
-        overview:
-          type: string
-        posterPath:
-          type: string
-        seasonNumber:
-          type: string
-        voteAverage:
-          type: number
+            $ref: "#/components/schemas/TmdbVideoCreditsCrewDto"
     TmdbRecommendationsMovieDto:
       type: object
       properties:
@@ -1319,7 +1490,7 @@ components:
         title:
           type: string
         credits:
-          $ref: "#/components/schemas/TmdbCreditsDto"
+          $ref: "#/components/schemas/TmdbVideoCreditsDto"
         link:
           type: string
         starRatingAverage:
@@ -1426,8 +1597,6 @@ components:
         id:
           type: integer
           format: int32
-        siteUrl:
-          type: string
         image:
           $ref: "#/components/schemas/AniListCharactersImageDto"
         name:
@@ -1438,6 +1607,31 @@ components:
           type: string
         description:
           type: string
+        bloodType:
+          type: string
+        dateOfBirth:
+          $ref: "#/components/schemas/AniListDateDto"
+        favourites:
+          type: integer
+          format: int32
+        siteUrl:
+          type: string
+        favourite:
+          type: boolean
+        favouriteBlocked:
+          type: boolean
+    AniListDateDto:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        day:
+          type: integer
+          format: int32
     DetailComicsResponseDto:
       type: object
       properties:

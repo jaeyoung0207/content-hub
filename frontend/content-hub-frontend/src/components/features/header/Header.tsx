@@ -111,9 +111,9 @@ export const Header = () => {
     return (
         <div className="flex justify-between z-50 shadow-md">
             <div className="fixed bg-white">
-                <div className="flex justify-between w-sm lg:w-7xl lg:mt-10 px-3 ">
+                <div className="flex justify-between w-sm lg:w-7xl lg:mt-5 px-3 ">
                     {/* 홈 아이콘 */}
-                    <img src={homeIcon} className="w-12 h-12 cursor-pointer" onClick={commonErrorHandler(() => {
+                    <img src={homeIcon} className="w-12 h-12 cursor-pointer" alt="Home" onClick={commonErrorHandler(() => {
                         handleHomeOnClick();
                     })} />
                     <div className="flex items-center">
@@ -246,20 +246,25 @@ export const CheckBoxAndLabel = memo(CheckBoxAndLabelInner) as typeof CheckBoxAn
  * @returns 자동완성 박스
  */
 const AutoCompleteBox = memo(({ autoCompleteList, handleKeywordListOnClick, currentIndex, selectRef, handleRemoveSearchHistory, searchHistoryisOpen, handleSetCurrentIndex, savedKeyword }: autoCompletePropsType) => {
-
+    // i18n 훅
     const { t } = useTranslation();
 
     const boxHeight = autoCompleteList?.length;
     const highLightStyle = "font-black text-blue-600";
+    const tab = "\\t";
     return (
         <>
             {
                 autoCompleteList &&
                 autoCompleteList.length !== 0 &&
-                // <div className={`absolute lg:w-sm w-xs h-[${boxHeight}] right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}>
-                <div className={`absolute lg:w-sm w-xs max-h-64 overflow-auto right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}>
+                // <div className={`absolute lg:w-sm w-xs max-h-64 overflow-auto right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}>
+                <div className={`absolute lg:w-sm w-xs h-[${boxHeight}] right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}>
                     {
                         autoCompleteList.map((item, index) => {
+                            // 자동완성 리스트에서 검색어를 기준으로 배열화
+                            const keywordArray = item.search(new RegExp(savedKeyword, "gi")) !== -1
+                                ? item.replace(new RegExp(savedKeyword, "gi"), tab.concat(savedKeyword).concat(tab)).split(tab)
+                                : [item];
                             return (
                                 <ul
                                     key={index}
@@ -277,19 +282,17 @@ const AutoCompleteBox = memo(({ autoCompleteList, handleKeywordListOnClick, curr
                                             !searchHistoryisOpen
                                                 ? <>
                                                     {
-                                                        item === savedKeyword
-                                                            ? <span className={highLightStyle}>{savedKeyword}</span>
-                                                            : item.split(new RegExp(`${savedKeyword}`, "gi")).map((text, textIndex) => {
-                                                                return (
-                                                                    <span key={textIndex} className={`${!text ? highLightStyle : ""}`}>
-                                                                        {
-                                                                            text
-                                                                                ? text
-                                                                                : savedKeyword
-                                                                        }
-                                                                    </span>
-                                                                )
-                                                            })
+                                                        keywordArray.map((text, textIndex) => {
+                                                            return (
+                                                                <span key={textIndex} className={`${text === savedKeyword ? highLightStyle : ""}`}>
+                                                                    {
+                                                                        text === savedKeyword
+                                                                            ? savedKeyword
+                                                                            : text
+                                                                    }
+                                                                </span>
+                                                            )
+                                                        })
                                                     }
                                                 </>
                                                 : item

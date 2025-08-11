@@ -23,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class TmdbRecommendationsCommonResultsDto {
+public abstract class TmdbRecommendationsCommonResultsDto {
 	
 	/** 성인물 여부 */
 	private boolean adult;

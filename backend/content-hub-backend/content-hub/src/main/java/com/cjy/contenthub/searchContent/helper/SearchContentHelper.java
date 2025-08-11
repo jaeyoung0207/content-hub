@@ -8,7 +8,7 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 
 /**
- * 검색 컨텐츠 관련 유틸리티 클래스
+ * 검색 컨텐츠 헬퍼 클래스
  */
 public class SearchContentHelper {
 	

@@ -49,9 +49,9 @@ export interface SearchContentVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
-  aniViewMore?: boolean;
   dramaViewMore?: boolean;
   movieViewMore?: boolean;
+  aniViewMore?: boolean;
 }
 
 export interface TmdbSearchMovieResultsDto {
@@ -147,6 +147,81 @@ export interface SearchContentComicsResponseDto {
   comicsViewMore?: boolean;
 }
 
+export interface PersonCreditsCastDto {
+  adult?: boolean;
+  backdrop_path?: string;
+  genreIds?: number[];
+  /** @format int32 */
+  id?: number;
+  originalLanguage?: string;
+  overview?: string;
+  popularity?: number;
+  posterPath?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  character?: string;
+  creditId?: string;
+  originalTitle?: string;
+  releaseDate?: string;
+  releaseYear?: string;
+  title?: string;
+  /** @format int32 */
+  episodeCount?: number;
+  mediaType?: string;
+}
+
+export interface PersonCreditsCrewDto {
+  adult?: boolean;
+  backdrop_path?: string;
+  genreIds?: number[];
+  /** @format int32 */
+  id?: number;
+  originalLanguage?: string;
+  overview?: string;
+  popularity?: number;
+  posterPath?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  creditId?: string;
+  department?: string;
+  job?: string;
+  originalTitle?: string;
+  releaseDate?: string;
+  releaseYear?: string;
+  title?: string;
+  /** @format int32 */
+  episodeCount?: number;
+  mediaType?: string;
+}
+
+export interface PersonResponseDto {
+  adult?: boolean;
+  alsoKnownAs?: string[];
+  biography?: string;
+  birthday?: string;
+  deathday?: string;
+  /** @format int32 */
+  gender?: number;
+  homepage?: string;
+  /** @format int32 */
+  id?: number;
+  imdb_id?: string;
+  knownForDepartment?: string;
+  name?: string;
+  placeOfBirth?: string;
+  popularity?: number;
+  profilePath?: string;
+  genderValue?: string;
+  /** @format int32 */
+  castCount?: number;
+  /** @format int32 */
+  crewCount?: number;
+  cast?: PersonCreditsCastDto[];
+  crew?: PersonCreditsCrewDto[];
+}
+
 export interface LoginUserInfoDto {
   id?: string;
   nickname?: string;
@@ -204,9 +279,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  leapMonth?: boolean;
-  emailValid?: boolean;
   emailVerified?: boolean;
+  emailValid?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -285,49 +360,9 @@ export interface DetailTvResponseDto {
   originalName?: string;
   seasons?: TmdbTvSeasonDto[];
   type?: string;
-  credits?: TmdbCreditsDto;
+  credits?: TmdbVideoCreditsDto;
   link?: string;
   starRatingAverage?: number;
-}
-
-export interface TmdbCreditsCastDto {
-  adult?: boolean;
-  /** @format int32 */
-  gender?: number;
-  /** @format int32 */
-  id?: number;
-  knownForDepartment?: string;
-  name?: string;
-  originalName?: string;
-  popularity?: number;
-  profilePath?: string;
-  /** @format int32 */
-  castId?: number;
-  character?: string;
-  creditId?: string;
-  /** @format int32 */
-  order?: number;
-}
-
-export interface TmdbCreditsCrewDto {
-  adult?: boolean;
-  /** @format int32 */
-  gender?: number;
-  /** @format int32 */
-  id?: number;
-  knownForDepartment?: string;
-  name?: string;
-  originalName?: string;
-  popularity?: number;
-  profilePath?: string;
-  creditId?: string;
-  department?: string;
-  job?: string;
-}
-
-export interface TmdbCreditsDto {
-  cast?: TmdbCreditsCastDto[];
-  crew?: TmdbCreditsCrewDto[];
 }
 
 export interface TmdbGenreDto {
@@ -347,6 +382,46 @@ export interface TmdbTvSeasonDto {
   posterPath?: string;
   seasonNumber?: string;
   voteAverage?: number;
+}
+
+export interface TmdbVideoCreditsCastDto {
+  adult?: boolean;
+  /** @format int32 */
+  gender?: number;
+  /** @format int32 */
+  id?: number;
+  knownForDepartment?: string;
+  name?: string;
+  originalName?: string;
+  popularity?: number;
+  profilePath?: string;
+  /** @format int32 */
+  castId?: number;
+  character?: string;
+  creditId?: string;
+  /** @format int32 */
+  order?: number;
+}
+
+export interface TmdbVideoCreditsCrewDto {
+  adult?: boolean;
+  /** @format int32 */
+  gender?: number;
+  /** @format int32 */
+  id?: number;
+  knownForDepartment?: string;
+  name?: string;
+  originalName?: string;
+  popularity?: number;
+  profilePath?: string;
+  creditId?: string;
+  department?: string;
+  job?: string;
+}
+
+export interface TmdbVideoCreditsDto {
+  cast?: TmdbVideoCreditsCastDto[];
+  crew?: TmdbVideoCreditsCrewDto[];
 }
 
 export interface TmdbRecommendationsMovieDto {
@@ -395,7 +470,7 @@ export interface DetailMovieResponseDto {
   /** @format int32 */
   runtime?: number;
   title?: string;
-  credits?: TmdbCreditsDto;
+  credits?: TmdbVideoCreditsDto;
   link?: string;
   starRatingAverage?: number;
 }
@@ -460,12 +535,27 @@ export interface AniListCharactersNameDto {
 export interface AniListCharactersNodesDto {
   /** @format int32 */
   id?: number;
-  siteUrl?: string;
   image?: AniListCharactersImageDto;
   name?: AniListCharactersNameDto;
   age?: string;
   gender?: string;
   description?: string;
+  bloodType?: string;
+  dateOfBirth?: AniListDateDto;
+  /** @format int32 */
+  favourites?: number;
+  siteUrl?: string;
+  favourite?: boolean;
+  favouriteBlocked?: boolean;
+}
+
+export interface AniListDateDto {
+  /** @format int32 */
+  year?: number;
+  /** @format int32 */
+  month?: number;
+  /** @format int32 */
+  day?: number;
 }
 
 export interface DetailComicsResponseDto {

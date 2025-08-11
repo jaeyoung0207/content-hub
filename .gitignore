@@ -81,3 +81,11 @@ replay_pid*
 /backend/bk/
 /frontend/bk/
 /frontend/front_01/
+
+# ================================================
+# SonarLint 관련
+# ================================================
+# SonarLint
+.sonarlint/
+.idea/sonarlint/
+.vscode/sonarlint/

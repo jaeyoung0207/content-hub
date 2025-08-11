@@ -49,26 +49,26 @@ export enum MEDIA_TYPE {
     "NOVEL" = "5",
 }
 
-/**
- * 미디어 타입에 따라 전체보기 타입 문자열을 반환
- * @param mediaType 미디어 타입
- * @returns 전체보기 타입 문자열
- */
-export const VIEW_MORE_TYPE = (mediaType: string) => {
-    if (MEDIA_TYPE.ANI === mediaType) {
-        return "ani";
-    } else if (MEDIA_TYPE.DRAMA === mediaType) {
-        return "drama";
-    } else if (MEDIA_TYPE.MOVIE === mediaType) {
-        return "movie";
-    } else if (MEDIA_TYPE.COMICS === mediaType) {
-        return "comics";
-    } else if (MEDIA_TYPE.NOVEL === mediaType) {
-        return "novel";
-    } else {
-        return null;
-    }
-}
+// /**
+//  * 미디어 타입에 따라 전체보기 타입 문자열을 반환
+//  * @param mediaType 미디어 타입
+//  * @returns 전체보기 타입 문자열
+//  */
+// export const VIEW_MORE_TYPE = (mediaType: string) => {
+//     if (MEDIA_TYPE.ANI === mediaType) {
+//         return "ani";
+//     } else if (MEDIA_TYPE.DRAMA === mediaType) {
+//         return "drama";
+//     } else if (MEDIA_TYPE.MOVIE === mediaType) {
+//         return "movie";
+//     } else if (MEDIA_TYPE.COMICS === mediaType) {
+//         return "comics";
+//     } else if (MEDIA_TYPE.NOVEL === mediaType) {
+//         return "novel";
+//     } else {
+//         return null;
+//     }
+// }
 
 // 로그인 제공자
 export enum LOGIN_PROVIDER {

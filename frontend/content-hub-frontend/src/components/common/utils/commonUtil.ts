@@ -1,25 +1,28 @@
-import { ERROR_MESSAGE, MEDIA_TYPE, VIEW_MORE_TYPE } from "../constants/constants";
+import { ERROR_MESSAGE, MEDIA_TYPE } from "../constants/constants";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import i18n from "i18next";
 import { useProviderStore, useUserStore } from "../store/globalStateStore";
 import { SearchContentCommonResultType } from "@/components/features/searchContent/useSearchContent";
-import { DetailComicsResponseDto, DetailMovieResponseDto, DetailTvResponseDto, SearchContentComicsMediaResultDto, TmdbRecommendationsMovieResultsDto, TmdbRecommendationsTvResultsDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@/api/data-contracts";
+import { DetailComicsResponseDto, DetailMovieResponseDto, DetailTvResponseDto, PersonCreditsCastDto, PersonCreditsCrewDto, SearchContentComicsMediaResultDto, TmdbRecommendationsMovieResultsDto, TmdbRecommendationsTvResultsDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@/api/data-contracts";
 import { RecommendContentResultType } from "@/components/features/detail/tabs/recommendContent/useRecommendContent";
 import { DetailResponseType } from "@/components/features/detail/useDetail";
 import { NavigateFunction } from "react-router-dom";
+import { PersonCredits } from "@/components/features/person/Person";
 
 /**
  * 검색 URL 쿼리 생성 함수 타입
  */
 type SearchUrlQueryPropsType = {
-    keyword: string, // 검색어
-    isAdult: string, // 성인물 포함 여부
-    viewMore?: string, // 전체보기 여부
+    keyword?: string, // 검색어
+    isAdult?: string, // 성인물 포함 여부
+    // viewMore?: string, // 전체보기 여부
     mediaType?: string, // 미디어 타입
     originalMediaType?: string, // 원본 미디어 타입
     contentId?: string, // 콘텐츠 ID
-    tabNo?: string, // 탭 번호
+    tabNo?: number, // 탭 번호
+    personId?: number, // 인물 ID
+    characterId?: number, // 캐릭터 ID
 }
 
 /**
@@ -33,6 +36,17 @@ export const searchUrlQuery = ({ keyword, isAdult }: SearchUrlQueryPropsType) =>
 }
 
 /**
+ * 전체보기 URL 쿼리 생성 함수
+ * @param keyword 검색어
+ * @param isAdult 성인물 포함 여부
+ * @param mediaType 미디어 타입
+ * @returns 전체보기 URL 쿼리 문자열
+ */
+export const viewMoreUrlQuery = ({ keyword, isAdult, mediaType }: SearchUrlQueryPropsType) => {
+    return `/search?keyword=${keyword}&isAdult=${isAdult}&viewMore=${mediaType}`;
+}
+
+/**
  * 상세 화면 URL 쿼리 생성 함수
  * @param keyword 검색어
  * @param isAdult 성인물 포함 여부
@@ -41,33 +55,26 @@ export const searchUrlQuery = ({ keyword, isAdult }: SearchUrlQueryPropsType) =>
  * @param tabNo 탭 번호
  * @returns 상세화면 URL 쿼리 문자열
  */
-export const detailUrlQuery = ({ keyword, isAdult, originalMediaType, contentId, tabNo }: SearchUrlQueryPropsType) => {
-    return `/search?keyword=${keyword}&isAdult=${isAdult}&originalMediaType=${originalMediaType}&contentId=${contentId}&tabNo=${tabNo}`;
+export const detailUrlQuery = ({ originalMediaType, contentId, tabNo }: SearchUrlQueryPropsType) => {
+    return `/detail/${originalMediaType}/${contentId}?tabNo=${tabNo}`;
 }
 
 /**
- * 전체보기를 통해 상세 화면으로 이동하는 URL 쿼리 생성 함수
- * @param keyword 검색어
- * @param isAdult 성인물 포함 여부
- * @param mediaType 미디어 타입
- * @param originalMediaType 원본 미디어 타입
- * @param contentId 콘텐츠 ID
- * @param tabNo 탭 번호
- * @returns 전체보기를 통한 상세화면 URL 쿼리 문자열
+ * 인물 화면 URL 쿼리 생성 함수
+ * @param personId 인물 ID
+ * @returns 인물 화면 URL 쿼리 문자열
  */
-export const detailInViewMoreUrlQuery = ({ keyword, isAdult, mediaType, originalMediaType, contentId, tabNo }: SearchUrlQueryPropsType) => {
-    return `/search?keyword=${keyword}&isAdult=${isAdult}&viewMore=${VIEW_MORE_TYPE(mediaType!)}&mediaType=${mediaType}&originalMediaType=${originalMediaType}&contentId=${contentId}&tabNo=${tabNo}`;
+export const personUrlQuery = ({ personId }: SearchUrlQueryPropsType) => {
+    return `/person/${personId}`;
 }
 
 /**
- * 전체보기 URL 쿼리 생성 함수
- * @param keyword 검색어
- * @param isAdult 성인물 포함 여부
- * @param mediaType 미디어 타입
- * @returns 전체보기 URL 쿼리 문자열
+ * 캐릭터 화면 URL 쿼리 생성 함수
+ * @param characterId 캐릭터 ID
+ * @returns 캐릭터 화면 URL 쿼리 문자열
  */
-export const viewMoreUrlQuery = ({ keyword, isAdult, mediaType }: SearchUrlQueryPropsType) => {
-    return `/search?keyword=${keyword}&isAdult=${isAdult}&viewMore=${VIEW_MORE_TYPE(mediaType!)}&mediaType=${mediaType}`;
+export const characterUrlQuery = ({ characterId }: SearchUrlQueryPropsType) => {
+    return `/character/${characterId}`;
 }
 
 /**
@@ -272,4 +279,56 @@ export const isDetailMovieType = (detailResult: DetailResponseType, originalMedi
  */
 export const isDetailComicsType = (detailResult: DetailResponseType, originalMediaType: string): detailResult is DetailComicsResponseDto => {
     return originalMediaType === MEDIA_TYPE.COMICS;
+}
+
+/**
+ * 크레딧이 cast 타입인지 확인하는 함수
+ * @param credits 크레딧
+ * @returns cast 타입 여부
+ */
+export const isCreditsCastType = (credits: PersonCredits): credits is PersonCreditsCastDto => {
+    return true;
+}
+
+/**
+ * 크레딧이 crew 타입인지 확인하는 함수
+ * @param credits 크레딧
+ * @returns crew 타입 여부
+ */
+export const isCreditsCrewType = (credits: PersonCredits): credits is PersonCreditsCrewDto => {
+    return true;
+}
+
+
+/**
+ * 미디어 타입에 따라 타입 문자열을 반환
+ * @param mediaType 미디어 타입
+ * @returns 타입 문자열
+ */
+export const detailMediaType = (mediaType: string) => {
+    if (mediaType === MEDIA_TYPE.ANI) {
+        return "1";
+    } else if (mediaType === MEDIA_TYPE.DRAMA) {
+        return "2";
+    } else if (mediaType === MEDIA_TYPE.MOVIE) {
+        return "3";
+    } else if (mediaType === MEDIA_TYPE.COMICS) {
+        return "4";
+    } else {
+        return null;
+    }
+}
+
+/**
+ * 생년월일을 변환하는 함수
+ * @param year 년도
+ * @param month 월
+ * @param day 일
+ * @returns 변환된 생년월일 문자열
+ */
+export const convertBirthDate = (year: number | undefined, month: number | undefined, day: number | undefined) => {
+    const birthYear = year ? year.toString().concat("년 ") : "";
+    const birthMonth = month ? month.toString().concat("월 ") : "";
+    const birthDay = day ? day.toString().concat("일") : "";
+    return birthYear.concat(birthMonth).concat(birthDay).trim();
 }

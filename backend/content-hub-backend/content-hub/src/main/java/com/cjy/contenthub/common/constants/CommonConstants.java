@@ -1,8 +1,12 @@
 package com.cjy.contenthub.common.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * 공통 상수 정의 클래스
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonConstants {
 
 	/** TV 장르명 */
@@ -43,5 +47,8 @@ public class CommonConstants {
     
     /** COMMA */
     public static final String COMMA = ",";
+    
+    /** 날짜 형식 정규식: yyyy-MM-dd */
+    public static final String STR_DATE_REGEX = "^\\d{4}-\\d{2}-\\d{2}$";
 	
 }

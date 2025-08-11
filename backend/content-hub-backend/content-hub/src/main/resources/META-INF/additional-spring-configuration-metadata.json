@@ -60,6 +60,11 @@
     "description": "A description for 'tmdb.url.movieDetailPath'"
   },
   {
+    "name": "tmdb.url.personDetailPath",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.url.personDetailPath'"
+  },
+  {
     "name": "tmdb.url.tvWatchProvidersPath",
     "type": "java.lang.String",
     "description": "A description for 'tmdb.url.tvWatchProvidersPath'"

@@ -46,14 +46,15 @@ export const useRecommendContent = (detailResult: DetailResponseType, originalMe
 
     // ================================================================================================== react query
 
+    // Detail API 인스턴스 생성
+    const detailApi = new Detail();
+
     /**
      * 추천 콘텐츠를 가져오기 위한 API 호출 함수
      * @param pageParam 다음 페이지를 가져오기 위한 페이지 번호
      * @returns 추천 콘텐츠 결과 배열
      */
     const judgeExecApi = async (pageParam: number) => {
-        // Detail API 인스턴스 생성
-        const detailApi = new Detail();
         // 원본 미디어 타입이 ANI 또는 DRAMA인 경우
         if (originalMediaType == MEDIA_TYPE.ANI || originalMediaType == MEDIA_TYPE.DRAMA) {
             return (await detailApi.getTvRecommendations({
@@ -97,7 +98,7 @@ export const useRecommendContent = (detailResult: DetailResponseType, originalMe
         number | undefined // pageParam 타입 (보통 number | undefined)
     >({
         // useInfiniteQuery의 키 지정
-        queryKey: detailQueryKeys.detail.recommendationContent.list(originalMediaType, detailResult.id!.toString()),
+        queryKey: detailQueryKeys.detail.recommendationContent.list(originalMediaType, detailResult.id!.toString()) as [string, string, string, string],
         // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
         queryFn: async ({ pageParam = 1 }) => {
             const response = await judgeExecApi(pageParam);

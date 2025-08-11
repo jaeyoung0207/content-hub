@@ -5,7 +5,7 @@ import { COMMON_IMAGES, MEDIA_TYPE, TMDB_API_IMAGE_DOMAIN, WIDTH_300 } from "@/c
 import { LoadingUi } from "@/components/ui/LoadingUi";
 import { NodataMessageUi } from "@/components/ui/common/NodataMessageUi";
 import { useTranslation } from "react-i18next";
-import { commonErrorHandler, detailInViewMoreUrlQuery, detailUrlQuery, isRecommendationsTvType } from "@/components/common/utils/commonUtil";
+import { commonErrorHandler, detailUrlQuery, isRecommendationsTvType } from "@/components/common/utils/commonUtil";
 
 /**
  * 추천 콘텐츠 컴포넌트 props 타입
@@ -77,13 +77,6 @@ export const RecommendContent = ({ detailResult, originalMediaType }: RecommendC
  */
 const DisplayRecommendResults = ({ data, originalMediaType }: DisplayRecommendResultsPropsType) => {
 
-    // URL query string에서 검색어, 성인 여부, viewMore 여부, 미디어 타입을 가져오기
-    const [searchParams] = useSearchParams();
-    const keyword = searchParams.get("keyword")!;
-    const isAdult = searchParams.get("isAdult")!;
-    const viewMore = searchParams.get("viewMore")!;
-    const mediaType = searchParams.get("mediaType")!;
-
     // navigate 훅
     const navigate = useNavigate();
     // 상세보기 모달에서 사용할 썸네일 이미지 경로
@@ -104,10 +97,8 @@ const DisplayRecommendResults = ({ data, originalMediaType }: DisplayRecommendRe
                                         key={"frame" + index}
                                         className={"ml-1 mr-1 block hover:font-bold cursor-pointer " + (originalMediaType === MEDIA_TYPE.COMICS ? "w-[190px]" : "w-[300px]")}
                                         onClick={commonErrorHandler(() => {
-                                            // 전체보기를 통해 상세화면으로 이동한 경우와 검색화면에서 상세화면으로 이동한 경우를 구분해서 URL 쿼리 생성
-                                            const detailUrl = viewMore
-                                                ? detailInViewMoreUrlQuery({ keyword: keyword, isAdult: isAdult, mediaType: mediaType, originalMediaType: originalMediaType, contentId: String(items.id), tabNo: "0" })
-                                                : detailUrlQuery({ keyword: keyword, isAdult: isAdult, originalMediaType: originalMediaType, contentId: String(items.id), tabNo: "0" });
+                                            // 상세화면 URL 생성
+                                            const detailUrl = detailUrlQuery({ originalMediaType: originalMediaType, contentId: String(items.id), tabNo: 0 });
                                             // 리다이렉트용 데이터 저장
                                             sessionStorage.setItem("redirectUrl", detailUrl);
                                             // 상세보기 모달 오픈
@@ -125,6 +116,7 @@ const DisplayRecommendResults = ({ data, originalMediaType }: DisplayRecommendRe
                                                 onError={(e) => {
                                                     e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
                                                 }}
+                                                alt={"Thumbnail Image"}
                                                 className={(originalMediaType === MEDIA_TYPE.COMICS ? "w-[190px] h-[270px]" : "w-full h-[180px]") + " object-scale-down"}
                                             />
                                         </li>

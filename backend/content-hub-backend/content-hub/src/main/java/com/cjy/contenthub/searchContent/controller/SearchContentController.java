@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniList.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListPageInfoDto;
-import com.cjy.contenthub.common.api.dto.aniList.AniListResponseDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListPageInfoDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
@@ -130,11 +129,11 @@ public class SearchContentController {
 	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
 	private static final String PARAM_IS_ADULT = "isAdult";
 	
+	/** API 입구 판단용 파라미터 키 문자열  */
+	private static final String PARAM_IS_MAIN_PAGE = "isMainPage";
+	
 	/** 언어 : 한국어 */
 	private static final String LANGUAGE_KOREAN = "ko-KR";
-	
-	/** API 입구 판단용 파라미터 키 문자열  */
-	private static final String IS_MAIN_PAGE = "isMainPage";
 	
 	/**
 	 * 어플리케이션 기동시 ApplicationReadyEvent를 이용하여, 
@@ -233,7 +232,7 @@ public class SearchContentController {
 								.filter(StringUtils::isNotEmpty) // 빈 요소 제거
 								.distinct() // 중복 제거
 								.sorted() // 문자열 순으로 정렬
-								.collect(Collectors.toList());
+								.toList();
 						// 키워드로 시작하는 검색결과가 먼저 오도록 정렬
 						List<String> sortedList = SearchContentHelper.sortKeywordList(nameList, keyword); 
 						// 표시개수 제한 후 결과값 반환
@@ -448,14 +447,12 @@ public class SearchContentController {
 							}
 						}
 						// 애니 리스트 저장
-						TmdbSearchTvDto tvResponse = TmdbSearchTvDto.builder()
+						return TmdbSearchTvDto.builder()
 								.results(aniList)
 								.page(response.getPage())
 								.totalPages(response.getTotalPages())
 								.totalResults(response.getTotalResults())
 								.build();
-
-						return tvResponse;
 					});
 
 			// 영화 정보 취득
@@ -518,8 +515,8 @@ public class SearchContentController {
 			@Nullable @RequestParam(PARAM_PAGE) Integer page) {
 
 		// 드라마 장르 정보 취득
-		return getTvGenres().flatMap(tvGenreMap -> {
-			return tmdbWebClient.get()
+		return getTvGenres().flatMap(tvGenreMap -> 
+			tmdbWebClient.get()
 					.uri(builder -> builder
 							.path(tvSearchPath)
 							.queryParam(PARAM_QUERY, keyword)
@@ -552,8 +549,8 @@ public class SearchContentController {
 
 						// 드라마 응답 오브젝트 반환
 						return ResponseEntity.ok(dramaResponse);
-					});
-		});
+					})
+		);
 	}
 
 	/**
@@ -570,9 +567,9 @@ public class SearchContentController {
 			) {
 		
 		// 영화 장르 정보 취득
-		return getMovieGenres().flatMap(movieGenreMap -> {
+		return getMovieGenres().flatMap(movieGenreMap -> 
 			// 영화 정보 조회
-			return tmdbWebClient.get()
+			tmdbWebClient.get()
 					.uri(builder -> builder
 							.path(movieSearchPath)
 							.queryParam(PARAM_QUERY, keyword)
@@ -587,14 +584,11 @@ public class SearchContentController {
 						List<TmdbSearchMovieResultsDto> resultList = new ArrayList<>();
 						for (TmdbSearchMovieResultsDto results : response.getResults()) {
 							List<Integer> movieGenre = results.getGenreIds();
-							// 장르가 아예 없는 경우는 제외
-							if (movieGenre != null) {
-								if (CollectionUtils.isEmpty(movieGenre) // 장르가 빈 배열의 경우는 추가
-										|| (!CollectionUtils.isEmpty(movieGenre) 
-												&& !movieGenre.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre())))) {
-									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
-									resultList.add(results);
-								}
+							if (movieGenre != null && movieGenre.isEmpty() // 장르가 빈 배열의 경우는 추가
+									|| (!CollectionUtils.isEmpty(movieGenre) 
+											&& !movieGenre.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre())))) {
+								results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
+								resultList.add(results);
 							}
 						}
 						// 결과값 설정
@@ -607,8 +601,8 @@ public class SearchContentController {
 						
 						// 영화 응답 오브젝트 반환
 						return ResponseEntity.ok(movieResponse);
-					});
-		});
+					})
+		);
 	}
 	
 	/**
@@ -622,7 +616,7 @@ public class SearchContentController {
 	public Mono<ResponseEntity<SearchContentComicsResponseDto>> searchComics(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
 			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@RequestParam(IS_MAIN_PAGE) boolean isMainPage
+			@RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage
 			) {
 		
 		// API를 어디서 불렀는지에 따라 표시 건수를 다르게 설정
