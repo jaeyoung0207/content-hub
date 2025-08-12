@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,17 +28,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListRecommendationsNodeDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListRelationsNodeDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResponseDto;
@@ -81,7 +76,7 @@ public class DetailController {
 
 	/** 공통 세션 유팅 */
 	private final SessionUtil session;
-	
+
 	/** 상세 헬퍼 */
 	private final DetailHelper helper;
 
@@ -180,16 +175,16 @@ public class DetailController {
 
 	/** 크레딧 : credits */
 	private static final String CREDITS = "credits";
-	
+
 	/** 첫번째 페이지 번호 */
 	private static final int FIRST_PAGE_NO = 1;
-	
+
 	/** TMDB TV API Error */
 	private static final String TMDB_TV_API_ERROR_MSG = "TMDB TV API Error";
-	
+
 	/** TMDB Movie API Error */
 	private static final String TMDB_MOVIE_API_ERROR_MSG = "TMDB Movie API Error";
-	
+
 	/** AniList API Error */
 	private static final String ANILIST_API_ERROR_MSG = "AniList API Error";
 
@@ -314,7 +309,7 @@ public class DetailController {
 	 * @return ResponseEntity<DetailTvResponseDto> TV 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getTvDetail")
-	public Mono<ResponseEntity<DetailTvResponseDto>> getTvDetail(
+	public ResponseEntity<DetailTvResponseDto> getTvDetail(
 			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId
 			) {
 
@@ -356,7 +351,7 @@ public class DetailController {
 
 			// 응답 DTO 반환
 			return ResponseEntity.ok(response);
-		});
+		}).block();
 	}
 
 	/**
@@ -367,7 +362,7 @@ public class DetailController {
 	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getMovieDetail")
-	public Mono<ResponseEntity<DetailMovieResponseDto>> getMovieDetail(
+	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
 			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId
 			) {
 
@@ -409,7 +404,7 @@ public class DetailController {
 
 			// 응답 DTO 반환
 			return ResponseEntity.ok(respoonse);
-		});
+		}).block();
 	}
 
 	/**
@@ -420,7 +415,7 @@ public class DetailController {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@GetMapping(value = "/getComicsDetail")
-	public Mono<ResponseEntity<DetailComicsResponseDto>> getComicsDetail(
+	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
 			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId
 			) throws IOException {
 
@@ -467,7 +462,7 @@ public class DetailController {
 
 					// 응답 DTO 반환
 					return ResponseEntity.ok(comicsResponse);
-				});
+				}).block();
 	}
 
 	/**
@@ -478,7 +473,7 @@ public class DetailController {
 	 * @return ResponseEntity<TmdbRecommendationsTvDto> 추천 작품 응답 DTO
 	 */
 	@GetMapping(value = "/getTvRecommendations")
-	public Mono<ResponseEntity<TmdbRecommendationsTvDto>> getTvRecommendations(
+	public ResponseEntity<TmdbRecommendationsTvDto> getTvRecommendations(
 			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
 			@Nullable @RequestParam(PARAM_PAGE) Integer page
 			) {
@@ -499,7 +494,7 @@ public class DetailController {
 								.retrieve()
 								.onStatus(HttpStatusCode::isError, response ->
 								response.bodyToMono(String.class).flatMap(body -> {
-									// 404의 경우는 무시하고 빈 Mono 반환
+									// 404의 경우는 무시하고 빈 응답 반환
 									if (response.statusCode() == HttpStatus.NOT_FOUND) {
 										log.warn("TMDB TV Recommendations not found for seriesId: {}", seriesId);
 										return Mono.empty(); 
@@ -531,7 +526,7 @@ public class DetailController {
 						// 추천 작품이 존재하는 경우, 그대로 응답 반환
 						return Mono.just(ResponseEntity.ok(response));
 					}
-				});
+				}).block();
 	}
 
 	/**
@@ -542,11 +537,11 @@ public class DetailController {
 	 * @return ResponseEntity<TmdbRecommendationsMovieDto> 추천 작품 응답 DTO
 	 */
 	@GetMapping(value = "/getMovieRecommendations")
-	public Mono<ResponseEntity<TmdbRecommendationsMovieDto>> getMovieRecommendations(
+	public ResponseEntity<TmdbRecommendationsMovieDto> getMovieRecommendations(
 			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId,
 			@Nullable @RequestParam(PARAM_PAGE) Integer page
 			) {
-		
+
 		// TMDB 영화 추천 작품 조회
 		return tmdbWebClient.get()
 				.uri(helper.getMovieRecommendationUri(movieId, page, LANGUAGE_KOREAN))
@@ -563,7 +558,7 @@ public class DetailController {
 								.retrieve()
 								.onStatus(HttpStatusCode::isError, response ->
 								response.bodyToMono(String.class).flatMap(body -> {
-									// 404의 경우는 무시하고 빈 Mono 반환
+									// 404의 경우는 무시하고 빈 응답 반환
 									if (response.statusCode() == HttpStatus.NOT_FOUND) {
 										log.warn("TMDB Movie Recommendations not found for movieId: {}", movieId);
 										return Mono.empty(); 
@@ -594,9 +589,9 @@ public class DetailController {
 						// 추천 작품이 존재하는 경우, 그대로 응답 반환
 						return Mono.just(ResponseEntity.ok(response));
 					}
-				});
+				}).block();
 	}
-	
+
 	/**
 	 * AniList Comics 추천 작품 조회 API
 	 * 
@@ -605,7 +600,7 @@ public class DetailController {
 	 * @return ResponseEntity<DetailComicsRecommendationsResponseDto> 추천 작품 응답 DTO
 	 */
 	@GetMapping(value = "/getComicsRecommendations")
-	public Mono<ResponseEntity<DetailComicsRecommendationsResponseDto>> getComicsRecommendations(
+	public ResponseEntity<DetailComicsRecommendationsResponseDto> getComicsRecommendations(
 			@NotNull @RequestParam(PARAM_MEDIA_ID) Integer mediaId,
 			@Nullable @RequestParam(PARAM_PAGE) Integer page
 			) throws IOException {
@@ -632,7 +627,7 @@ public class DetailController {
 				.retrieve()
 				.onStatus(HttpStatusCode::isError, response ->
 				response.bodyToMono(String.class).flatMap(body -> {
-					// 404의 경우는 무시하고 빈 Mono 반환
+					// 404의 경우는 무시하고 빈 응답 반환
 					if (response.statusCode() == HttpStatus.NOT_FOUND) {
 						log.warn("AniList Comics Recommendations not found for mediaId: {}", mediaId);
 						return Mono.empty(); 
@@ -652,7 +647,7 @@ public class DetailController {
 						List<DetailComicsRecommendationsResultDto> results = new ArrayList<>();
 						// 응답 데이터에서 미디어 추천 데이터 추출
 						AniListMediaDto media =  response.getData().getMedia();
-						
+
 						// 첫번째 페이지인 경우, 관련 작품 노드 리스트를 추가
 						if (page == FIRST_PAGE_NO) {
 							helper.getComicsRelations(media, results);
@@ -668,7 +663,7 @@ public class DetailController {
 
 					// 추천 작품 응답 DTO 반환
 					return ResponseEntity.ok(recommendationResponse);
-				});
+				}).block();
 	}
 
 }

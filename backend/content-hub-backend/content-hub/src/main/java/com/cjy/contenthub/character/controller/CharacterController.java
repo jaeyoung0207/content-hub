@@ -18,7 +18,6 @@ import com.cjy.contenthub.common.util.GraphqlUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 /**
  * 캐릭터 정보 API 컨트롤러 클래스
@@ -45,11 +44,11 @@ public class CharacterController {
 	 * 캐릭터 조회
 	 *
 	 * @param characterId 캐릭터 ID
-	 * @return Mono<ResponseEntity<AniListCharactersNodesDto>> 캐릭터 정보
+	 * @return ResponseEntity<AniListCharactersNodesDto> 캐릭터 정보
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@GetMapping(value = "/getCharacter")
-	public Mono<ResponseEntity<AniListCharactersNodesDto>> getCharacter(
+	public ResponseEntity<AniListCharactersNodesDto> getCharacter(
 			@RequestParam(PARAM_CHARACTER_ID) Integer characterId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -71,10 +70,11 @@ public class CharacterController {
 					if (ObjectUtils.isEmpty(response.getData())
 							|| ObjectUtils.isEmpty(response.getData().getCharacter())) {
 						log.warn("Character not found for ID: {}", characterId);
-						return ResponseEntity.noContent().build();
+						return ResponseEntity.ok(new AniListCharactersNodesDto());
 					}
 					// 응답 데이터가 있는 경우 캐릭터 정보 반환
 					return ResponseEntity.ok(response.getData().getCharacter());
-				});
+				})
+				.block();
 	}
 }

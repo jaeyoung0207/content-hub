@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -105,12 +104,6 @@ public class LoginClient {
 			String[] cookieArray
 			) {
 		
-//		Mono.just(response)
-//		.contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
-//		.flatMap(context -> {
-//
-//		});
-
 		// 회원 프로필 조회 API 조회
 		return naverWebClient.get()
 				.uri(naverUserInfoUrl)
@@ -135,7 +128,6 @@ public class LoginClient {
 					userServiceDto.setProvider(LoginProviderEnum.NAVER.getProvider());
 
 					// user 등록 확인 후 등록
-					// Mono.fromRunnable()은 비동기 작업을 수행하고, 처리가 완료되면 Mono<Void>를 반환
 					return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
 							.then(Mono.fromSupplier(() -> {
 
@@ -239,8 +231,6 @@ public class LoginClient {
 							.build();
 
 					// user 등록 확인 후 등록
-					// Mono.fromRunnable()은 비동기 작업을 수행하고, 처리가 완료되면 Mono<Void>를 반환
-					// Mono.fromSupplier()는 공급자에서 값을 가져와 Mono로 감싸 반환
 					return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
 							.then(Mono.fromSupplier(() -> {
 

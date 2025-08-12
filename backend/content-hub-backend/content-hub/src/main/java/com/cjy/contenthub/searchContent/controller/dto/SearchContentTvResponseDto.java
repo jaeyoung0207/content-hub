@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +15,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class SearchContentTvResponseDto {
 
 	/** TMDB API TV 프로그램 검색 결과 DTO 애니 리스트 */

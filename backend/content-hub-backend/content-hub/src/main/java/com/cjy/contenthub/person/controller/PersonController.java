@@ -26,7 +26,6 @@ import com.cjy.contenthub.person.mapper.PersonMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 /**
  * 인물 정보 API 컨트롤러 클래스
@@ -71,10 +70,10 @@ public class PersonController {
 	 * 
 	 * @param request  HTTP 요청 객체
 	 * @param personId 인물 ID
-	 * @return Mono<ResponseEntity<TmdbPersonDetailsDto>> 인물 상세 정보 DTO
+	 * @return ResponseEntity<TmdbPersonDetailsDto> 인물 상세 정보 DTO
 	 */
 	@GetMapping("/details")
-	public Mono<ResponseEntity<PersonResponseDto>> getPersonDetails(
+	public ResponseEntity<PersonResponseDto> getPersonDetails(
 			HttpServletRequest request,
 			@RequestParam(PARAM_PERSON_ID) int personId) {
 
@@ -140,7 +139,7 @@ public class PersonController {
 					// 응답 반환
 					return ResponseEntity.ok(personResponse);
 					
-				});
+				}).block();
 	}
 
 }

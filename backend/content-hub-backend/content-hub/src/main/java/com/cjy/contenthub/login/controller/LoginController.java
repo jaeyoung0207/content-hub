@@ -104,19 +104,19 @@ public class LoginController {
 
 	/** 파라미터 : 리프레쉬 토큰 */
 	private static final String PARAM_REFRESH_TOKEN = "refresh_token";
-	
+
 	/** 파라미터 : 만료까지의 시간(초) */
 	private static final String PARAM_EXPIRES_IN = "expires_in";
-	
+
 	/** 파라미터 : 리다이렉 URI */
 	private static final String PARAM_REDIRECT_URI = "redirect_uri";
 
 	/** 파라미터 : 서비스 제공자 */
 	private static final String PARAM_SERVICE_PROVIDER = "service_provider";
-	
+
 	/** 파라미터 : 대상 ID */
 	private static final String PARAM_TARGET_ID = "target_id";
-	
+
 	/** 파라미터 : 대상 ID 타입 */
 	private static final String PARAM_TARGET_ID_TYPE = "target_id_type";
 
@@ -125,10 +125,10 @@ public class LoginController {
 
 	/** 권한 종별 : 삭제 */
 	private static final String GRANT_TYPE_DELETE = "delete";
-	
+
 	/** 값 : 유저 ID */
 	private static final String VALUE_USER_ID = "user_id";
-	
+
 	/** 값 : 인증 코드 */
 	private static final String VALUE_AUTHORIZATION_CODE = "authorization_code";
 
@@ -141,7 +141,7 @@ public class LoginController {
 	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
 	 */
 	@GetMapping("/getNaverLoginInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> getNaverLoginInfo(HttpServletRequest request, @RequestParam(PARAM_CODE) String code, @RequestParam(PARAM_STATE) String state) {
+	public ResponseEntity<LoginUserResponseDto> getNaverLoginInfo(HttpServletRequest request, @RequestParam(PARAM_CODE) String code, @RequestParam(PARAM_STATE) String state) {
 
 		// 네이버 토큰 발급 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -185,24 +185,24 @@ public class LoginController {
 						Integer status =  errorCode.chars().allMatch(Character::isDigit) ? Integer.parseInt(errorCode) : HttpStatus.INTERNAL_SERVER_ERROR.value();
 						throw new ResponseStatusException(HttpStatus.valueOf(status), issueResponse.getErrorDescription());
 					}
-				});
+				}).block();
 	}
 
 	/**
 	 * 네이버 로그인 정보 갱신
 	 * 
 	 * @param request HttpServletRequest
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
+	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
 	@GetMapping("/updateNaverLoginInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> updateNaverLoginInfo(HttpServletRequest request) {
+	public ResponseEntity<LoginUserResponseDto> updateNaverLoginInfo(HttpServletRequest request) {
 
 		// 쿠키에서 리프레시 토큰 추출
 		String refreshToken = LoginUtil.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
 
 		// refresh token이 없는 경우 처리 종료
 		if (StringUtils.isEmpty(refreshToken)) {
-			return Mono.just(ResponseEntity.ok(null));
+			return ResponseEntity.ok(new LoginUserResponseDto());
 		}
 
 		// 네이버 토큰 갱신 URL 생성
@@ -219,9 +219,9 @@ public class LoginController {
 				.retrieve()
 				.bodyToMono(NaverIssueTokenDto.class)
 				.flatMap(updateResponse -> 
-					// 네이버 프로필 조회 처리
-					loginClient.getNaverUserInfo(request, updateResponse.getAccessToken(), updateResponse.getExpiresIn(), null)
-				);
+				// 네이버 프로필 조회 처리
+				loginClient.getNaverUserInfo(request, updateResponse.getAccessToken(), updateResponse.getExpiresIn(), null)
+						).block();
 	}
 
 	/**
@@ -230,27 +230,27 @@ public class LoginController {
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
 	 * @param expiresIn 토큰 만료까지의 시간(초)
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
+	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
 	@GetMapping("/getNaverUserInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> getNaverUserInfo(
+	public ResponseEntity<LoginUserResponseDto> getNaverUserInfo(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
 			@RequestParam(PARAM_EXPIRES_IN) int expiresIn
 			) {
 
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getNaverUserInfo(request, accessToken, expiresIn, null);
+		return loginClient.getNaverUserInfo(request, accessToken, expiresIn, null).block();
 	}
 
 	/**
 	 * 네이버 토큰 삭제
 	 * 
 	 * @param accessToken 액세스 토큰
-	 * @return Mono<ResponseEntity<NaverDeleteTokenDto>>
+	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
 	@GetMapping("/deleteNaverToken")
-	public Mono<ResponseEntity<NaverDeleteTokenDto>> deleteNaverToken(@RequestParam(PARAM_ACCESS_TOKEN) String accessToken) {
+	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(@RequestParam(PARAM_ACCESS_TOKEN) String accessToken) {
 
 		// 네이버 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -282,7 +282,7 @@ public class LoginController {
 							.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), providerCookie.toString())
 							.body(response);
 
-				});
+				}).block();
 	}
 
 	/**
@@ -292,10 +292,10 @@ public class LoginController {
 	 * @param clientId 클라이언트 ID
 	 * @param redirectUri 리다이렉트 URI
 	 * @param code 인증 코드
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
+	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
 	@GetMapping("/getKakaoLoginInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> getKakaoLoginInfo(
+	public ResponseEntity<LoginUserResponseDto> getKakaoLoginInfo(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_CLIENT_ID) String clientId, 
 			@RequestParam(PARAM_REDIRECT_URI)String redirectUri,
@@ -339,7 +339,7 @@ public class LoginController {
 					};
 					// 유저 정보 가져오기 API 조회
 					return loginClient.getKakaoUserInfo(request, issueResponse.getAccessToken(), issueResponse.getExpiresIn(), cookieArray);
-				});
+				}).block();
 	}
 
 	/**
@@ -347,10 +347,10 @@ public class LoginController {
 	 * 
 	 * @param request  HttpServletRequest
 	 * @param clientId 클라이언트 ID
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
+	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
 	@GetMapping("/updateKakaoLoginInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> updateKakaoLoginInfo(
+	public ResponseEntity<LoginUserResponseDto> updateKakaoLoginInfo(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_CLIENT_ID) String clientId
 			) {
@@ -360,7 +360,7 @@ public class LoginController {
 
 		// 리프레시 토큰이 없는 경우 처리 종료
 		if (StringUtils.isEmpty(refreshTokenFromCookie)) {
-			return Mono.just(ResponseEntity.ok(null));
+			return ResponseEntity.ok(null);
 		}
 
 		// 카카오 토큰 갱신 URL 생성
@@ -405,7 +405,7 @@ public class LoginController {
 					String[] cookieArray = ObjectUtils.isEmpty(cookieList) ? null : cookieList.toArray(new String[cookieList.size()]);
 					// 유저 정보 가져오기 API 조회
 					return loginClient.getKakaoUserInfo(request, issueResponse.getAccessToken(), issueResponse.getExpiresIn(), cookieArray);
-				});
+				}).block();
 	}
 
 	/**
@@ -414,17 +414,17 @@ public class LoginController {
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
 	 * @param expiresIn 토큰 만료까지의 시간(초 단위)
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
+	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
 	@GetMapping("/getKakaoUserInfo")
-	public Mono<ResponseEntity<LoginUserResponseDto>> getKakaoUserInfo(
+	public ResponseEntity<LoginUserResponseDto> getKakaoUserInfo(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
 			@RequestParam(PARAM_EXPIRES_IN) int expiresIn
 			) {
 
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, accessToken, expiresIn, null);
+		return loginClient.getKakaoUserInfo(request, accessToken, expiresIn, null).block();
 	}
 
 	/**
@@ -433,10 +433,10 @@ public class LoginController {
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
 	 * @param targetId 대상 ID
-	 * @return Mono<ResponseEntity<KakaoUserInfoDto>>
+	 * @return ResponseEntity<KakaoUserInfoDto>
 	 */
 	@GetMapping("/deleteKakaoToken")
-	public Mono<ResponseEntity<KakaoUserInfoDto>> deleteKakaoToken(
+	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
 			@RequestParam(PARAM_TARGET_ID) String targetId
@@ -452,8 +452,8 @@ public class LoginController {
 		return kakaoWebClient.get()
 				.uri(uri)
 				.headers(header -> 
-					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
-				)
+				header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
+						)
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.map(response -> {
@@ -471,7 +471,7 @@ public class LoginController {
 					return ResponseEntity.ok()
 							.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), providerCookie.toString())
 							.body(response);
-				});
+				}).block();
 	}
 
 }

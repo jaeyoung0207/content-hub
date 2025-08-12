@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 /**
  * 공통 로그 출력 Aspect 클래스
@@ -67,16 +66,11 @@ public class CommonLoggingAspect {
 	    String declaringTypeName = joinPoint.getSignature().getDeclaringTypeName();
 	    String methodName = joinPoint.getSignature().getName();
 	    String args = Arrays.toString(joinPoint.getArgs());
-	    log.info("{}_START: {}.{}({})", type, declaringTypeName, methodName, args);
 	    try {
+	    	log.info("{}_START: {}.{}({})", type, declaringTypeName, methodName, args);
 	        Object result = joinPoint.proceed();
-	        if (result instanceof Mono) {
-	            return ((Mono<?>) result)
-	                .doOnSuccess(r -> log.info("{}_END: {}.{}({})", type, declaringTypeName, methodName, args));
-	        } else {
-	            log.info("{}_END: {}.{}({})", type, declaringTypeName, methodName, args);
-	            return result;
-	        }
+	        log.info("{}_END: {}.{}({})", type, declaringTypeName, methodName, args);
+	        return result;
 	    } catch (Throwable ex) {
 	        log.error("{}_Error: {}.{} - {}", type, declaringTypeName, methodName, ex.getMessage(), ex);
 	        throw ex;
