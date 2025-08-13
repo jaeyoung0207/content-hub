@@ -27,7 +27,7 @@ public class TmdbApiGenreClient {
 	/** API 통신용 WebClient 공통 클래스 */
 	@Qualifier("tmdbWebClient")
 	private final WebClient tmdbWebClient;
-	
+
 	/** TMDB TV 장르 정보 취득 경로 */
 	@Value("${tmdb.url.tvGenrePath}")
 	private String tvGenrePath;
@@ -49,7 +49,7 @@ public class TmdbApiGenreClient {
 	 */
 	@Cacheable(CommonConstants.API_TV_GENRE_NAME)
 	public Map<String, Integer> getTvGenres() {
-		
+
 		// TMDB API를 호출하여 TV 장르 정보를 취득
 		return tmdbWebClient.get()
 				.uri(builder -> builder
@@ -58,17 +58,14 @@ public class TmdbApiGenreClient {
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbGenreListDto.class)
-				.map(response -> {
-					Map<String, Integer> genreMap = response.getGenres().stream().collect(
-							Collectors.toMap(
-									TmdbGenreDto::getName, // 키
-									TmdbGenreDto::getId, // 값
-									(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
-									HashMap::new // 반환형 지정
-									)
-							);
-					return genreMap;
-				}).block();
+				.map(response -> response.getGenres().stream()
+						.collect(Collectors.toMap(
+								TmdbGenreDto::getName, // 키
+								TmdbGenreDto::getId, // 값
+								(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
+								HashMap::new // 반환형 지정
+								))
+						).block();
 	}
 
 	/**
@@ -81,7 +78,7 @@ public class TmdbApiGenreClient {
 	 */
 	@Cacheable(CommonConstants.API_MOVIE_GENRE_NAME)
 	public Map<String, Integer> getMovieGenres() {
-		
+
 		// TMDB API를 호출하여 영화 장르 정보를 취득
 		return tmdbWebClient.get()
 				.uri(builder -> builder
@@ -90,17 +87,14 @@ public class TmdbApiGenreClient {
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbGenreListDto.class)
-				.map(response -> {
-					Map<String, Integer> genreMap = response.getGenres().stream().collect(
-							Collectors.toMap(
-									TmdbGenreDto::getName, // 키
-									TmdbGenreDto::getId, // 값
-									(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
-									HashMap::new // 반환형 지정
-									)
-							);
-					return genreMap;
-				}).block();
+				.map(response -> response.getGenres().stream()
+						.collect(Collectors.toMap(
+								TmdbGenreDto::getName, // 키
+								TmdbGenreDto::getId, // 값
+								(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
+								HashMap::new // 반환형 지정
+								))
+						).block();
 	}
 
 }

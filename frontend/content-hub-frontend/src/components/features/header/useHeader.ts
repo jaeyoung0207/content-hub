@@ -1,11 +1,11 @@
 import { Control, useForm, useWatch } from "react-hook-form"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useProviderStore, useSearchContentTypeStore, useUserStore } from "@/components/common/store/globalStateStore"
+import { useProviderStore, useSearchTypeStore, useUserStore } from "@/components/common/store/globalStateStore"
 import { KeyboardEvent, RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { Login } from "@/api/Login"
 import { Common } from "@/api/Common"
-import { SearchContent } from "@/api/SearchContent"
+import { Search } from "@/api/Search"
 import { useDebounce } from "@/components/common/hooks/useDebounce"
 import { ARROW_DOWN_KEY, ARROW_UP_KEY, ENTER_KEY, ESC_KEY, LOGIN_PROVIDER } from "@/components/common/constants/constants"
 import { clearUserData, searchUrlQuery } from "@/components/common/utils/commonUtil"
@@ -117,7 +117,7 @@ export const useHeader = (): useHeaderReturnType => {
     // provider 정보 전역 상태 저장용 훅
     const { setProvider } = useProviderStore();
     // 검색 종류 전역 상태 저장용 훅
-    const { setSearchTypeState } = useSearchContentTypeStore();
+    const { setSearchTypeState } = useSearchTypeStore();
 
     // ================================================================================================== react hook form
 
@@ -191,7 +191,7 @@ export const useHeader = (): useHeaderReturnType => {
     // 공통 API 인스턴스 생성
     const commonApi = new Common();
     // 검색 API 인스턴스 생성
-    const searchContentApi = new SearchContent();
+    const searchApi = new Search();
     // 로그인 API 인스턴스 생성
     const loginApi = new Login();
 
@@ -279,7 +279,7 @@ export const useHeader = (): useHeaderReturnType => {
         return queryClient.fetchQuery({
             queryKey: headerQueryKeys.searchKeyword(keyword!),
             queryFn: async () => {
-                return (await searchContentApi.searchKeyword({ query: keyword! })).data;
+                return (await searchApi.searchKeyword({ query: keyword! })).data;
             }
         })
     }
@@ -621,7 +621,7 @@ export const useHeader = (): useHeaderReturnType => {
 
     /**
      * 검색 종류 제어
-     * 검색 종류의 체크 상태를 검색 종류 전역 상태에 설정(검색 콘텐츠 훅에서 사용하기 위함)
+     * 검색 종류의 체크 상태를 검색 종류 전역 상태에 설정(검색 훅에서 사용하기 위함)
      * 실행 조건: 필터 팝업에서 검색 종류(애니,드라마,영화,만화) 체크/해제시마다 발생
      */
     useEffect(() => {

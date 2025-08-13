@@ -1,22 +1,22 @@
 import { MEDIA_TYPE, TMDB_API_IMAGE_DOMAIN, WIDTH_300, COMMON_IMAGES } from "@/components/common/constants/constants";
 import { CloseButtonUi } from "@/components/ui/common/CloseButtonUi";
-import { UseInfiniteQueryResultType, useSearchContentMore } from "./useSearchContentMore";
+import { UseInfiniteQueryResultType, useSearchMore } from "./useSearchMore";
 import { useTranslation } from "react-i18next";
-import { SearchContentCommonResultType } from "../useSearchContent";
+import { SearchCommonResultType } from "../useSearch";
 import { memo } from "react";
 import { LoadingUi } from "@/components/ui/LoadingUi";
 import { useNavigate } from "react-router-dom";
-import { SearchContentPropsType } from "../SearchContentPage";
+import { SearchPropsType } from "../SearchPage";
 import { commonErrorHandler, detailUrlQuery, isSearchTvType } from "@/components/common/utils/commonUtil";
 
 /**
  * 전체보기 모달화면 컴포넌트 props 타입
  */
-export type SearchContentModalPropsType = {
+export type SearchModalPropsType = {
     keyword: string | null | undefined,
     mediaType: string,
-    getDatailData: (params: SearchContentCommonResultType, mediaType: string) => void,
-    detailResult?: SearchContentCommonResultType | undefined,
+    getDatailData: (params: SearchCommonResultType, mediaType: string) => void,
+    detailResult?: SearchCommonResultType | undefined,
 }
 
 /**
@@ -39,7 +39,7 @@ type SearchResultsModalPropsType = {
  * @param isAdult 성인 콘텐츠 포함 여부
  * @param mediaType 미디어 타입
  */
-export const SearchContentMore = memo(({ keyword, isAdult, mediaType }: SearchContentPropsType) => {
+export const SearchMore = memo(({ keyword, isAdult, mediaType }: SearchPropsType) => {
     // i18n 번역 함수
     const { t } = useTranslation();
     // 검색 결과를 가져오는 커스텀 훅
@@ -49,7 +49,7 @@ export const SearchContentMore = memo(({ keyword, isAdult, mediaType }: SearchCo
         hasNextPage,
         isFetchingNextPage,
         handleModalClose,
-    } = useSearchContentMore(keyword, mediaType!);
+    } = useSearchMore(keyword, mediaType!);
 
     // 각 미디어 이름을 가져오는 함수
     const getMediaName = () => {

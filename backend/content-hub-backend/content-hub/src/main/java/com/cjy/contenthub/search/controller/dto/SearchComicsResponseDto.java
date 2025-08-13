@@ -1,4 +1,4 @@
-package com.cjy.contenthub.searchContent.controller.dto;
+package com.cjy.contenthub.search.controller.dto;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchContentComicsResponseDto {
+public class SearchComicsResponseDto {
 
 	/** 만화 결과 DTO 리스트 */
-	private List<SearchContentComicsMediaResultDto> comicsResults;
+	private List<SearchComicsMediaResultDto> comicsResults;
 	
 	/** 페이지 */
 	private int page;

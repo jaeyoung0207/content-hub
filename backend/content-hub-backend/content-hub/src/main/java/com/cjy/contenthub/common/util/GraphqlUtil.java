@@ -10,10 +10,14 @@ import org.springframework.core.io.ClassPathResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * GraphQL 유틸리티 클래스
  * GraphQL 쿼리를 로드하고 요청 본문을 빌드하는 메소드를 포함
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GraphqlUtil {
 	
 	/**

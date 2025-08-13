@@ -1,5 +1,6 @@
 package com.cjy.contenthub.common.api.dto.kakao;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Map;
 
@@ -13,7 +14,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class KakaoUserInfoDto {
+public class KakaoUserInfoDto implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	/** 회원번호 */
 	private Long id;

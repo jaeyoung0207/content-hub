@@ -1,4 +1,4 @@
-package com.cjy.contenthub.searchContent.controller;
+package com.cjy.contenthub.search.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListPageInfoDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
@@ -38,11 +37,10 @@ import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.SessionUtil;
-import com.cjy.contenthub.searchContent.controller.dto.SearchContentComicsMediaResultDto;
-import com.cjy.contenthub.searchContent.controller.dto.SearchContentComicsResponseDto;
-import com.cjy.contenthub.searchContent.controller.dto.SearchContentTvResponseDto;
-import com.cjy.contenthub.searchContent.controller.dto.SearchContentVideoResponseDto;
-import com.cjy.contenthub.searchContent.helper.SearchContentHelper;
+import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
+import com.cjy.contenthub.search.helper.SearchHelper;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
@@ -54,10 +52,10 @@ import reactor.core.publisher.Mono;
  * 검색 컨텐츠 API 컨트롤러 클래스
  */
 @RestController
-@RequestMapping("/searchContent")
+@RequestMapping("/search")
 @RequiredArgsConstructor
 @Slf4j
-public class SearchContentController {
+public class SearchController {
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -232,7 +230,7 @@ public class SearchContentController {
 								.sorted() // 문자열 순으로 정렬
 								.toList();
 						// 키워드로 시작하는 검색결과가 먼저 오도록 정렬
-						List<String> sortedList = SearchContentHelper.sortKeywordList(nameList, keyword); 
+						List<String> sortedList = SearchHelper.sortKeywordList(nameList, keyword); 
 						// 표시개수 제한 후 결과값 반환
 						return ResponseEntity.ok(sortedList.stream().limit(autoCompleteCount).toList());
 					});
@@ -243,10 +241,10 @@ public class SearchContentController {
 	 * 애니메이션/드라마/영화 검색 API
 	 * 
 	 * @param keyword 검색어
-	 * @return ResponseEntity<SearchContentVideoResponseDto> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
+	 * @return ResponseEntity<SearchVideoResponseDto> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchVideo")
-	public ResponseEntity<SearchContentVideoResponseDto> searchVideo(@RequestParam(PARAM_QUERY) String keyword) {
+	public ResponseEntity<SearchVideoResponseDto> searchVideo(@RequestParam(PARAM_QUERY) String keyword) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
 		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
@@ -259,7 +257,7 @@ public class SearchContentController {
 			boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 
 			// 애니, 드라마 정보 취득
-			Mono<SearchContentTvResponseDto> tvResponseMono = tmdbWebClient.get()
+			Mono<SearchTvResponseDto> tvResponseMono = tmdbWebClient.get()
 					.uri(builder -> builder
 							.path(tvSearchPath)
 							.queryParam(PARAM_QUERY, keyword)
@@ -270,27 +268,17 @@ public class SearchContentController {
 					.retrieve()
 					.bodyToMono(TmdbSearchTvDto.class)
 					.map(response -> {
-						List<TmdbSearchTvResultsDto> aniList = new ArrayList<>();
-						List<TmdbSearchTvResultsDto> dramaList = new ArrayList<>();
+						// 결과가 없는 경우, 빈 응답 반환
+						if (response == null || CollectionUtils.isEmpty(response.getResults())) {
+							return new SearchTvResponseDto();
+						}
 
 						// 애니/드라마 리스트 분배
-						for (TmdbSearchTvResultsDto results : response.getResults()) {
-							List<Integer> genreIds = results.getGenreIds();
-							if (!CollectionUtils.isEmpty(genreIds)) {
-								// 장르가 애니메이션인 경우
-								if (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
-									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode());
-									aniList.add(results);
-									// 장르가 드라마인 경우
-								} else if (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenre()))
-										|| genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenre()))) {
-									results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());
-									dramaList.add(results);
-								}
-							}
-						}
+						List<TmdbSearchTvResultsDto> aniList = SearchHelper.getAniList(response.getResults(), tvGenreMap);
+						List<TmdbSearchTvResultsDto> dramaList = SearchHelper.getDramaList(response.getResults(), tvGenreMap);
+
 						// 애니/드라마/영화 리스트 저장
-						SearchContentTvResponseDto tvResponse = new SearchContentTvResponseDto();
+						SearchTvResponseDto tvResponse = new SearchTvResponseDto();
 						int totalResults = response.getTotalResults();
 						// 애니 정보
 						tvResponse.setAniResults(aniList);
@@ -321,7 +309,7 @@ public class SearchContentController {
 			// 비동기로 API실행(webClient사용)후 결과를 병렬처리
 			return Mono.zip(tvResponseMono, movieResponseMono).map(dtoTuple -> {
 				// TV 응답 DTO 
-				SearchContentTvResponseDto tvResponse = dtoTuple.getT1();
+				SearchTvResponseDto tvResponse = dtoTuple.getT1();
 				// 영화 응답 DTO
 				TmdbSearchMovieDto movieResponse = dtoTuple.getT2();
 				// 애니 검색 결과 리스트
@@ -332,21 +320,9 @@ public class SearchContentController {
 				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
 
 				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
-				List<TmdbSearchTvResultsDto> aniMovieList = new ArrayList<>();
 				List<TmdbSearchMovieResultsDto> filteredMovieList = new ArrayList<>();
 				// 영화 정보에서 애니메이션 정보 추출 
-				for (TmdbSearchMovieResultsDto movieResult : movieResultList) {
-					List<Integer> genreIds = movieResult.getGenreIds();
-					if (!CollectionUtils.isEmpty(genreIds)
-							&& genreIds.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
-						aniMovieList.add(SearchContentHelper.convertMovieToAni(movieResult));
-					} else {
-						movieResult.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
-						filteredMovieList.add(movieResult);
-					}
-				}
-				// 애니메니션 정보에 영화 애니메이션 정보 통합
-				aniResultList.addAll(aniMovieList);
+				aniResultList.addAll(SearchHelper.getAniMovieList(movieResultList, movieGenreMap));
 
 				// 애니 필터용 인덱스
 				AtomicInteger aniIndex = new AtomicInteger(0);
@@ -361,31 +337,22 @@ public class SearchContentController {
 				// 설정된 페이지당 작품 표시 개수 이상의 영화 정보가 있는지 여부
 				boolean isMoreMovie = filteredMovieList.size() > tmdbPerMainPage;
 
-				// 반환값 DTO
-				SearchContentVideoResponseDto videoResponse = SearchContentVideoResponseDto.builder()
-						// 애니 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
+				// 반환값 설정
+				SearchVideoResponseDto videoResponse = SearchVideoResponseDto.builder()
 						.aniResults(isMoreAni ? 
 								aniResultList.stream().filter(e -> aniIndex.incrementAndGet() <= tmdbPerMainPage).toList()
 								: aniResultList)
-						// 드라마 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
 						.dramaResults(isMoreDrama?
 								dramaResultList.stream().filter(e -> dramaIndex.incrementAndGet() <= tmdbPerMainPage).toList()
 								: dramaResultList)
-						// 영화 검색 결과를 페이지당 작품 표시 개수 설정값까지만 설정
 						.movieResults(isMoreMovie ? 
 								filteredMovieList.stream().filter(e -> movieIndex.incrementAndGet() <= tmdbPerMainPage).toList() 
 								: filteredMovieList)
-						// 현재 페이지 < 총 페이지 or 애니 정보 건수 > 페이지 건수 표시 설정값 인지 판단
-						.isAniViewMore(tvResponse.getPage() < tvResponse.getTotalPages() || isMoreAni)
-						// 현재 페이지 < 총 페이지 or 드라마 정보 건수 > 페이지 건수 표시 설정값 인지 판단
-						.isDramaViewMore(tvResponse.getPage() < tvResponse.getTotalPages() || isMoreDrama)
-						// 현재 페이지 < 총 페이지 or 영화 정보 건수 > 페이지 건수 표시 설정값 인지 판단
-						.isMovieViewMore(movieResponse.getPage() < movieResponse.getTotalPages() || isMoreMovie)
-						// 현재 페이지
+						.isAniViewMore(tvResponse.getPage() < tvResponse.getTotalPages())
+						.isDramaViewMore(tvResponse.getPage() < tvResponse.getTotalPages())
+						.isMovieViewMore(movieResponse.getPage() < movieResponse.getTotalPages())
 						.page(tvResponse.getPage())
-						// 총 페이지 수
 						.totalPages(tvResponse.getTotalPages())
-						// 총 결과 수
 						.totalResults(tvResponse.getTotalResults())
 						.build();
 
@@ -431,25 +398,15 @@ public class SearchContentController {
 							.build())
 					.retrieve()
 					.bodyToMono(TmdbSearchTvDto.class)
-					.map(response -> {
-						List<TmdbSearchTvResultsDto> aniList = new ArrayList<>();
-						// 애니 리스트 추출
-						for (TmdbSearchTvResultsDto results : response.getResults()) {
-							List<Integer> tvGenreIds = results.getGenreIds();
-							if (!CollectionUtils.isEmpty(tvGenreIds) 
-									&& tvGenreIds.contains(aniGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
-								results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode());
-								aniList.add(results);
-							}
-						}
+					.map(response -> 
 						// 애니 리스트 저장
-						return TmdbSearchTvDto.builder()
-								.results(aniList)
+						TmdbSearchTvDto.builder()
+								.results(SearchHelper.getAniList(response.getResults(), aniGenreMap))
 								.page(response.getPage())
 								.totalPages(response.getTotalPages())
 								.totalResults(response.getTotalResults())
-								.build();
-					});
+								.build()
+					);
 
 			// 영화 정보 취득
 			Mono<TmdbSearchMovieDto> movieResponseMono = tmdbWebClient.get()
@@ -475,15 +432,7 @@ public class SearchContentController {
 				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
 
 				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
-				List<TmdbSearchTvResultsDto> aniMovieList = new ArrayList<>();
-				for (TmdbSearchMovieResultsDto movieResult : movieResultList) {
-					List<Integer> movieGenreIds = movieResult.getGenreIds();
-					if (!CollectionUtils.isEmpty(movieGenreIds) 
-							&& movieGenreIds.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))) {
-						aniMovieList.add(SearchContentHelper.convertMovieToAni(movieResult));
-					}
-				}
-				aniResultList.addAll(aniMovieList);
+				aniResultList.addAll(SearchHelper.getAniMovieList(movieResultList, movieGenreMap));
 
 				// 반환값 설정
 				TmdbSearchTvDto aniResponse = TmdbSearchTvDto.builder()
@@ -522,21 +471,9 @@ public class SearchContentController {
 		.retrieve()
 		.bodyToMono(TmdbSearchTvDto.class)
 		.map(response -> {
-			// TV 정보 결과 리스트에서 드라마 정보만 추출
-			List<TmdbSearchTvResultsDto> resultList = new ArrayList<>();
-			for (TmdbSearchTvResultsDto results : response.getResults()) {
-				List<Integer> genreIds = results.getGenreIds();
-				if (!CollectionUtils.isEmpty(results.getGenreIds()) 
-						&& !genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre()))
-						&& (genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenre()))
-								|| genreIds.contains(tvGenreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenre())))) {
-					results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());
-					resultList.add(results);
-				}
-			}
 			// 결과값 설정
 			TmdbSearchTvDto dramaResponse = TmdbSearchTvDto.builder()
-					.results(resultList)
+					.results(SearchHelper.getDramaList(response.getResults(), tvGenreMap))
 					.page(response.getPage())
 					.totalPages(response.getTotalPages())
 					.totalResults(response.getTotalResults())
@@ -544,8 +481,8 @@ public class SearchContentController {
 
 			// 드라마 응답 오브젝트 반환
 			return ResponseEntity.ok(dramaResponse);
-		})
-				).block();
+			
+		})).block();
 	}
 
 	/**
@@ -575,20 +512,9 @@ public class SearchContentController {
 		.retrieve()
 		.bodyToMono(TmdbSearchMovieDto.class)
 		.map(response -> {
-			// 영화 정보 결과 리스트에서 애니 정보만 제외
-			List<TmdbSearchMovieResultsDto> resultList = new ArrayList<>();
-			for (TmdbSearchMovieResultsDto results : response.getResults()) {
-				List<Integer> movieGenre = results.getGenreIds();
-				if (movieGenre != null && movieGenre.isEmpty() // 장르가 빈 배열의 경우는 추가
-						|| (!CollectionUtils.isEmpty(movieGenre) 
-								&& !movieGenre.contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenre())))) {
-					results.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode());
-					resultList.add(results);
-				}
-			}
 			// 결과값 설정
 			TmdbSearchMovieDto movieResponse = TmdbSearchMovieDto.builder()
-					.results(resultList)
+					.results(SearchHelper.getMovieList(response.getResults(), movieGenreMap))
 					.page(response.getPage())
 					.totalPages(response.getTotalPages())
 					.totalResults(response.getTotalResults())
@@ -596,8 +522,7 @@ public class SearchContentController {
 
 			// 영화 응답 오브젝트 반환
 			return ResponseEntity.ok(movieResponse);
-		})
-				).block();
+		})).block();
 	}
 
 	/**
@@ -605,10 +530,10 @@ public class SearchContentController {
 	 * 
 	 * @param keyword 검색어
 	 * @param page 페이지
-	 * @return ResponseEntity<SearchContentComicsResponseDto> 만화 정보 응답 오브젝트
+	 * @return ResponseEntity<SearchComicsResponseDto> 만화 정보 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchComics")
-	public ResponseEntity<SearchContentComicsResponseDto> searchComics(
+	public ResponseEntity<SearchComicsResponseDto> searchComics(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
 			@Nullable @RequestParam(PARAM_PAGE) Integer page,
 			@RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage
@@ -647,39 +572,18 @@ public class SearchContentController {
 									|| ObjectUtils.isEmpty(response.getData().getPage())
 									|| CollectionUtils.isEmpty(response.getData().getPage().getMedia())
 									|| ObjectUtils.isEmpty(response.getData().getPage().getPageInfo())) {
-								return ResponseEntity.ok(SearchContentComicsResponseDto.builder()
-										.page(0)
-										.totalPages(0)
-										.isComicsViewMore(false)
-										.comicsResults(new ArrayList<>())
-										.build());
+								return ResponseEntity.ok(new SearchComicsResponseDto());
 							}							
 							// 페이지 정보 설정
 							AniListPageInfoDto comicsPageDto = response.getData().getPage().getPageInfo();
 							int currentPage = comicsPageDto.getCurrentPage();
 							int lastPage = comicsPageDto.getLastPage();
-							// 미디어 결과 설정
-							List<AniListMediaDto> mediaList = response.getData().getPage().getMedia();
-							List<SearchContentComicsMediaResultDto> mediaResultList = new ArrayList<>();
-							for(AniListMediaDto media : mediaList) {
-								String mediaTitle = ObjectUtils.isNotEmpty(media.getTitle()) ? media.getTitle().getUserPreferred() : "";
-								String mediaLargeImage = ObjectUtils.isNotEmpty(media.getCoverImage()) ? media.getCoverImage().getLarge() : "";
-								String mediaExtraLargeImage = ObjectUtils.isNotEmpty(media.getCoverImage()) ? media.getCoverImage().getExtraLarge() : "";
-								SearchContentComicsMediaResultDto mediaResult = SearchContentComicsMediaResultDto.builder()
-										.id(media.getId())
-										.title(mediaTitle)
-										.backdropPath(mediaLargeImage)
-										.posterPath(mediaExtraLargeImage)
-										.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
-										.build();
-								mediaResultList.add(mediaResult);
-							}
 							// 응답 데이터 재분배
-							SearchContentComicsResponseDto comicsResponse = SearchContentComicsResponseDto.builder()
+							SearchComicsResponseDto comicsResponse = SearchComicsResponseDto.builder()
 									.page(currentPage)
 									.totalPages(lastPage)
 									.isComicsViewMore(currentPage < lastPage)
-									.comicsResults(mediaResultList)
+									.comicsResults( SearchHelper.setComicsResponse(response.getData().getPage().getMedia()))
 									.build();
 
 							// 만화 응답 오브젝트 반환

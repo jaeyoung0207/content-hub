@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -120,21 +121,37 @@ public class PersonController {
 						helper.setCreditsCrew(personResponse, movieCredits.getCrew());
 					}
 					
-					// 출연작 수
-					int castCount = (int) personResponse.getCast().stream()
-							.filter(cast -> StringUtils.isNotEmpty(cast.getTitle()))
-							.map(PersonCreditsCastDto::getTitle)
-							.distinct()
-							.count();
-					personResponse.setCastCount(castCount);
-					
-					// 제작 참여작 수
-					int crewCount = (int) personResponse.getCrew().stream()
-							.filter(crew -> StringUtils.isNotEmpty(crew.getTitle()))
-							.map(PersonCreditsCrewDto::getTitle)
-							.distinct()
-							.count();
-					personResponse.setCrewCount(crewCount);
+					int castCount = 0;
+					int crewCount = 0;
+					// 출연작 목록이 비어있지 않은 경우
+					if (!CollectionUtils.isEmpty(personResponse.getCast())) {
+						// 출연작 목록 정렬
+						personResponse.getCast().sort((o1,o2) -> 
+							StringUtils.compare(o2.getReleaseYear(), o1.getReleaseYear())
+						);
+						// 출연작 수
+						castCount = (int) personResponse.getCast().stream()
+								.filter(cast -> StringUtils.isNotEmpty(cast.getTitle()))
+								.map(PersonCreditsCastDto::getTitle)
+								.distinct()
+								.count();
+						personResponse.setCastCount(castCount);
+					}
+
+					// 제작 참여작 목록이 비어있지 않은 경우
+					if (!CollectionUtils.isEmpty(personResponse.getCrew())) {
+						// 제작 참여작 목록 정렬
+						personResponse.getCrew().sort((o1,o2) -> 
+							StringUtils.compare(o2.getReleaseYear(), o1.getReleaseYear())
+						);
+						// 제작 참여작 수
+						crewCount = (int) personResponse.getCrew().stream()
+								.filter(crew -> StringUtils.isNotEmpty(crew.getTitle()))
+								.map(PersonCreditsCrewDto::getTitle)
+								.distinct()
+								.count();
+						personResponse.setCrewCount(crewCount);
+					}
 					
 					// 응답 반환
 					return ResponseEntity.ok(personResponse);

@@ -39,7 +39,7 @@ export interface DetailCommentSaveRequestDto {
   bad?: number;
 }
 
-export interface SearchContentVideoResponseDto {
+export interface SearchVideoResponseDto {
   aniResults?: TmdbSearchTvResultsDto[];
   dramaResults?: TmdbSearchTvResultsDto[];
   movieResults?: TmdbSearchMovieResultsDto[];
@@ -49,9 +49,9 @@ export interface SearchContentVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
+  aniViewMore?: boolean;
   dramaViewMore?: boolean;
   movieViewMore?: boolean;
-  aniViewMore?: boolean;
 }
 
 export interface TmdbSearchMovieResultsDto {
@@ -117,7 +117,7 @@ export interface TmdbSearchTvDto {
   totalResults?: number;
 }
 
-export interface SearchContentComicsMediaResultDto {
+export interface SearchComicsMediaResultDto {
   adult?: boolean;
   backdropPath?: string;
   genreIds?: number[];
@@ -136,8 +136,8 @@ export interface SearchContentComicsMediaResultDto {
   title?: string;
 }
 
-export interface SearchContentComicsResponseDto {
-  comicsResults?: SearchContentComicsMediaResultDto[];
+export interface SearchComicsResponseDto {
+  comicsResults?: SearchComicsMediaResultDto[];
   /** @format int32 */
   page?: number;
   /** @format int32 */
@@ -149,7 +149,7 @@ export interface SearchContentComicsResponseDto {
 
 export interface PersonCreditsCastDto {
   adult?: boolean;
-  backdrop_path?: string;
+  backdropPath?: string;
   genreIds?: number[];
   /** @format int32 */
   id?: number;
@@ -173,7 +173,7 @@ export interface PersonCreditsCastDto {
 
 export interface PersonCreditsCrewDto {
   adult?: boolean;
-  backdrop_path?: string;
+  backdropPath?: string;
   genreIds?: number[];
   /** @format int32 */
   id?: number;
@@ -207,7 +207,7 @@ export interface PersonResponseDto {
   homepage?: string;
   /** @format int32 */
   id?: number;
-  imdb_id?: string;
+  imdbId?: string;
   knownForDepartment?: string;
   name?: string;
   placeOfBirth?: string;
@@ -270,7 +270,7 @@ export interface KakaoAccountDto {
   birthyear?: string;
   birthdayNeedsAgreement?: boolean;
   birthday?: string;
-  birthday_type?: string;
+  birthdayType?: string;
   genderNeedsAgreement?: boolean;
   gender?: string;
   phoneNumberNeedsAgreement?: boolean;
@@ -292,8 +292,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultImage?: boolean;
   defaultNickname?: boolean;
+  defaultImage?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -545,8 +545,8 @@ export interface AniListCharactersNodesDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favourite?: boolean;
   favouriteBlocked?: boolean;
+  favourite?: boolean;
 }
 
 export interface AniListDateDto {

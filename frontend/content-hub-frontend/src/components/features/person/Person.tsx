@@ -265,7 +265,7 @@ const DisplayCredits = memo(({ credits }: DisplayCreditsType) => {
                         <div className="flex mb-1" key={index}>
                             <div className={`w-full h-full grid grid-rows-[${role ? 2 : 1}] grid-cols-[0.1fr_0.1fr_1.8fr] gap-1`}>
                                 {/* 작업 연도 */}
-                                <div className="row-span-2">
+                                <div className="flex justify-center pt-1 row-span-2">
                                     {
                                         items.releaseYear ?
                                             index !== 0 ?
@@ -274,7 +274,8 @@ const DisplayCredits = memo(({ credits }: DisplayCreditsType) => {
                                             : t("info.unknown")
                                     }
                                 </div>
-                                <div className="flex justify-center">
+                                {/* 미디어 타입 */}
+                                <div className="flex justify-center pt-1">
                                     {items.mediaType}
                                 </div>
                                 {/* 작품 링크 */}
@@ -292,6 +293,7 @@ const DisplayCredits = memo(({ credits }: DisplayCreditsType) => {
                                     role &&
                                     <div className="pl-1 col-start-3">
                                         {role}
+                                        {isCast && t("info.role")}
                                     </div>
                                 }
                             </div>

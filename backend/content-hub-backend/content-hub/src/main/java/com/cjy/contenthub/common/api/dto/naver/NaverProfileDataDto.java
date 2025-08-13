@@ -1,5 +1,7 @@
 package com.cjy.contenthub.common.api.dto.naver;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +14,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class NaverProfileDataDto {
+public class NaverProfileDataDto implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	/** ID */
 	private String id;

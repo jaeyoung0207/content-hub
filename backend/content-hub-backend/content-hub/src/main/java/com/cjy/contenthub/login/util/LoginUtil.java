@@ -3,7 +3,6 @@ package com.cjy.contenthub.login.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,10 +11,13 @@ import com.cjy.contenthub.common.constants.CommonConstants;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * 로그인 관련 유틸리티 클래스
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginUtil {
 
 	/**
@@ -40,7 +42,7 @@ public class LoginUtil {
 				// 쿠키이름이 리프레시 토큰인 쿠키 추출
 				cookieList = Arrays.stream(cookies)
 						.filter(c -> StringUtils.equals(c.getName(), CommonConstants.REFRESH_TOKEN))
-						.collect(Collectors.toList());
+						.toList();
 			}
 			// 쿠키가 존재하는 경우
 			if (!ObjectUtils.isEmpty(cookieList)) {

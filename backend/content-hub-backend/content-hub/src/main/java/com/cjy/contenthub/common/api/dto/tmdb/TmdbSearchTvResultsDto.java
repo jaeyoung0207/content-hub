@@ -2,9 +2,11 @@ package com.cjy.contenthub.common.api.dto.tmdb;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * TMDB API TV 프로그램 검색 결과 Response DTO
@@ -15,7 +17,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class TmdbSearchTvResultsDto extends TmdbSearchCommonResultsDto {
 
 	/** 원저작물의 국가 리스트 */

@@ -1,5 +1,6 @@
 package com.cjy.contenthub.common.api.dto.kakao;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import lombok.Getter;
@@ -14,7 +15,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class KakaoAccountDto {
+public class KakaoAccountDto implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	/** 유저 동의 시 프로필 정보(닉네임/프로필 사진) 제공 가능 */
 	private boolean profileNeedsAgreement;
@@ -65,7 +68,7 @@ public class KakaoAccountDto {
 	private String birthday;
 	
 	/** 생일 타입 */
-	private String birthday_type;
+	private String birthdayType;
 	
 	/** 생일의 윤달 여부 */
 	private boolean isLeapMonth;

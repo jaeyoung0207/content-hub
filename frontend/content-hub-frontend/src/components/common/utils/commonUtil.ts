@@ -3,8 +3,8 @@ import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import i18n from "i18next";
 import { useProviderStore, useUserStore } from "../store/globalStateStore";
-import { SearchContentCommonResultType } from "@/components/features/searchContent/useSearchContent";
-import { DetailComicsResponseDto, DetailMovieResponseDto, DetailTvResponseDto, PersonCreditsCastDto, PersonCreditsCrewDto, SearchContentComicsMediaResultDto, TmdbRecommendationsMovieResultsDto, TmdbRecommendationsTvResultsDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@/api/data-contracts";
+import { SearchCommonResultType } from "@/components/features/search/useSearch";
+import { DetailComicsResponseDto, DetailMovieResponseDto, DetailTvResponseDto, PersonCreditsCastDto, PersonCreditsCrewDto, SearchComicsMediaResultDto, TmdbRecommendationsMovieResultsDto, TmdbRecommendationsTvResultsDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@/api/data-contracts";
 import { RecommendContentResultType } from "@/components/features/detail/tabs/recommendContent/useRecommendContent";
 import { DetailResponseType } from "@/components/features/detail/useDetail";
 import { NavigateFunction } from "react-router-dom";
@@ -197,7 +197,7 @@ export const clearUserData = () => {
  * @param mediaType 미디어 타입
  * @returns TV 타입 여부
  */
-export const isSearchTvType = (results: SearchContentCommonResultType, mediaType: string): results is TmdbSearchTvResultsDto => {
+export const isSearchTvType = (results: SearchCommonResultType, mediaType: string): results is TmdbSearchTvResultsDto => {
     return mediaType === MEDIA_TYPE.ANI || mediaType === MEDIA_TYPE.DRAMA;
 }
 
@@ -207,7 +207,7 @@ export const isSearchTvType = (results: SearchContentCommonResultType, mediaType
  * @param mediaType 미디어 타입
  * @returns MOVIE 타입 여부
  */
-export const isSearchMovieType = (results: SearchContentCommonResultType, mediaType: string): results is TmdbSearchMovieResultsDto => {
+export const isSearchMovieType = (results: SearchCommonResultType, mediaType: string): results is TmdbSearchMovieResultsDto => {
     return mediaType === MEDIA_TYPE.MOVIE;
 }
 
@@ -217,7 +217,7 @@ export const isSearchMovieType = (results: SearchContentCommonResultType, mediaT
  * @param mediaType 미디어 타입
  * @returns COMICS 타입 여부
  */
-export const isSearchComicsType = (results: SearchContentCommonResultType, mediaType: string): results is SearchContentComicsMediaResultDto => {
+export const isSearchComicsType = (results: SearchCommonResultType, mediaType: string): results is SearchComicsMediaResultDto => {
     return mediaType === MEDIA_TYPE.COMICS;
 }
 

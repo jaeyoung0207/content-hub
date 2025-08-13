@@ -72,10 +72,10 @@ paths:
             '*/*':
               schema:
                 type: boolean
-  /searchContent/searchVideo:
+  /search/searchVideo:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchVideo
       parameters:
       - name: query
@@ -89,11 +89,11 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/SearchContentVideoResponseDto"
-  /searchContent/searchMovie:
+                $ref: "#/components/schemas/SearchVideoResponseDto"
+  /search/searchMovie:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchMovie
       parameters:
       - name: query
@@ -114,10 +114,10 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TmdbSearchMovieDto"
-  /searchContent/searchKeyword:
+  /search/searchKeyword:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchKeyword
       parameters:
       - name: query
@@ -134,10 +134,10 @@ paths:
                 type: array
                 items:
                   type: string
-  /searchContent/searchDrama:
+  /search/searchDrama:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchDrama
       parameters:
       - name: query
@@ -158,10 +158,10 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TmdbSearchTvDto"
-  /searchContent/searchComics:
+  /search/searchComics:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchComics
       parameters:
       - name: query
@@ -186,11 +186,11 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/SearchContentComicsResponseDto"
-  /searchContent/searchAni:
+                $ref: "#/components/schemas/SearchComicsResponseDto"
+  /search/searchAni:
     get:
       tags:
-      - search-content-controller
+      - search-controller
       operationId: searchAni
       parameters:
       - name: query
@@ -691,7 +691,7 @@ components:
         bad:
           type: integer
           format: int64
-    SearchContentVideoResponseDto:
+    SearchVideoResponseDto:
       type: object
       properties:
         aniResults:
@@ -715,11 +715,11 @@ components:
         totalResults:
           type: integer
           format: int32
+        aniViewMore:
+          type: boolean
         dramaViewMore:
           type: boolean
         movieViewMore:
-          type: boolean
-        aniViewMore:
           type: boolean
     TmdbSearchMovieResultsDto:
       type: object
@@ -841,7 +841,7 @@ components:
         totalResults:
           type: integer
           format: int32
-    SearchContentComicsMediaResultDto:
+    SearchComicsMediaResultDto:
       type: object
       properties:
         adult:
@@ -879,13 +879,13 @@ components:
           type: string
         title:
           type: string
-    SearchContentComicsResponseDto:
+    SearchComicsResponseDto:
       type: object
       properties:
         comicsResults:
           type: array
           items:
-            $ref: "#/components/schemas/SearchContentComicsMediaResultDto"
+            $ref: "#/components/schemas/SearchComicsMediaResultDto"
         page:
           type: integer
           format: int32
@@ -902,7 +902,7 @@ components:
       properties:
         adult:
           type: boolean
-        backdrop_path:
+        backdropPath:
           type: string
         genreIds:
           type: array
@@ -947,7 +947,7 @@ components:
       properties:
         adult:
           type: boolean
-        backdrop_path:
+        backdropPath:
           type: string
         genreIds:
           type: array
@@ -1012,7 +1012,7 @@ components:
         id:
           type: integer
           format: int32
-        imdb_id:
+        imdbId:
           type: string
         knownForDepartment:
           type: string
@@ -1126,7 +1126,7 @@ components:
           type: boolean
         birthday:
           type: string
-        birthday_type:
+        birthdayType:
           type: string
         genderNeedsAgreement:
           type: boolean
@@ -1163,9 +1163,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultImage:
-          type: boolean
         defaultNickname:
+          type: boolean
+        defaultImage:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -1616,9 +1616,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favourite:
-          type: boolean
         favouriteBlocked:
+          type: boolean
+        favourite:
           type: boolean
     AniListDateDto:
       type: object

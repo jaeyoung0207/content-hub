@@ -1,11 +1,11 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next"
-import { SearchContentCommonResultListType, useSearchContent } from "./useSearchContent";
+import { SearchCommonResultListType, useSearch } from "./useSearch";
 import { Link, useNavigate } from "react-router-dom";
 import { MEDIA_TYPE, TMDB_API_IMAGE_DOMAIN, WIDTH_300, COMMON_IMAGES } from "@/components/common/constants/constants";
-import { useSearchContentTypeStore } from "@/components/common/store/globalStateStore";
+import { useSearchTypeStore } from "@/components/common/store/globalStateStore";
 import { LoadingUi } from "@/components/ui/LoadingUi";
-import { SearchContentPropsType } from "./SearchContentPage";
+import { SearchPropsType } from "./SearchPage";
 import { NodataMessageUi } from "@/components/ui/common/NodataMessageUi";
 import { commonErrorHandler, detailUrlQuery, isSearchTvType, viewMoreUrlQuery } from "@/components/common/utils/commonUtil";
 
@@ -14,7 +14,7 @@ import { commonErrorHandler, detailUrlQuery, isSearchTvType, viewMoreUrlQuery } 
  */
 export type SearchResultsPropsType = {
     mediaName: string, // 미디어 이름
-    results: SearchContentCommonResultListType, // 검색 결과 리스트
+    results: SearchCommonResultListType, // 검색 결과 리스트
     isViewMore?: boolean, // 전체보기 여부
     mediaType: string, // 미디어 타입
     keyword: string, // 검색어
@@ -26,17 +26,17 @@ export type SearchResultsPropsType = {
  * @param keyword 검색어
  * @param isAdult 성인물 포함 여부
  */
-export const SearchContent = ({ keyword, isAdult }: SearchContentPropsType) => {
+export const Search = ({ keyword, isAdult }: SearchPropsType) => {
     // i18n 번역 훅
     const { t } = useTranslation();
     // 검색 타입 상태 훅
-    const { searchTypeState } = useSearchContentTypeStore();
+    const { searchTypeState } = useSearchTypeStore();
 
-    // 검색 콘텐츠 훅 호출
+    // 검색 훅 호출
     const {
         data,
         isLoading,
-    } = useSearchContent(keyword, isAdult!);
+    } = useSearch(keyword, isAdult!);
 
     // 검색결과에 따라 미디어 타입별로 결과를 분리
     const aniSearchResults = data?.videoResult?.aniResults;

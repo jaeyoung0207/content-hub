@@ -23,6 +23,7 @@ export const Detail = memo(() => {
 
     // URL query string 값을 가져오는 useSearchParams 훅
     const [searchParams, setSearchParams] = useSearchParams();
+    
     // 탭 번호, 없으면 0으로 초기화
     const tabNo = Number(searchParams.get("tabNo") ?? 0);
 
@@ -273,20 +274,6 @@ export const Detail = memo(() => {
                                                                 ? <a className="text-blue-600" href={data.link} target="_blank">{data.link}</a>
                                                                 : t("info.unknown")
                                                         }
-                                                    </div>
-                                                </li>
-                                            }
-                                            {
-                                                isMovieType && data.adult &&
-                                                <li className="mb-2 flex">
-                                                    <div className="mr-2">
-                                                        {"비밀 사이트 : "}
-                                                    </div>
-                                                    <div>
-                                                        <a className="text-blue-600"
-                                                            href={"https://missav123.com/ja/search/" + data.originalTitle}
-                                                            target="_blank">여기
-                                                        </a>
                                                     </div>
                                                 </li>
                                             }

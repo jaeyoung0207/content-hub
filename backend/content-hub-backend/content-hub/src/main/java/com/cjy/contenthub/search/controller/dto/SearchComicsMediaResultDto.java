@@ -1,4 +1,4 @@
-package com.cjy.contenthub.searchContent.controller.dto;
+package com.cjy.contenthub.search.controller.dto;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchCommonResultsDto;
 
@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @SuperBuilder
-public class SearchContentComicsMediaResultDto extends TmdbSearchCommonResultsDto {
+public class SearchComicsMediaResultDto extends TmdbSearchCommonResultsDto {
 
 	/** 제목 */
 	private String title;

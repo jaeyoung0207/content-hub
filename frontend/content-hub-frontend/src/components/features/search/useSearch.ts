@@ -1,35 +1,35 @@
-import { SearchContent } from "@api/SearchContent";
-import { SearchContentComicsResponseDto, SearchContentComicsMediaResultDto, SearchContentVideoResponseDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@api/data-contracts";
+import { Search } from "@api/Search";
+import { SearchComicsResponseDto, SearchComicsMediaResultDto, SearchVideoResponseDto, TmdbSearchMovieResultsDto, TmdbSearchTvResultsDto } from "@api/data-contracts";
 import { useQuery } from "@tanstack/react-query";
-import { searchContentQueryKeys } from "./queryKeys/searchContentQueryKeys";
+import { searchQueryKeys } from "./queryKeys/searchQueryKeys";
 
 // 공통 검색 결과 타입
-export type SearchContentCommonResultType = TmdbSearchTvResultsDto | TmdbSearchMovieResultsDto | SearchContentComicsMediaResultDto;
+export type SearchCommonResultType = TmdbSearchTvResultsDto | TmdbSearchMovieResultsDto | SearchComicsMediaResultDto;
 // 공통 검색 결과 리스트 타입
-export type SearchContentCommonResultListType = TmdbSearchTvResultsDto[] | TmdbSearchMovieResultsDto[] | SearchContentComicsMediaResultDto[];
+export type SearchCommonResultListType = TmdbSearchTvResultsDto[] | TmdbSearchMovieResultsDto[] | SearchComicsMediaResultDto[];
 
 /**
- * 검색 콘텐츠 훅 반환 타입
+ * 검색 훅 반환 타입
  */
-type UseSearchContentReturnType = {
+type UseSearchReturnType = {
     isLoading?: boolean, // 로딩 중 여부
     data?: {
-        videoResult: SearchContentVideoResponseDto | undefined; // 비디오 검색 결과
-        comicsResult: SearchContentComicsResponseDto | undefined; // 만화 검색 결과
+        videoResult: SearchVideoResponseDto | undefined; // 비디오 검색 결과
+        comicsResult: SearchComicsResponseDto | undefined; // 만화 검색 결과
     },
 }
 
 /**
- * 검색 콘텐츠 컴포넌트에서 사용하는 훅
+ * 검색 컴포넌트에서 사용하는 훅
  * @param keyword 검색어
  * @param isAdult 성인물 포함 여부
  */
-export const useSearchContent = (keyword: string, isAdult: string): UseSearchContentReturnType => {
+export const useSearch = (keyword: string, isAdult: string): UseSearchReturnType => {
     
     // ================================================================================================== react query
 
-    // 검색 콘텐츠 API 인스턴스 생성
-    const searchContentApi = new SearchContent();
+    // 검색 API 인스턴스 생성
+    const searchApi = new Search();
 
     /**
      * 비디오 및 만화 검색 결과를 가져오는 API 호출 함수
@@ -51,7 +51,7 @@ export const useSearchContent = (keyword: string, isAdult: string): UseSearchCon
      * @returns 비디오 검색 결과
      */
     const searchVideoApi = async () => {
-        return (await searchContentApi.searchVideo({ query: keyword }, {})).data;
+        return (await searchApi.searchVideo({ query: keyword }, {})).data;
     }
 
     /**
@@ -59,17 +59,17 @@ export const useSearchContent = (keyword: string, isAdult: string): UseSearchCon
      * @returns 만화 검색 결과
      */
     const searchComicsApi = async () => {
-        return (await searchContentApi.searchComics({ query: keyword, isMainPage: true }, {})).data;
+        return (await searchApi.searchComics({ query: keyword, isMainPage: true }, {})).data;
     }
 
     /**
-     * 검색 콘텐츠를 가져오기 위한 react-query 훅
+     * 검색 결과를 가져오기 위한 react-query 훅
      */
     const {
         data, // 검색 결과 데이터
         isLoading, // 로딩 중 여부
     } = useQuery({
-        queryKey: searchContentQueryKeys.searchContent.search(keyword, isAdult),
+        queryKey: searchQueryKeys.search.search(keyword, isAdult),
         queryFn: async () => {
             // 비디오 및 만화 검색 결과를 가져오는 API 호출
             return await getSearchResult();

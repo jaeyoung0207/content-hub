@@ -1,5 +1,7 @@
 package com.cjy.contenthub.common.api.dto.kakao;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +12,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class KakaoPartnerDto {
+public class KakaoPartnerDto implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	/** 고유 ID */
 	private String uuid;

@@ -54,7 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(commonInterceptor)
-		.addPathPatterns("/searchContent/*", "/detail/*","/common/*"); // 이 경로에서만 적용
+		.addPathPatterns("/search/*", "/detail/*","/common/*"); // 이 경로에서만 적용
 	}
 
 }

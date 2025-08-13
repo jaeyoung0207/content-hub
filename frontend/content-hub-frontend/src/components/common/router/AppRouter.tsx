@@ -3,7 +3,7 @@ import { Login } from "../../features/login/Login"
 import { NaverLogin } from "@/components/features/login/NaverLogin"
 import { Logout } from "@/components/features/login/Logout"
 import { Home } from "@/components/features/home/Home"
-import { SearchContentPage } from "@/components/features/searchContent/SearchContentPage"
+import { SearchPage } from "@/components/features/search/SearchPage"
 import { Layout } from "@/components/features/common/Layout"
 import { ErrorPageWithHalfScreen } from "@/components/common/error/ErrorPageWithHalfScreen"
 import { ErrorPageWithFullScreen } from "@/components/common/error/ErrorPageWithFullScreen"
@@ -57,7 +57,7 @@ const AppRouter = () => {
                     <Routes>
                         <Route element={<Layout />} >
                             <Route path='/' element={<Home />} />
-                            <Route path='/search' element={<SearchContentPage />} />
+                            <Route path='/search' element={<SearchPage />} />
                             <Route path='/detail/:originalMediaType/:contentId' element={<Detail />} />
                             <Route path='/person/:personId' element={<Person />} />
                             <Route path='/character/:characterId' element={<Character />} />

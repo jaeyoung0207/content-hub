@@ -48,7 +48,7 @@ type useConfirmDialogStoreType = {
 /**
  * 검색 필터 상태관리 타입
  */
-export type useSearchContentTypeStoreType = {
+export type useSearchTypeStoreType = {
     searchTypeState: {
         aniFlg: boolean,
         movieFlg: boolean,
@@ -115,7 +115,7 @@ export const useCommentStore = create<useCommentStoreType>((set) => ({
 /**
  * 검색 필터 상태관리
  */
-export const useSearchContentTypeStore = create<useSearchContentTypeStoreType>((set) => ({
+export const useSearchTypeStore = create<useSearchTypeStoreType>((set) => ({
     searchTypeState: {
         aniFlg: true,
         movieFlg: true,

@@ -139,12 +139,10 @@ public class WebClientConfig {
 		// WebClient에서 사용할 ExchangeStrategie를 통해 JSON 응답을 파싱할 때 사용할 디코더를 설정
 		// objectMapper를 사용하는 Jackson2JsonDecoder를 설정
 		// JSON 응답에 대해서만 해당 매핑 전략을 적용
-		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder() // ExchangeStrategies 빌더 생성
+		return ExchangeStrategies.builder() // ExchangeStrategies 빌더 생성
 				.codecs(configurer -> {
 					configurer.defaultCodecs().maxInMemorySize(1024 * 1024); // 최대 메모리 크기 설정 (1MB)
 					configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON)); // JSON 디코더 설정
 				}).build();  // ExchangeStrategies 빌드
-		// 빌드된 ExchangeStrategies를 반환
-		return exchangeStrategies;
 	}
 }

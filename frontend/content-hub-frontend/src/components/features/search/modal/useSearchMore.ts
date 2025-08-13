@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
-import { SearchContent } from "@/api/SearchContent";
+import { Search } from "@/api/Search";
 import { ESC_KEY, MEDIA_TYPE } from "@/components/common/constants/constants";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { SearchContentCommonResultListType } from "../useSearchContent";
+import { SearchCommonResultListType } from "../useSearch";
 import { useSearchParams } from "react-router-dom";
-import { searchContentQueryKeys } from "../queryKeys/searchContentQueryKeys";
+import { searchQueryKeys } from "../queryKeys/searchQueryKeys";
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -22,7 +22,7 @@ type UseSearchConentModalReturnType = {
  * 무한스크롤 결과 타입
  */
 export type UseInfiniteQueryResultType = {
-    pages: SearchContentCommonResultListType[],
+    pages: SearchCommonResultListType[],
     pageParams: (number | undefined)[],
 }
 
@@ -32,7 +32,7 @@ export type UseInfiniteQueryResultType = {
  * @param mediaType 미디어 타입 
  * @returns UseSearchConentModalReturnType
  */
-export const useSearchContentMore = (
+export const useSearchMore = (
     keyword: string,
     mediaType: string,
 ): UseSearchConentModalReturnType => {
@@ -50,22 +50,22 @@ export const useSearchContentMore = (
     // ================================================================================================== react query
 
     // 검색 API 인스턴스 생성
-    const searchContentApi = new SearchContent();
+    const searchApi = new Search();
 
     // 전체보기 검색결과를 가져오기 위한 API 호출 함수
     const judgeExecApi = async (pageParam: number) => {        
         if (mediaType == MEDIA_TYPE.ANI) {
             // 애니메이션 검색 API 호출
-            return (await searchContentApi.searchAni({ query: keyword, page: pageParam }, {})).data.results
+            return (await searchApi.searchAni({ query: keyword, page: pageParam }, {})).data.results
         } else if (mediaType == MEDIA_TYPE.DRAMA) {
             // 드라마 검색 API 호출
-            return (await searchContentApi.searchDrama({ query: keyword, page: pageParam }, {})).data.results
+            return (await searchApi.searchDrama({ query: keyword, page: pageParam }, {})).data.results
         } else if (mediaType == MEDIA_TYPE.MOVIE) {
             // 영화 검색 API 호출
-            return (await searchContentApi.searchMovie({ query: keyword, page: pageParam }, {})).data.results
+            return (await searchApi.searchMovie({ query: keyword, page: pageParam }, {})).data.results
         } else if (mediaType == MEDIA_TYPE.COMICS) {
             // 만화 검색 API 호출
-            return (await searchContentApi.searchComics({ query: keyword, page: pageParam, isMainPage: false }, {})).data.comicsResults
+            return (await searchApi.searchComics({ query: keyword, page: pageParam, isMainPage: false }, {})).data.comicsResults
         } else {
             return null;
         }
@@ -79,14 +79,14 @@ export const useSearchContentMore = (
         hasNextPage, // 가져올 다음페이지가 있는지 여부를 나타냄(boolean). getNextPageParam옵션을 통해 확인가능
         isSuccess, // useInfiniteQuery의 실행 성공여부
     } = useInfiniteQuery<
-        SearchContentCommonResultListType,  // queryFn이 반환하는 원본 데이터
+        SearchCommonResultListType,  // queryFn이 반환하는 원본 데이터
         AxiosError, // 에러 타입 (보통 AxiosError)
         UseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
         [string, string, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
         number | undefined // pageParam 타입 (보통 number | undefined)
     >({
         // useInfiniteQuery의 키 지정
-        queryKey: searchContentQueryKeys.searchContentMore.searchMore(keyword, mediaType) as [string, string, string],
+        queryKey: searchQueryKeys.searchMore.searchMore(keyword, mediaType) as [string, string, string],
         // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
         queryFn: async ({ pageParam = 1 }) => {
             console.log("queryFn★★★★★");

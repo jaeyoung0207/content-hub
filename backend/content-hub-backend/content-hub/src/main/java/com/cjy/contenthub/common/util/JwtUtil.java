@@ -14,6 +14,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -26,11 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	/** JWT 서명에 사용할 비밀 키 */
-	private static final SecretKey SECRET_KEY = Jwts.SIG.HS256.key().build();
-	
-//	private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(
-//		    Decoders.BASE64.decode(System.getenv("JWT_SECRET_KEY"))
-//		);
+	private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(
+			Decoders.BASE64.decode(System.getProperty("JWT_SECRET_KEY"))
+			);
 
 	/**
 	 * JWT 토큰 생성 메소드
@@ -90,7 +90,7 @@ public class JwtUtil {
 	 * JWT 토큰에서 유저 정보를 추출하는 메소드
 	 * 
 	 * @param token JWT 토큰
-	 * @return NaverUserDetails 객체에 유저 정보가 담김
+	 * @return 유저 정보가 담긴 Claims 객체
 	 */
 	public Claims parseClaims(String token) {
 		// JWT 토큰에서 Claims 객체를 추출

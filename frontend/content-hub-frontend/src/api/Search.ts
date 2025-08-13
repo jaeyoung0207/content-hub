@@ -24,9 +24,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchVideo
-   * @request GET:/searchContent/searchVideo
+   * @request GET:/search/searchVideo
    */
   searchVideo = (
     query: {
@@ -35,7 +35,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<SearchVideoResponseDto, any>({
-      path: `/searchContent/searchVideo`,
+      path: `/search/searchVideo`,
       method: "GET",
       query: query,
       ...params,
@@ -43,9 +43,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchMovie
-   * @request GET:/searchContent/searchMovie
+   * @request GET:/search/searchMovie
    */
   searchMovie = (
     query: {
@@ -56,7 +56,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<TmdbSearchMovieDto, any>({
-      path: `/searchContent/searchMovie`,
+      path: `/search/searchMovie`,
       method: "GET",
       query: query,
       ...params,
@@ -64,9 +64,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchKeyword
-   * @request GET:/searchContent/searchKeyword
+   * @request GET:/search/searchKeyword
    */
   searchKeyword = (
     query: {
@@ -75,7 +75,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<string[], any>({
-      path: `/searchContent/searchKeyword`,
+      path: `/search/searchKeyword`,
       method: "GET",
       query: query,
       ...params,
@@ -83,9 +83,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchDrama
-   * @request GET:/searchContent/searchDrama
+   * @request GET:/search/searchDrama
    */
   searchDrama = (
     query: {
@@ -96,7 +96,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<TmdbSearchTvDto, any>({
-      path: `/searchContent/searchDrama`,
+      path: `/search/searchDrama`,
       method: "GET",
       query: query,
       ...params,
@@ -104,9 +104,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchComics
-   * @request GET:/searchContent/searchComics
+   * @request GET:/search/searchComics
    */
   searchComics = (
     query: {
@@ -118,7 +118,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<SearchComicsResponseDto, any>({
-      path: `/searchContent/searchComics`,
+      path: `/search/searchComics`,
       method: "GET",
       query: query,
       ...params,
@@ -126,9 +126,9 @@ export class Search<
   /**
    * No description
    *
-   * @tags search-content-controller
+   * @tags search-controller
    * @name SearchAni
-   * @request GET:/searchContent/searchAni
+   * @request GET:/search/searchAni
    */
   searchAni = (
     query: {
@@ -139,7 +139,7 @@ export class Search<
     params: RequestParams = {},
   ) =>
     this.request<TmdbSearchTvDto, any>({
-      path: `/searchContent/searchAni`,
+      path: `/search/searchAni`,
       method: "GET",
       query: query,
       ...params,
