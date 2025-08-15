@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom"
-import { Header } from "@components/features/header/Header"
+import { Outlet } from 'react-router-dom';
+import { Header } from '@components/features/header/Header';
 
 /**
  * 레이아웃 컴포넌트
@@ -9,13 +9,12 @@ import { Header } from "@components/features/header/Header"
  * 이 레이아웃은 모든 페이지에서 공통적으로 사용되며, 페이지 간 일관된 디자인을 유지하도록 해 줌
  */
 export const Layout = () => {
-    return (
-        <>
-            <Header />
-            <main>
-                <Outlet />
-            </main>
-        </>
-    )
-
-}
+  return (
+    <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+};

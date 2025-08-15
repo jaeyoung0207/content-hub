@@ -23,5 +23,8 @@ public class AniListPageInfoDto {
 	
 	/** 다음 페이지 여부 */
 	private boolean hasNextPage;
+	
+	/** 페이지당 표시 개수 */
+	private boolean perPage;
 
 }

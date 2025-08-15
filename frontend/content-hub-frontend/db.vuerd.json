@@ -17,26 +17,13 @@
     "bracketType": 1,
     "relationshipDataTypeSync": true,
     "relationshipOptimization": false,
-    "columnOrder": [
-      1,
-      2,
-      4,
-      8,
-      16,
-      32,
-      64
-    ],
+    "columnOrder": [1, 2, 4, 8, 16, 32, 64],
     "maxWidthComment": -1,
     "ignoreSaveSettings": 0
   },
   "doc": {
-    "tableIds": [
-      "VXrfn6a7i1WnVZAyM5Y83",
-      "x2hWqm4dGS3xbU8QzeHeS"
-    ],
-    "relationshipIds": [
-      "ZoL66i2r9gF-lrhRt7nc9"
-    ],
+    "tableIds": ["VXrfn6a7i1WnVZAyM5Y83", "x2hWqm4dGS3xbU8QzeHeS"],
+    "relationshipIds": ["ZoL66i2r9gF-lrhRt7nc9"],
     "indexIds": [],
     "memoIds": []
   },

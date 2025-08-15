@@ -91,6 +91,7 @@ public interface DetailMapper {
 	 */
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
+	@Mapping(target = "credits", source = "aggregateCredits")
 	DetailTvResponseDto detailTvToDetailTvResponse(TmdbTvDetailsDto apiResponse);
 	
 	/**

@@ -15,8 +15,8 @@ import {
   SearchVideoResponseDto,
   TmdbSearchMovieDto,
   TmdbSearchTvDto,
-} from "./data-contracts";
-import { HttpClient, RequestParams } from "./http-client";
+} from './data-contracts';
+import { HttpClient, RequestParams } from './http-client';
 
 export class Search<
   SecurityDataType = unknown,
@@ -32,11 +32,11 @@ export class Search<
     query: {
       query: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<SearchVideoResponseDto, any>({
       path: `/searchContent/searchVideo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -53,11 +53,11 @@ export class Search<
       /** @format int32 */
       page?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<TmdbSearchMovieDto, any>({
       path: `/searchContent/searchMovie`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -72,11 +72,11 @@ export class Search<
     query: {
       query: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<string[], any>({
       path: `/searchContent/searchKeyword`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -93,11 +93,11 @@ export class Search<
       /** @format int32 */
       page?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<TmdbSearchTvDto, any>({
       path: `/searchContent/searchDrama`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -115,11 +115,11 @@ export class Search<
       page?: number;
       isMainPage: boolean;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<SearchComicsResponseDto, any>({
       path: `/searchContent/searchComics`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -136,11 +136,11 @@ export class Search<
       /** @format int32 */
       page?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<TmdbSearchTvDto, any>({
       path: `/searchContent/searchAni`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });

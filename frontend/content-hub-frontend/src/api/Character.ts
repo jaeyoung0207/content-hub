@@ -10,8 +10,8 @@
  * ---------------------------------------------------------------
  */
 
-import { AniListCharactersNodesDto } from "./data-contracts";
-import { HttpClient, RequestParams } from "./http-client";
+import { AniListCharactersNodesDto } from './data-contracts';
+import { HttpClient, RequestParams } from './http-client';
 
 export class Character<
   SecurityDataType = unknown,
@@ -28,11 +28,11 @@ export class Character<
       /** @format int32 */
       characterId: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<AniListCharactersNodesDto, any>({
       path: `/character/getCharacter`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });

@@ -14,8 +14,8 @@ import {
   KakaoUserInfoDto,
   LoginUserResponseDto,
   NaverDeleteTokenDto,
-} from "./data-contracts";
-import { HttpClient, RequestParams } from "./http-client";
+} from './data-contracts';
+import { HttpClient, RequestParams } from './http-client';
 
 export class Login<
   SecurityDataType = unknown,
@@ -30,7 +30,7 @@ export class Login<
   updateNaverLoginInfo = (params: RequestParams = {}) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/updateNaverLoginInfo`,
-      method: "GET",
+      method: 'GET',
       ...params,
     });
   /**
@@ -44,11 +44,11 @@ export class Login<
     query: {
       client_id: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/updateKakaoLoginInfo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -65,11 +65,11 @@ export class Login<
       /** @format int32 */
       expires_in: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/getNaverUserInfo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -85,11 +85,11 @@ export class Login<
       code: string;
       state: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/getNaverLoginInfo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -106,11 +106,11 @@ export class Login<
       /** @format int32 */
       expires_in: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/getKakaoUserInfo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -127,11 +127,11 @@ export class Login<
       redirect_uri: string;
       code: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
       path: `/login/getKakaoLoginInfo`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -146,11 +146,11 @@ export class Login<
     query: {
       access_token: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<NaverDeleteTokenDto, any>({
       path: `/login/deleteNaverToken`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });
@@ -166,11 +166,11 @@ export class Login<
       access_token: string;
       target_id: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<KakaoUserInfoDto, any>({
       path: `/login/deleteKakaoToken`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });

@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------
  */
 
-import { HttpClient, RequestParams } from "./http-client";
+import { HttpClient, RequestParams } from './http-client';
 
 export class Common<
   SecurityDataType = unknown,
@@ -26,11 +26,11 @@ export class Common<
     query: {
       adult_flg: boolean;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
       path: `/common/setAdultFlg`,
-      method: "POST",
+      method: 'POST',
       query: query,
       ...params,
     });
@@ -44,7 +44,7 @@ export class Common<
   clearAdultFlg = (params: RequestParams = {}) =>
     this.request<boolean, any>({
       path: `/common/clearAdultFlg`,
-      method: "POST",
+      method: 'POST',
       ...params,
     });
 }

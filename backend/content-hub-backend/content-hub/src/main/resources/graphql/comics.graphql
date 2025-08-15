@@ -1,5 +1,5 @@
-query($mediaId: Int)  {
-  Media(id: $mediaId, type: MANGA) {
+query($mediaId: Int, $isAdult: Boolean, $page: Int, $perPage: Int)  {
+  Media(id: $mediaId, type: MANGA, , isAdult: $isAdult) {
     id
     description
     genres
@@ -21,7 +21,7 @@ query($mediaId: Int)  {
       large
       medium
     }
-    characters {
+    characters(page: $page, perPage: $perPage, sort: ID) {
       nodes {
         id
         image {
@@ -47,6 +47,13 @@ query($mediaId: Int)  {
         isFavouriteBlocked
         modNotes
         siteUrl
+      }
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
       }
     }
     startDate {

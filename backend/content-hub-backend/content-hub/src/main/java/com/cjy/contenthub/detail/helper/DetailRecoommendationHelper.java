@@ -14,8 +14,6 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
 import com.cjy.contenthub.common.constants.CommonEnum;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
-import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
-import com.cjy.contenthub.detail.repository.entity.DetailCommentViewEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,10 +22,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
-public class DetailHelper {
-
-	/** 코멘트 뷰 엔티티 리포지토리 */
-	private final DetailCommentViewRepository commentViewRepository;
+public class DetailRecoommendationHelper {
 
 	/** 리퀘스트 파라미터 키 : TV SERIES ID */
 	private static final String PARAM_TV_SERIES_ID = "series_id";
@@ -48,8 +43,6 @@ public class DetailHelper {
 	/** TMDB API Movie 추천 작품 API 패스 */
 	@Value("${tmdb.url.movieRecommendationsPath}")
 	private String movieRecommendationsPath;
-
-	private static final int FIRST_PAGE_INDEX = 0;
 
 	/**
 	 * TMDB 영화 추천 작품 조회를 위한 URI 생성
@@ -81,44 +74,6 @@ public class DetailHelper {
 				.queryParam(PARAM_LANGUAGE, language)
 				.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
 				.toUriString();
-	}
-
-	/**
-	 * 각 페이지당 코멘트 리스트 처리
-	 * 유저ID에 해당하는 코멘트를 첫번째 페이지에 추가
-	 * 
-	 * @param commentList 코멘트 엔티티 리스트
-	 * @param originalMediaType 원본 미디어 타입
-	 * @param apiId API ID
-	 * @param page 페이지 번호
-	 * @param userId 유저 ID
-	 */
-	public void getCommentListPerPage(
-			List<DetailCommentViewEntity> commentList,
-			String originalMediaType,
-			String apiId,
-			Integer page,
-			String userId
-			) {
-
-		// 유저ID에 해당하는 코멘트를 추출
-		DetailCommentViewEntity myCommentViewEntity = commentList.stream()
-				.filter(e -> StringUtils.equals(e.getUserId(), userId))
-				.findFirst()
-				.orElse(commentViewRepository.findByOriginalMediaTypeAndApiIdAndUserId(originalMediaType, apiId, userId));
-
-		// 유저ID에 해당하는 코멘트가 없는 경우 처리 종료
-		if (ObjectUtils.isEmpty(myCommentViewEntity)) {
-			return;
-		}
-
-		// 유저ID에 해당하는 코멘트 삭제
-		commentList.removeIf(e -> StringUtils.equals(e.getUserId(), userId));
-
-		// 첫번째 페이지의 경우 유저ID의 코멘트 추가
-		if (page.equals(FIRST_PAGE_INDEX)) {
-			commentList.add(0, myCommentViewEntity);
-		}
 	}
 
 	/**

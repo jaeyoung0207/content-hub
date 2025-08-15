@@ -1,6 +1,7 @@
 package com.cjy.contenthub.common.api.dto.tmdb;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,8 @@ import lombok.Setter;
  * TMDB API 크레딧(출연진) Response DTO
  * TMDB에서 제공하는 영화 및 TV 프로그램의 출연진 정보를 포함하는 DTO
  * 
- * @see <a href="https://developers.themoviedb.org/3/movies/get-movie-credits">TMDB Credits API 문서</a>
+ * @see <a href="https://developer.themoviedb.org/reference/tv-series-aggregate-credits">TMDB TV Credits API 문서</a>
+ * @see <a href="https://developers.themoviedb.org/3/movies/get-movie-credits">TMDB Movie Credits API 문서</a>
  */
 @Setter
 @Getter
@@ -49,6 +51,12 @@ public class TmdbVideoCreditsCastDto {
 	
 	/** 크레딧 ID (TMDB에서 사용하는 고유 ID) */
 	private String creditId;
+	
+	/** 역할 정보 (TV Only) */
+	private List<TmdbRoleDto> roles;
+	
+	/** 총 에피소드 수 (TV Only) */
+	private int totalEpisodeCount;
 	
 	/** 순서 */
 	private int order;

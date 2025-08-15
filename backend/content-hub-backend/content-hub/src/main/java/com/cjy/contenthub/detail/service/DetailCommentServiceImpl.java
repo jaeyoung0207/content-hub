@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
-import com.cjy.contenthub.detail.helper.DetailHelper;
+import com.cjy.contenthub.detail.helper.DetailCommentHelper;
 import com.cjy.contenthub.detail.mapper.DetailMapper;
 import com.cjy.contenthub.detail.repository.DetailCommentRepository;
 import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class DetailCommentServiceImpl implements DetailCommentService {
 	
 	/** 상세 페이지 헬퍼 클래스 */
-	private final DetailHelper helper;
+	private final DetailCommentHelper helper;
 
 	/** 코멘트 엔티티 리포지토리 */	
 	private final DetailCommentRepository commentRepository;

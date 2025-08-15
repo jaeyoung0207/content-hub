@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AniListPageDto {
 	
-	/** 페이지 DTO */
+	/** 페이지 정보 DTO */
 	private AniListPageInfoDto pageInfo;
 	
 	/** 미디어 DTO 리스트 */

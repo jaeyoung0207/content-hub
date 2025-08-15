@@ -60,4 +60,7 @@ public class TmdbTvDetailsDto extends TmdbVideoDetailsDto {
 	/** 크레딧 */
 	private TmdbVideoCreditsDto credits;
 	
+	/** 종합 크레딧 */
+	private TmdbVideoCreditsDto aggregateCredits;
+	
 }

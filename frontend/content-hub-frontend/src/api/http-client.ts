@@ -10,14 +10,14 @@
  * ---------------------------------------------------------------
  */
 
-import { AxiosErrorType } from "@/components/common/config/queryClientConfig"; // add custom config
-import { settings } from "@/components/common/config/settings"; // add custom config
+import { AxiosErrorType } from '@/components/common/config/queryClientConfig'; // add custom config
+import { settings } from '@/components/common/config/settings'; // add custom config
 import {
   useConfirmDialogStore,
   useProviderStore,
   useUserStore,
-} from "@/components/common/store/globalStateStore"; // add custom config
-import { clearUserData } from "@/components/common/utils/commonUtil"; // add custom config
+} from '@/components/common/store/globalStateStore'; // add custom config
+import { clearUserData } from '@/components/common/utils/commonUtil'; // add custom config
 import type {
   AxiosError,
   AxiosInstance,
@@ -25,15 +25,15 @@ import type {
   AxiosResponse,
   HeadersDefaults,
   ResponseType,
-} from "axios"; // add custom config
-import axios from "axios";
-import dayjs from "dayjs"; // add custom config
-import { LoginProfileResultDto } from "./data-contracts"; // add custom config
+} from 'axios'; // add custom config
+import axios from 'axios';
+import dayjs from 'dayjs'; // add custom config
+import { LoginProfileResultDto } from './data-contracts'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 
 export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+  extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -50,23 +50,23 @@ export interface FullRequestParams
 
 export type RequestParams = Omit<
   FullRequestParams,
-  "body" | "method" | "query" | "path"
+  'body' | 'method' | 'query' | 'path'
 >;
 
 export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
+  extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
   securityWorker?: (
-    securityData: SecurityDataType | null,
+    securityData: SecurityDataType | null
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
   secure?: boolean;
   format?: ResponseType;
 }
 
 export enum ContentType {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+  Json = 'application/json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
 }
 
 const backendUrl = settings.appBackendUrl; // add custom config
@@ -74,7 +74,7 @@ const backendUrl = settings.appBackendUrl; // add custom config
 export class HttpClient<SecurityDataType = unknown> {
   public instance: AxiosInstance;
   private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
   private secure?: boolean;
   private format?: ResponseType;
 
@@ -103,11 +103,11 @@ export class HttpClient<SecurityDataType = unknown> {
     this.instance.interceptors.request.use(
       async (request) => {
         // 접근토큰
-        const jwt = sessionStorage.getItem("jwt");
+        const jwt = sessionStorage.getItem('jwt');
         // 만료시각
-        const expireDateStr = sessionStorage.getItem("expireDate");
+        const expireDateStr = sessionStorage.getItem('expireDate');
         const expireDate =
-          expireDateStr && dayjs(expireDateStr, "YYYYMMDDHHmmss");
+          expireDateStr && dayjs(expireDateStr, 'YYYYMMDDHHmmss');
         // 현재시각
         const now = dayjs();
         // 접근토큰 만료 확인
@@ -127,13 +127,13 @@ export class HttpClient<SecurityDataType = unknown> {
             ).data as LoginProfileResultDto;
           }
           if (res) {
-            console.log("접근토큰 갱신");
+            console.log('접근토큰 갱신');
             // 접근토큰을 sessionStorage에 저장
-            sessionStorage.setItem("accessToken", res.accessToken);
+            sessionStorage.setItem('accessToken', res.accessToken);
             // JWT를 sessionStorage에 저장
-            sessionStorage.setItem("jwt", res.jwt);
+            sessionStorage.setItem('jwt', res.jwt);
             // 만료시각을 sessionStorage에 저장
-            sessionStorage.setItem("expireDate", res.expireDate);
+            sessionStorage.setItem('expireDate', res.expireDate);
           } else {
             // 유저정보 클리어
             clearUserData();
@@ -149,26 +149,26 @@ export class HttpClient<SecurityDataType = unknown> {
       (error) => {
         // 요청 전 단계의 예외만 처리
         return Promise.reject(error);
-      },
+      }
     );
 
     // axios 공통 응답 인터셉터 // add custom config
     this.instance.interceptors.response.use(
       (response) => {
-        console.log("API 조회 성공: " + response.config.url);
+        console.log('API 조회 성공: ' + response.config.url);
         return response;
       },
       (error: AxiosError<AxiosErrorType>) => {
         const data = error.response?.data;
         // 로그인 만료시
-        if (data?.status === 401 || data?.status === "401") {
+        if (data?.status === 401 || data?.status === '401') {
           // 유저정보 클리어
           clearUserData();
           // 로그인 확인 다이얼로그 표시
           useConfirmDialogStore.getState().setIsConfirmDialogOpen();
         }
         return Promise.reject(error);
-      },
+      }
     );
   }
 
@@ -178,7 +178,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected mergeRequestParams(
     params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig,
+    params2?: AxiosRequestConfig
   ): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
@@ -199,7 +199,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === "object" && formItem !== null) {
+    if (typeof formItem === 'object' && formItem !== null) {
       return JSON.stringify(formItem);
     } else {
       return `${formItem}`;
@@ -219,7 +219,7 @@ export class HttpClient<SecurityDataType = unknown> {
         const isFileType = formItem instanceof Blob || formItem instanceof File;
         formData.append(
           key,
-          isFileType ? formItem : this.stringifyFormItem(formItem),
+          isFileType ? formItem : this.stringifyFormItem(formItem)
         );
       }
 
@@ -237,7 +237,7 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<AxiosResponse<T>> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.secure) &&
+      ((typeof secure === 'boolean' ? secure : this.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
@@ -248,7 +248,7 @@ export class HttpClient<SecurityDataType = unknown> {
       type === ContentType.FormData &&
       body &&
       body !== null &&
-      typeof body === "object"
+      typeof body === 'object'
     ) {
       body = this.createFormData(body as Record<string, unknown>);
     }
@@ -257,17 +257,17 @@ export class HttpClient<SecurityDataType = unknown> {
       type === ContentType.Text &&
       body &&
       body !== null &&
-      typeof body !== "string"
+      typeof body !== 'string'
     ) {
       body = JSON.stringify(body);
     }
 
-    const token = sessionStorage.getItem("jwt"); // add custom config
+    const token = sessionStorage.getItem('jwt'); // add custom config
     return this.instance.request({
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type ? { "Content-Type": type } : {}),
+        ...(type ? { 'Content-Type': type } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}), // add custom config
       },
       params: query,

@@ -20,8 +20,8 @@ import {
   DetailTvResponseDto,
   TmdbRecommendationsMovieDto,
   TmdbRecommendationsTvDto,
-} from "./data-contracts";
-import { ContentType, HttpClient, RequestParams } from "./http-client";
+} from './data-contracts';
+import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Detail<
   SecurityDataType = unknown,
@@ -29,17 +29,17 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-controller
+   * @tags detail-comment-controller
    * @name UpdateComent
-   * @request PUT:/detail/updateComment
+   * @request PUT:/detail/comment/updateComment
    */
   updateComent = (
     data: DetailCommentUpdateRequestDto,
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
-      path: `/detail/updateComment`,
-      method: "PUT",
+      path: `/detail/comment/updateComment`,
+      method: 'PUT',
       body: data,
       type: ContentType.Json,
       ...params,
@@ -47,17 +47,17 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-controller
+   * @tags detail-comment-controller
    * @name SaveComent
-   * @request POST:/detail/saveComment
+   * @request POST:/detail/comment/saveComment
    */
   saveComent = (
     data: DetailCommentSaveRequestDto,
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
-      path: `/detail/saveComment`,
-      method: "POST",
+      path: `/detail/comment/saveComment`,
+      method: 'POST',
       body: data,
       type: ContentType.Json,
       ...params,
@@ -65,9 +65,9 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-controller
+   * @tags detail-recommendation-controller
    * @name GetTvRecommendations
-   * @request GET:/detail/getTvRecommendations
+   * @request GET:/detail/recommendation/getTvRecommendations
    */
   getTvRecommendations = (
     query: {
@@ -76,60 +76,20 @@ export class Detail<
       /** @format int32 */
       page?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<TmdbRecommendationsTvDto, any>({
-      path: `/detail/getTvRecommendations`,
-      method: "GET",
+      path: `/detail/recommendation/getTvRecommendations`,
+      method: 'GET',
       query: query,
       ...params,
     });
   /**
    * No description
    *
-   * @tags detail-controller
-   * @name GetTvDetail
-   * @request GET:/detail/getTvDetail
-   */
-  getTvDetail = (
-    query: {
-      /** @format int32 */
-      series_id: number;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<DetailTvResponseDto, any>({
-      path: `/detail/getTvDetail`,
-      method: "GET",
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags detail-controller
-   * @name GetStarRatingAverage
-   * @request GET:/detail/getStarRatingAverage
-   */
-  getStarRatingAverage = (
-    query: {
-      originalMediaType: string;
-      apiId: string;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<number, any>({
-      path: `/detail/getStarRatingAverage`,
-      method: "GET",
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags detail-controller
+   * @tags detail-recommendation-controller
    * @name GetMovieRecommendations
-   * @request GET:/detail/getMovieRecommendations
+   * @request GET:/detail/recommendation/getMovieRecommendations
    */
   getMovieRecommendations = (
     query: {
@@ -138,40 +98,124 @@ export class Detail<
       /** @format int32 */
       page?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<TmdbRecommendationsMovieDto, any>({
-      path: `/detail/getMovieRecommendations`,
-      method: "GET",
+      path: `/detail/recommendation/getMovieRecommendations`,
+      method: 'GET',
       query: query,
       ...params,
     });
   /**
    * No description
    *
-   * @tags detail-controller
+   * @tags detail-recommendation-controller
+   * @name GetComicsRecommendations
+   * @request GET:/detail/recommendation/getComicsRecommendations
+   */
+  getComicsRecommendations = (
+    query: {
+      /** @format int32 */
+      mediaId: number;
+      /** @format int32 */
+      page?: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<DetailComicsRecommendationsResponseDto, any>({
+      path: `/detail/recommendation/getComicsRecommendations`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-information-controller
+   * @name GetTvDetail
+   * @request GET:/detail/information/getTvDetail
+   */
+  getTvDetail = (
+    query: {
+      /** @format int32 */
+      series_id: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<DetailTvResponseDto, any>({
+      path: `/detail/information/getTvDetail`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-information-controller
    * @name GetMovieDetail
-   * @request GET:/detail/getMovieDetail
+   * @request GET:/detail/information/getMovieDetail
    */
   getMovieDetail = (
     query: {
       /** @format int32 */
       movie_id: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<DetailMovieResponseDto, any>({
-      path: `/detail/getMovieDetail`,
-      method: "GET",
+      path: `/detail/information/getMovieDetail`,
+      method: 'GET',
       query: query,
       ...params,
     });
   /**
    * No description
    *
-   * @tags detail-controller
+   * @tags detail-information-controller
+   * @name GetComicsDetail
+   * @request GET:/detail/information/getComicsDetail
+   */
+  getComicsDetail = (
+    query: {
+      /** @format int32 */
+      comics_id: number;
+      /** @format int32 */
+      page?: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<DetailComicsResponseDto, any>({
+      path: `/detail/information/getComicsDetail`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-comment-controller
+   * @name GetStarRatingAverage
+   * @request GET:/detail/comment/getStarRatingAverage
+   */
+  getStarRatingAverage = (
+    query: {
+      originalMediaType: string;
+      apiId: string;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<number, any>({
+      path: `/detail/comment/getStarRatingAverage`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-comment-controller
    * @name GetCommentList
-   * @request GET:/detail/getCommentList
+   * @request GET:/detail/comment/getCommentList
    */
   getCommentList = (
     query: {
@@ -181,73 +225,31 @@ export class Detail<
       page?: number;
       userId?: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<DetailCommentGetResponseDto, any>({
-      path: `/detail/getCommentList`,
-      method: "GET",
+      path: `/detail/comment/getCommentList`,
+      method: 'GET',
       query: query,
       ...params,
     });
   /**
    * No description
    *
-   * @tags detail-controller
-   * @name GetComicsRecommendations
-   * @request GET:/detail/getComicsRecommendations
-   */
-  getComicsRecommendations = (
-    query: {
-      /** @format int32 */
-      mediaId: number;
-      /** @format int32 */
-      page?: number;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<DetailComicsRecommendationsResponseDto, any>({
-      path: `/detail/getComicsRecommendations`,
-      method: "GET",
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags detail-controller
-   * @name GetComicsDetail
-   * @request GET:/detail/getComicsDetail
-   */
-  getComicsDetail = (
-    query: {
-      /** @format int32 */
-      comics_id: number;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<DetailComicsResponseDto, any>({
-      path: `/detail/getComicsDetail`,
-      method: "GET",
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags detail-controller
+   * @tags detail-comment-controller
    * @name DeleteComment
-   * @request DELETE:/detail/deleteComment
+   * @request DELETE:/detail/comment/deleteComment
    */
   deleteComment = (
     query: {
       /** @format int64 */
       commentNo: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
-      path: `/detail/deleteComment`,
-      method: "DELETE",
+      path: `/detail/comment/deleteComment`,
+      method: 'DELETE',
       query: query,
       ...params,
     });

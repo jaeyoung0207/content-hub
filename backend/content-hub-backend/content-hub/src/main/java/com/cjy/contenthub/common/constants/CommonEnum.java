@@ -23,67 +23,72 @@ public class CommonEnum {
 	public enum TmdbGenreEnum {
 
 		/** 애니메이션 */
-		GENRE_ANI("Animation", "애니메이션"),
-		/** 드라마 */
-		GENRE_DRAMA("Drama", "드라마"),
-		/** 액션&어드벤처 */
-		GENRE_ACTION_ADVENTURE("Action & Adventure", "액션&어드벤처"),
+		GENRE_ANI(16, "Animation", "애니메이션"),
 		/** 코메디 */
-		GENRE_COMEDY("Comedy", "코메디"),
+		GENRE_COMEDY(35, "Comedy", "코메디"),
+		/** 드라마 */
+		GENRE_DRAMA(18, "Drama", "드라마"),
 		/** 범죄 */
-		GENRE_CRIME("Crime", "범죄"),
+		GENRE_CRIME(80, "Crime", "범죄"),
 		/** 다큐 */
-		GENRE_DOCUMENTARY("Documentary", "다큐"),
-		/** 가족 */
-		GENRE_FAMILY("Family", "가족"),
-		/** 어린이 */
-		GENRE_KIDS("Kids", "어린이"),
+		GENRE_DOCUMENTARY(99, "Documentary", "다큐"),
 		/** 미스테리 */
-		GENRE_MYSTERY("Mystery", "미스테리"),
+		GENRE_MYSTERY(9648, "Mystery", "미스테리"),
+		/** 가족 */
+		GENRE_FAMILY(10751, "Family", "가족"),
+		/** 액션&어드벤처 */
+		GENRE_ACTION_ADVENTURE(10759, "Action & Adventure", "액션&어드벤처"),
+		/** 어린이 */
+		GENRE_KIDS(10762, "Kids", "어린이"),
 		/** 뉴스 */
-		GENRE_NEWS("News", "뉴스"),
+		GENRE_NEWS(10763, "News", "뉴스"),
 		/** 리얼리티 */
-		GENRE_REALITY("Reality", "리얼리티"),
+		GENRE_REALITY(10764, "Reality", "리얼리티"),
 		/** 공상과학 판타지 */
-		GENRE_SCI_FI_FANTASY("Sci-Fi & Fantasy", "공상과학 판타지"),
+		GENRE_SCI_FI_FANTASY(10765, "Sci-Fi & Fantasy", "공상과학 판타지"),
 		/** 연속극 */
-		GENRE_SOAP("Soap", "연속극"),
+		GENRE_SOAP(10766, "Soap", "연속극"),
 		/** 토크쇼 */
-		GENRE_TALK("Talk", "토크쇼"),
+		GENRE_TALK(10767, "Talk", "토크쇼"),
 		/** 전쟁&정치 */
-		GENRE_WAR_POLITICS("War & Politics", "전쟁&정치"),
+		GENRE_WAR_POLITICS(10768, "War & Politics", "전쟁&정치"),
+		/** 서부극 */
+		GENRE_WESTERN(37, "Western", "서부극"),
 		/** 액션 */
-		GENRE_ACTION("Action", "액션"),
+		GENRE_ACTION(28, "Action", "액션"),
 		/** 어드벤처 */
-		GENRE_ADVENTURE("Adventure", "어드벤처"),
+		GENRE_ADVENTURE(12, "Adventure", "어드벤처"),
 		/** 판타지 */
-		GENRE_FANTASY("Fantasy", "판타지"),
+		GENRE_FANTASY(14, "Fantasy", "판타지"),
 		/** 역사극 */
-		GENRE_HISTORY("History", "역사극"),
+		GENRE_HISTORY(36, "History", "역사극"),
 		/** 호러 */
-		GENRE_HORROR("Horror", "호러"),
+		GENRE_HORROR(27, "Horror", "호러"),
 		/** 음악 */
-		GENRE_MUSIC("Music", "음악"),
+		GENRE_MUSIC(10402, "Music", "음악"),
 		/** 로맨스 */
-		GENRE_ROMANCE("Romance", "로맨스"),
+		GENRE_ROMANCE(10749, "Romance", "로맨스"),
 		/** 공상과학 */
-		GENRE_SCIENCE_FICTION("Science Fiction", "공상과학"),
+		GENRE_SCIENCE_FICTION(878, "Science Fiction", "공상과학"),
 		/** TV 영화 */
-		GENRE_TV_MOVIE("TV Movie", "TV 영화"),
+		GENRE_TV_MOVIE(10770, "TV Movie", "TV 영화"),
 		/** 스릴러 */
-		GENRE_THRILLER("Thriller", "스릴러"),
+		GENRE_THRILLER(53, "Thriller", "스릴러"),
 		/** 전쟁 */
-		GENRE_WAR("War", "전쟁");
+		GENRE_WAR(10752, "War", "전쟁");
 
 		/** 장르 */
-		private String genre;
+		private int genreId;
+		
+		/** 장르(영어) */
+		private String genreEnglish;
 
 		/** 장르(한국어) */
 		private String genreKorean;
 
 		/** 장르 맵 */
 		private static final Map<String, String> GENRE_MAP = Stream.of(values()).collect(
-				Collectors.toMap(TmdbGenreEnum::getGenre, TmdbGenreEnum::getGenreKorean, (oldKey,newKey) -> newKey));
+				Collectors.toMap(TmdbGenreEnum::getGenreEnglish, TmdbGenreEnum::getGenreKorean, (oldKey,newKey) -> newKey));
 
 		/** 영어 장르명 -> 한글 장르명으로 변경 */
 		public static String getTranslatedGenre(String genre) {

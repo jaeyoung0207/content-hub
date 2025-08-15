@@ -1,18 +1,13 @@
 import z from 'zod';
-import { useTranslation } from "react-i18next"
-
 
 /**
  * 홈 스키마
  * @returns 홈 스키마
  */
 export const useHomeSchema = () => {
-
-    const homeSchema = z.object({
-
-    });
-    return homeSchema;
-}
+  const homeSchema = z.object({});
+  return homeSchema;
+};
 
 /**
  * 홈 스키마 타입 정의

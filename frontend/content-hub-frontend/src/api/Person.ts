@@ -10,8 +10,8 @@
  * ---------------------------------------------------------------
  */
 
-import { PersonResponseDto } from "./data-contracts";
-import { HttpClient, RequestParams } from "./http-client";
+import { PersonResponseDto } from './data-contracts';
+import { HttpClient, RequestParams } from './http-client';
 
 export class Person<
   SecurityDataType = unknown,
@@ -28,11 +28,11 @@ export class Person<
       /** @format int32 */
       personId: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<PersonResponseDto, any>({
       path: `/person/details`,
-      method: "GET",
+      method: 'GET',
       query: query,
       ...params,
     });

@@ -1,4 +1,4 @@
-import { AppBrowserRouter } from './components/common/router/AppRouter'
+import { AppBrowserRouter } from './components/common/router/AppRouter';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
 import { CookiesProvider } from 'react-cookie';
@@ -9,10 +9,10 @@ import { CookiesProvider } from 'react-cookie';
 function App() {
   return (
     <>
-      <div className='sm:w-sm md:w-md lg:w-7xl m-auto'>
+      <div className="sm:w-sm md:w-md lg:w-7xl m-auto">
         {/* 애플리케이션 전역에서 알림을 표시하는 ToastContainer는 설정 */}
         <ToastContainer
-          position='bottom-center' // 알림 위치 설정
+          position="bottom-center" // 알림 위치 설정
         />
         {/* 쿠키 프로바이더는 애플리케이션 전체에서 쿠키를 관리 */}
         <CookiesProvider>
@@ -21,7 +21,7 @@ function App() {
         </CookiesProvider>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

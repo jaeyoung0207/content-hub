@@ -1,6 +1,7 @@
 package com.cjy.contenthub.common.api.dto.tmdb;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,10 +45,16 @@ public class TmdbVideoCreditsCrewDto {
 	/** 크레딧 ID (TMDB에서 사용하는 고유 ID) */
 	private String creditId;
 	
+	/** 직무 정보 (TV Only) */
+	private List<TmdbJobDto> jobs;
+	
 	/** 부서 */
 	private String department;
 	
-	/** 직업 */
+	/** 직무 */
 	private String job;
+	
+	/** 총 에피소드 수 (TV Only) */
+	private int totalEpisodeCount;
 	
 }

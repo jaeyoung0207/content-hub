@@ -279,9 +279,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  emailVerified?: boolean;
-  emailValid?: boolean;
   leapMonth?: boolean;
+  emailValid?: boolean;
+  emailVerified?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -292,8 +292,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultNickname?: boolean;
   defaultImage?: boolean;
+  defaultNickname?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -338,6 +338,55 @@ export interface TmdbRecommendationsTvResultsDto {
   name?: string;
 }
 
+export interface TmdbRecommendationsMovieDto {
+  /** @format int32 */
+  page?: number;
+  results?: TmdbRecommendationsMovieResultsDto[];
+  /** @format int32 */
+  totalPages?: number;
+  /** @format int32 */
+  totalResults?: number;
+}
+
+export interface TmdbRecommendationsMovieResultsDto {
+  adult?: boolean;
+  backdropPath?: string;
+  genreIds?: number[];
+  /** @format int32 */
+  id?: number;
+  originalLanguage?: string;
+  overview?: string;
+  popularity?: number;
+  posterPath?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  originalTitle?: string;
+  releaseDate?: string;
+  title?: string;
+  video?: boolean;
+}
+
+export interface DetailComicsRecommendationsResponseDto {
+  results?: DetailComicsRecommendationsResultDto[];
+}
+
+export interface DetailComicsRecommendationsResultDto {
+  adult?: boolean;
+  backdropPath?: string;
+  genreIds?: number[];
+  /** @format int32 */
+  id?: number;
+  originalLanguage?: string;
+  overview?: string;
+  popularity?: number;
+  posterPath?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  title?: string;
+}
+
 export interface DetailTvResponseDto {
   adult?: boolean;
   backdropPath?: string;
@@ -361,6 +410,7 @@ export interface DetailTvResponseDto {
   seasons?: TmdbTvSeasonDto[];
   type?: string;
   credits?: TmdbVideoCreditsDto;
+  aggregateCredits?: TmdbVideoCreditsDto;
   link?: string;
   starRatingAverage?: number;
 }
@@ -369,6 +419,18 @@ export interface TmdbGenreDto {
   /** @format int32 */
   id?: number;
   name?: string;
+}
+
+export interface TmdbJobDto {
+  creditId?: string;
+  job?: string;
+  episodeCount?: string;
+}
+
+export interface TmdbRoleDto {
+  creditId?: string;
+  character?: string;
+  episodeCount?: string;
 }
 
 export interface TmdbTvSeasonDto {
@@ -399,6 +461,9 @@ export interface TmdbVideoCreditsCastDto {
   castId?: number;
   character?: string;
   creditId?: string;
+  roles?: TmdbRoleDto[];
+  /** @format int32 */
+  totalEpisodeCount?: number;
   /** @format int32 */
   order?: number;
 }
@@ -415,42 +480,16 @@ export interface TmdbVideoCreditsCrewDto {
   popularity?: number;
   profilePath?: string;
   creditId?: string;
+  jobs?: TmdbJobDto[];
   department?: string;
   job?: string;
+  /** @format int32 */
+  totalEpisodeCount?: number;
 }
 
 export interface TmdbVideoCreditsDto {
   cast?: TmdbVideoCreditsCastDto[];
   crew?: TmdbVideoCreditsCrewDto[];
-}
-
-export interface TmdbRecommendationsMovieDto {
-  /** @format int32 */
-  page?: number;
-  results?: TmdbRecommendationsMovieResultsDto[];
-  /** @format int32 */
-  totalPages?: number;
-  /** @format int32 */
-  totalResults?: number;
-}
-
-export interface TmdbRecommendationsMovieResultsDto {
-  adult?: boolean;
-  backdropPath?: string;
-  genreIds?: number[];
-  /** @format int32 */
-  id?: number;
-  originalLanguage?: string;
-  overview?: string;
-  popularity?: number;
-  posterPath?: string;
-  voteAverage?: number;
-  /** @format int32 */
-  voteCount?: number;
-  originalTitle?: string;
-  releaseDate?: string;
-  title?: string;
-  video?: boolean;
 }
 
 export interface DetailMovieResponseDto {
@@ -475,50 +514,9 @@ export interface DetailMovieResponseDto {
   starRatingAverage?: number;
 }
 
-export interface DetailCommentGetDataDto {
-  /** @format int64 */
-  commentNo?: number;
-  originalMediaType?: string;
-  apiId?: string;
-  userId?: string;
-  nickname?: string;
-  starRating?: number;
-  comment?: string;
-  /** @format int64 */
-  good?: number;
-  /** @format int64 */
-  bad?: number;
-  createTime?: string;
-}
-
-export interface DetailCommentGetResponseDto {
-  /** @format int64 */
-  totalElements?: number;
-  responseList?: DetailCommentGetDataDto[];
-}
-
-export interface DetailComicsRecommendationsResponseDto {
-  results?: DetailComicsRecommendationsResultDto[];
-}
-
-export interface DetailComicsRecommendationsResultDto {
-  adult?: boolean;
-  backdropPath?: string;
-  genreIds?: number[];
-  /** @format int32 */
-  id?: number;
-  originalLanguage?: string;
-  overview?: string;
-  popularity?: number;
-  posterPath?: string;
-  voteAverage?: number;
-  /** @format int32 */
-  voteCount?: number;
-  title?: string;
-}
-
 export interface AniListCharactersDto {
   nodes?: AniListCharactersNodesDto[];
+  pageInfo?: AniListPageInfoDto;
 }
 
 export interface AniListCharactersImageDto {
@@ -545,8 +543,8 @@ export interface AniListCharactersNodesDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface AniListDateDto {
@@ -556,6 +554,17 @@ export interface AniListDateDto {
   month?: number;
   /** @format int32 */
   day?: number;
+}
+
+export interface AniListPageInfoDto {
+  /** @format int32 */
+  total?: number;
+  /** @format int32 */
+  lastPage?: number;
+  /** @format int32 */
+  currentPage?: number;
+  hasNextPage?: boolean;
+  perPage?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -576,4 +585,26 @@ export interface DetailComicsResponseDto {
   /** @format int32 */
   chapters?: number;
   startDate?: string;
+}
+
+export interface DetailCommentGetDataDto {
+  /** @format int64 */
+  commentNo?: number;
+  originalMediaType?: string;
+  apiId?: string;
+  userId?: string;
+  nickname?: string;
+  starRating?: number;
+  comment?: string;
+  /** @format int64 */
+  good?: number;
+  /** @format int64 */
+  bad?: number;
+  createTime?: string;
+}
+
+export interface DetailCommentGetResponseDto {
+  /** @format int64 */
+  totalElements?: number;
+  responseList?: DetailCommentGetDataDto[];
 }
