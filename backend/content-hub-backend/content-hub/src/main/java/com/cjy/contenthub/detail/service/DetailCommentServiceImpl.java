@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +67,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 등록 성공 여부
 	 */
 	@Override
+	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean saveComment(DetailCommentDataServiceDto commentDto) {
 
 		// 서비스 DTO를 엔티티로 변환
@@ -94,6 +97,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 갱신 성공 여부
 	 */
 	@Override
+	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean updateComment(DetailCommentDataServiceDto commentDto) {
 		
 		// 서비스 DTO를 엔티티로 변환
@@ -123,6 +127,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 삭제 성공 여부
 	 */
 	@Override
+	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean deleteComment(Long commentNo) {
 		
 		// 해당 코멘트 삭제
@@ -142,6 +147,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return 상세 코멘트 서비스 DTO
 	 */
 	@Override
+	@Cacheable(value = "commentList", key = "#originalMediaType + '_' + #apiId + '_' + #page + '_' + #userId", unless = "#result == null")
 	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String userId) {
 
 		// 페이지 번호 설정
@@ -180,6 +186,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return 별점 평균
 	 */
 	@Override
+	@Cacheable(value = "starRatingAverage", key = "#originalMediaType + '_' + #apiId")
 	public BigDecimal getStarRatingAverage(String originalMediaType, String apiId) {
 		
 		// 별점 평균 조회

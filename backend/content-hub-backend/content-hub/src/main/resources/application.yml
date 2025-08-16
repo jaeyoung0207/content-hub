@@ -55,10 +55,10 @@ logging:
 #TMDB API Config
 tmdb:
   api:
-    key: 8e92dcdda6bea8e495cdb9b35ab1e664
-    token: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZTkyZGNkZGE2YmVhOGU0OTVjZGI5YjM1YWIxZTY2NCIsIm5iZiI6MTc0NTAzMTQ5Ni4wNTUsInN1YiI6IjY4MDMxMTQ4NjFiMWM0YmIzMjlhNTA0OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.IJFQE9TgzRyibt963p8WkXtb53c7HuJ_PX2oVZNTN18
-    #key: ${TMDB_API_KEY}
-    #token: ${TMDB_API_TOKEN}
+    #key: 8e92dcdda6bea8e495cdb9b35ab1e664
+    #token: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZTkyZGNkZGE2YmVhOGU0OTVjZGI5YjM1YWIxZTY2NCIsIm5iZiI6MTc0NTAzMTQ5Ni4wNTUsInN1YiI6IjY4MDMxMTQ4NjFiMWM0YmIzMjlhNTA0OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.IJFQE9TgzRyibt963p8WkXtb53c7HuJ_PX2oVZNTN18
+    key: ${TMDB_API_KEY}
+    token: ${TMDB_API_TOKEN}
   url: 
     baseUrl: https://api.themoviedb.org
     tvSearchPath: /3/search/tv
@@ -93,8 +93,8 @@ anilist:
 #DeepL API Config
 deepl:
   api:
-    key: b79e6d1a-09a9-40ad-a29b-018cab21e62b:fx
-    #key: ${DEEPL_API_KEY}
+    #key: b79e6d1a-09a9-40ad-a29b-018cab21e62b:fx
+    key: ${DEEPL_API_KEY}
   url:
     baseUrl: https://api-free.deepl.com/v2
     translatePath: /translate

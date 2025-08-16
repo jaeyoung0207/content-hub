@@ -34,10 +34,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자는 protected로 설정하여 외부에서 직접 생성하지 못하도록 함
 @AllArgsConstructor
 @Table(
-		schema = CommonConstants.SCHEMA_NAME_CONTENT, // 스키마 이름
-		name = "comment", // 테이블 이름
-		uniqueConstraints = @UniqueConstraint(name = "comment_unique" ,columnNames = {"originalMediaType", "apiId", "commentNo"}), // originalMediaType, apiId, commentNo의 조합이 유일해야 함
-		indexes = {@Index(name = "idx_original_media_type_api_id", columnList = "originalMediaType, apiId")} // originalMediaType와 apiId에 대한 인덱스 생성
+		schema = CommonConstants.SCHEMA_NAME_CONTENT,
+		name = "comment",
+		uniqueConstraints = @UniqueConstraint(name = "comment_unique" ,columnNames = {"originalMediaType", "apiId", "commentNo"}),
+		indexes = {@Index(name = "idx_original_media_type_api_id_create_time", columnList = "originalMediaType, apiId, createTime")}
 		)
 public class DetailCommentEntity implements Serializable {
 	

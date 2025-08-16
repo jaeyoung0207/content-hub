@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DetailCommentController {
 
 	/** 코멘트 서비스 */
-	private final DetailCommentService service;
+	private final DetailCommentService commentService;
 
 	/** 상세 매퍼 */
 	private final DetailMapper mapper;
@@ -73,7 +73,7 @@ public class DetailCommentController {
 		DetailCommentDataServiceDto commentDto = mapper.commentSaveReqToCommentService(params);
 
 		// 등록 서비스 호출
-		Boolean saveResult = service.saveComment(commentDto);
+		Boolean saveResult = commentService.saveComment(commentDto);
 
 		// 등록 결과 반환
 		return ResponseEntity.ok(saveResult);
@@ -93,7 +93,7 @@ public class DetailCommentController {
 		DetailCommentDataServiceDto commentDto = mapper.commentUpdateReqToCommentService(params);
 
 		// 갱신 서비스 호출
-		Boolean updateResult = service.updateComment(commentDto);
+		Boolean updateResult = commentService.updateComment(commentDto);
 
 		// 갱신 결과 반환
 		return ResponseEntity.ok(updateResult);
@@ -110,7 +110,7 @@ public class DetailCommentController {
 	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_NO) @NotNull Long commentNo) {
 
 		// 삭제 서비스 호출
-		Boolean deleteResult = service.deleteComment(commentNo);
+		Boolean deleteResult = commentService.deleteComment(commentNo);
 
 		// 삭제 결과 반환
 		return ResponseEntity.ok(deleteResult);
@@ -138,7 +138,7 @@ public class DetailCommentController {
 		DetailCommentGetResponseDto response = new DetailCommentGetResponseDto();
 
 		// 코멘트 조회 서비스 호출
-		DetailCommentServiceDto serviceResult = service.getCommentList(originalMediaType, apiId, page, userId);
+		DetailCommentServiceDto serviceResult = commentService.getCommentList(originalMediaType, apiId, page, userId);
 
 		// 서비스 DTO를 응답 DTO로 변환
 		List<DetailCommentGetDataDto> responseDtoList = mapper.commentServiceDtoListToCommentGetResponseDtoList(serviceResult.getDataList());
@@ -166,7 +166,7 @@ public class DetailCommentController {
 			) {
 
 		// 별점 평균 조회 서비스 호출
-		BigDecimal starRating = service.getStarRatingAverage(originalMediaType, apiId);
+		BigDecimal starRating = commentService.getStarRatingAverage(originalMediaType, apiId);
 
 		// 별점 평균 반환
 		return ResponseEntity.status(HttpStatus.OK).body(starRating);
