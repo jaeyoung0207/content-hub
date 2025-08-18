@@ -24,7 +24,7 @@ type VideoInformationPropsType = {
 };
 
 /**
- * 비디오 정보 컴포넌트
+ * 비디오(애니, 드라마, 영화) 정보 컴포넌트
  * @param detailResult 상세 정보 결과
  * @param originalMediaType 원본 미디어 타입
  */

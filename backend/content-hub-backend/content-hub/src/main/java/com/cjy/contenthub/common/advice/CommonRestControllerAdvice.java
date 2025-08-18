@@ -1,6 +1,7 @@
 package com.cjy.contenthub.common.advice;
 
 import java.nio.file.AccessDeniedException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Rest API 통신중 발생한 에러를 잡아서 처리하는 클래스
- * 각 메소드에서 예외를 잡아 적절한 에러 메시지와 상태 코드를 JSON 형태의 객체로 반환
+ * 각 메소드에서 예외를 잡아 적절한 에러 메시지와 상태 코드를 JSON 형태의 오브젝트로 반환
  */
 @Slf4j
 @RestControllerAdvice
@@ -45,6 +46,9 @@ public class CommonRestControllerAdvice {
 
 	/** 시스템 에러 */
 	private static final String SERVER_ERROR = "Server Error";
+	
+	/** 타임아웃 에러 */
+	private static final String TIMEOUT_ERROR = "Timeout Error";
 
 	/** 시스템 에러 */
 	private static final String LOG_FORMAT = " : path={}, status={}, message={}";
@@ -54,7 +58,7 @@ public class CommonRestControllerAdvice {
 	 * 
 	 * @param ex AuthenticationException, AccessDeniedException
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler({
 		AuthenticationException.class, // 인증 실패
@@ -82,7 +86,7 @@ public class CommonRestControllerAdvice {
 	 * @param ex BindException, MissingServletRequestParameterException, MethodArgumentTypeMismatchException, 
 	 *           HttpMessageNotReadableException, ConstraintViolationException
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler({
 		HttpMessageNotReadableException.class, // JSON 파싱 에러
@@ -141,10 +145,10 @@ public class CommonRestControllerAdvice {
 	 * 
 	 * @param ex WebClientResponseException
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler(WebClientResponseException.class)
-	public ResponseEntity<CommonErrorResponse> handleException(WebClientResponseException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleWebClientException(WebClientResponseException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		String statusCode = String.valueOf(ex.getStatusCode());
 		String message = ex.getMessage();
@@ -165,10 +169,10 @@ public class CommonRestControllerAdvice {
 	 * 
 	 * @param ex CommonBusinessException
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler(CommonBusinessException.class)
-	public ResponseEntity<CommonErrorResponse> handleException(CommonBusinessException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleBusinessException(CommonBusinessException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode();
 		String message = ex.getMessage();
@@ -187,10 +191,10 @@ public class CommonRestControllerAdvice {
 	 * 
 	 * @param ex ResponseStatusException
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler(ResponseStatusException.class)
-	public ResponseEntity<CommonErrorResponse> handleException(ResponseStatusException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
 		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode().value();
 		String message = ex.getReason();
@@ -203,13 +207,35 @@ public class CommonRestControllerAdvice {
 		log.error(BUSINESS_ERROR.concat(" (StatusException)".concat(LOG_FORMAT)), path, statusCode, message, ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
+	
+	/**
+	 * 타임아웃 예외 처리
+	 * 
+	 * @param ex      TimeoutException
+	 * @param request HttpServletRequest
+	 * @return 공통 에러 응답 오브젝트
+	 */
+	@ExceptionHandler(TimeoutException.class)
+	public ResponseEntity<CommonErrorResponse> handleTimeoutException(TimeoutException ex, HttpServletRequest request) {
+	    String path = request.getRequestURI();
+	    int statusCode = HttpStatus.GATEWAY_TIMEOUT.value();
+	    String message = "API Request Timeout: " + ex.getMessage();
+	    CommonErrorResponse errorResponse = CommonErrorResponse.builder()
+	        .path(path)
+	        .status(String.valueOf(statusCode))
+	        .message(message)
+	        .name(TIMEOUT_ERROR)
+	        .build();
+	    log.error("Timeout Error : path={}, status={}, message={}", path, statusCode, ex.getMessage(), ex);
+	    return new ResponseEntity<>(errorResponse, HttpStatus.GATEWAY_TIMEOUT);
+	}
 
 	/**
 	 * 그 밖에 모든 예외 처리
 	 * 
 	 * @param ex Exception
 	 * @param request HttpServletRequest
-	 * @return ResponseEntity<CommonErrorResponse>
+	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<CommonErrorResponse> handleException(Exception ex, HttpServletRequest request) {

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.api.dto.kakao.KakaoIssueTokenDto;
@@ -43,48 +40,8 @@ public class LoginController {
 	/** 로그인 서비스 */
 	private final LoginService loginService;
 
-	/** 네이버 API WebClient */
-	@Qualifier("naverWebClient")
-	private final WebClient naverWebClient;
-
-	/** 카카오 API WebClient */
-	@Qualifier("kakaoWebClient")
-	private final WebClient kakaoWebClient;
-
 	/** 로그인 클라이언트 */
 	private final LoginClient loginClient;
-
-	/** 네이버 클라이언트 ID */
-	@Value("${login.naver.clientId}")
-	private String clientId;
-
-	/** 네이버 클라이언트 시크릿 */
-	@Value("${login.naver.clientSecret}")
-	private String clientSecret;
-
-	/** 네이버 API 토큰 발행 URL */
-	@Value("${login.naver.tokenIssueUrl}")
-	private String naverTokenIssueUrl;
-
-	/** 네이버 API 유저 정보 URL */
-	@Value("${login.kakao.userInfoUrl}")
-	private String kakaoOidcUserInfoUrl;
-
-	/** 카카오 API 토큰 발행 URL */
-	@Value("${login.kakao.tokenIssueUrl}")
-	private String kakaoTokenIssueUrl;
-
-	/** 카카오 API 유저 정보 URL */
-	@Value("${login.kakao.userInfoUrl}")
-	private String kakaoUserInfoUrl;
-
-	/** 카카오 API 로그아웃 URL */
-	@Value("${login.kakao.logoutUrl}")
-	private String kakaoLogoutUrl;
-
-	/** 카카오 클라이언트 시크릿 */
-	@Value("${login.kakao.clientSecret}")
-	private String kakaoClientSecret;
 
 	/** 파라미터 : 클라이언트 ID */
 	private static final String PARAM_CLIENT_ID = "client_id";

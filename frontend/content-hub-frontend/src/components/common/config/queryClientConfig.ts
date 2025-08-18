@@ -22,8 +22,6 @@ export type AxiosErrorType = {
 
 /**
  * React Query의 QueryClient 설정
- * 재시도 기능을 비활성화하고, 브라우저 포커스 시 데이터 재요청을 방지
- * API 요청의 에러를 일관되게 처리하기 위해 사용
  */
 export const queryClientConfig = new QueryClient({
   defaultOptions: {
@@ -52,11 +50,7 @@ export const queryClientConfig = new QueryClient({
 
 /**
  * 에러 출력 함수
- * AxiosError를 처리하고, 에러 메시지를 toast로 표시
- * 에러 페이지나 점검 페이지로 리다이렉트하는 로직 포함
- * 에러 메시지와 상태 코드에 따라 다른 처리를 수행
- * 에러 메시지를 콘솔에 출력하고, 사용자에게 알림
- * 에러 페이지나 점검 페이지의 경우 중복 로딩 방지
+ * AxiosError를 처리하고, 에러 메시지를 console, toast로 표시
  * @param error 에러 객체
  */
 const outputError = (error: Error) => {

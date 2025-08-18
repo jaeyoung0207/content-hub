@@ -81,6 +81,8 @@ export const useComicsInformation = (
         pageParams: data.pageParams,
       }),
       initialPageParam: 1,
+      staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
+      gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
     });
 
   /**

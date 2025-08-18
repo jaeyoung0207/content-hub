@@ -44,36 +44,36 @@ public class LoginServiceImpl implements LoginService {
 	private final WebClient kakaoWebClient;
 
 	/** 네이버 클라이언트 ID */
-	@Value("${login.naver.clientId}")
-	private String clientId;
+	@Value("${login.naver.api.clientId}")
+	private String naverClientId;
 
 	/** 네이버 클라이언트 시크릿 */
-	@Value("${login.naver.clientSecret}")
-	private String clientSecret;
+	@Value("${login.naver.api.clientSecret}")
+	private String naverClientSecret;
+	
+	/** 카카오 클라이언트 시크릿 */
+	@Value("${login.kakao.api.clientSecret}")
+	private String kakaoClientSecret;
 
 	/** 네이버 API 토큰 발행 URL */
-	@Value("${login.naver.tokenIssueUrl}")
+	@Value("${login.naver.url.tokenIssueUrl}")
 	private String naverTokenIssueUrl;
 
 	/** 네이버 API 유저 정보 URL */
-	@Value("${login.kakao.userInfoUrl}")
+	@Value("${login.kakao.url.userInfoUrl}")
 	private String kakaoOidcUserInfoUrl;
 
 	/** 카카오 API 토큰 발행 URL */
-	@Value("${login.kakao.tokenIssueUrl}")
+	@Value("${login.kakao.url.tokenIssueUrl}")
 	private String kakaoTokenIssueUrl;
 
 	/** 카카오 API 유저 정보 URL */
-	@Value("${login.kakao.userInfoUrl}")
+	@Value("${login.kakao.url.userInfoUrl}")
 	private String kakaoUserInfoUrl;
 
 	/** 카카오 API 로그아웃 URL */
-	@Value("${login.kakao.logoutUrl}")
+	@Value("${login.kakao.url.logoutUrl}")
 	private String kakaoLogoutUrl;
-
-	/** 카카오 클라이언트 시크릿 */
-	@Value("${login.kakao.clientSecret}")
-	private String kakaoClientSecret;
 
 	/** 파라미터 : 권한 종별 */
 	private static final String PARAM_GRANT_TYPE = "grant_type";
@@ -153,8 +153,8 @@ public class LoginServiceImpl implements LoginService {
 		// 네이버 토큰 발급 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
 				.queryParam(PARAM_GRANT_TYPE, VALUE_AUTHORIZATION_CODE)
-				.queryParam(PARAM_CLIENT_ID, clientId)
-				.queryParam(PARAM_CLIENT_SECRET, clientSecret)
+				.queryParam(PARAM_CLIENT_ID, naverClientId)
+				.queryParam(PARAM_CLIENT_SECRET, naverClientSecret)
 				.queryParam(PARAM_CODE, code)
 				.queryParam(PARAM_STATE, state)
 				.toUriString();
@@ -179,8 +179,8 @@ public class LoginServiceImpl implements LoginService {
 		// 네이버 토큰 갱신 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
 				.queryParam(PARAM_GRANT_TYPE, GRANT_TYPE_REFRESH_TOKEN)
-				.queryParam(PARAM_CLIENT_ID, clientId)
-				.queryParam(PARAM_CLIENT_SECRET, clientSecret)
+				.queryParam(PARAM_CLIENT_ID, naverClientId)
+				.queryParam(PARAM_CLIENT_SECRET, naverClientSecret)
 				.queryParam(PARAM_REFRESH_TOKEN, refreshToken)
 				.toUriString();
 
@@ -204,8 +204,8 @@ public class LoginServiceImpl implements LoginService {
 		// 네이버 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
 				.queryParam(PARAM_GRANT_TYPE, GRANT_TYPE_DELETE)
-				.queryParam(PARAM_CLIENT_ID, clientId)
-				.queryParam(PARAM_CLIENT_SECRET, clientSecret)
+				.queryParam(PARAM_CLIENT_ID, naverClientId)
+				.queryParam(PARAM_CLIENT_SECRET, naverClientSecret)
 				.queryParam(PARAM_ACCESS_TOKEN, accessToken)
 				.queryParam(PARAM_SERVICE_PROVIDER, LoginProviderEnum.NAVER.getProvider())
 				.toUriString();

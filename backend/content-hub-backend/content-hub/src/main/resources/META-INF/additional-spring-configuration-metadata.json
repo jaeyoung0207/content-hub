@@ -105,6 +105,16 @@
     "description": "A description for 'tmdb.custom.autoCompleteCount'"
   },
   {
+    "name": "tmdb.custom.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.timeout'"
+  },
+  {
+    "name": "tmdb.custom.retryCount",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.retryCount'"
+  },
+  {
     "name": "anilist.url.base-url",
     "type": "java.lang.String",
     "description": "A description for 'anilist.url.base-url'"
@@ -125,14 +135,9 @@
     "description": "A description for 'anilist.custom.perCharacterPage'"
   },
   {
-    "name": "deepl.url.translate-path",
+    "name": "anilist.custom.timeout",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.url.translate-path'"
-  },
-  {
-    "name": "deepl.url.base-url",
-    "type": "java.lang.String",
-    "description": "A description for 'deepl.url.base-url'"
+    "description": "A description for 'anilist.custom.timeout'"
   },
   {
     "name": "deepl.api.key",
@@ -140,54 +145,79 @@
     "description": "A description for 'deepl.api.key'"
   },
   {
-    "name": "login.naver.clientId",
+    "name": "deepl.url.baseUrl",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.clientId'"
+    "description": "A description for 'deepl.url.baseUrl'"
   },
   {
-    "name": "login.naver.tokenIssueUrl",
+    "name": "deepl.url.translatePath",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.tokenIssueUrl'"
+    "description": "A description for 'deepl.url.translatePath'"
   },
   {
-    "name": "login.naver.clientSecret",
+    "name": "deepl.custom.timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.clientSecret'"
+    "description": "A description for 'deepl.custom.timeout'"
   },
   {
-    "name": "login.naver.redirectUri",
+    "name": "login.naver.api.clientId",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.redirectUri'"
+    "description": "A description for 'login.naver.api.clientId'"
   },
   {
-    "name": "login.naver.userInfoUrl",
+    "name": "login.naver.api.clientSecret",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.userInfoUrl'"
+    "description": "A description for 'login.naver.api.clientSecret'"
   },
   {
-    "name": "login.kakao.clientSecret",
+    "name": "login.naver.url.tokenIssueUrl",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.clientSecret'"
+    "description": "A description for 'login.naver.url.tokenIssueUrl'"
   },
   {
-    "name": "login.kakao.tokenIssueUrl",
+    "name": "login.naver.url.redirectUri",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.tokenIssueUrl'"
+    "description": "A description for 'login.naver.url.redirectUri'"
   },
   {
-    "name": "login.kakao.oidcUserInfoUrl",
+    "name": "login.naver.url.userInfoUrl",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.oidcUserInfoUrl'"
+    "description": "A description for 'login.naver.url.userInfoUrl'"
   },
   {
-    "name": "login.kakao.userInfoUrl",
+    "name": "login.naver.custom.timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.userInfoUrl'"
+    "description": "A description for 'login.naver.custom.timeout'"
   },
   {
-    "name": "login.kakao.logoutUrl",
+    "name": "login.kakao.api.clientSecret",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.logoutUrl'"
+    "description": "A description for 'login.kakao.api.clientSecret'"
+  },
+  {
+    "name": "login.kakao.url.tokenIssueUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.url.tokenIssueUrl'"
+  },
+  {
+    "name": "login.kakao.url.oidcUserInfoUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.url.oidcUserInfoUrl'"
+  },
+  {
+    "name": "login.kakao.url.userInfoUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.url.userInfoUrl'"
+  },
+  {
+    "name": "login.kakao.url.logoutUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.url.logoutUrl'"
+  },
+  {
+    "name": "login.kakao.custom.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.custom.timeout'"
   },
   {
     "name": "app.url",

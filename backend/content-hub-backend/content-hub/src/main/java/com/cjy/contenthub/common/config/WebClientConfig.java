@@ -1,11 +1,14 @@
 package com.cjy.contenthub.common.config;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -31,10 +34,18 @@ public class WebClientConfig {
 	/** TMDB API 기본 URL */
 	@Value("${tmdb.url.baseUrl}")
 	private String tmdbBaseUrl;
+	
+	/** TMDB API Timeout */
+	@Value("${tmdb.custom.timeout}")
+	private int tmdbTimeout;
 
 	/** AniList API 기본 URL */
 	@Value("${anilist.url.baseUrl}")
 	private String anilistBaseUrl;
+	
+	/** AniList API Timeout */
+	@Value("${anilist.custom.timeout}")
+	private int anilistTimeout;
 
 	/** DeepL API 기본 URL */
 	@Value("${deepl.url.baseUrl}")
@@ -43,6 +54,18 @@ public class WebClientConfig {
 	/** DeepL API 인증 키 */
 	@Value("${deepl.api.key}")
 	private String deeplApiKey;
+	
+	/** DeepL API Timeout */
+	@Value("${deepl.custom.timeout}")
+	private int deeplTimeout;
+	
+	/** NAVER API Timeout */
+	@Value("${login.naver.custom.timeout}")
+	private int naverTimeout;
+	
+	/** KAKAO API Timeout */
+	@Value("${login.kakao.custom.timeout}")
+	private int kakaoTimeout;
 
 	/**
 	 * TMDB API와 통신하기 위한 WebClient를 설정
@@ -52,11 +75,14 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient tmdbWebClient() {
+		// 타임아웃 필터
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(tmdbTimeout));
 		// WebClient 공통설정
 		return WebClient.builder()
 				.baseUrl(tmdbBaseUrl) // TMDB API 기본 URL 설정
 				.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ".concat(tmdbApiAccessToken)) // 헤더에 인증에 필요한 토큰 설정
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
+				.filter(timeoutFilter) // 타임아웃 필터 설정 
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
@@ -70,11 +96,14 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient anilistWebClient() {
+		// 타임아웃 필터
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(anilistTimeout));
 		// WebClient 공통설정
 		return WebClient.builder() // WebClient 빌더 생성
 				.baseUrl(anilistBaseUrl) // AniList API 기본 URL 설정
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // 헤더에 전송하는 데이터 타입 설정
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
+				.filter(timeoutFilter) // 타임아웃 필터 설정 
 				.build();
 	}
 
@@ -86,11 +115,14 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient deeplWebClient() {
+		// 타임아웃 필터
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(deeplTimeout));
 		// WebClient 공통설정
 		return WebClient.builder()
 				.baseUrl(deeplBaseUrl) // DeepL API 기본 URL 설정
 				.defaultHeader(HttpHeaders.AUTHORIZATION, "DeepL-Auth-Key ".concat(deeplApiKey)) // 헤더에 인증 키 설정
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE) // 헤더에 전송하는 데이터 타입 설정
+				.filter(timeoutFilter) // 타임아웃 필터 설정 
 				.build();
 	}
 
@@ -102,8 +134,11 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient naverWebClient() {
+		// 타임아웃 필터
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(naverTimeout));
 		// WebClient 공통설정
 		return WebClient.builder()
+				.filter(timeoutFilter) // 타임아웃 필터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
@@ -116,9 +151,12 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient kakaoWebClient() {
+		// 타임아웃 필터
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(naverTimeout));
 		// WebClient 공통설정
 		return WebClient.builder()
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8") // 헤더에 전송하는 데이터 타입 설정
+				.filter(timeoutFilter) // 타임아웃 필터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}

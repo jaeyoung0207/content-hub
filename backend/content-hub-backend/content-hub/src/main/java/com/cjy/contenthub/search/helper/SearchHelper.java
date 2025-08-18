@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
@@ -26,6 +27,25 @@ public class SearchHelper {
 	/** TMDB API 페이지당 작품 표시 개수 */
 	@Value("${tmdb.custom.perMainPage}")
 	private int tmdbPerMainPage;
+	
+	/** TMDB API TV시리즈 검색 API 패스 */
+	@Value("${tmdb.url.tvSearchPath}")
+	private String tvSearchPath;
+	
+	/** 리퀘스트 파라미터 키 : 검색어 */
+	private static final String PARAM_QUERY = "query";
+
+	/** 리퀘스트 파라미터 키 : 페이지 */
+	private static final String PARAM_PAGE = "page";
+	
+	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
+	private static final String PARAM_INCLUDE_ADULT = "include_adult";
+	
+	/** 리퀘스트 파라미터 키 : 언어 */
+	private static final String PARAM_LANGUAGE = "language";
+
+	/** 언어 : 한국어 */
+	private static final String LANGUAGE_KOREAN = "ko-KR";
 
 	/**
 	 * private 생성자로 외부에서 인스턴스 생성을 막음
@@ -63,6 +83,24 @@ public class SearchHelper {
 		// 정렬된 리스트 반환
 		return sortedList;
 	}
+	
+	/**
+	 * TV시리즈 검색 URI 생성
+	 * 
+	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
+	 * @param page    페이지 번호
+	 * @return 생성된 URI 문자열
+	 */
+	public String getTvSearchUri(String keyword, boolean isAdult, int page) {
+		return UriComponentsBuilder.fromPath(tvSearchPath)
+				.queryParam(PARAM_QUERY, keyword)
+				.queryParam(PARAM_INCLUDE_ADULT, isAdult)
+				.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+				.queryParam(PARAM_PAGE, page)
+				.toUriString();
+	}
+
 	
 	/**
 	 * 비디오 검색 결과 DTO를 설정

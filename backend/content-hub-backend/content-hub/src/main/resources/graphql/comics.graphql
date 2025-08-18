@@ -1,5 +1,5 @@
-query($mediaId: Int, $isAdult: Boolean, $page: Int, $perPage: Int)  {
-  Media(id: $mediaId, type: MANGA, , isAdult: $isAdult) {
+query($mediaId: Int, $page: Int, $perPage: Int)  {
+  Media(id: $mediaId, type: MANGA) {
     id
     description
     genres

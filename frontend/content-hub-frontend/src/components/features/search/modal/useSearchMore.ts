@@ -3,11 +3,12 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { Search } from '@/api/Search';
 import { ESC_KEY, MEDIA_TYPE } from '@/components/common/constants/constants';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { SearchCommonResultListType } from '../useSearch';
 import { useSearchParams } from 'react-router-dom';
@@ -40,6 +41,7 @@ export type UseInfiniteQueryResultType = {
  */
 export const useSearchMore = (
   keyword: string,
+  isAdult: boolean,
   mediaType: string
 ): UseSearchConentModalReturnType => {
   // ================================================================================================== URL query string
@@ -53,6 +55,8 @@ export const useSearchMore = (
   const [observeTarget, setObserveTarget] = useState<HTMLDivElement | null>(
     null
   );
+  // 전체 페이지 수를 저장하는 ref
+  const totalPagesRef = useRef<number | undefined>(0);
 
   // ================================================================================================== react query
 
@@ -63,27 +67,48 @@ export const useSearchMore = (
   const judgeExecApi = async (pageParam: number) => {
     if (mediaType == MEDIA_TYPE.ANI) {
       // 애니메이션 검색 API 호출
-      return (
+      const response = await (
         await searchApi.searchAni({ query: keyword, page: pageParam }, {})
-      ).data.results;
+      );
+      // 전체 페이지 수 저장
+      if (response.data.page === 1) {
+        totalPagesRef.current = response.data.totalPages;
+      }
+      return response.data.results;
+
     } else if (mediaType == MEDIA_TYPE.DRAMA) {
       // 드라마 검색 API 호출
-      return (
+      const response = await (
         await searchApi.searchDrama({ query: keyword, page: pageParam }, {})
-      ).data.results;
+      );
+      // 전체 페이지 수 저장
+      if (response.data.page === 1) {
+        totalPagesRef.current = response.data.totalPages;
+      }
+      return response.data.results;
     } else if (mediaType == MEDIA_TYPE.MOVIE) {
       // 영화 검색 API 호출
-      return (
+      const response = await (
         await searchApi.searchMovie({ query: keyword, page: pageParam }, {})
-      ).data.results;
+      );
+      // 전체 페이지 수 저장
+      if (response.data.page === 1) {
+        totalPagesRef.current = response.data.totalPages;
+      }
+      return response.data.results;
     } else if (mediaType == MEDIA_TYPE.COMICS) {
       // 만화 검색 API 호출
-      return (
+      const response = await (
         await searchApi.searchComics(
           { query: keyword, page: pageParam, isMainPage: false },
           {}
         )
-      ).data.comicsResults;
+      );
+      // 전체 페이지 수 저장
+      if (response.data.page === 1) {
+        totalPagesRef.current = response.data.totalPages;
+      }
+      return response.data.comicsResults;
     } else {
       return null;
     }
@@ -99,13 +124,14 @@ export const useSearchMore = (
     SearchCommonResultListType, // queryFn이 반환하는 원본 데이터
     AxiosError, // 에러 타입 (보통 AxiosError)
     UseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
-    [string, string, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
+    [string, string, boolean, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
     number | undefined // pageParam 타입 (보통 number | undefined)
   >({
     // useInfiniteQuery의 키 지정
-    queryKey: searchQueryKeys.searchMore.searchMore(keyword, mediaType) as [
+    queryKey: searchQueryKeys.searchMore.searchMore(keyword, isAdult, mediaType) as [
       string,
       string,
+      boolean,
       string,
     ],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
@@ -118,8 +144,10 @@ export const useSearchMore = (
     // 새 데이터를 받아올 때 마지막페이지와 전체페이지 배열을 함께 받아옴
     // 더 불러올 데이터가 있는지 여부를 결정하는데 사용
     // 반환값이 다음 API호출할때의 pageParam으로 들어감
-    getNextPageParam: (lastPageData, allPages) => {
-      return lastPageData.length === 0 ? undefined : allPages.length + 1;
+    getNextPageParam: (_, allPages) => {
+      const currentPage = allPages.length;
+      const totalPages = totalPagesRef.current ?? 1;
+      return currentPage < totalPages ? currentPage + 1 : undefined;
     },
     select: (data) => ({
       pages: data.pages,
@@ -127,6 +155,8 @@ export const useSearchMore = (
     }),
     initialPageParam: 1, // 초기 페이지 매개변수를 지정
     enabled: !!keyword && !!mediaType, // useInfiniteQuery가 실행되는 조건 지정
+    staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
+    gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
   });
 
   // ================================================================================================== function

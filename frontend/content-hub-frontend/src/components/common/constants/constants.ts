@@ -86,8 +86,8 @@ export const COMMON_IMAGES = {
   NO_IMAGE: NoImageThumbnailFile,
 };
 
+// API 응답 에러 코드
 export const ERROR_CODE = {
-  // API 응답 에러 코드
   BAD_REQUEST: {
     name: '400',
     message: 'Bad Request',
@@ -112,11 +112,13 @@ export const ERROR_CODE = {
     name: '503',
     message: 'Service Unavailable',
   },
+  GATEWAY_TIMEOUT: {
+    name: '504',
+    message: 'Gateway Timeout',
+  },
 };
 
-/**
- * 에러 메세지 정의
- */
+// API 응답 에러 메시지
 export const ERROR_MESSAGE = {
   // API 응답 에러 메시지
   // 네트워크 에러
@@ -154,6 +156,7 @@ export const ERROR_MESSAGE = {
     name: 'Unexpected Error',
     message: i18n.t('error.unexpectedError'),
   },
+  // 잘못된 요청 에러
   BAD_REQUEST_ERROR: {
     name: 'Bad Request Error',
     message: i18n.t('error.badRequestError'),
@@ -162,5 +165,10 @@ export const ERROR_MESSAGE = {
   SYSTEM_ERROR: {
     name: 'System Error',
     message: i18n.t('error.systemError'),
+  },
+  // 타임아웃 에러
+  TIMEOUT_ERROR: {
+    name: 'Timeout Error',
+    message: i18n.t('error.timeoutError'),
   },
 };

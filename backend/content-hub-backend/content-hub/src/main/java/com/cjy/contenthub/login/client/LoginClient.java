@@ -62,11 +62,11 @@ public class LoginClient {
 	private final WebClient kakaoWebClient;
 
 	/** 네이버 API 유저 정보 조회 URL */
-	@Value("${login.naver.userInfoUrl}")
+	@Value("${login.naver.url.userInfoUrl}")
 	private String naverUserInfoUrl;
 
 	/** 카카오 API 유저 정보 조회 URL */
-	@Value("${login.kakao.userInfoUrl}")
+	@Value("${login.kakao.url.userInfoUrl}")
 	private String kakaoUserInfoUrl;
 
 	/** 로그인 서비스 */
@@ -76,12 +76,12 @@ public class LoginClient {
 	private final JwtUtil jwtUtil;
 
 	/** 네이버 API 클라이언트 ID */
-	@Value("${login.naver.clientId}")
-	private String clientId;
+	@Value("${login.naver.api.clientId}")
+	private String naverClientId;
 
 	/** 네이버 API 클라이언트 시크릿 */
-	@Value("${login.naver.clientSecret}")
-	private String clientSecret;
+	@Value("${login.naver.api.clientSecret}")
+	private String naverClientSecret;
 
 	/** 유저 정보 조회 API 응답 성공 결과 코드 */
 	private static final String PROFILE_API_SUCCESS = "00";

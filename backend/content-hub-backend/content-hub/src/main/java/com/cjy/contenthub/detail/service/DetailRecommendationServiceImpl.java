@@ -21,9 +21,7 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.GraphqlUtil;
-import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
 import com.cjy.contenthub.detail.helper.DetailRecoommendationHelper;
@@ -39,9 +37,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class DetailRecommendationServiceImpl implements DetailRecommendationService {
-
-	/** 공통 세션 유팅 */
-	private final SessionUtil session;
 
 	/** 상세 헬퍼 */
 	private final DetailRecoommendationHelper helper;
@@ -96,9 +91,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	/** 리퀘스트 파라미터 키 : 미디어 ID */
 	private static final String PARAM_MEDIA_ID = "mediaId";
 	
-	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
-	private static final String PARAM_IS_ADULT = "isAdult";
-
 	/** 언어 : 한국어 */
 	private static final String LANGUAGE_KOREAN = "ko-KR";
 
@@ -248,8 +240,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	@Cacheable(value = "anilistComicsRecommendations", key = "#mediaId + '-' + #page", unless = "#result == null")
 	public DetailComicsRecommendationsResponseDto getComicsRecommendations(Integer mediaId, Integer page) throws IOException {
 
-		// 성인콘텐츠 포함 여부
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		// graphql 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsRecomendation.graphql");
 		// 리퀘스트 파라미터 작성
@@ -258,10 +248,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				PARAM_PAGE, Optional.ofNullable(page).orElse(FIRST_PAGE_NO),
 				PARAM_PER_PAGE, anilistPerMorePage
 				));
-		// 성인물 플래그가 false인 경우, 파라미터 추가
-		if (!isAdult) {
-			variables.put(PARAM_IS_ADULT, isAdult);
-		}
 		// graphql 쿼리에 리퀘스트 파라미터 적용
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
 		// AniList API 실행

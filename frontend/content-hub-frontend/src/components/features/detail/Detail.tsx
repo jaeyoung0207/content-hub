@@ -333,12 +333,14 @@ export const Detail = memo(() => {
             <>
               {tabIndex === tabId.mediaInfo && (
                 <div>
+                  {/* 만화 정보 */}
                   {originalMediaType === MEDIA_TYPE.COMICS && (
                     <ComicsInfomation
                       detailResult={data}
                       originalMediaType={originalMediaType}
                     />
                   )}
+                  {/* 애니, 드라마, 영화 정보 */}
                   {(originalMediaType === MEDIA_TYPE.ANI ||
                     originalMediaType === MEDIA_TYPE.DRAMA ||
                     originalMediaType === MEDIA_TYPE.MOVIE) && (

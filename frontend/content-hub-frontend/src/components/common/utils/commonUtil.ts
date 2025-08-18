@@ -193,6 +193,8 @@ export const getErrorMessage = (errorName: string): string => {
       return ERROR_MESSAGE.BAD_REQUEST_ERROR.message;
     case ERROR_MESSAGE.SYSTEM_ERROR.name:
       return ERROR_MESSAGE.SYSTEM_ERROR.message;
+    case ERROR_MESSAGE.TIMEOUT_ERROR.name:
+      return ERROR_MESSAGE.TIMEOUT_ERROR.message;
     case ERROR_MESSAGE.UNEXPECTED_ERROR.name:
       return ERROR_MESSAGE.UNEXPECTED_ERROR.message;
     default:

@@ -49,9 +49,12 @@ type SearchResultsModalPropsType = {
  * @param isAdult 성인 콘텐츠 포함 여부
  * @param mediaType 미디어 타입
  */
-export const SearchMore = memo(({ keyword, mediaType }: SearchPropsType) => {
+export const SearchMore = memo(({ keyword, isAdult, mediaType }: SearchPropsType) => {
   // i18n 번역 함수
   const { t } = useTranslation();
+  // 성인 콘텐츠 포함 여부
+  const adultFlag = isAdult === 'true';
+
   // 검색 결과를 가져오는 커스텀 훅
   const {
     setObserveTarget,
@@ -59,7 +62,7 @@ export const SearchMore = memo(({ keyword, mediaType }: SearchPropsType) => {
     hasNextPage,
     isFetchingNextPage,
     handleModalClose,
-  } = useSearchMore(keyword, mediaType!);
+  } = useSearchMore(keyword, adultFlag, mediaType!);
 
   // 각 미디어 이름을 가져오는 함수
   const getMediaName = () => {

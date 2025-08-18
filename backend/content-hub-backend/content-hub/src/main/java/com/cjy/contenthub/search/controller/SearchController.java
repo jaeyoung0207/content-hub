@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
+import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.service.SearchService;
@@ -33,6 +35,9 @@ public class SearchController {
 
 	/** 검색 서비스 클래스 */
 	private final SearchService searchService;
+	
+	/** 세션 유틸 클래스 */
+	private final SessionUtil session;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -87,7 +92,8 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchKeyword")
 	public ResponseEntity<List<String>> searchKeyword(@NotEmpty @RequestParam(PARAM_QUERY) String keyword) {
-		return ResponseEntity.ok(searchService.searchKeyword(keyword));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchKeyword(keyword, isAdult));
 	}
 
 	/**
@@ -98,7 +104,8 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchVideo")
 	public ResponseEntity<SearchVideoResponseDto> searchVideo(@NotEmpty @RequestParam(PARAM_QUERY) String keyword) {
-		return ResponseEntity.ok(searchService.searchVideo(keyword));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchVideo(keyword, isAdult));
 	}
 
 	/**
@@ -113,7 +120,8 @@ public class SearchController {
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
 			@Nullable @RequestParam(PARAM_PAGE) Integer page
 			) {
-		return ResponseEntity.ok(searchService.searchAni(keyword, page));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchAni(keyword, isAdult, page));
 	}
 
 	/**
@@ -127,7 +135,8 @@ public class SearchController {
 	public ResponseEntity<TmdbSearchTvDto> searchDrama(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
 			@Nullable @RequestParam(PARAM_PAGE) Integer page) {
-		return ResponseEntity.ok(searchService.searchDrama(keyword, page));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchDrama(keyword, isAdult, page));
 	}
 
 	/**
@@ -142,7 +151,8 @@ public class SearchController {
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
 			@Nullable @RequestParam(PARAM_PAGE) Integer page
 			) {
-		return ResponseEntity.ok(searchService.searchMovie(keyword, page));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchMovie(keyword, isAdult, page));
 	}
 
 	/**
@@ -158,7 +168,8 @@ public class SearchController {
 			@Nullable @RequestParam(PARAM_PAGE) Integer page,
 			@RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage
 			) {
-		return ResponseEntity.ok(searchService.searchComics(keyword, page, isMainPage));
+		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		return ResponseEntity.ok(searchService.searchComics(keyword, isAdult, page, isMainPage));
 	}
 
 }

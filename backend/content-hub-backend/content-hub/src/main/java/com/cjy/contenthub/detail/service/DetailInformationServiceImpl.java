@@ -17,9 +17,7 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.GraphqlUtil;
-import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
@@ -39,9 +37,6 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 	/** 상세 매퍼 */
 	private final DetailMapper mapper;
-
-	/** 공통 세션 유팅 */
-	private final SessionUtil session;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -116,9 +111,6 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	/** 리퀘스트 파라미터 키 : 미디어 ID */
 	private static final String PARAM_MEDIA_ID = "mediaId";
 	
-	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
-	private static final String PARAM_IS_ADULT = "isAdult";
-
 	/** 언어 : 한국어 */
 	private static final String LANGUAGE_KOREAN = "ko-KR";
 
@@ -255,12 +247,6 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				PARAM_PAGE, Optional.ofNullable(page).orElse(FIRST_PAGE_NO),
 				PARAM_PER_PAGE, anilistPerCharacterPage
 				));
-		// 성인물 포함 플래그
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		// 성인물 플래그가 false인 경우, 파라미터 추가
-		if (!isAdult) {
-			variables.put(PARAM_IS_ADULT, isAdult);
-		}
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
 

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 공통 에러 리스폰스
+ * 공통 에러 응답 오브젝트 클래스
  */
 @Getter
 @Builder

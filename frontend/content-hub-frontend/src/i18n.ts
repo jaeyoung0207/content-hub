@@ -128,6 +128,7 @@ const resources = {
         badRequestError: '잘못된 요청입니다. 입력값을 확인해 주세요.',
         systemError:
           '시스템에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+        timeoutError: '요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.',
       },
     },
   },

@@ -290,7 +290,7 @@ export const useHeader = (): useHeaderReturnType => {
    */
   const getKeywordList = () => {
     return queryClient.fetchQuery({
-      queryKey: headerQueryKeys.searchKeyword(keyword!),
+      queryKey: headerQueryKeys.searchKeyword(keyword!, adultFlg!),
       queryFn: async () => {
         return (await searchApi.searchKeyword({ query: keyword! })).data;
       },

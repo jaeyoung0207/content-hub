@@ -154,7 +154,8 @@ export const useRecommendationContent = (
     }),
     // 초기 페이지 매개변수를 지정
     initialPageParam: 1,
-    // enabled: !!tabIndex, // useInfiniteQuery가 실행되는 조건 지정
+    staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
+    gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
   });
 
   // ================================================================================================== function

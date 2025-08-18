@@ -80,6 +80,8 @@ tmdb:
   custom:
     perMainPage: 8
     autoCompleteCount: 15
+    timeout: 5
+    retryCount: 3
 
 #Anilist API Config
 anilist:
@@ -89,6 +91,7 @@ anilist:
     perMainPage: 12
     perMorePage: 18
     perCharacterPage: 25
+    timeout: 5
 
 #DeepL API Config
 deepl:
@@ -98,20 +101,33 @@ deepl:
   url:
     baseUrl: https://api-free.deepl.com/v2
     translatePath: /translate
+  custom:
+    timeout: 5
 
 #Login Config
 login:
   naver:
-    clientId: 1dzs6yxigzox43oOLBqs
-    clientSecret: WQgNu48622
-    tokenIssueUrl: https://nid.naver.com/oauth2.0/token
-    userInfoUrl: https://openapi.naver.com/v1/nid/me
+    api:
+      #clientId: 1dzs6yxigzox43oOLBqs
+      clientId: ${NAVER_CLIENT_ID}
+      #clientSecret: WQgNu48622
+      clientSecret: ${NAVER_CLIENT_SECRET}
+    url:
+      tokenIssueUrl: https://nid.naver.com/oauth2.0/token
+      userInfoUrl: https://openapi.naver.com/v1/nid/me
+    custom:
+      timeout: 5
   kakao:
-    clientSecret: tez0FBOO4zxXbVwUUsW1VqeEr8eD5mzS
-    tokenIssueUrl: https://kauth.kakao.com/oauth/token
-    oidcUserInfoUrl: https://kapi.kakao.com/v1/oidc/userinfo
-    userInfoUrl: https://kapi.kakao.com/v2/user/me
-    logoutUrl: https://kapi.kakao.com/v1/user/logout
+    api:
+      #clientSecret: tez0FBOO4zxXbVwUUsW1VqeEr8eD5mzS
+      clientSecret: ${KAKAO_CLIENT_SECRET}
+    url:
+      tokenIssueUrl: https://kauth.kakao.com/oauth/token
+      oidcUserInfoUrl: https://kapi.kakao.com/v1/oidc/userinfo
+      userInfoUrl: https://kapi.kakao.com/v2/user/me
+      logoutUrl: https://kapi.kakao.com/v1/user/logout
+    custom:
+      timeout: 5
 
 #Application Config
 app:
