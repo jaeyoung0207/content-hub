@@ -22,6 +22,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true  # SQL 로그 출력
     open-in-view: false # true로 설정하면 View 렌더링 중에도 데이터베이스 쿼리가 실행될 수 있음
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # 필요시 password: yourpassword
+      # database: 0
 #  security:
 #    oauth2:
 #      client:

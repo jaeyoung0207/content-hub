@@ -1,8 +1,5 @@
 package com.cjy.contenthub.login.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +18,7 @@ import com.cjy.contenthub.common.api.dto.naver.NaverDeleteTokenDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverIssueTokenDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.login.client.LoginClient;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.helper.LoginHelper;
@@ -42,6 +40,9 @@ public class LoginController {
 
 	/** 로그인 클라이언트 */
 	private final LoginClient loginClient;
+	
+	/** Redis 유틸리티 */
+	private final RedisUtil redisUtil;
 
 	/** 파라미터 : 클라이언트 ID */
 	private static final String PARAM_CLIENT_ID = "client_id";
@@ -80,22 +81,8 @@ public class LoginController {
 
 		// 토큰 발행 API 응답이 정상적인 경우
 		if (StringUtils.isEmpty(tokenResponse.getError())) {
-			// 리프레시 토큰 쿠키
-			String refreshToken = tokenResponse.getRefreshToken();
-			ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
-					.path("/")
-					.build();
-			// provider 쿠키
-			ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.NAVER.getProvider())
-					.path("/")
-					.build();
-			// 쿠키 배열 생성
-			String[] cookieArray = new String[] {
-					refreshTokenCookie.toString(), 
-					providerCookie.toString()
-			};
 			// 네이버 프로필 조회 처리
-			return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), cookieArray).block();
+			return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
 
 		} 
 		// 토큰 발행 API 응답에 에러가 있는 경우
@@ -157,10 +144,16 @@ public class LoginController {
 	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
 	@GetMapping("/deleteNaverToken")
-	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(@RequestParam(PARAM_ACCESS_TOKEN) String accessToken) {
+	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
+			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
+			@RequestParam(PARAM_TARGET_ID) String targetId
+			) {
 
-		// 네이버 토큰 삭제 서비스 호출		
+		// 네이버 토큰 삭제 서비스 호출
 		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken);
+		
+		// Redis에서 리프레시 토큰 삭제
+		redisUtil.deleteRefreshToken(LoginProviderEnum.NAVER.getProvider(), targetId);
 
 		// 리프레시 토큰 쿠키 삭제
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, "")
@@ -205,23 +198,8 @@ public class LoginController {
 		if (ObjectUtils.isEmpty(idTokenArray) || idTokenArray.length != 3) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is Empty");
 		}
-		// 리프레시 토큰 쿠키
-		String refreshToken = tokenResponse.getRefreshToken();
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
-				.path("/")
-				.build();
-		// provider 쿠키
-		ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.KAKAO.getProvider())
-				.path("/")
-				.build();
-		// 쿠키 배열 생성
-		String[] cookieArray = new String[] {
-				refreshTokenCookie.toString(),
-				providerCookie.toString() 
-		};
-
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), cookieArray).block();
+		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
 	}
 
 	/**
@@ -254,29 +232,8 @@ public class LoginController {
 		if (ObjectUtils.isEmpty(idTokenArray) || idTokenArray.length != 3) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is Empty");
 		}
-		// 리프레시 토큰
-		String refreshToken = tokenResponse.getRefreshToken();
-		// 쿠키 리스트
-		List<String> cookieList = new ArrayList<>();
-		// 리프레시 토큰 유무 확인
-		if (StringUtils.isNotEmpty(refreshToken)) {
-			// 존재하지 않는 경우 null 반환
-			// 리프레시 토큰 쿠키
-			ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
-					.path("/")
-					.build();
-			// provider 쿠키
-			ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.KAKAO.getProvider())
-					.path("/")
-					.build();
-			cookieList.add(refreshTokenCookie.toString());
-			cookieList.add(providerCookie.toString());
-		}
-		// 쿠키 배열 생성
-		String[] cookieArray = ObjectUtils.isEmpty(cookieList) ? null : cookieList.toArray(new String[cookieList.size()]);
-
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), cookieArray).block();
+		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
 
 
 	}
@@ -317,6 +274,9 @@ public class LoginController {
 
 		// 카카오 토큰 삭제 서비스 호출
 		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId);
+		
+		// Redis에서 리프레시 토큰 삭제
+		redisUtil.deleteRefreshToken(LoginProviderEnum.KAKAO.getProvider(), targetId);
 
 		// 리프레시 토큰 쿠키 삭제
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, "")

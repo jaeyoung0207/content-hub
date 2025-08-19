@@ -8,6 +8,6 @@ import org.mapstruct.MapperConfig;
  * 이 설정을 통해 MapStruct 매퍼가 스프링 빈으로 등록되어 의존성 주입이 가능해짐
  */
 @MapperConfig(componentModel = "spring")
-public interface CommonMapStruct {
+public interface MapStructConfig {
 
 }

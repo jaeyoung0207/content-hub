@@ -48,6 +48,9 @@ public class CommonConstants {
     /** COMMA */
     public static final String COMMA = ",";
     
+    /** COLON */
+    public static final String COLON = ":";
+    
     /** 날짜 형식 정규식: yyyy-MM-dd */
     public static final String STR_DATE_REGEX = "^\\d{4}-\\d{2}-\\d{2}$";
 	

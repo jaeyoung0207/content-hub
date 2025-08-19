@@ -279,9 +279,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  leapMonth?: boolean;
-  emailValid?: boolean;
   emailVerified?: boolean;
+  emailValid?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {

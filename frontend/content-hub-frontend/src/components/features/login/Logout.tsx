@@ -1,7 +1,10 @@
 import { Login } from '@/api/Login';
 import { settings } from '@/components/common/config/settings';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
-import { useProviderStore } from '@/components/common/store/globalStateStore';
+import {
+  useProviderStore,
+  useUserStore,
+} from '@/components/common/store/globalStateStore';
 import {
   afterLoginRedirect,
   clearUserData,
@@ -17,6 +20,8 @@ export const Logout = () => {
   const navigate = useNavigate();
   // provider 전역 상태 저장 훅
   const { provider } = useProviderStore();
+  // user 전역 상태 저장 훅
+  const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
   const loginApi = new Login();
 
@@ -30,6 +35,8 @@ export const Logout = () => {
   useEffect(() => {
     const logout = async () => {
       try {
+        // 유저 ID
+        const userId = user!.id!;
         // 접근토큰 취득
         const accessToken = sessionStorage.getItem('accessToken');
         // 접근토큰이나 provider가 존재하지 않는 경우는 처리 종료
@@ -39,14 +46,17 @@ export const Logout = () => {
         // 네이버로 로그인한 경우
         if (provider === LOGIN_PROVIDER.NAVER) {
           // 로그아웃 처리
-          await loginApi.deleteNaverToken({ access_token: accessToken });
+          await loginApi.deleteNaverToken({
+            access_token: accessToken,
+            target_id: userId,
+          });
         }
         // 카카오로 로그인한 경우
         else if (provider === LOGIN_PROVIDER.KAKAO) {
           // 로그아웃 처리
           await loginApi.deleteKakaoToken({
             access_token: accessToken,
-            target_id: settings.kakaoClientId,
+            target_id: userId,
           });
         }
       } finally {

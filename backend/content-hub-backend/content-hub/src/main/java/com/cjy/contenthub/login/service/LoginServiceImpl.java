@@ -285,7 +285,7 @@ public class LoginServiceImpl implements LoginService {
 		// 카카오 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(kakaoLogoutUrl)
 				.queryParam(PARAM_TARGET_ID_TYPE, VALUE_USER_ID)
-				.queryParam(PARAM_TARGET_ID, targetId)
+				.queryParam(PARAM_TARGET_ID, Long.valueOf(targetId))
 				.toUriString();
 
 		// 카카오 토큰 삭제 API 호출

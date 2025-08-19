@@ -11,6 +11,8 @@ import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.util.JwtUtil;
+import com.cjy.contenthub.common.util.RedisUtil;
+import com.cjy.contenthub.login.helper.LoginHelper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -32,6 +34,9 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
+	
+	/** Redis 유틸리티 클래스 */
+	private final RedisUtil redisUtil;
 	
 	/** User 리포지토리 */
 	private final UserRepository repository;
@@ -57,7 +62,6 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 		// 헤더 추출
 		String authorization = request.getHeader(CommonConstants.AUTHORIZATION_HEADER);
 		
-		// Authorization 헤더가 비어있거나 null인 경우, 필터 체인을 계속 진행(로그인하지 않은 유저도 접근 가능하도록 설정)
 		// Authorization 헤더가 존재하고, 인증토큰 접두어가 포함된 경우에만 JWT 검증을 수행
 		if (StringUtils.isNotEmpty(authorization) && authorization.startsWith(CommonConstants.AUTHORIZATION_HEADER_PREFIX)) {
 			// JWT 추출
@@ -66,12 +70,12 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			try {
 				// JWT 토큰의 유효성 검사
 				String validateResult = jwtUtil.validateToken(jwt);
-				// 유효하지 않은 토큰인 경우, AccountExpiredException 예외를 발생시킴
+				// 유효하지 않은 토큰인 경우, 예외를 발생시킴
 				if (!JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode().equals(validateResult)) {
 					throw new AccountExpiredException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
 				}
 			} catch (JwtException ex) {
-				throw new AccountExpiredException("JWT 파싱 중 에러", ex);
+				throw new AccountExpiredException("JWT parsing error", ex);
 			}
 
 			// 토큰에서 id와 provider를 추출하여 user테이블에 존재하는지 확인
@@ -80,11 +84,19 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			// 클레임에서 providerId와 provider 추출
 			String providerId = claims.getSubject();
 			String provider = (String) claims.get("provider");
+			
+			// 쿠키에서 리프레시 토큰 추출
+			String refreshToken = LoginHelper.getRefreshToken(request, provider);
+			// 리프레시 토큰 검증
+			if (!redisUtil.validateRefreshToken(provider, providerId, refreshToken)) {
+				throw new AccountExpiredException("No available refresh token");
+			}
+			
 			// user 테이블에 등록되어 있는지 확인
 			boolean isSaved = repository.existsByProviderAndProviderId(provider, providerId);
-			// 유저가 존재하지 않는 경우, UsernameNotFoundException 예외를 발생시킴
+			// 유저가 존재하지 않는 경우, 예외를 발생시킴
 			if(!isSaved) {
-				throw new UsernameNotFoundException("유저ID가 존재하지 않습니다.");
+				throw new UsernameNotFoundException("User ID is not registered");
 			}
 		}
 		// 필터 체인을 계속 진행

@@ -67,19 +67,20 @@ export const useSearchMore = (
   const judgeExecApi = async (pageParam: number) => {
     if (mediaType == MEDIA_TYPE.ANI) {
       // 애니메이션 검색 API 호출
-      const response = await (
-        await searchApi.searchAni({ query: keyword, page: pageParam }, {})
+      const response = await await searchApi.searchAni(
+        { query: keyword, page: pageParam },
+        {}
       );
       // 전체 페이지 수 저장
       if (response.data.page === 1) {
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.results;
-
     } else if (mediaType == MEDIA_TYPE.DRAMA) {
       // 드라마 검색 API 호출
-      const response = await (
-        await searchApi.searchDrama({ query: keyword, page: pageParam }, {})
+      const response = await await searchApi.searchDrama(
+        { query: keyword, page: pageParam },
+        {}
       );
       // 전체 페이지 수 저장
       if (response.data.page === 1) {
@@ -88,8 +89,9 @@ export const useSearchMore = (
       return response.data.results;
     } else if (mediaType == MEDIA_TYPE.MOVIE) {
       // 영화 검색 API 호출
-      const response = await (
-        await searchApi.searchMovie({ query: keyword, page: pageParam }, {})
+      const response = await await searchApi.searchMovie(
+        { query: keyword, page: pageParam },
+        {}
       );
       // 전체 페이지 수 저장
       if (response.data.page === 1) {
@@ -98,11 +100,9 @@ export const useSearchMore = (
       return response.data.results;
     } else if (mediaType == MEDIA_TYPE.COMICS) {
       // 만화 검색 API 호출
-      const response = await (
-        await searchApi.searchComics(
-          { query: keyword, page: pageParam, isMainPage: false },
-          {}
-        )
+      const response = await await searchApi.searchComics(
+        { query: keyword, page: pageParam, isMainPage: false },
+        {}
       );
       // 전체 페이지 수 저장
       if (response.data.page === 1) {
@@ -128,12 +128,11 @@ export const useSearchMore = (
     number | undefined // pageParam 타입 (보통 number | undefined)
   >({
     // useInfiniteQuery의 키 지정
-    queryKey: searchQueryKeys.searchMore.searchMore(keyword, isAdult, mediaType) as [
-      string,
-      string,
-      boolean,
-      string,
-    ],
+    queryKey: searchQueryKeys.searchMore.searchMore(
+      keyword,
+      isAdult,
+      mediaType
+    ) as [string, string, boolean, string],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 1 }) => {
       console.log('queryFn★★★★★');

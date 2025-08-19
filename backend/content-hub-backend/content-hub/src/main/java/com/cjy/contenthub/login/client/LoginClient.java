@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.common.util.JwtUtil;
+import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.login.controller.dto.LoginUserInfoDto;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.mapper.LoginMapper;
@@ -52,6 +54,9 @@ public class LoginClient {
 
 	/** 로그인 매퍼 */
 	private final LoginMapper mapper;
+
+	/** Redis 템플릿 */
+	private final RedisUtil redisUtil;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -94,16 +99,16 @@ public class LoginClient {
 	 * @param request HttpServletRequest
 	 * @param accessToken 네이버 API 접근 토큰
 	 * @param expiresIn 토큰 만료 시간(초 단위)
-	 * @param cookieArray 쿠키 배열
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>> 유저 정보 응답
+	 * @param refreshToken 리프레시 토큰
+	 * @return 유저 정보 응답 오브젝트
 	 */
 	public Mono<ResponseEntity<LoginUserResponseDto>> getNaverUserInfo(
 			HttpServletRequest request,
 			String accessToken,
 			int expiresIn,
-			String[] cookieArray
+			String refreshToken
 			) {
-		
+
 		// 회원 프로필 조회 API 조회
 		return naverWebClient.get()
 				.uri(naverUserInfoUrl)
@@ -111,7 +116,7 @@ public class LoginClient {
 				.retrieve()
 				.bodyToMono(NaverProfileResultDto.class)
 				.flatMap(response -> {
-					
+
 					// 프로필 조회 API 응답 코드가 성공이 아닌 경우 예외 처리
 					if (!StringUtils.equals(response.getResultcode(), PROFILE_API_SUCCESS)) {
 						// 프로필 조회 API 에러 발생시 처리
@@ -120,7 +125,7 @@ public class LoginClient {
 								ObjectUtils.isNotEmpty(errorCode) ? HttpStatus.valueOf(errorCode) : null,
 										response.getMessage());
 					}
-					
+
 					// 프로필 정보
 					NaverProfileDataDto profile = response.getResponse();
 					// 유저 서비스 파라미터 설정
@@ -173,11 +178,29 @@ public class LoginClient {
 										.jwt(jwt)
 										.expireDate(expireDateStr)
 										.build();
-								if (ObjectUtils.isNotEmpty(cookieArray) && cookieArray.length != 0) {
-									// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정(토큰 발급시) 
+
+								// 파라미터에 리프레시 토큰이 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
+								if (StringUtils.isNotEmpty(refreshToken)) {
+									// refresh token을 redis에 저장
+									redisUtil.saveRefreshToken(LoginProviderEnum.NAVER.getProvider(), profile.getId(),
+											refreshToken);
+									// 리프레시 토큰 쿠키
+									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
+											.path("/")
+											.build();
+									// provider 쿠키
+									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.NAVER.getProvider())
+											.path("/")
+											.build();
+									// 쿠키 배열 생성
+									String[] cookieArray = new String[] {
+											refreshTokenCookie.toString(), 
+											providerCookie.toString()
+									};
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
-								} else {
-									// 파라미터에 쿠키가 존재하지 않는 경우(이미 있는 경우) 헤더 미설정(토큰 갱신시)
+								} 
+								// 파라미터에 리프레시 토큰이 존재하지 않는 경우(쿠키가 이미 있는 경우) 헤더 미설정
+								else {
 									return ResponseEntity.ok().body(userResponse);
 								}
 							}));
@@ -192,22 +215,22 @@ public class LoginClient {
 	 * @param request HttpServletRequest
 	 * @param accessToken 카카오 API 접근 토큰
 	 * @param expiresIn 토큰 만료 시간(초 단위)
-	 * @param cookieArray 쿠키 배열
-	 * @return Mono<ResponseEntity<LoginUserResponseDto>> 유저 정보 응답
+	 * @param refreshToken 리프레시 토큰
+	 * @return 유저 정보 응답 오브젝트
 	 */
 	public Mono<ResponseEntity<LoginUserResponseDto>> getKakaoUserInfo(
 			HttpServletRequest request, 
 			String accessToken,
 			int expiresIn,
-			String[] cookieArray
+			String refreshToken
 			) {
 
 		// 유저 정보 가져오기 API 조회
 		return kakaoWebClient.get()
 				.uri(kakaoUserInfoUrl)
 				.headers(header -> 
-					header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
-				)
+				header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
+						)
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.flatMap(response -> {
@@ -269,7 +292,7 @@ public class LoginClient {
 								// 만료시각 변환(Date -> String)
 								SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
 								String expireDateStr = sdf.format(expireDate);
-								
+
 								// 결과값 설정
 								LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
 										.resultcode(PROFILE_API_SUCCESS)
@@ -280,11 +303,28 @@ public class LoginClient {
 										.expireDate(expireDateStr)
 										.build();
 
-								if (ObjectUtils.isNotEmpty(cookieArray) && cookieArray.length != 0) {
-									// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정(토큰 발급시) 
+								// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
+								if (StringUtils.isNotEmpty(refreshToken)) {
+									// refresh token을 redis에 저장
+									redisUtil.saveRefreshToken(LoginProviderEnum.KAKAO.getProvider(), userId,
+											refreshToken);
+									// 리프레시 토큰 쿠키
+									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
+											.path("/")
+											.build();
+									// provider 쿠키
+									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.KAKAO.getProvider())
+											.path("/")
+											.build();
+									// 쿠키 배열 생성
+									String[] cookieArray = new String[] {
+											refreshTokenCookie.toString(),
+											providerCookie.toString() 
+									};
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
-								} else {
-									// 파라미터에 쿠키가 존재하지 않는 경우(이미 있는 경우) 헤더 미설정(토큰 갱신시)
+								} 
+								// 파라미터에 쿠키가 존재하지 않는 경우(쿠키가 이미 있는 경우) 헤더 미설정
+								else {
 									return ResponseEntity.ok().body(userResponse);
 								}
 							}));

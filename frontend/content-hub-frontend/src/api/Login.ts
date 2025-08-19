@@ -145,6 +145,7 @@ export class Login<
   deleteNaverToken = (
     query: {
       access_token: string;
+      target_id: string;
     },
     params: RequestParams = {}
   ) =>
