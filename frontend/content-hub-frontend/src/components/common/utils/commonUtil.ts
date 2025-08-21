@@ -351,7 +351,7 @@ export const isDetailComicsType = (
 export const isCreditsCastType = (
   credits: PersonCredits
 ): credits is PersonCreditsCastDto => {
-  return true;
+  return 'character' in credits;
 };
 
 /**
@@ -362,7 +362,7 @@ export const isCreditsCastType = (
 export const isCreditsCrewType = (
   credits: PersonCredits
 ): credits is PersonCreditsCrewDto => {
-  return true;
+  return 'job' in credits;
 };
 
 /**
