@@ -186,7 +186,6 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return 별점 평균
 	 */
 	@Override
-	@Cacheable(value = "starRatingAverage", key = "#originalMediaType + '_' + #apiId")
 	public BigDecimal getStarRatingAverage(String originalMediaType, String apiId) {
 		
 		// 별점 평균 조회

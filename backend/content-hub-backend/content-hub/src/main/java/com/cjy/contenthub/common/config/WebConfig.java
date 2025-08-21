@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.interceptor.CommonInterceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
 		.allowedOrigins(appUrl) // resources를 공유할 URL을 지정(IP주소:포트번호)
 		.allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), 
 	    		HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()) // 허용할 HTTP method를 지정
-		.allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE) // 클라이언트 측의 CORS 요청에 허용되는 헤더를 지정
+		.allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER) // 클라이언트 측의 CORS 요청에 허용되는 헤더를 지정
 		.allowCredentials(true) // 클라이언트 측에 대한 응답에 credentials(쿠키, 인증 헤더)를 포함할 수 있는지 여부를 지정(true 설정시, allowedOrigins에 와일드카드(*) 설정 불가)
 		.maxAge(3600); // 지정한 시간만큼 preflight 리퀘스트(정식 요청처리 전에 OPTIONS 메소드로 사전에 CORS위반을 확인하기 위한 요청 처리)를 캐싱
 	}

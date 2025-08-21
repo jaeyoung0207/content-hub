@@ -56,10 +56,6 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            '*/*':
-              schema:
-                type: boolean
   /common/clearAdultFlg:
     post:
       tags:
@@ -68,10 +64,6 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            '*/*':
-              schema:
-                type: boolean
   /search/searchVideo:
     get:
       tags:
@@ -600,6 +592,24 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/DetailCommentGetResponseDto'
+  /common/getCsrfToken:
+    get:
+      tags:
+        - common-controller
+      operationId: getCsrfToken
+      parameters:
+        - name: token
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CsrfToken'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
   /character/getCharacter:
     get:
       tags:
@@ -726,9 +736,9 @@ components:
         totalResults:
           type: integer
           format: int32
-        aniViewMore:
-          type: boolean
         dramaViewMore:
+          type: boolean
+        aniViewMore:
           type: boolean
         movieViewMore:
           type: boolean
@@ -1154,11 +1164,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
-        emailVerified:
-          type: boolean
         emailValid:
           type: boolean
         leapMonth:
+          type: boolean
+        emailVerified:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1731,3 +1741,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DetailCommentGetDataDto'
+    CsrfToken:
+      type: object
+      properties:
+        token:
+          type: string
+        parameterName:
+          type: string
+        headerName:
+          type: string

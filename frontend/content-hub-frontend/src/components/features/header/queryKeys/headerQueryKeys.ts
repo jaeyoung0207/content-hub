@@ -6,6 +6,8 @@ const headerMainKey = 'header';
  * 각 쿼리 키는 React Query에서 데이터를 캐싱하고 관리하는 데 사용됨
  */
 export const headerQueryKeys = {
+  // 헤더 초기화 쿼리 키
+  getCsrfToken: () => [headerMainKey, 'getCsrfToken'] as const,
   // 헤더에서 키워드 리스트를 가져오기 위한 쿼리 키
   searchKeyword: (keyword: string, adultFlg: boolean) =>
     [headerMainKey, 'searchKeyword', keyword, adultFlg] as const,

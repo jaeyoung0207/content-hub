@@ -61,7 +61,7 @@ public class CommonAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	    		HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), 
 	    		HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name())); // 허용할 HTTP 메서드 설정
 	    response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, String.join(CommonConstants.COMMA, 
-	    		HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)); // 허용할 헤더 설정
+	    		HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER)); // 허용할 헤더 설정
 	    
 	    // 예외 처리 리졸버를 사용하여 인증 예외를 처리
 		resolver.resolveException(request, response, null, authException);

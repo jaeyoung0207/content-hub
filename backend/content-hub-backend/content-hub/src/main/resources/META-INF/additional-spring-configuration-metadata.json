@@ -160,6 +160,11 @@
     "description": "A description for 'deepl.custom.timeout'"
   },
   {
+    "name": "login.jwt.secretKey",
+    "type": "java.lang.String",
+    "description": "A description for 'login.jwt.secretKey'"
+  },
+  {
     "name": "login.naver.api.clientId",
     "type": "java.lang.String",
     "description": "A description for 'login.naver.api.clientId'"
@@ -190,6 +195,11 @@
     "description": "A description for 'login.naver.custom.timeout'"
   },
   {
+    "name": "login.naver.custom.refreshTokenExpiresIn",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.custom.refreshTokenExpiresIn'"
+  },
+  {
     "name": "login.kakao.api.clientSecret",
     "type": "java.lang.String",
     "description": "A description for 'login.kakao.api.clientSecret'"
@@ -218,6 +228,11 @@
     "name": "login.kakao.custom.timeout",
     "type": "java.lang.String",
     "description": "A description for 'login.kakao.custom.timeout'"
+  },
+  {
+    "name": "login.kakao.custom.refreshTokenExpiresIn",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.custom.refreshTokenExpiresIn'"
   },
   {
     "name": "app.url",

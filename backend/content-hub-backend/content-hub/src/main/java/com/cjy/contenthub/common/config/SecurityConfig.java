@@ -1,5 +1,6 @@
 package com.cjy.contenthub.common.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import com.cjy.contenthub.common.filter.CommonAuthenticationEntryPoint;
 import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
@@ -38,6 +41,10 @@ public class SecurityConfig {
 	
 	/** 인증 예외 처리 필터 */
 	private final CommonAuthenticationEntryPoint authenticationEntryPoint;
+	
+	/** 어플리케이션 URL(프론트엔드) */
+	@Value("${app.url}")
+	private String appUrl;
 
 	/**
 	 * 스프링 세큐리티 설정
@@ -51,6 +58,12 @@ public class SecurityConfig {
 	 */
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		
+		// CSRF TOKEN 쿠키 저장소 설정 
+		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+		csrfTokenRepository.setCookieCustomizer(cookie -> 
+			cookie.path("/").sameSite("lax").secure(false).httpOnly(true).build()
+		);
 		// HTTP 보안 설정
 		httpSecurity
 		.authorizeHttpRequests(auth -> auth
@@ -59,7 +72,11 @@ public class SecurityConfig {
 				.anyRequest().permitAll() // 로그인 없이 접근 가능하므로, 모든 요청에 대해 인증 없이 접근 허용
 				)
 		.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
-		.csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
+		.csrf(csrf -> csrf
+				.csrfTokenRepository(csrfTokenRepository)
+				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+				.ignoringRequestMatchers("/login/**")
+				) // CSRF 보호 활성화
 		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, redisUtil, repository), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 

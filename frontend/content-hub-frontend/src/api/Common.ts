@@ -10,6 +10,7 @@
  * ---------------------------------------------------------------
  */
 
+import { CsrfToken } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Common<
@@ -28,7 +29,7 @@ export class Common<
     },
     params: RequestParams = {}
   ) =>
-    this.request<boolean, any>({
+    this.request<void, any>({
       path: `/common/setAdultFlg`,
       method: 'POST',
       query: query,
@@ -42,9 +43,28 @@ export class Common<
    * @request POST:/common/clearAdultFlg
    */
   clearAdultFlg = (params: RequestParams = {}) =>
-    this.request<boolean, any>({
+    this.request<void, any>({
       path: `/common/clearAdultFlg`,
       method: 'POST',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags common-controller
+   * @name GetCsrfToken
+   * @request GET:/common/getCsrfToken
+   */
+  getCsrfToken = (
+    query?: {
+      token?: CsrfToken;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<CsrfToken, any>({
+      path: `/common/getCsrfToken`,
+      method: 'GET',
+      query: query,
       ...params,
     });
 }

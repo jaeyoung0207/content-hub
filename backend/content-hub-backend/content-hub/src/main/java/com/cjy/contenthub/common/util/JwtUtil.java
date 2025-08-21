@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Component;
 
@@ -28,9 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	/** JWT 서명에 사용할 비밀 키 */
-	private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(
-			Decoders.BASE64.decode(System.getProperty("JWT_SECRET_KEY"))
-			);
+	@Value("${login.jwt.secretKey}")
+	private String jwtScretKey;
 
 	/**
 	 * JWT 토큰 생성 메소드
@@ -45,6 +45,8 @@ public class JwtUtil {
 	 */
 	public String createToken(String id, String provider, String nickName, Date currentDate, Date expireDate) throws ParseException {
 		
+		// 비밀 키 생성
+		SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtScretKey)); 
 		// Claims 설정
 		Claims claims = Jwts.claims()
 				.subject(id) // subject로 유저 식별
@@ -56,7 +58,7 @@ public class JwtUtil {
 				.claims(claims) // Claims 설정
 				.issuedAt(currentDate) // 현재 날짜 설정
 				.expiration(expireDate) // 만료 날짜 설정
-				.signWith(SECRET_KEY) // 서명
+				.signWith(secretKey) // 서명
 				.compact(); // JWT 토큰 문자열로 변환
 	}
 
@@ -68,9 +70,12 @@ public class JwtUtil {
 	 * @throws ParseException 날짜 파싱 예외
 	 */
 	public String validateToken(String token) throws AccountExpiredException {
+		
+		// 비밀 키 생성
+		SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtScretKey)); 
 		try {
 			// JWT 토큰 파싱 및 검증
-			Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token);
+			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
 			// 토큰이 유효한 경우 Claims 객체 반환
 			return JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode();
 		} catch (ExpiredJwtException ex) {
@@ -93,8 +98,10 @@ public class JwtUtil {
 	 * @return 유저 정보가 담긴 Claims 객체
 	 */
 	public Claims parseClaims(String token) {
+		// 비밀 키 생성
+		SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtScretKey)); 
 		// JWT 토큰에서 Claims 객체를 추출
-		return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
+		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 	}
 
 }

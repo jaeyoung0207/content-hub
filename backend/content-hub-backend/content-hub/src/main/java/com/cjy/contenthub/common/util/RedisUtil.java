@@ -1,10 +1,14 @@
 package com.cjy.contenthub.common.util;
 
+import java.time.Duration;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +22,14 @@ public class RedisUtil {
 	/** Redis 템플릿 */
 	private final RedisTemplate<String, Object> redisTemplate;
 	
+	/** 네이버 리프레시 토큰 만료 시간 (일) */
+	@Value("${login.naver.custom.refreshTokenExpiresIn}")
+	private long naverExpiresIn;
+	
+	/** 네이버 리프레시 토큰 만료 시간 (일) */
+	@Value("${login.kakao.custom.refreshTokenExpiresIn}")
+	private long kakaoExpiresIn;
+	
 	/** 리프레시 토큰 키 접두사 */
 	private static final String KEY_REFRESH_TOKEN = "refreshToken:";
 	
@@ -29,8 +41,14 @@ public class RedisUtil {
 	 * @param refreshToken 리프레시 토큰 값
 	 */
 	public void saveRefreshToken(String provider, String providerId, String refreshToken) {
+		long refreshTokenExpiresIn;
+		if (StringUtils.equals(provider, LoginProviderEnum.KAKAO.getProvider())) {
+			refreshTokenExpiresIn = kakaoExpiresIn;
+		} else {
+			refreshTokenExpiresIn = naverExpiresIn;
+		}
 		String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
-		redisTemplate.opsForValue().set(key, refreshToken);
+		redisTemplate.opsForValue().set(key, refreshToken, Duration.ofDays(refreshTokenExpiresIn));
 	}
 	
 	/**

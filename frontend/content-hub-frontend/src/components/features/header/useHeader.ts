@@ -553,6 +553,13 @@ export const useHeader = (): useHeaderReturnType => {
     clearUserData();
     // 처음 로드시 true
     firstLoadRef.current = true;
+    // csrf token 초기화 API 호출
+    queryClient.fetchQuery({
+      queryKey: headerQueryKeys.getCsrfToken(),
+      queryFn: async () => {
+        return await commonApi.getCsrfToken();
+      },
+    });
     // 재로그인 처리
     if (refreshTokenCookie.refreshToken) {
       // 쿠키의 provider가 NAVER인 경우
@@ -575,7 +582,6 @@ export const useHeader = (): useHeaderReturnType => {
               // JWT를 localStorage에 저장
               sessionStorage.setItem('jwt', updateResponse.jwt!);
               // 만료시각을 sessionStorage에 저장
-              // const expireDate = dayjs().add(updateResponse.expiresIn!, "seconds").format('YYYYMMDDHHmmss');
               sessionStorage.setItem('expireDate', updateResponse.expireDate!);
             } else {
               clearUserData();
@@ -608,7 +614,6 @@ export const useHeader = (): useHeaderReturnType => {
               // JWT를 localStorage에 저장
               sessionStorage.setItem('jwt', updateResponse.jwt!);
               // 만료시각을 sessionStorage에 저장
-              // const expireDate = dayjs().add(updateResponse.expiresIn!, "seconds").format('YYYYMMDDHHmmss');
               sessionStorage.setItem('expireDate', updateResponse.expireDate!);
             } else {
               clearUserData();
@@ -619,7 +624,7 @@ export const useHeader = (): useHeaderReturnType => {
       }
     }
     // 초기화
-    resetAll();
+    // resetAll();
     // keyword 쿼리스트링이 있는 경우 설정(URL직접 입력 고려)
     if (keywordParam) {
       setValue('keyword', keywordParam);

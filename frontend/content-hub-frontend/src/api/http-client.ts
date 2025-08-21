@@ -69,6 +69,12 @@ export enum ContentType {
   Text = 'text/plain',
 }
 
+function getXsrfTokenFromCookie() {
+  const cookies = document.cookie.split('; ');
+  const xsrf = cookies.find((cookie) => cookie.startsWith('XSRF-TOKEN='));
+  return xsrf ? xsrf.split('=')[1] : null;
+}
+
 const backendUrl = settings.appBackendUrl; // add custom config
 
 export class HttpClient<SecurityDataType = unknown> {
@@ -88,11 +94,12 @@ export class HttpClient<SecurityDataType = unknown> {
     this.instance = axios.create({
       ...axiosConfig,
       baseURL: axiosConfig.baseURL || backendUrl,
-    }); // add custom config
+      withCredentials: true,
+    }); // 인스턴스에서 발생하는 모든 요청에 대해 쿠키 추가
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
-    axios.defaults.withCredentials = true; // add custom config
+    axios.defaults.withCredentials = true; // axios를 직접 사용시 쿠키 추가
 
     // 유저정보
     const { user, clearUser } = useUserStore.getState();
@@ -262,13 +269,16 @@ export class HttpClient<SecurityDataType = unknown> {
       body = JSON.stringify(body);
     }
 
-    const token = sessionStorage.getItem('jwt'); // add custom config
+    const jwt = sessionStorage.getItem('jwt'); // add custom config
+    const xsrfToken = getXsrfTokenFromCookie(); // add custom config
     return this.instance.request({
       ...requestParams,
+      withCredentials: true, // 개별 요청마다 명시적으로 쿠키 추가
       headers: {
         ...(requestParams.headers || {}),
         ...(type ? { 'Content-Type': type } : {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}), // add custom config
+        ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}), // add custom config
+        ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}), // add custom config
       },
       params: query,
       responseType: responseFormat,

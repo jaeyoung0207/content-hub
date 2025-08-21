@@ -49,8 +49,8 @@ export interface SearchVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
-  aniViewMore?: boolean;
   dramaViewMore?: boolean;
+  aniViewMore?: boolean;
   movieViewMore?: boolean;
 }
 
@@ -279,9 +279,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  emailVerified?: boolean;
   emailValid?: boolean;
   leapMonth?: boolean;
+  emailVerified?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -607,4 +607,10 @@ export interface DetailCommentGetResponseDto {
   /** @format int64 */
   totalElements?: number;
   responseList?: DetailCommentGetDataDto[];
+}
+
+export interface CsrfToken {
+  token?: string;
+  parameterName?: string;
+  headerName?: string;
 }
