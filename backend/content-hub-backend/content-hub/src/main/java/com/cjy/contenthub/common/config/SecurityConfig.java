@@ -62,7 +62,7 @@ public class SecurityConfig {
 		// CSRF TOKEN 쿠키 저장소 설정 
 		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
 		csrfTokenRepository.setCookieCustomizer(cookie -> 
-			cookie.path("/").sameSite("lax").secure(false).httpOnly(true).build()
+			cookie.path("/").sameSite("lax").secure(false).build()
 		);
 		// HTTP 보안 설정
 		httpSecurity
