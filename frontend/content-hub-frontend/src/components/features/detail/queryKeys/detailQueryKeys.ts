@@ -17,10 +17,17 @@ export const detailQueryKeys = {
         contentId,
       ] as const,
     contentInformation: {
-      list: (originalMediaType: string, contentId: string) =>
+      characterList: (originalMediaType: string, contentId: string) =>
         [
           detailMainKey,
-          'getContentInformation',
+          'getCharacterInformation',
+          originalMediaType,
+          contentId,
+        ] as const,
+      staffList: (originalMediaType: string, contentId: string) =>
+        [
+          detailMainKey,
+          'getStaffInformation',
           originalMediaType,
           contentId,
         ] as const,

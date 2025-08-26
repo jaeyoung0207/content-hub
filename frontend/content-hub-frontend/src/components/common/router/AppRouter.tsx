@@ -64,7 +64,10 @@ const AppRouter = () => {
                 element={<Detail />}
               />
               <Route path="/person/:personId" element={<Person />} />
-              <Route path="/character/:characterId" element={<Character />} />
+              <Route
+                path="/character/:comicsCreditsType/:creditsId"
+                element={<Character />}
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/login/naver" element={<NaverLogin />} />
               <Route path="/login/kakao" element={<KakaoLogin />} />

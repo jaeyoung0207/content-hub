@@ -3,6 +3,7 @@ package com.cjy.contenthub.detail.controller.dto;
 import java.util.List;
 
 import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbVideoDetailsDto;
 
 import lombok.Getter;
@@ -28,6 +29,9 @@ public class DetailComicsResponseDto extends TmdbVideoDetailsDto {
 
 	/** 캐릭터 DTO */
 	private AniListCharactersDto characters;
+	
+	/** 스태프 DTO */
+	private AniListStaffDto staff;
 	
 	/** 권 수 */
 	private int volumes;

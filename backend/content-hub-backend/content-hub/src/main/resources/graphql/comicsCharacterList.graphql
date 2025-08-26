@@ -1,0 +1,49 @@
+query($mediaId: Int, $page: Int, $perPage: Int, $sort: [CharacterSort])  {
+  Media(id: $mediaId, type: MANGA) {
+    id
+    type
+    title {
+      romaji
+      english
+      native
+      userPreferred
+    }
+    characters(page: $page, perPage: $perPage, sort: $sort) {
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
+      }
+      edges {
+        id
+        role
+        node {
+          id
+          siteUrl
+          image {
+            large
+            medium
+          }
+          name {
+            full
+            native
+            userPreferred
+          }
+          age
+          gender
+          description
+          dateOfBirth {
+            year
+            month
+            day
+          }
+          favourites
+          isFavourite
+          isFavouriteBlocked
+        }
+      }
+    }
+  }
+}

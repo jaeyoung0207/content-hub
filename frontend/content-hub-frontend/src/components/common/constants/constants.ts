@@ -13,6 +13,9 @@ export const IS_MOBILE = window.innerWidth < 768;
 // 이미지 사이즈 예시 : w300, w500, original 등
 export const TMDB_API_IMAGE_DOMAIN = 'https://image.tmdb.org/t/p/';
 
+// width 45 이미지 사이즈
+export const WIDTH_45 = 'w45';
+
 // width 185 이미지 사이즈
 export const WIDTH_185 = 'w185';
 
@@ -43,6 +46,9 @@ export const ARROW_UP_KEY = 'ArrowUp';
 // 구분자 슬래시
 export const SEPERATE_SLASH = ' / ';
 
+// 리다이렉트 URL
+export const REDIRECT_URL = 'redirectUrl';
+
 // 미디어 타입
 export enum MEDIA_TYPE {
   'ANI' = '1',
@@ -51,6 +57,31 @@ export enum MEDIA_TYPE {
   'COMICS' = '4',
   'NOVEL' = '5',
 }
+
+// 탭 ID 매핑
+export const DETAIL_TAB_ID = {
+  mediaInfo: 0,
+  cast: 1,
+  crew: 2,
+  review: 3,
+  recommendation: 4,
+};
+
+/**
+ * 비디오 크레딧 타입
+ */
+export const VIDEO_CREDITS_TYPE = {
+  CAST: '1',
+  CREW: '2',
+};
+
+/**
+ * 만화 크레딧 타입
+ */
+export const COMICS_CREDITS_TYPE = {
+  CHARACTER: '1',
+  STAFF: '2',
+};
 
 // /**
 //  * 미디어 타입에 따라 전체보기 타입 문자열을 반환

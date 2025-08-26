@@ -50,8 +50,8 @@ export interface SearchVideoResponseDto {
   /** @format int32 */
   totalResults?: number;
   dramaViewMore?: boolean;
-  aniViewMore?: boolean;
   movieViewMore?: boolean;
+  aniViewMore?: boolean;
 }
 
 export interface TmdbSearchMovieResultsDto {
@@ -280,8 +280,8 @@ export interface KakaoAccountDto {
   /** @format date-time */
   ciAuthenticatedAt?: string;
   emailValid?: boolean;
-  leapMonth?: boolean;
   emailVerified?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -292,8 +292,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultImage?: boolean;
   defaultNickname?: boolean;
+  defaultImage?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -514,37 +514,11 @@ export interface DetailMovieResponseDto {
   starRatingAverage?: number;
 }
 
-export interface AniListCharactersDto {
-  nodes?: AniListCharactersNodesDto[];
-  pageInfo?: AniListPageInfoDto;
-}
-
-export interface AniListCharactersImageDto {
-  large?: string;
+export interface AniListCoverImageDto {
+  color?: string;
   medium?: string;
-}
-
-export interface AniListCharactersNameDto {
-  full?: string;
-  userPreferred?: string;
-  native?: string;
-}
-
-export interface AniListCharactersNodesDto {
-  /** @format int32 */
-  id?: number;
-  image?: AniListCharactersImageDto;
-  name?: AniListCharactersNameDto;
-  age?: string;
-  gender?: string;
-  description?: string;
-  bloodType?: string;
-  dateOfBirth?: AniListDateDto;
-  /** @format int32 */
-  favourites?: number;
-  siteUrl?: string;
-  favourite?: boolean;
-  favouriteBlocked?: boolean;
+  large?: string;
+  extraLarge?: string;
 }
 
 export interface AniListDateDto {
@@ -556,6 +530,12 @@ export interface AniListDateDto {
   day?: number;
 }
 
+export interface AniListNameDto {
+  full?: string;
+  userPreferred?: string;
+  native?: string;
+}
+
 export interface AniListPageInfoDto {
   /** @format int32 */
   total?: number;
@@ -565,6 +545,70 @@ export interface AniListPageInfoDto {
   currentPage?: number;
   hasNextPage?: boolean;
   perPage?: boolean;
+}
+
+export interface AniListStaffDto {
+  pageInfo?: AniListPageInfoDto;
+  edges?: AniListStaffEdgesDto[];
+}
+
+export interface AniListStaffEdgesDto {
+  /** @format int32 */
+  id?: number;
+  role?: string;
+  node?: AniListStaffNodeDto;
+}
+
+export interface AniListStaffNodeDto {
+  /** @format int32 */
+  id?: number;
+  /** @format int32 */
+  age?: number;
+  gender?: string;
+  bloodType?: string;
+  dateOfBirth?: AniListDateDto;
+  dateOfDeath?: AniListDateDto;
+  homeTown?: string;
+  name?: AniListNameDto;
+  image?: AniListCoverImageDto;
+  siteUrl?: string;
+  description?: string;
+  primaryOccupations?: string[];
+  yearsActive?: number[];
+}
+
+export interface AniListCharactersDto {
+  pageInfo?: AniListPageInfoDto;
+  edges?: AniListCharactersEdgesDto[];
+}
+
+export interface AniListCharactersEdgesDto {
+  /** @format int32 */
+  id?: number;
+  role?: string;
+  node?: AniListCharactersNodeDto;
+}
+
+export interface AniListCharactersImageDto {
+  large?: string;
+  medium?: string;
+}
+
+export interface AniListCharactersNodeDto {
+  /** @format int32 */
+  id?: number;
+  image?: AniListCharactersImageDto;
+  name?: AniListNameDto;
+  age?: string;
+  gender?: string;
+  description?: string;
+  bloodType?: string;
+  dateOfBirth?: AniListDateDto;
+  /** @format int32 */
+  favourites?: number;
+  siteUrl?: string;
+  favouriteBlocked?: boolean;
+  favourite?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -580,6 +624,7 @@ export interface DetailComicsResponseDto {
   title?: string;
   comicsGenres?: string[];
   characters?: AniListCharactersDto;
+  staff?: AniListStaffDto;
   /** @format int32 */
   volumes?: number;
   /** @format int32 */

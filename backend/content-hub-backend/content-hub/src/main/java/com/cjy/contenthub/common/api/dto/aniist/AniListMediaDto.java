@@ -49,6 +49,9 @@ public class AniListMediaDto {
 
 	/** 캐릭터 DTO */
 	private AniListCharactersDto characters;
+	
+	/** 스태프 DTO */
+	private AniListStaffDto staff;
 
 	/** 연재 시작일 DTO */
 	private AniListDateDto startDate;

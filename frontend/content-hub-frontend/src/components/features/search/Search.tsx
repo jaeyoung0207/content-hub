@@ -7,6 +7,7 @@ import {
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
   COMMON_IMAGES,
+  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { LoadingUi } from '@/components/ui/LoadingUi';
@@ -117,11 +118,14 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           })
         )}
         {/* 검색 결과가 없을 때 표시할 메시지 */}
-        {aniSearchResults?.length === 0 &&
-          dramaSearchResults?.length === 0 &&
-          movieSearchResults?.length === 0 &&
-          comicsSearchResults?.length === 0 && (
-            <NodataMessageUi message={t('warn.noSearchData')} />
+        {!isLoading &&
+          (!aniSearchResults || aniSearchResults?.length === 0) &&
+          (!dramaSearchResults || dramaSearchResults?.length === 0) &&
+          (!movieSearchResults || movieSearchResults?.length === 0) &&
+          (!comicsSearchResults || comicsSearchResults?.length === 0) && (
+            <div className="mt-60">
+              <NodataMessageUi message={t('warn.noSearchData')} />
+            </div>
           )}
         {/* 검색 전 메세지 */}
         {aniSearchResults === undefined &&
@@ -201,7 +205,7 @@ const DisplayResults = memo(
                       tabNo: 0,
                     });
                     // 상세화면 URL 저장
-                    sessionStorage.setItem('redirectUrl', detailUrl);
+                    sessionStorage.setItem(REDIRECT_URL, detailUrl);
                     // 상세화면 이동
                     navigate(detailUrl);
                   })}

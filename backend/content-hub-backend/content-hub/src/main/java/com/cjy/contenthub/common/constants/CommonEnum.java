@@ -319,5 +319,21 @@ public class CommonEnum {
 					.orElse(INVALID_TOKEN); // 기본값으로 INVALID_TOKEN 반환
 		}
 	}
+	
+	/**
+	 * AniList 정렬 Enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum SortEnum {
+		ID,
+        ID_DESC,
+        ROLE,
+        ROLE_DESC,
+        NAME,
+        NAME_DESC,
+        FAVORITES,
+        FAVORITES_DESC;
+	}
 
 }

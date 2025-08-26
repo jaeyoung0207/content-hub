@@ -1,0 +1,94 @@
+query($mediaId: Int, $page: Int, $perPage: Int, $staffPage2: Int, $staffPerPage2: Int, $sort: [CharacterSort], $staffSort2: [StaffSort])  {
+  Media(id: $mediaId, type: MANGA) {
+    id
+    description
+    genres
+    isAdult
+    volumes
+    chapters
+    status
+    type
+    siteUrl
+    title {
+      romaji
+      english
+      native
+      userPreferred
+    }
+    coverImage {
+      color
+      extraLarge
+      large
+      medium
+    }
+    startDate {
+      year
+      month
+      day
+    }
+    characters(page: $page, perPage: $perPage, sort: $sort) {
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
+      }
+      edges {
+        id
+        role
+        node {
+          id
+          siteUrl
+          image {
+            large
+            medium
+          }
+          name {
+            full
+            native
+            userPreferred
+          }
+          age
+          gender
+          description
+          dateOfBirth {
+            year
+            month
+            day
+          }
+          favourites
+          isFavourite
+          isFavouriteBlocked
+        }
+      }
+    }
+    staff(page: $staffPage2, perPage: $staffPerPage2, sort: $staffSort2) {
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
+      }
+      edges {
+        role
+        id
+        node {
+          age
+          gender
+          name {
+            full
+            userPreferred
+            native
+          }
+          id
+          image {
+            large
+            medium
+          }
+        }
+      }
+    }
+  }
+}

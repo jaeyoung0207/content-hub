@@ -3,6 +3,7 @@ import {
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
   COMMON_IMAGES,
+  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import { CloseButtonUi } from '@/components/ui/common/CloseButtonUi';
 import { UseInfiniteQueryResultType, useSearchMore } from './useSearchMore';
@@ -167,7 +168,7 @@ const DisplayAllResults = memo(
                       tabNo: 0,
                     });
                     // 리다이렉트용 데이터 저장
-                    sessionStorage.setItem('redirectUrl', detailUrl);
+                    sessionStorage.setItem(REDIRECT_URL, detailUrl);
                     // 상세화면 이동
                     navigate(detailUrl);
                   })}

@@ -7,17 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * AniList API 캐릭터 Response DTO
+ * AniList API 스태프 Response DTO
  */
 @Setter
 @Getter
 @NoArgsConstructor
-public class AniListCharactersDto {
+public class AniListStaffDto {
 	
-	/** 페이지 정보 DTO */
+	/** 페이지 정보 */
 	private AniListPageInfoDto pageInfo;
 	
-	/** 캐릭터 DTO 리스트 */
-	private List<AniListCharactersEdgesDto> edges;
+	/** 스태프 엣지 리스트 */
+	private List<AniListStaffEdgesDto> edges;
 
 }

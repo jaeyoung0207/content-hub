@@ -8,22 +8,26 @@ import {
 } from 'react';
 import { DetailResponseType } from '../../useDetail';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { AniListCharactersNodesDto } from '@/api/data-contracts';
+import {
+  AniListCharactersEdgesDto,
+  AniListStaffEdgesDto,
+} from '@/api/data-contracts';
 import { AxiosError } from 'axios';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
+import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
 
 /**
  * 만화 정보 무한스크롤 쿼리 결과 타입
  */
 type InformationUseInfiniteQueryResultType = {
-  pages: (AniListCharactersNodesDto[] | undefined)[];
+  pages: (AniListCharactersEdgesDto[] | AniListStaffEdgesDto[] | undefined)[];
   pageParams: (number | undefined)[];
 };
 
 /**
  * 만화 정보 컴포넌트 훅 반환 타입
  */
-type UseComicsInformationReturnType = {
+type UseComicsCharacterInformationReturnType = {
   data: InformationUseInfiniteQueryResultType | undefined; // 서버에 요청해서 받아온 데이터
   isFetchingNextPage: boolean; // 다음 페이지 로딩중 여부
   hasNextPage: boolean; // 가져올 다음 페이지가 있는지 여부
@@ -33,10 +37,11 @@ type UseComicsInformationReturnType = {
 /**
  * 만화 정보 컴포넌트 훅
  */
-export const useComicsInformation = (
+export const useComicsCharacterInformation = (
   detailResult: DetailResponseType,
-  originalMediaType: string
-): UseComicsInformationReturnType => {
+  originalMediaType: string,
+  creditsType: string
+): UseComicsCharacterInformationReturnType => {
   // ================================================================================================== react hook
 
   // 무한스크롤 div태그 관찰용 state
@@ -54,22 +59,34 @@ export const useComicsInformation = (
    */
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery<
-      AniListCharactersNodesDto[] | undefined,
+      AniListCharactersEdgesDto[] | AniListStaffEdgesDto[] | undefined,
       AxiosError,
       InformationUseInfiniteQueryResultType,
       [string, string, string, string],
       number | undefined
     >({
-      queryKey: detailQueryKeys.detail.contentInformation.list(
-        originalMediaType,
-        detailResult.id!.toString()
-      ) as [string, string, string, string],
+      queryKey:
+        creditsType === COMICS_CREDITS_TYPE.CHARACTER
+          ? (detailQueryKeys.detail.contentInformation.characterList(
+              originalMediaType,
+              detailResult.id!.toString()
+            ) as [string, string, string, string])
+          : (detailQueryKeys.detail.contentInformation.staffList(
+              originalMediaType,
+              detailResult.id!.toString()
+            ) as [string, string, string, string]),
       queryFn: async ({ pageParam = 1 }) => {
-        const response = await detailApi.getComicsDetail({
-          comics_id: detailResult.id!,
-          page: pageParam,
-        });
-        return response.data.characters?.nodes;
+        const response =
+          creditsType === COMICS_CREDITS_TYPE.CHARACTER
+            ? await detailApi.getComicsCharacterList({
+                comics_id: detailResult.id!,
+                page: pageParam,
+              })
+            : await detailApi.getComicsStaffList({
+                comics_id: detailResult.id!,
+                page: pageParam,
+              });
+        return response.data.edges ? response.data.edges : [];
       },
       getNextPageParam: (lastPageData, allPages) => {
         return !lastPageData || lastPageData.length === 0

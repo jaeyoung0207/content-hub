@@ -1,10 +1,17 @@
-import { ERROR_MESSAGE, MEDIA_TYPE } from '../constants/constants';
+import {
+  DETAIL_TAB_ID,
+  ERROR_MESSAGE,
+  MEDIA_TYPE,
+  REDIRECT_URL,
+} from '../constants/constants';
 import { isAxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import i18n from 'i18next';
 import { useProviderStore, useUserStore } from '../store/globalStateStore';
 import { SearchCommonResultType } from '@/components/features/search/useSearch';
 import {
+  AniListCharactersNodeDto,
+  AniListStaffNodeDto,
   DetailComicsResponseDto,
   DetailMovieResponseDto,
   DetailTvResponseDto,
@@ -15,6 +22,8 @@ import {
   TmdbRecommendationsTvResultsDto,
   TmdbSearchMovieResultsDto,
   TmdbSearchTvResultsDto,
+  TmdbVideoCreditsCastDto,
+  TmdbVideoCreditsCrewDto,
 } from '@/api/data-contracts';
 import { RecommendationContentResultType } from '@/components/features/detail/tabs/recommendationContent/useRecommendationContent';
 import { DetailResponseType } from '@/components/features/detail/useDetail';
@@ -33,7 +42,8 @@ type SearchUrlQueryPropsType = {
   contentId?: string; // 콘텐츠 ID
   tabNo?: number; // 탭 번호
   personId?: number; // 인물 ID
-  characterId?: number; // 캐릭터 ID
+  creditsId?: number; // 캐릭터 ID
+  comicsCreditsType?: string; // 만화 크레딧 타입
 };
 
 /**
@@ -66,8 +76,6 @@ export const viewMoreUrlQuery = ({
 
 /**
  * 상세 화면 URL 쿼리 생성 함수
- * @param keyword 검색어
- * @param isAdult 성인물 포함 여부
  * @param originalMediaType 원본 미디어 타입
  * @param contentId 콘텐츠 ID
  * @param tabNo 탭 번호
@@ -92,11 +100,15 @@ export const personUrlQuery = ({ personId }: SearchUrlQueryPropsType) => {
 
 /**
  * 캐릭터 화면 URL 쿼리 생성 함수
+ * @param comicsCreditsType 만화 크레딧 타입
  * @param characterId 캐릭터 ID
  * @returns 캐릭터 화면 URL 쿼리 문자열
  */
-export const characterUrlQuery = ({ characterId }: SearchUrlQueryPropsType) => {
-  return `/character/${characterId}`;
+export const characterUrlQuery = ({
+  comicsCreditsType,
+  creditsId,
+}: SearchUrlQueryPropsType) => {
+  return `/character/${comicsCreditsType}/${creditsId}`;
 };
 
 /**
@@ -104,18 +116,23 @@ export const characterUrlQuery = ({ characterId }: SearchUrlQueryPropsType) => {
  */
 export const afterLoginRedirect = (navigate: NavigateFunction) => {
   // 리다이렉트 URL이 있다면 해당 URL로 이동
-  const redirectUrl = sessionStorage.getItem('redirectUrl');
+  const redirectUrl = sessionStorage.getItem(REDIRECT_URL);
   if (redirectUrl) {
     // 상세 화면으로 리다이렉트하는 경우, tabNo가 0인 경우 1로 변경
     if (redirectUrl.includes('tabNo=0')) {
-      navigate(redirectUrl.replace('tabNo=0', 'tabNo=1'));
+      navigate(
+        redirectUrl.replace(
+          'tabNo=0',
+          'tabNo='.concat(DETAIL_TAB_ID.review.toString())
+        )
+      );
     }
     // 그 이외의 경우
     else {
       navigate(redirectUrl);
     }
     // 리다이렉트 URL 삭제
-    sessionStorage.removeItem('redirectUrl');
+    sessionStorage.removeItem(REDIRECT_URL);
   } else {
     // 리다이렉트 URL이 없다면 홈으로 이동
     navigate('/');
@@ -344,25 +361,69 @@ export const isDetailComicsType = (
 };
 
 /**
- * 크레딧이 cast 타입인지 확인하는 함수
+ * 상세 화면 크레딧이 cast 타입인지 확인하는 함수
  * @param credits 크레딧
  * @returns cast 타입 여부
  */
-export const isCreditsCastType = (
+export const isDetailCreditsCastType = (
+  credits: TmdbVideoCreditsCastDto | TmdbVideoCreditsCrewDto
+): credits is TmdbVideoCreditsCastDto => {
+  return 'character' in credits;
+};
+
+/**
+ * 상세 화면 크레딧이 crew 타입인지 확인하는 함수
+ * @param credits 크레딧
+ * @returns crew 타입 여부
+ */
+export const isDetailCreditsCrewType = (
+  credits: TmdbVideoCreditsCastDto | TmdbVideoCreditsCrewDto
+): credits is TmdbVideoCreditsCrewDto => {
+  return 'job' in credits;
+};
+
+/**
+ * 인물 화면 크레딧이 cast 타입인지 확인하는 함수
+ * @param credits 크레딧
+ * @returns cast 타입 여부
+ */
+export const isPersonCreditsCastType = (
   credits: PersonCredits
 ): credits is PersonCreditsCastDto => {
   return 'character' in credits;
 };
 
 /**
- * 크레딧이 crew 타입인지 확인하는 함수
+ * 인물 화면 크레딧이 crew 타입인지 확인하는 함수
  * @param credits 크레딧
  * @returns crew 타입 여부
  */
-export const isCreditsCrewType = (
+export const isPersonCreditsCrewType = (
   credits: PersonCredits
 ): credits is PersonCreditsCrewDto => {
   return 'job' in credits;
+};
+
+/**
+ * 캐릭터 타입인지 확인하는 함수
+ * @param credits 데이터
+ * @returns 캐릭터 타입 여부
+ */
+export const isCharacterType = (
+  credits: AniListCharactersNodeDto | AniListStaffNodeDto
+): credits is AniListCharactersNodeDto => {
+  return !('homeTown' in credits);
+};
+
+/**
+ * 스태프 타입인지 확인하는 함수
+ * @param credits 데이터
+ * @returns 스태프 타입 여부
+ */
+export const isStaffType = (
+  credits: AniListCharactersNodeDto | AniListStaffNodeDto
+): credits is AniListStaffNodeDto => {
+  return 'homeTown' in credits;
 };
 
 /**
@@ -385,21 +446,21 @@ export const detailMediaType = (mediaType: string) => {
 };
 
 /**
- * 생년월일을 변환하는 함수
- * @param year 년도
+ * 연월일을 변환하는 함수
+ * @param year 연도
  * @param month 월
  * @param day 일
- * @returns 변환된 생년월일 문자열
+ * @returns 변환된 연월일 문자열
  */
-export const convertBirthDate = (
+export const convertDate = (
   year: number | undefined,
   month: number | undefined,
   day: number | undefined
 ) => {
-  const birthYear = year ? year.toString().concat('년 ') : '';
-  const birthMonth = month ? month.toString().concat('월 ') : '';
-  const birthDay = day ? day.toString().concat('일') : '';
-  return birthYear.concat(birthMonth).concat(birthDay).trim();
+  const convertedYear = year ? year.toString().concat('년 ') : '';
+  const convertedMonth = month ? month.toString().concat('월 ') : '';
+  const convertedDay = day ? day.toString().concat('일') : '';
+  return convertedYear.concat(convertedMonth).concat(convertedDay).trim();
 };
 
 /**
@@ -432,5 +493,16 @@ export const checkCharacterId = (characterId: number | undefined) => {
   if (!characterId) {
     console.error('no characterId');
     toast.error(i18n.t('warn.noCharacterId'), { toastId: 'noCharacterId' });
+  }
+};
+
+/**
+ * staffId 체크 함수
+ * @param staffId 제작진 ID
+ */
+export const checkStaffId = (staffId: number | undefined) => {
+  if (!staffId) {
+    console.error('no staffId');
+    toast.error(i18n.t('warn.noStaffId'), { toastId: 'noStaffId' });
   }
 };

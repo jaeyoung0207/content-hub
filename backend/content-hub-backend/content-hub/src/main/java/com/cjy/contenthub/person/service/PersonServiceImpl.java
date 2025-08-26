@@ -91,8 +91,8 @@ public class PersonServiceImpl implements PersonService {
 					personResponse.setCrew(new ArrayList<>());
 
 					// 크레딧 정보가 없는 경우 경고 로그 출력 후 응답 반환
-					if (ObjectUtils.isEmpty(response.getTvCredits())
-							&& ObjectUtils.isEmpty(response.getMovieCredits())) {
+					if (response.getTvCredits() == null
+							&& response.getMovieCredits() == null) {
 						log.warn("Person ID {} has no credits data.", personId);
 						return personResponse;
 					}

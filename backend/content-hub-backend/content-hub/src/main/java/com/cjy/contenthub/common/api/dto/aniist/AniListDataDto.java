@@ -28,6 +28,10 @@ public class AniListDataDto {
 	
 	/** 캐릭터 DTO */
 	@JsonProperty("Character")
-	private AniListCharactersNodesDto character;
+	private AniListCharactersNodeDto character;
+	
+	/** 스태프 DTO */
+	@JsonProperty("Staff")
+	private AniListStaffNodeDto staff;
 
 }

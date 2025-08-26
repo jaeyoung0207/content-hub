@@ -241,7 +241,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	public DetailComicsRecommendationsResponseDto getComicsRecommendations(Integer mediaId, Integer page) throws IOException {
 
 		// graphql 쿼리 파일 불러오기
-		String query = GraphqlUtil.loadQuery("comicsRecomendation.graphql");
+		String query = GraphqlUtil.loadQuery("comicsRecomendationList.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
 				PARAM_MEDIA_ID, mediaId,

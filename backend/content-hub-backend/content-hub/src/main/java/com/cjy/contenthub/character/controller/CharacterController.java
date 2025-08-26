@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.character.service.CharacterService;
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodesDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,9 @@ public class CharacterController {
 
 	/** 리퀘스트 파라미터 키 : 캐릭터ID */
 	private static final String PARAM_CHARACTER_ID = "characterId";
+	
+	/** 리퀘스트 파라미터 키 : 스태프ID */
+	private static final String PARAM_STAFF_ID = "staffId";
 
 
 	/**
@@ -48,8 +52,21 @@ public class CharacterController {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@GetMapping(value = "/getCharacter")
-	public ResponseEntity<AniListCharactersNodesDto> getCharacter(
+	public ResponseEntity<AniListCharactersNodeDto> getCharacter(
 			@RequestParam(PARAM_CHARACTER_ID) Integer characterId) throws IOException {
 		return ResponseEntity.ok(characterService.getCharacter(characterId));
+	}
+	
+	/**
+	 * 스태프 조회
+	 *
+	 * @param staffId 스태프 ID
+	 * @return ResponseEntity<AniListStaffNodeDto> 스태프 정보
+	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
+	 */
+	@GetMapping(value = "/getStaff")
+	public ResponseEntity<AniListStaffNodeDto> getStaff(
+			@RequestParam(PARAM_STAFF_ID) Integer staffId) throws IOException {
+		return ResponseEntity.ok(characterService.getStaff(staffId));
 	}
 }

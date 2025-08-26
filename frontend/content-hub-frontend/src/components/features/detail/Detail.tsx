@@ -4,6 +4,7 @@ import {
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
   COMMON_IMAGES,
+  DETAIL_TAB_ID,
 } from '@/components/common/constants/constants';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,8 @@ import {
   isDetailTvType,
 } from '@/components/common/utils/commonUtil';
 import { ComicsInfomation } from './tabs/contentInformation/ComicsInformation';
+import { CastInformation } from './tabs/CastInformation';
+import { CrewInformation } from './tabs/CrewInformation';
 
 /**
  * 상세 화면 컴포넌트
@@ -45,35 +48,29 @@ export const Detail = memo(() => {
   // i18n 훅
   const { t } = useTranslation();
 
-  // 탭 ID 매핑
-  const tabId = {
-    mediaInfo: 0,
-    cast: 1,
-    crew: 2,
-    review: 3,
-    recommendation: 4,
-  };
-
   // 탭 정보 배열
   const tabInfo = [
     {
-      id: tabId.mediaInfo,
+      id: DETAIL_TAB_ID.mediaInfo,
       tabTitle: t('info.mediaInfo'),
     },
-    // {
-    //   id: tabId.cast,
-    //   tabTitle: t('info.cast'),
-    // },
-    // {
-    //   id: tabId.crew,
-    //   tabTitle: t('info.crew'),
-    // },
     {
-      id: tabId.review,
+      id: DETAIL_TAB_ID.cast,
+      tabTitle:
+        originalMediaType === MEDIA_TYPE.COMICS
+          ? t('info.characters')
+          : t('info.cast'),
+    },
+    {
+      id: DETAIL_TAB_ID.crew,
+      tabTitle: t('info.crew'),
+    },
+    {
+      id: DETAIL_TAB_ID.review,
       tabTitle: t('info.review'),
     },
     {
-      id: tabId.recommendation,
+      id: DETAIL_TAB_ID.recommendation,
       tabTitle: t('info.recommend'),
     },
   ];
@@ -331,7 +328,7 @@ export const Detail = memo(() => {
         <div className="mt-5 p-4">
           {data && originalMediaType && (
             <>
-              {tabIndex === tabId.mediaInfo && (
+              {tabIndex === DETAIL_TAB_ID.mediaInfo && (
                 <div>
                   {/* 만화 정보 */}
                   {originalMediaType === MEDIA_TYPE.COMICS && (
@@ -351,7 +348,25 @@ export const Detail = memo(() => {
                   )}
                 </div>
               )}
-              {tabIndex === tabId.review && (
+              {tabIndex === DETAIL_TAB_ID.cast && (
+                <div>
+                  {/* 출연진 */}
+                  <CastInformation
+                    detailResult={data}
+                    originalMediaType={originalMediaType}
+                  />
+                </div>
+              )}
+              {tabIndex === DETAIL_TAB_ID.crew && (
+                <div>
+                  {/* 제작진 */}
+                  <CrewInformation
+                    detailResult={data}
+                    originalMediaType={originalMediaType}
+                  />
+                </div>
+              )}
+              {tabIndex === DETAIL_TAB_ID.review && (
                 <div>
                   {/* 평가&리뷰 */}
                   <ContentComment
@@ -360,7 +375,7 @@ export const Detail = memo(() => {
                   />
                 </div>
               )}
-              {tabIndex === tabId.recommendation && (
+              {tabIndex === DETAIL_TAB_ID.recommendation && (
                 <div>
                   {/* 비슷한 작품 */}
                   <RecommendContent

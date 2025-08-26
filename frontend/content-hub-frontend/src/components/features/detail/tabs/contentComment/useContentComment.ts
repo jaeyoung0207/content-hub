@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/commonUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
+import { REDIRECT_URL } from '@/components/common/constants/constants';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -425,6 +426,10 @@ export const useContentComment = (
   const handleLoginConfirmOk = () => {
     // 로그인 확인 모달 닫기
     setIsLoginConfirmOpen(false);
+    // URL 생성
+    const searchUrl = location.pathname + location.search;
+    // URL 저장
+    sessionStorage.setItem(REDIRECT_URL, searchUrl);
     // 로그인 페이지로 이동
     navigate('/login');
   };

@@ -1,0 +1,39 @@
+query($mediaId: Int, $staffPage2: Int, $staffPerPage2: Int, $staffSort2: [StaffSort])  {
+  Media(id: $mediaId, type: MANGA) {
+    id
+    type
+    title {
+      romaji
+      english
+      native
+      userPreferred
+    }
+    staff(page: $staffPage2, perPage: $staffPerPage2, sort: $staffSort2) {
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
+      }
+      edges {
+        id
+        role
+        node {
+          id
+          age
+          gender
+          name {
+            full
+            userPreferred
+            native
+          }
+          image {
+            large
+            medium
+          }
+        }
+      }
+    }
+  }
+}

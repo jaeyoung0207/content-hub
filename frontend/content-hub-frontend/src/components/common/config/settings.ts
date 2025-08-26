@@ -23,4 +23,5 @@ export const settings = {
     'http://localhost:3000/login/kakao',
   kakaoClientId:
     import.meta.env.VITE_KAKAO_CLIENT_ID || 'kakao_client_id_placeholder',
+  detailCreditCount: import.meta.env.VITE_DETAIL_CREDIT_COUNT || 8,
 };

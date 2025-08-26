@@ -7,7 +7,11 @@ import {
   useState,
 } from 'react';
 import { Search } from '@/api/Search';
-import { ESC_KEY, MEDIA_TYPE } from '@/components/common/constants/constants';
+import {
+  ESC_KEY,
+  MEDIA_TYPE,
+  REDIRECT_URL,
+} from '@/components/common/constants/constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { SearchCommonResultListType } from '../useSearch';
@@ -184,7 +188,7 @@ export const useSearchMore = (
    */
   const handleModalClose = useCallback(() => {
     // 리다이렉트 주소 삭제
-    sessionStorage.removeItem('redirectUrl');
+    sessionStorage.removeItem(REDIRECT_URL);
     // URL 쿼리스트링 제거
     searchParams.delete('viewMore');
     setSearchParams(searchParams); //  URL이 바뀌면 React Router가 감지해서 리렌더링 발생

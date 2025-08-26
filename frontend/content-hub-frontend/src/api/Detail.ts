@@ -11,6 +11,8 @@
  */
 
 import {
+  AniListCharactersDto,
+  AniListStaffDto,
   DetailComicsRecommendationsResponseDto,
   DetailComicsResponseDto,
   DetailCommentGetResponseDto,
@@ -172,6 +174,28 @@ export class Detail<
    * No description
    *
    * @tags detail-information-controller
+   * @name GetComicsStaffList
+   * @request GET:/detail/information/getComicsStaffList
+   */
+  getComicsStaffList = (
+    query: {
+      /** @format int32 */
+      comics_id: number;
+      /** @format int32 */
+      page: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<AniListStaffDto, any>({
+      path: `/detail/information/getComicsStaffList`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-information-controller
    * @name GetComicsDetail
    * @request GET:/detail/information/getComicsDetail
    */
@@ -179,13 +203,33 @@ export class Detail<
     query: {
       /** @format int32 */
       comics_id: number;
-      /** @format int32 */
-      page?: number;
     },
     params: RequestParams = {}
   ) =>
     this.request<DetailComicsResponseDto, any>({
       path: `/detail/information/getComicsDetail`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags detail-information-controller
+   * @name GetComicsCharacterList
+   * @request GET:/detail/information/getComicsCharacterList
+   */
+  getComicsCharacterList = (
+    query: {
+      /** @format int32 */
+      comics_id: number;
+      /** @format int32 */
+      page: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<AniListCharactersDto, any>({
+      path: `/detail/information/getComicsCharacterList`,
       method: 'GET',
       query: query,
       ...params,

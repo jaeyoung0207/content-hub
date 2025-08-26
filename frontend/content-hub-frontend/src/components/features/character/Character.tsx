@@ -3,32 +3,53 @@ import { useCharacter } from './useCharacter';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { useTranslation } from 'react-i18next';
 import { COMMON_IMAGES } from '@/components/common/constants/constants';
-import { convertBirthDate } from '@/components/common/utils/commonUtil';
+import { convertDate, isStaffType } from '@/components/common/utils/commonUtil';
 
 /**
  * 캐릭터 화면 컴포넌트
  */
 export const Character = () => {
   // URL 파라미터에서 값을 가져오는 useParams 훅
-  const { characterId } = useParams();
+  const { comicsCreditsType, creditsId } = useParams();
   // i18n 훅
   const { t } = useTranslation();
 
   // useCharacter 훅을 사용하여 캐릭터 정보 조회
-  const { data, isLoading, isError } = useCharacter(characterId!);
+  const { data, isLoading, isError } = useCharacter(
+    comicsCreditsType!,
+    creditsId!
+  );
 
   // 캐릭터 정보 스타일
   const characterInfoStyle = 'flex text-xl mb-2 mr-3 break-all';
   // 소제목 스타일
   const subTitleStyle = 'mr-2 whitespace-nowrap';
-  // 생년월일 변환
-  const birthday = data?.dateOfBirth
-    ? convertBirthDate(
-        data.dateOfBirth.year,
-        data.dateOfBirth.month,
-        data.dateOfBirth.day
-      )
-    : '';
+  // 생년월일
+  const birthday =
+    data && data.dateOfBirth
+      ? convertDate(
+          data.dateOfBirth.year,
+          data.dateOfBirth.month,
+          data.dateOfBirth.day
+        )
+      : '';
+  // 사망일(Staff Only)
+  const deathday =
+    data && isStaffType(data) && data.dateOfDeath
+      ? convertDate(
+          data.dateOfDeath.year,
+          data.dateOfDeath.month,
+          data.dateOfDeath.day
+        )
+      : '';
+  // 활동 시작 연도(Staff Only)
+  const yearsActive =
+    data && isStaffType(data) && data.yearsActive
+      ? data.yearsActive.join(', ')
+      : '';
+  // 출생지(Staff Only)
+  const homeTown =
+    data && isStaffType(data) && data.homeTown ? data.homeTown : '';
 
   return (
     <div className="block mt-30 mb-10">
@@ -71,13 +92,22 @@ export const Character = () => {
                     <div>{data.gender}</div>
                   </li>
                 )}
-                {/* 생년월일 */}
+                {/* 생일 */}
                 {birthday && (
                   <li className={characterInfoStyle}>
                     <div className={subTitleStyle}>
                       {t('info.birthday') + t('info.colon')}
                     </div>
                     <div>{birthday}</div>
+                  </li>
+                )}
+                {/* 사망일 */}
+                {deathday && (
+                  <li className={characterInfoStyle}>
+                    <div className={subTitleStyle}>
+                      {t('info.deathday') + t('info.colon')}
+                    </div>
+                    <div>{deathday}</div>
                   </li>
                 )}
                 {/* 나이 */}
@@ -96,6 +126,24 @@ export const Character = () => {
                       {t('info.bloodType') + t('info.colon')}
                     </div>
                     <div>{data.bloodType}</div>
+                  </li>
+                )}
+                {/* 출생지 */}
+                {homeTown && (
+                  <li className={characterInfoStyle}>
+                    <div className={subTitleStyle}>
+                      {t('info.homeTown') + t('info.colon')}
+                    </div>
+                    <div>{homeTown}</div>
+                  </li>
+                )}
+                {/* 활동 시작 연도 */}
+                {yearsActive && (
+                  <li className={characterInfoStyle}>
+                    <div className={subTitleStyle}>
+                      {t('info.yearsActive') + t('info.colon')}
+                    </div>
+                    <div>{yearsActive}</div>
                   </li>
                 )}
                 {/* 참고URL */}

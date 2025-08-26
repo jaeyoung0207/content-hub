@@ -510,6 +510,31 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/DetailMovieResponseDto'
+  /detail/information/getComicsStaffList:
+    get:
+      tags:
+        - detail-information-controller
+      operationId: getComicsStaffList
+      parameters:
+        - name: comics_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AniListStaffDto'
   /detail/information/getComicsDetail:
     get:
       tags:
@@ -522,9 +547,28 @@ paths:
           schema:
             type: integer
             format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DetailComicsResponseDto'
+  /detail/information/getComicsCharacterList:
+    get:
+      tags:
+        - detail-information-controller
+      operationId: getComicsCharacterList
+      parameters:
+        - name: comics_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
         - name: page
           in: query
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
@@ -534,7 +578,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/DetailComicsResponseDto'
+                $ref: '#/components/schemas/AniListCharactersDto'
   /detail/comment/getStarRatingAverage:
     get:
       tags:
@@ -610,6 +654,25 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/CsrfToken'
+  /character/getStaff:
+    get:
+      tags:
+        - character-controller
+      operationId: getStaff
+      parameters:
+        - name: staffId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AniListStaffNodeDto'
   /character/getCharacter:
     get:
       tags:
@@ -628,7 +691,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/AniListCharactersNodesDto'
+                $ref: '#/components/schemas/AniListCharactersNodeDto'
   /detail/comment/deleteComment:
     delete:
       tags:
@@ -738,9 +801,9 @@ components:
           format: int32
         dramaViewMore:
           type: boolean
-        aniViewMore:
-          type: boolean
         movieViewMore:
+          type: boolean
+        aniViewMore:
           type: boolean
     TmdbSearchMovieResultsDto:
       type: object
@@ -1166,9 +1229,9 @@ components:
           format: date-time
         emailValid:
           type: boolean
-        leapMonth:
-          type: boolean
         emailVerified:
+          type: boolean
+        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1184,9 +1247,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultImage:
-          type: boolean
         defaultNickname:
+          type: boolean
+        defaultImage:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -1587,60 +1650,17 @@ components:
           type: string
         starRatingAverage:
           type: number
-    AniListCharactersDto:
+    AniListCoverImageDto:
       type: object
       properties:
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AniListCharactersNodesDto'
-        pageInfo:
-          $ref: '#/components/schemas/AniListPageInfoDto'
-    AniListCharactersImageDto:
-      type: object
-      properties:
-        large:
+        color:
           type: string
         medium:
           type: string
-    AniListCharactersNameDto:
-      type: object
-      properties:
-        full:
+        large:
           type: string
-        userPreferred:
+        extraLarge:
           type: string
-        native:
-          type: string
-    AniListCharactersNodesDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int32
-        image:
-          $ref: '#/components/schemas/AniListCharactersImageDto'
-        name:
-          $ref: '#/components/schemas/AniListCharactersNameDto'
-        age:
-          type: string
-        gender:
-          type: string
-        description:
-          type: string
-        bloodType:
-          type: string
-        dateOfBirth:
-          $ref: '#/components/schemas/AniListDateDto'
-        favourites:
-          type: integer
-          format: int32
-        siteUrl:
-          type: string
-        favourite:
-          type: boolean
-        favouriteBlocked:
-          type: boolean
     AniListDateDto:
       type: object
       properties:
@@ -1653,6 +1673,15 @@ components:
         day:
           type: integer
           format: int32
+    AniListNameDto:
+      type: object
+      properties:
+        full:
+          type: string
+        userPreferred:
+          type: string
+        native:
+          type: string
     AniListPageInfoDto:
       type: object
       properties:
@@ -1668,6 +1697,116 @@ components:
         hasNextPage:
           type: boolean
         perPage:
+          type: boolean
+    AniListStaffDto:
+      type: object
+      properties:
+        pageInfo:
+          $ref: '#/components/schemas/AniListPageInfoDto'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/AniListStaffEdgesDto'
+    AniListStaffEdgesDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        role:
+          type: string
+        node:
+          $ref: '#/components/schemas/AniListStaffNodeDto'
+    AniListStaffNodeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        age:
+          type: integer
+          format: int32
+        gender:
+          type: string
+        bloodType:
+          type: string
+        dateOfBirth:
+          $ref: '#/components/schemas/AniListDateDto'
+        dateOfDeath:
+          $ref: '#/components/schemas/AniListDateDto'
+        homeTown:
+          type: string
+        name:
+          $ref: '#/components/schemas/AniListNameDto'
+        image:
+          $ref: '#/components/schemas/AniListCoverImageDto'
+        siteUrl:
+          type: string
+        description:
+          type: string
+        primaryOccupations:
+          type: array
+          items:
+            type: string
+        yearsActive:
+          type: array
+          items:
+            type: integer
+            format: int32
+    AniListCharactersDto:
+      type: object
+      properties:
+        pageInfo:
+          $ref: '#/components/schemas/AniListPageInfoDto'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/AniListCharactersEdgesDto'
+    AniListCharactersEdgesDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        role:
+          type: string
+        node:
+          $ref: '#/components/schemas/AniListCharactersNodeDto'
+    AniListCharactersImageDto:
+      type: object
+      properties:
+        large:
+          type: string
+        medium:
+          type: string
+    AniListCharactersNodeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        image:
+          $ref: '#/components/schemas/AniListCharactersImageDto'
+        name:
+          $ref: '#/components/schemas/AniListNameDto'
+        age:
+          type: string
+        gender:
+          type: string
+        description:
+          type: string
+        bloodType:
+          type: string
+        dateOfBirth:
+          $ref: '#/components/schemas/AniListDateDto'
+        favourites:
+          type: integer
+          format: int32
+        siteUrl:
+          type: string
+        favouriteBlocked:
+          type: boolean
+        favourite:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -1697,6 +1836,8 @@ components:
             type: string
         characters:
           $ref: '#/components/schemas/AniListCharactersDto'
+        staff:
+          $ref: '#/components/schemas/AniListStaffDto'
         volumes:
           type: integer
           format: int32

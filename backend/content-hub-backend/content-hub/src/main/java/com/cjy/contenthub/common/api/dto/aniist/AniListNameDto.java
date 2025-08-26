@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * AniList API 캐릭터 이름 Response DTO
+ * AniList API 이름 Response DTO
  */
 @Setter
 @Getter
 @NoArgsConstructor
-public class AniListCharactersNameDto {
+public class AniListNameDto {
 	
 	/** 캐릭터 전체 이름 */
 	private String full;

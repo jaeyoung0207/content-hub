@@ -6,7 +6,10 @@ import {
   DetailMovieResponseDto,
   DetailComicsResponseDto,
 } from '@/api/data-contracts';
-import { MEDIA_TYPE } from '@/components/common/constants/constants';
+import {
+  MEDIA_TYPE,
+  REDIRECT_URL,
+} from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 
@@ -149,7 +152,7 @@ export const useDetail = (
     // 언마운트시 실행
     return () => {
       // 리다이렉트 주소 삭제
-      sessionStorage.removeItem('redirectUrl');
+      // sessionStorage.removeItem(REDIRECT_URL);
     };
   }, []);
 

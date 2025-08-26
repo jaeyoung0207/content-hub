@@ -1,12 +1,16 @@
 import { Character } from '@/api/Character';
-import { AniListCharactersNodesDto } from '@/api/data-contracts';
+import {
+  AniListCharactersNodeDto,
+  AniListStaffNodeDto,
+} from '@/api/data-contracts';
+import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
 import { useQuery } from '@tanstack/react-query';
 
 /**
  * 캐릭터 화면 훅 반환 타입
  */
 type UseCharacterReturnType = {
-  data: AniListCharactersNodesDto | undefined;
+  data: AniListCharactersNodeDto | AniListStaffNodeDto | undefined;
   isLoading: boolean;
   isError: boolean;
 };
@@ -16,19 +20,29 @@ type UseCharacterReturnType = {
  * @param characterId 캐릭터 ID
  * @returns UseCharacterReturnType
  */
-export const useCharacter = (characterId: string): UseCharacterReturnType => {
+export const useCharacter = (
+  comicsCreditsType: string,
+  creditsId: string
+): UseCharacterReturnType => {
   // ================================================================================================== react query
 
   // character API 인스턴스 생성
   const characterApi = new Character();
 
   // 캐릭터 데이터 API 호출
-  const { data, isLoading, isError } = useQuery<AniListCharactersNodesDto>({
-    queryKey: ['character', characterId],
+  const { data, isLoading, isError } = useQuery<
+    AniListCharactersNodeDto | AniListStaffNodeDto
+  >({
+    queryKey: ['character', creditsId],
     queryFn: async () => {
-      return (
-        await characterApi.getCharacter({ characterId: Number(characterId) })
-      ).data;
+      if (comicsCreditsType === COMICS_CREDITS_TYPE.CHARACTER) {
+        return (
+          await characterApi.getCharacter({ characterId: Number(creditsId) })
+        ).data;
+      } else {
+        return (await characterApi.getStaff({ staffId: Number(creditsId) }))
+          .data;
+      }
     },
   });
 

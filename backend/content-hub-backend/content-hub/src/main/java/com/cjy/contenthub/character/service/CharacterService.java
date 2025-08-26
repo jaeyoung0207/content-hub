@@ -2,7 +2,8 @@ package com.cjy.contenthub.character.service;
 
 import java.io.IOException;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodesDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
 
 /**
  * 캐릭터 서비스 인터페이스
@@ -16,6 +17,8 @@ public interface CharacterService {
 	 * @return AniListCharactersNodesDto 캐릭터 정보
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
-	AniListCharactersNodesDto getCharacter(Integer characterId) throws IOException;
+	AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException;
+	
+	AniListStaffNodeDto getStaff(Integer staffId) throws IOException;
 
 }

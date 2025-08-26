@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
 import com.cjy.contenthub.detail.service.DetailInformationService;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -135,9 +136,40 @@ public class DetailInformationController {
 	 */
 	@GetMapping(value = "/getComicsDetail")
 	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
-			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page
+			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId
 			) throws IOException {
-		return ResponseEntity.ok(informationService.getComicsDetail(comicsId, page));
+		return ResponseEntity.ok(informationService.getComicsDetail(comicsId));
+	}
+	
+	/**
+	 * AniList Comics 캐릭터 리스트 조회 API
+	 * 
+	 * @param comicsId Comics ID
+	 * @param page     페이지 번호
+	 * @return Comics 캐릭터 리스트 응답 DTO
+	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
+	 */
+	@GetMapping(value = "/getComicsCharacterList")
+	public ResponseEntity<AniListCharactersDto> getComicsCharacterList(
+			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId,
+			@NotNull @RequestParam(PARAM_PAGE) Integer page
+			) throws IOException {
+		return ResponseEntity.ok(informationService.getComicsCharacterList(comicsId, page));
+	}
+	
+	/**
+	 * AniList Comics 스태프 리스트 조회 API
+	 * 
+	 * @param comicsId Comics ID
+	 * @param page     페이지 번호
+	 * @return Comics 스태프 리스트 응답 DTO
+	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
+	 */
+	@GetMapping(value = "/getComicsStaffList")
+	public ResponseEntity<AniListStaffDto> getComicsStaffList(
+			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId,
+			@NotNull @RequestParam(PARAM_PAGE) Integer page
+			) throws IOException {
+		return ResponseEntity.ok(informationService.getComicsStaffList(comicsId, page));
 	}
 }

@@ -37,6 +37,7 @@ const resources = {
         cast: '출연진',
         crew: '제작진',
         characters: '캐릭터',
+        staff: '스태프',
         role: ' 역',
         loginConfirmMsg2: '로그인이 필요합니다. 로그인 하시겠습니까?',
         /* 코멘트 관련 */
@@ -80,6 +81,7 @@ const resources = {
         notEndedYet: '미완',
         userStarRating: '유저 평점',
         ableToWatching: '볼 수 있는 곳',
+        seeMore: '더보기',
         /* 인물 정보 */
         singleCast: '출연작',
         singleCrew: '제작 참여작',
@@ -98,6 +100,8 @@ const resources = {
         /* 캐릭터 정보 */
         age: '나이',
         bloodType: '혈액형',
+        yearsActive: '활동 시작 연도',
+        homeTown: '출생지',
         /* 점검 화면 */
         maintenanceTitle: '서비스 점검 중입니다.',
         maintenanceMessage:
@@ -111,6 +115,7 @@ const resources = {
         noContentId: '작품 정보가 없습니다.',
         noPersonId: '인물 정보가 없습니다.',
         noCharacterId: '캐릭터 정보가 없습니다.',
+        noStaffId: '제작진 정보가 없습니다.',
       },
       error: {
         problemsOccurred: '문제가 발생했습니다.',

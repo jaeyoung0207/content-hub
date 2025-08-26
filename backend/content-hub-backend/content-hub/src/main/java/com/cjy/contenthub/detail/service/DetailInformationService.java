@@ -2,6 +2,8 @@ package com.cjy.contenthub.detail.service;
 
 import java.io.IOException;
 
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
@@ -30,6 +32,10 @@ public interface DetailInformationService {
 	 * @param comicsId Comics ID
 	 * @return Comics 상세 응답 DTO
 	 */
-	DetailComicsResponseDto getComicsDetail(Integer comicsId, Integer page) throws IOException;
+	DetailComicsResponseDto getComicsDetail(Integer comicsId) throws IOException;
+	
+	AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page)  throws IOException;
+	
+	AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException;
 
 }

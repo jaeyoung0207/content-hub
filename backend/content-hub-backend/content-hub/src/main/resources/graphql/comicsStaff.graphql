@@ -1,0 +1,34 @@
+query Staff($staffId: Int) {
+  Staff(id: $staffId) {
+    id
+    gender
+    age
+    bloodType
+    homeTown
+    dateOfBirth {
+      year
+      month
+      day
+    }
+    dateOfDeath {
+      year
+      month
+      day
+    }
+    favourites
+    name {
+      alternative
+      full
+      native
+      userPreferred
+    }
+    siteUrl
+    description
+    image {
+      large
+      medium
+    }
+    primaryOccupations
+    yearsActive
+  }
+}

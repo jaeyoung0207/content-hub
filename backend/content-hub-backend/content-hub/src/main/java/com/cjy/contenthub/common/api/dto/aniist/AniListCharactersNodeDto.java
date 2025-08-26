@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class AniListCharactersNodesDto {
+public class AniListCharactersNodeDto {
 	
 	/** 캐릭터 ID */
 	private int id;
@@ -19,7 +19,7 @@ public class AniListCharactersNodesDto {
 	private AniListCharactersImageDto image;
 
 	/** 캐릭터 이름 DTO */
-	private AniListCharactersNameDto name;
+	private AniListNameDto name;
 
 	/** 캐릭터 나이 */
 	private String age;

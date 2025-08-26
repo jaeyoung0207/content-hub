@@ -7,6 +7,7 @@ import {
 import {
   COMMON_IMAGES,
   MEDIA_TYPE,
+  REDIRECT_URL,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
 } from '@/components/common/constants/constants';
@@ -126,7 +127,7 @@ const DisplayRecommendResults = ({
                         tabNo: 0,
                       });
                       // 리다이렉트용 데이터 저장
-                      sessionStorage.setItem('redirectUrl', detailUrl);
+                      sessionStorage.setItem(REDIRECT_URL, detailUrl);
                       // 상세보기 모달 오픈
                       navigate(detailUrl);
                     })}

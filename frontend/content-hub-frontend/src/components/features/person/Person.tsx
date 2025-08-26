@@ -12,7 +12,7 @@ import {
 } from '@/components/common/constants/constants';
 import {
   detailUrlQuery,
-  isCreditsCastType,
+  isPersonCreditsCastType,
 } from '@/components/common/utils/commonUtil';
 import dayjs from 'dayjs';
 import {
@@ -23,7 +23,7 @@ import { memo } from 'react';
 
 export type PersonCredits = PersonCreditsCastDto | PersonCreditsCrewDto;
 
-type DisplayCreditsType = {
+type DisplayPersonCreditsType = {
   credits: PersonCredits[];
 };
 
@@ -191,7 +191,7 @@ export const Person = () => {
                 {t('info.singleCast')}
               </div>
               <div className="mt-3 p-2">
-                <DisplayCredits credits={data.cast} />
+                <DisplayPersonCredits credits={data.cast} />
               </div>
             </>
           )}
@@ -202,7 +202,7 @@ export const Person = () => {
                 {t('info.singleCrew')}
               </div>
               <div className="mt-3 p-2">
-                <DisplayCredits credits={data.crew} />
+                <DisplayPersonCredits credits={data.crew} />
               </div>
             </>
           )}
@@ -216,14 +216,14 @@ export const Person = () => {
  * 크레딧 정보를 표시하는 컴포넌트
  * @param credits - 크레딧 정보 배열
  */
-const DisplayCredits = memo(({ credits }: DisplayCreditsType) => {
+const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
   return (
     <div>
       {credits.map((items, index) => {
         // 캐스트인지 타입 확인
-        const isCast = isCreditsCastType(items);
+        const isCast = isPersonCreditsCastType(items);
         // TV인 경우 애니메이션 고정, 그 이외의 경우 영화로 설정
         const originalMediaType =
           items.mediaType === 'TV' ? MEDIA_TYPE.ANI : MEDIA_TYPE.MOVIE;

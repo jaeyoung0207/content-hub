@@ -1,5 +1,5 @@
 import { Control, useForm, useWatch } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useProviderStore,
@@ -24,6 +24,7 @@ import {
   ENTER_KEY,
   ESC_KEY,
   LOGIN_PROVIDER,
+  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import {
   clearUserData,
@@ -100,6 +101,8 @@ export const useHeader = (): useHeaderReturnType => {
 
   // navigate 훅
   const navigate = useNavigate();
+  // location 훅
+  const location = useLocation();
 
   // 쿠키 훅: 리프레시 토큰
   const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
@@ -437,6 +440,10 @@ export const useHeader = (): useHeaderReturnType => {
    * 로그인 클릭시 처리
    */
   const handleLoginOnClick = useCallback(() => {
+    // URL 생성
+    // const searchUrl = location.pathname + location.search;
+    // // URL 저장
+    // sessionStorage.setItem(REDIRECT_URL, searchUrl);
     // 로그인 페이지로 이동
     navigate('/login');
   }, [navigate]);
@@ -445,13 +452,11 @@ export const useHeader = (): useHeaderReturnType => {
    * 로그아웃 클릭시 처리
    */
   const handleLogoutOnClick = useCallback(() => {
-    // 검색 화면 URL 생성
-    const searchUrl = searchUrlQuery({
-      keyword: keyword!,
-      isAdult: String(adultFlg),
-    });
-    // 검색 화면 URL 저장
-    sessionStorage.setItem('redirectUrl', searchUrl);
+    // URL 생성
+    // const searchUrl = location.pathname + `?keyword=${keyword}&isAdult=${adultFlg}`;
+    // const searchUrl = location.pathname + location.search;
+    // // URL 저장
+    // sessionStorage.setItem(REDIRECT_URL, searchUrl);
     // 로그아웃 페이지로 이동
     navigate('/logout');
   }, [keyword, adultFlg, navigate]);

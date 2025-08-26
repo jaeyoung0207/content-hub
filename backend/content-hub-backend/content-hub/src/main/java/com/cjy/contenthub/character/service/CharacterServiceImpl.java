@@ -3,14 +3,14 @@ package com.cjy.contenthub.character.service;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodesDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
+import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,9 @@ public class CharacterServiceImpl implements CharacterService {
 
 	/** 리퀘스트 파라미터 키 : 캐릭터ID */
 	private static final String PARAM_CHARACTER_ID = "characterId";
+	
+	/** 리퀘스트 파라미터 키 : 스태프ID */
+	private static final String PARAM_STAFF_ID = "staffId";
 
 
 	/**
@@ -45,7 +48,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 */
 	@Override
 	@Cacheable(value = "character", key = "#characterId", unless = "#result == null")
-	public AniListCharactersNodesDto getCharacter(Integer characterId) throws IOException {
+	public AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsCharacter.graphql");
@@ -63,13 +66,52 @@ public class CharacterServiceImpl implements CharacterService {
 				.bodyToMono(AniListResponseDto.class)
 				.map(response -> {
 					// 응답 데이터가 없는 경우 빈 ResponseEntity 반환
-					if (ObjectUtils.isEmpty(response.getData())
-							|| ObjectUtils.isEmpty(response.getData().getCharacter())) {
+					if (response == null || response.getData() == null
+							|| response.getData().getCharacter() == null) {
 						log.warn("Character not found for ID: {}", characterId);
-						return new AniListCharactersNodesDto();
+						return new AniListCharactersNodeDto();
 					}
 					// 응답 데이터가 있는 경우 캐릭터 정보 반환
 					return response.getData().getCharacter();
+				})
+				.block();
+	}
+
+
+	/**
+	 * 스태프 조회
+	 *
+	 * @param staffId 스태프 ID
+	 * @return 스태프 정보
+	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
+	 */
+	@Override
+	@Cacheable(value = "staff", key = "#staffId", unless = "#result == null")
+	public AniListStaffNodeDto getStaff(Integer staffId) throws IOException {
+
+		// GraphQL 쿼리 파일 불러오기
+		String query = GraphqlUtil.loadQuery("comicsStaff.graphql");
+		// 리퀘스트 파라미터 작성
+		Map<String, Object> variables = Map.of(
+				PARAM_STAFF_ID, staffId
+				);
+		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
+		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
+
+		// AniList API 조회
+		return anilistWebClient.post()
+				.bodyValue(requestBody)
+				.retrieve()
+				.bodyToMono(AniListResponseDto.class)
+				.map(response -> {
+					// 응답 데이터가 없는 경우 빈 ResponseEntity 반환
+					if (response == null || response.getData() == null
+							|| response.getData().getStaff() == null) {
+						log.warn("Staff not found for ID: {}", staffId);
+						return new AniListStaffNodeDto();
+					}
+					// 응답 데이터가 있는 경우 스태프 정보 반환
+					return response.getData().getStaff();
 				})
 				.block();
 	}
