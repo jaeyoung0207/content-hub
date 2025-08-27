@@ -1,5 +1,5 @@
 import Modal from 'react-modal';
-import { commonErrorHandler } from '../common/utils/commonUtil';
+import { commonErrorHandler } from '../common/utils/errorUtil';
 
 export type ConfirmModalUiProps = {
   isOpen: boolean;

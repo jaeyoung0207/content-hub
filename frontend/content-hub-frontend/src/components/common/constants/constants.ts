@@ -3,7 +3,7 @@
  */
 
 // 이미지 없음 썸네일 파일
-import NoImageThumbnailFile from '@assets/images/no_image_available_thumbnail.png';
+import NoImageThumbnailFile from '@assets/images/no_image_available.svg';
 import i18n from '@/i18n';
 
 // 모바일 사이즈 판단

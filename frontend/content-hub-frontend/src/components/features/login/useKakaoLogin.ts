@@ -5,7 +5,7 @@ import {
   useProviderStore,
   useUserStore,
 } from '@/components/common/store/globalStateStore';
-import { afterLoginRedirect } from '@/components/common/utils/commonUtil';
+import { afterLoginRedirect } from '@/components/common/utils/redirectUtil';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';

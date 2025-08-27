@@ -3,15 +3,14 @@ import DOMPurify from 'dompurify';
 import {
   COMICS_CREDITS_TYPE,
   COMMON_IMAGES,
+  DETAIL_TAB_ID,
 } from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../useDetail';
-import {
-  characterUrlQuery,
-  checkCharacterId,
-  checkStaffId,
-  isDetailComicsType,
-} from '@/components/common/utils/commonUtil';
 import { Link } from 'react-router-dom';
+import { settings } from '@/components/common/config/settings';
+import { isDetailComicsType } from '@/components/common/utils/typeGuardUtil';
+import { characterUrlQuery, detailUrlQuery } from '@/components/common/utils/urlUtil';
+import { checkCharacterId, checkStaffId } from '@/components/common/utils/checkUtil';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -113,15 +112,36 @@ export const DisplayComicsCredits = ({
       ? detailResult.characters && detailResult.characters.edges
       : detailResult.staff && detailResult.staff.edges
     : [];
-  const creditsList = isOmit
-    ? creditsAll?.filter((_, index) => index < 10)
-    : creditsAll;
+  const creditsList = creditsAll &&
+    (isOmit
+      ? creditsAll?.filter((_, index) => index < settings.detailComicsCount)
+      : creditsAll);
   const isCharacter = creditsType === COMICS_CREDITS_TYPE.CHARACTER;
+  const tabNo =
+    creditsType === COMICS_CREDITS_TYPE.CHARACTER
+      ? DETAIL_TAB_ID.cast
+      : DETAIL_TAB_ID.crew;
   return (
     <div className="mb-8">
       {/* 캐릭터 or 제작진 */}
-      <div className="text-3xl font-bold mt-5 mb-5">
-        {isCharacter ? t('info.characters') : t('info.crew')}
+      <div className="flex justify-between mt-5 mb-5">
+        <div className="text-3xl font-bold mt-5 mb-5">
+          {isCharacter ? t('info.characters') : t('info.crew')}
+        </div>
+        <div className="text-lx">
+          {isOmit && creditsAll!.length > settings.detailComicsCount && (
+            <Link
+              to={detailUrlQuery({
+                originalMediaType: originalMediaType,
+                contentId: String(detailResult.id),
+                tabNo: tabNo,
+              })}
+              className={'ml-5 hover:font-bold'}
+            >
+              {t('info.seeMore') + ' >'}
+            </Link>
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap items-start mt-5">
         {creditsList &&
@@ -144,11 +164,11 @@ export const DisplayComicsCredits = ({
                       to={
                         creditsInfo.id
                           ? characterUrlQuery({
-                              comicsCreditsType: isCharacter
-                                ? COMICS_CREDITS_TYPE.CHARACTER
-                                : COMICS_CREDITS_TYPE.STAFF,
-                              creditsId: creditsInfo.id,
-                            })
+                            comicsCreditsType: isCharacter
+                              ? COMICS_CREDITS_TYPE.CHARACTER
+                              : COMICS_CREDITS_TYPE.STAFF,
+                            creditsId: creditsInfo.id,
+                          })
                           : '#'
                       }
                     >

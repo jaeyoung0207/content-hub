@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { commonErrorHandler } from '../utils/commonUtil';
+import { commonErrorHandler } from '../utils/errorUtil';
 import { useTranslation } from 'react-i18next';
 
 /**

@@ -3,7 +3,7 @@ import {
   formattingErrorMessage,
   getErrorMessage,
   changConsoleColor,
-} from '../utils/commonUtil';
+} from '../utils/errorUtil';
 import i18n from '@/i18n';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';

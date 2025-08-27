@@ -5,10 +5,8 @@ import {
   useProviderStore,
   useUserStore,
 } from '@/components/common/store/globalStateStore';
-import {
-  afterLoginRedirect,
-  clearUserData,
-} from '@/components/common/utils/commonUtil';
+import { clearUserData } from '@/components/common/utils/clearUtil';
+import { afterLoginRedirect } from '@/components/common/utils/redirectUtil';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 

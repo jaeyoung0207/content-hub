@@ -13,12 +13,10 @@ import { memo } from 'react';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { useNavigate } from 'react-router-dom';
 import { SearchPropsType } from '../SearchPage';
-import {
-  checkContentId,
-  commonErrorHandler,
-  detailUrlQuery,
-  isSearchTvType,
-} from '@/components/common/utils/commonUtil';
+import { detailUrlQuery } from '@/components/common/utils/urlUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
+import { checkContentId } from '@/components/common/utils/checkUtil';
+import { isSearchTvType } from '@/components/common/utils/typeGuardUtil';
 
 /**
  * 전체보기 모달화면 컴포넌트 props 타입
@@ -199,7 +197,7 @@ const DisplayAllResults = memo(
                     />
                   </li>
                   {/* 제목 */}
-                  <li key={'title' + index} className="ml-1 mr-1 mb-4 text-xl">
+                  <li key={'title' + index} className="ml-1 mr-1 mb-4 text-lg">
                     {isSearchTvType(items, mediaType)
                       ? items.name
                       : items.title}

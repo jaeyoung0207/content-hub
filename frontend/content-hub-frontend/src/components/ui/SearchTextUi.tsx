@@ -3,7 +3,7 @@ import { Controller, FieldValues } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FormFieldProps } from './common/FormFieldProps';
 import { BiSearch } from 'react-icons/bi';
-import { commonErrorHandler } from '../common/utils/commonUtil';
+import { commonErrorHandler } from '../common/utils/errorUtil';
 
 /**
  * 검색용 텍스트 박스 UI

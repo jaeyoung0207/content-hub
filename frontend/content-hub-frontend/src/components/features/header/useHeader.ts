@@ -26,13 +26,11 @@ import {
   LOGIN_PROVIDER,
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
-import {
-  clearUserData,
-  searchUrlQuery,
-} from '@/components/common/utils/commonUtil';
+import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useCookies } from 'react-cookie';
 import { settings } from '@/components/common/config/settings';
 import { headerQueryKeys } from './queryKeys/headerQueryKeys';
+import { searchUrlQuery } from '@/components/common/utils/urlUtil';
 
 /**
  * 헤더 컴포넌트의 폼 필드 타입 정의

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
-import { afterLoginRedirect } from '@/components/common/utils/commonUtil';
+import { afterLoginRedirect } from '@/components/common/utils/redirectUtil';
 
 /**
  * Naver 로그인 훅

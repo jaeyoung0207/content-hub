@@ -3,7 +3,8 @@ import { useCharacter } from './useCharacter';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { useTranslation } from 'react-i18next';
 import { COMMON_IMAGES } from '@/components/common/constants/constants';
-import { convertDate, isStaffType } from '@/components/common/utils/commonUtil';
+import { convertDate } from '@/components/common/utils/convertUtil';
+import { isStaffType } from '@/components/common/utils/typeGuardUtil';
 
 /**
  * 캐릭터 화면 컴포넌트

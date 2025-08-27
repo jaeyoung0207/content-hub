@@ -2,7 +2,7 @@ import { Controller, FieldValues } from 'react-hook-form';
 import { FormFieldProps } from './common/FormFieldProps';
 import { useTranslation } from 'react-i18next';
 import { RefObject } from 'react';
-import { commonErrorHandler } from '../common/utils/commonUtil';
+import { commonErrorHandler } from '../common/utils/errorUtil';
 
 type CommentTextAreaUiProps<T extends FieldValues> = FormFieldProps<T> & {
   textAreaRef: RefObject<HTMLTextAreaElement | null>;

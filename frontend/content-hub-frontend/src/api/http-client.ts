@@ -17,7 +17,7 @@ import {
   useProviderStore,
   useUserStore,
 } from '@/components/common/store/globalStateStore'; // add custom config
-import { clearUserData } from '@/components/common/utils/commonUtil'; // add custom config
+import { clearUserData } from '@/components/common/utils/clearUtil'; // add custom config
 import type {
   AxiosError,
   AxiosInstance,

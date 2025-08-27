@@ -10,7 +10,7 @@ import { FormFieldProps } from '@/components/ui/common/FormFieldProps';
 import { IS_MOBILE } from '@/components/common/constants/constants';
 import { CheckBoxUiM } from '@/components/ui/CheckBoxUiM';
 import { memo, RefObject } from 'react';
-import { commonErrorHandler } from '@/components/common/utils/commonUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { settings } from '@/components/common/config/settings';
 
 /**

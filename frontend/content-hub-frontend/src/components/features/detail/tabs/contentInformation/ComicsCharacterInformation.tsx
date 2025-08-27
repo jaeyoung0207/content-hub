@@ -4,14 +4,12 @@ import {
   COMMON_IMAGES,
 } from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../useDetail';
-import {
-  characterUrlQuery,
-  checkCharacterId,
-} from '@/components/common/utils/commonUtil';
+import { characterUrlQuery } from '@/components/common/utils/urlUtil';
 import { Link } from 'react-router-dom';
 import { useComicsCharacterInformation } from './useComicsCharacterInformation';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { checkCharacterId } from '@/components/common/utils/checkUtil';
 
 /**
  * 만화 정보 컴포넌트 props 타입

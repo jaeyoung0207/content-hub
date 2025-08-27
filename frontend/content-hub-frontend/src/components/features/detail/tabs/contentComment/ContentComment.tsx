@@ -6,7 +6,7 @@ import { ConfirmModalUi } from '@/components/ui/ConfirmModalUi';
 import { useTranslation } from 'react-i18next';
 import { CommentTextAreaUi } from '@/components/ui/CommentTextAreaUi';
 import { DetailResponseType } from '../../useDetail';
-import { commonErrorHandler } from '@/components/common/utils/commonUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 
 /**
  * 콘텐츠 코멘트 컴포넌트 props 타입

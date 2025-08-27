@@ -14,12 +14,12 @@ import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from './SearchPage';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import {
-  checkContentId,
-  commonErrorHandler,
   detailUrlQuery,
-  isSearchTvType,
   viewMoreUrlQuery,
-} from '@/components/common/utils/commonUtil';
+} from '@/components/common/utils/urlUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
+import { checkContentId } from '@/components/common/utils/checkUtil';
+import { isSearchTvType } from '@/components/common/utils/typeGuardUtil';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입

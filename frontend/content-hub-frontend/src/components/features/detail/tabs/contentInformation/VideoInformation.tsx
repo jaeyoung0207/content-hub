@@ -9,13 +9,12 @@ import {
 } from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../useDetail';
 import {
-  checkPersonId,
-  detailUrlQuery,
   isDetailCreditsCrewType,
   isDetailMovieType,
   isDetailTvType,
-  personUrlQuery,
-} from '@/components/common/utils/commonUtil';
+} from '@/components/common/utils/typeGuardUtil';
+import { detailUrlQuery, personUrlQuery } from '@/components/common/utils/urlUtil';
+import { checkPersonId } from '@/components/common/utils/checkUtil';
 import { Link } from 'react-router-dom';
 import { settings } from '@/components/common/config/settings';
 
@@ -124,7 +123,7 @@ export const DisplayVideoCredits = ({
   const creditsList =
     creditsAll &&
     (isOmit
-      ? creditsAll.filter((_, index) => index < settings.detailCreditCount)
+      ? creditsAll.filter((_, index) => index < settings.detailVideoCount)
       : creditsAll);
   // 링크 스타일
   const linkStyle = 'ml-5 hover:font-bold';
@@ -145,7 +144,7 @@ export const DisplayVideoCredits = ({
                 : t('info.cast')}
             </div>
             <div className="text-lx">
-              {isOmit && creditsAll.length > settings.detailCreditCount && (
+              {isOmit && creditsAll.length > settings.detailVideoCount && (
                 <Link
                   to={detailUrlQuery({
                     originalMediaType: originalMediaType,

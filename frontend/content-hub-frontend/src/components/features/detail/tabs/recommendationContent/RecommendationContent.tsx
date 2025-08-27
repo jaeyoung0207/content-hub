@@ -14,11 +14,9 @@ import {
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { useTranslation } from 'react-i18next';
-import {
-  commonErrorHandler,
-  detailUrlQuery,
-  isRecommendationsTvType,
-} from '@/components/common/utils/commonUtil';
+import { detailUrlQuery } from '@/components/common/utils/urlUtil';
+import { isRecommendationsTvType } from '@/components/common/utils/typeGuardUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 
 /**
  * 추천 콘텐츠 컴포넌트 props 타입

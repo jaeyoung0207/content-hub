@@ -10,16 +10,14 @@ import {
   WIDTH_185,
   WIDTH_300,
 } from '@/components/common/constants/constants';
-import {
-  detailUrlQuery,
-  isPersonCreditsCastType,
-} from '@/components/common/utils/commonUtil';
+import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import dayjs from 'dayjs';
 import {
   PersonCreditsCastDto,
   PersonCreditsCrewDto,
 } from '@/api/data-contracts';
 import { memo } from 'react';
+import { isPersonCreditsCastType } from '@/components/common/utils/typeGuardUtil';
 
 export type PersonCredits = PersonCreditsCastDto | PersonCreditsCrewDto;
 

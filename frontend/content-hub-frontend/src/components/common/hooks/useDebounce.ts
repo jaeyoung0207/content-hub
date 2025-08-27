@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { handleUnExceptedError } from '../utils/commonUtil';
+import { handleUnExceptedError } from '../utils/errorUtil';
 
 /**
  * 대상 값을 지정된 시간만큼 지연시킨 후에 반환하는 hook

@@ -31,7 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
-import { handleUnExceptedError } from '@/components/common/utils/commonUtil';
+import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import { REDIRECT_URL } from '@/components/common/constants/constants';
 

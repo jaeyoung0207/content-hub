@@ -15,11 +15,11 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { RecommendContent } from './tabs/recommendationContent/RecommendationContent';
 import {
-  commonErrorHandler,
   isDetailComicsType,
   isDetailMovieType,
   isDetailTvType,
-} from '@/components/common/utils/commonUtil';
+} from '@/components/common/utils/typeGuardUtil';
+import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { ComicsInfomation } from './tabs/contentInformation/ComicsInformation';
 import { CastInformation } from './tabs/CastInformation';
 import { CrewInformation } from './tabs/CrewInformation';
