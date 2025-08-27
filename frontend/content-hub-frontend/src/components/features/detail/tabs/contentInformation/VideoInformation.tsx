@@ -13,7 +13,10 @@ import {
   isDetailMovieType,
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
-import { detailUrlQuery, personUrlQuery } from '@/components/common/utils/urlUtil';
+import {
+  detailUrlQuery,
+  personUrlQuery,
+} from '@/components/common/utils/urlUtil';
 import { checkPersonId } from '@/components/common/utils/checkUtil';
 import { Link } from 'react-router-dom';
 import { settings } from '@/components/common/config/settings';

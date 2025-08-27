@@ -22,13 +22,13 @@ export const handleUnExceptedError = (error: unknown, message?: string) => {
  */
 export const commonErrorHandler =
   <T extends unknown[]>(fn: (...args: T) => void) =>
-    (...args: T) => {
-      try {
-        fn(...args);
-      } catch (err) {
-        handleUnExceptedError(err, '이벤트 처리 중 문제가 발생했습니다.');
-      }
-    };
+  (...args: T) => {
+    try {
+      fn(...args);
+    } catch (err) {
+      handleUnExceptedError(err, '이벤트 처리 중 문제가 발생했습니다.');
+    }
+  };
 
 /**
  * 콘솔 출력시 글자색을 붉은색으로 출력

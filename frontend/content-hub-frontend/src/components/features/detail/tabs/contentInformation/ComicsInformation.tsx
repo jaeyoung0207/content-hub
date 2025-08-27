@@ -9,8 +9,14 @@ import { DetailResponseType } from '../../useDetail';
 import { Link } from 'react-router-dom';
 import { settings } from '@/components/common/config/settings';
 import { isDetailComicsType } from '@/components/common/utils/typeGuardUtil';
-import { characterUrlQuery, detailUrlQuery } from '@/components/common/utils/urlUtil';
-import { checkCharacterId, checkStaffId } from '@/components/common/utils/checkUtil';
+import {
+  characterUrlQuery,
+  detailUrlQuery,
+} from '@/components/common/utils/urlUtil';
+import {
+  checkCharacterId,
+  checkStaffId,
+} from '@/components/common/utils/checkUtil';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -39,9 +45,6 @@ export const ComicsInfomation = ({
 }: ComicsInfomationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
-
-  // const { data, isFetchingNextPage, hasNextPage, setObserveTarget } =
-  //   useComicsInformation(detailResult, originalMediaType);
 
   // 개요 변수 선언
   // DOMPurify를 사용하여 XSS 공격을 방지하며 HTML로 처리
@@ -112,7 +115,8 @@ export const DisplayComicsCredits = ({
       ? detailResult.characters && detailResult.characters.edges
       : detailResult.staff && detailResult.staff.edges
     : [];
-  const creditsList = creditsAll &&
+  const creditsList =
+    creditsAll &&
     (isOmit
       ? creditsAll?.filter((_, index) => index < settings.detailComicsCount)
       : creditsAll);
@@ -164,11 +168,11 @@ export const DisplayComicsCredits = ({
                       to={
                         creditsInfo.id
                           ? characterUrlQuery({
-                            comicsCreditsType: isCharacter
-                              ? COMICS_CREDITS_TYPE.CHARACTER
-                              : COMICS_CREDITS_TYPE.STAFF,
-                            creditsId: creditsInfo.id,
-                          })
+                              comicsCreditsType: isCharacter
+                                ? COMICS_CREDITS_TYPE.CHARACTER
+                                : COMICS_CREDITS_TYPE.STAFF,
+                              creditsId: creditsInfo.id,
+                            })
                           : '#'
                       }
                     >

@@ -1,5 +1,5 @@
-import { NavigateFunction } from "react-router-dom";
-import { DETAIL_TAB_ID, REDIRECT_URL } from "../constants/constants";
+import { NavigateFunction } from 'react-router-dom';
+import { DETAIL_TAB_ID, REDIRECT_URL } from '../constants/constants';
 
 /**
  * 로그인 후 리다이렉트 처리
