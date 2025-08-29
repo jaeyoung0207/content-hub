@@ -83,26 +83,14 @@ export const COMICS_CREDITS_TYPE = {
   STAFF: '2',
 };
 
-// /**
-//  * 미디어 타입에 따라 전체보기 타입 문자열을 반환
-//  * @param mediaType 미디어 타입
-//  * @returns 전체보기 타입 문자열
-//  */
-// export const VIEW_MORE_TYPE = (mediaType: string) => {
-//     if (MEDIA_TYPE.ANI === mediaType) {
-//         return "ani";
-//     } else if (MEDIA_TYPE.DRAMA === mediaType) {
-//         return "drama";
-//     } else if (MEDIA_TYPE.MOVIE === mediaType) {
-//         return "movie";
-//     } else if (MEDIA_TYPE.COMICS === mediaType) {
-//         return "comics";
-//     } else if (MEDIA_TYPE.NOVEL === mediaType) {
-//         return "novel";
-//     } else {
-//         return null;
-//     }
-// }
+/**
+ * 검색 화면 타입
+ */
+export const SEARCH_SCREEN_TYPE = {
+  MAIN: '1',
+  VIEW_MORE: '2',
+  RECOMMENDATION: '3',
+};
 
 // 로그인 제공자
 export enum LOGIN_PROVIDER {

@@ -799,11 +799,11 @@ components:
         totalResults:
           type: integer
           format: int32
+        aniViewMore:
+          type: boolean
         dramaViewMore:
           type: boolean
         movieViewMore:
-          type: boolean
-        aniViewMore:
           type: boolean
     TmdbSearchMovieResultsDto:
       type: object
@@ -1227,11 +1227,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        leapMonth:
+          type: boolean
         emailValid:
           type: boolean
         emailVerified:
-          type: boolean
-        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1317,6 +1317,8 @@ components:
         voteCount:
           type: integer
           format: int32
+        originalMediaType:
+          type: string
         originCountry:
           type: array
           items:
@@ -1371,6 +1373,8 @@ components:
         voteCount:
           type: integer
           format: int32
+        originalMediaType:
+          type: string
         originalTitle:
           type: string
         releaseDate:
@@ -1414,6 +1418,8 @@ components:
         voteCount:
           type: integer
           format: int32
+        originalMediaType:
+          type: string
         title:
           type: string
     DetailTvResponseDto:

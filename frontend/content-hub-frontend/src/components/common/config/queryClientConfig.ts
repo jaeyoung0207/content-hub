@@ -1,8 +1,9 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import {
-  formattingErrorMessage,
   getErrorMessage,
-  changConsoleColor,
+  changeConsoleColor,
+  formattingErrorMsg,
+  formattingApiErrorMsg,
 } from '../utils/errorUtil';
 import i18n from '@/i18n';
 import { toast } from 'react-toastify';
@@ -66,14 +67,14 @@ const outputError = (error: Error) => {
     const axiosError: AxiosError<AxiosErrorType> = error;
     // AxiosErrorType의 response가 없는 경우
     if (!axiosError.response) {
-      changConsoleColor(
-        formattingErrorMessage(
+      changeConsoleColor(
+        formattingErrorMsg(
           ERROR_MESSAGE.NETWORK_ERROR.name,
           ERROR_MESSAGE.NETWORK_ERROR.message
         )
       );
       toast.error(
-        formattingErrorMessage(
+        formattingErrorMsg(
           ERROR_MESSAGE.NETWORK_ERROR.name,
           ERROR_MESSAGE.NETWORK_ERROR.message
         ),
@@ -85,14 +86,14 @@ const outputError = (error: Error) => {
     }
     // AxiosErrorType의 response가 있지만 data가 없는 경우
     else if (!axiosError.response.data) {
-      changConsoleColor(
-        formattingErrorMessage(
+      changeConsoleColor(
+        formattingErrorMsg(
           ERROR_MESSAGE.API_RESPONSE_ERROR.name,
           axiosError.message
         )
       );
       toast.error(
-        formattingErrorMessage(
+        formattingErrorMsg(
           ERROR_MESSAGE.API_RESPONSE_ERROR.name,
           ERROR_MESSAGE.API_RESPONSE_ERROR.message
         ),
@@ -111,26 +112,30 @@ const outputError = (error: Error) => {
     const message = data.message;
     const body = data.body;
     // 콘솔 에러 메시지 출력
-    const consoleErrorMsg =
-      `[${name}]: path=${path}, status=${status}, message=${message}` +
-      (body ? `, body=${body}` : '');
-    changConsoleColor(consoleErrorMsg);
+    const consoleErrorMsg = formattingApiErrorMsg({
+      name,
+      path,
+      status,
+      message,
+      body,
+    });
+    changeConsoleColor(consoleErrorMsg);
     // 토스트 에러 메시지 출력
     const toastErrorMsg = getErrorMessage(name);
     if (!redirectFromErrCode(status)) {
-      toast.error(formattingErrorMessage(name, toastErrorMsg), {
+      toast.error(formattingErrorMsg(name, toastErrorMsg), {
         toastId: 'apiResponseError', // 중복 토스트 방지
       });
     }
   } else {
-    changConsoleColor(
-      formattingErrorMessage(
+    changeConsoleColor(
+      formattingErrorMsg(
         ERROR_MESSAGE.UNEXPECTED_ERROR.name,
         error.stack || error.message
       )
     );
     toast.error(
-      formattingErrorMessage(
+      formattingErrorMsg(
         ERROR_MESSAGE.UNEXPECTED_ERROR.name,
         ERROR_MESSAGE.UNEXPECTED_ERROR.message
       ),

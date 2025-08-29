@@ -11,9 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,11 +24,9 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
-import com.cjy.contenthub.common.client.DeepLApiClient;
-import com.cjy.contenthub.common.client.TmdbApiGenreClient;
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
@@ -58,15 +54,8 @@ public class SearchServiceImpl implements SearchService {
 	@Qualifier("anilistWebClient")
 	private final WebClient anilistWebClient;
 
-	/** DeepL API 통신용 WebClient 클래스 */
-	@Qualifier("deeplWebClient")
-	private final WebClient deeplWebClient;
-
-	/** TMDB API 장르 WebClient 클래스 */
-	private final TmdbApiGenreClient tmdbApiGenreClient;
-
-	/** DeepL API 번역 WebClient 클래스 */
-	private final DeepLApiClient deeplApiGenreClient;
+	/** 공통 API 유틸 클래스 */
+	private final ApiUtil apiUtil;
 
 	/** 검색 헬퍼 클래스 */
 	private final SearchHelper helper;
@@ -127,47 +116,6 @@ public class SearchServiceImpl implements SearchService {
 	private static final int FIRST_PAGE_NO = 1;
 
 	/**
-	 * 어플리케이션 기동시 ApplicationReadyEvent를 이용하여, 
-	 * 모든 빈 초기화 + 어플리케이션 준비 완료 후에 캐시화 로직을 실행
-	 * (@Cacheable 가 AOP 프록시로 동작하므로, 이 시점에서는 사용 가능)
-	 */
-	@EventListener(ApplicationReadyEvent.class)
-	public void initializeTMdbApiGenreInfo() {
-		// TMDB API 애니/영화 장르 정보 캐시화 
-		tmdbApiGenreClient.getTvGenres();
-		tmdbApiGenreClient.getMovieGenres();
-	}
-
-	/**
-	 * TMDB API를 사용하여 TV 장르 정보 조회
-	 * 
-	 * @return TV 장르 정보 Map
-	 */
-	private Mono<Map<String, Integer>> getTvGenres() {
-		return Mono.just(tmdbApiGenreClient.getTvGenres());
-	}
-
-	/**
-	 * TMDB API를 사용하여 영화 장르 정보 조회
-	 * 
-	 * @return 영화 장르 정보 Map
-	 */
-	private Mono<Map<String, Integer>> getMovieGenres() {
-		return Mono.just(tmdbApiGenreClient.getMovieGenres());
-	}
-
-	/**
-	 * DeepL API를 사용하여 대상 문자열을 설정언어로 변역
-	 * 
-	 * @param keyword 번역할 문자열
-	 * @return 번역된 문자열
-	 */
-	private Mono<String> getTranslationText(String keyword) {
-		return Mono.just(deeplApiGenreClient.translateText(
-				keyword, CommonConstants.API_LANGUAGE_JAPANESE, CommonConstants.API_LANGUAGE_KOREAN));
-	}
-
-	/**
 	 * 검색어 리스트 조회
 	 * 
 	 * @param keyword 검색어
@@ -177,8 +125,8 @@ public class SearchServiceImpl implements SearchService {
 	@Cacheable(value = "searchKeyword", key = "#keyword + '_' + #isAdult", unless = "#result == null")
 	public List<String> searchKeyword(String keyword, boolean isAdult) {
 
-		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
 
 		// TV 장르와 영화 장르를 병렬로 묶어서 처리
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(tuple -> {
@@ -242,8 +190,8 @@ public class SearchServiceImpl implements SearchService {
 	@Cacheable(value = "searchVideo", key = "#keyword + '_' + #isAdult", unless = "#result == null")
 	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult) {
 
-		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
 
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
 			Map<String, Integer> tvGenreMap = genreTuple.getT1();
@@ -343,8 +291,8 @@ public class SearchServiceImpl implements SearchService {
 
 		int currentPage = Optional.ofNullable(page).orElse(1);
 
-		Mono<Map<String, Integer>> tvGenreMapMono = getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
 
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
 			Map<String, Integer> aniGenreMap = genreTuple.getT1();
@@ -421,7 +369,7 @@ public class SearchServiceImpl implements SearchService {
 	public TmdbSearchTvDto searchDrama(String keyword, boolean isAdult, Integer page) {
 
 		// 드라마 장르 정보 조회
-		return getTvGenres().flatMap(tvGenreMap -> 
+		return apiUtil.getTvGenres().flatMap(tvGenreMap -> 
 		tmdbWebClient.get()
 		.uri(builder -> builder
 				.path(tvSearchPath)
@@ -458,7 +406,7 @@ public class SearchServiceImpl implements SearchService {
 	public TmdbSearchMovieDto searchMovie(String keyword, boolean isAdult, Integer page) {
 
 		// 영화 장르 정보 조회
-		return getMovieGenres().flatMap(movieGenreMap -> 
+		return apiUtil.getMovieGenres().flatMap(movieGenreMap -> 
 		// 영화 정보 조회
 		tmdbWebClient.get()
 		.uri(builder -> builder
@@ -499,7 +447,7 @@ public class SearchServiceImpl implements SearchService {
 		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;
 
 		// 한글 검색어 -> 일본어로 번역후(DeepL API), AniList API 조회
-		return getTranslationText(keyword).flatMap(jaKeyword -> {
+		return apiUtil.getTranslationText(keyword).flatMap(jaKeyword -> {
 			try {
 				// graphql 쿼리 파일 불러오기
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");

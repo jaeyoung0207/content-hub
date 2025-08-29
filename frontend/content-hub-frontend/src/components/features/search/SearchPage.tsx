@@ -22,7 +22,7 @@ export type SearchPropsType = {
 export const SearchPage = () => {
   // URL 쿼리 파라미터를 가져오기 위한 훅
   const [searchParams] = useSearchParams();
-  const keyword = decodeURIComponent(searchParams.get('keyword')!); // 검색어
+  const keyword = searchParams.get('keyword')!; // 검색어
   const isAdult = searchParams.get('isAdult')!; // 성인물 포함 여부
   const viewMore = searchParams.get('viewMore'); // 전체보기 여부
 

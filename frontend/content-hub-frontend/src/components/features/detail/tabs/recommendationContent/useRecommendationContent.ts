@@ -1,5 +1,5 @@
 import {
-  DetailComicsResponseDto,
+  DetailComicsRecommendationsResultDto,
   TmdbRecommendationsMovieResultsDto,
   TmdbRecommendationsTvResultsDto,
 } from '@/api/data-contracts';
@@ -21,8 +21,7 @@ import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
  * 추천 콘텐츠 무한 스크롤 결과 타입
  */
 export type RecommendationUseInfiniteQueryResultType = {
-  pages: (RecommendationContentResultType[] | undefined)[];
-  // pages: RecommendationContentResultListType[],
+  pages: RecommendationContentResultType[][];
   pageParams: (number | undefined)[];
 };
 
@@ -40,12 +39,7 @@ type useRecommendationContentReturnType = {
 export type RecommendationContentResultType =
   | TmdbRecommendationsTvResultsDto
   | TmdbRecommendationsMovieResultsDto
-  | DetailComicsResponseDto;
-// 추천 콘텐츠 결과 리스트 타입
-export type RecommendationContentResultListType =
-  | TmdbRecommendationsTvResultsDto[]
-  | TmdbRecommendationsMovieResultsDto[]
-  | DetailComicsResponseDto[];
+  | DetailComicsRecommendationsResultDto;
 
 /**
  * 추천 콘텐츠 정보를 가져오기 위한 훅
@@ -120,7 +114,7 @@ export const useRecommendationContent = (
     isFetchingNextPage, // 다음페이지 로딩중 여부
     hasNextPage, // 가져올 다음페이지가 있는지 여부를 나타냄(boolean). getNextPageParam옵션을 통해 확인가능
   } = useInfiniteQuery<
-    RecommendationContentResultType[] | undefined, // queryFn이 반환하는 원본 데이터
+    RecommendationContentResultType[], // queryFn이 반환하는 원본 데이터
     AxiosError, // 에러 타입 (보통 AxiosError)
     RecommendationUseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
     [string, string, string, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])

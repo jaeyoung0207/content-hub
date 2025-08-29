@@ -17,6 +17,10 @@ import {
   checkCharacterId,
   checkStaffId,
 } from '@/components/common/utils/checkUtil';
+import {
+  AniListCharactersEdgesDto,
+  AniListStaffEdgesDto,
+} from '@/api/data-contracts';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -29,7 +33,14 @@ type ComicsInfomationPropsType = {
 /**
  * 만화 크레딧 표시 컴포넌트 props 타입
  */
-type DisplayComicsCreditsPropsType = ComicsInfomationPropsType & {
+type DisplayComicsCreditsPropsType = {
+  originalMediaType: string;
+  contentId: number;
+  creditsAllList: (
+    | AniListCharactersEdgesDto
+    | AniListStaffEdgesDto
+    | undefined
+  )[];
   creditsType?: String;
   isOmit?: boolean;
 };
@@ -45,6 +56,14 @@ export const ComicsInfomation = ({
 }: ComicsInfomationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
+
+  const characterList = isDetailComicsType(detailResult, originalMediaType)
+    ? (detailResult.characters?.edges ?? [])
+    : [];
+
+  const staffList = isDetailComicsType(detailResult, originalMediaType)
+    ? (detailResult.staff?.edges ?? [])
+    : [];
 
   // 개요 변수 선언
   // DOMPurify를 사용하여 XSS 공격을 방지하며 HTML로 처리
@@ -71,7 +90,8 @@ export const ComicsInfomation = ({
           <>
             {/* 캐릭터 */}
             <DisplayComicsCredits
-              detailResult={detailResult}
+              contentId={detailResult.id!}
+              creditsAllList={characterList}
               originalMediaType={originalMediaType}
               creditsType={COMICS_CREDITS_TYPE.CHARACTER}
               isOmit={true}
@@ -87,7 +107,8 @@ export const ComicsInfomation = ({
           <>
             {/* 제작진 */}
             <DisplayComicsCredits
-              detailResult={detailResult}
+              contentId={detailResult.id!}
+              creditsAllList={staffList}
               originalMediaType={originalMediaType}
               creditsType={COMICS_CREDITS_TYPE.STAFF}
               isOmit={true}
@@ -102,29 +123,24 @@ export const ComicsInfomation = ({
  * 만화 크레딧 표시 컴포넌트
  */
 export const DisplayComicsCredits = ({
-  detailResult,
+  contentId,
   originalMediaType,
+  creditsAllList,
   creditsType,
   isOmit,
 }: DisplayComicsCreditsPropsType) => {
   // i18n
   const { t } = useTranslation();
-  // 크레딧 목록
-  const creditsAll = isDetailComicsType(detailResult, originalMediaType)
-    ? creditsType === COMICS_CREDITS_TYPE.CHARACTER
-      ? detailResult.characters && detailResult.characters.edges
-      : detailResult.staff && detailResult.staff.edges
-    : [];
+  // 크레딧 목록 필터링
   const creditsList =
-    creditsAll &&
+    creditsAllList &&
     (isOmit
-      ? creditsAll?.filter((_, index) => index < settings.detailComicsCount)
-      : creditsAll);
+      ? creditsAllList?.filter((_, index) => index < settings.detailComicsCount)
+      : creditsAllList);
+  // 캐릭터/제작진 구분
   const isCharacter = creditsType === COMICS_CREDITS_TYPE.CHARACTER;
-  const tabNo =
-    creditsType === COMICS_CREDITS_TYPE.CHARACTER
-      ? DETAIL_TAB_ID.cast
-      : DETAIL_TAB_ID.crew;
+  // 탭 번호
+  const tabNo = isCharacter ? DETAIL_TAB_ID.cast : DETAIL_TAB_ID.crew;
   return (
     <div className="mb-8">
       {/* 캐릭터 or 제작진 */}
@@ -133,11 +149,11 @@ export const DisplayComicsCredits = ({
           {isCharacter ? t('info.characters') : t('info.crew')}
         </div>
         <div className="text-lx">
-          {isOmit && creditsAll!.length > settings.detailComicsCount && (
+          {isOmit && creditsAllList!.length > settings.detailComicsCount && (
             <Link
               to={detailUrlQuery({
                 originalMediaType: originalMediaType,
-                contentId: String(detailResult.id),
+                contentId: String(contentId),
                 tabNo: tabNo,
               })}
               className={'ml-5 hover:font-bold'}
@@ -151,13 +167,13 @@ export const DisplayComicsCredits = ({
         {creditsList &&
           creditsList.map((items, index) => {
             const creditsInfo = items?.node;
-            const role = items.role;
+            const role = items?.role;
             return (
               <>
                 {creditsInfo && (
                   <div
                     key={index}
-                    className="ml-1 mr-1 w-[230px] h-[140px]"
+                    className="ml-1 mr-1 w-[220px] h-[140px]"
                     onClick={() =>
                       isCharacter
                         ? checkCharacterId(creditsInfo.id)

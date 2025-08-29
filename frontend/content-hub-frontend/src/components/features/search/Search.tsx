@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SearchCommonResultListType, useSearch } from './useSearch';
+import { SearchCommonResultType, useSearch } from './useSearch';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   MEDIA_TYPE,
@@ -8,6 +8,7 @@ import {
   WIDTH_300,
   COMMON_IMAGES,
   REDIRECT_URL,
+  SEARCH_SCREEN_TYPE,
 } from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { LoadingUi } from '@/components/ui/LoadingUi';
@@ -19,18 +20,23 @@ import {
 } from '@/components/common/utils/urlUtil';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { checkContentId } from '@/components/common/utils/checkUtil';
-import { isSearchTvType } from '@/components/common/utils/typeGuardUtil';
+import {
+  isRecommendationsTvType,
+  isSearchTvType,
+} from '@/components/common/utils/typeGuardUtil';
+import { RecommendationContentResultType } from '../detail/tabs/recommendationContent/useRecommendationContent';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입
  */
-export type SearchResultsPropsType = {
-  mediaName: string; // 미디어 이름
-  results: SearchCommonResultListType; // 검색 결과 리스트
+export type DisplaySearchResultsPropsType = {
+  mediaName?: string; // 미디어 이름
+  results: SearchCommonResultType[] | RecommendationContentResultType[]; // 검색 결과 리스트
   isViewMore?: boolean; // 전체보기 여부
   mediaType: string; // 미디어 타입
   keyword: string; // 검색어
   isAdult: string; // 성인물 포함 여부
+  searchScreenType: string; // 검색 화면 타입
 };
 
 /**
@@ -104,13 +110,14 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
                   items.dataResults &&
                   items.dataResults.length !== 0 && (
                     // 각 미디어 검색결과 컴포넌트
-                    <DisplayResults
+                    <DisplaySearchResults
                       mediaName={items.media}
                       results={items.dataResults}
                       isViewMore={items.isViewMore}
                       mediaType={items.mediaType}
                       keyword={keyword!}
                       isAdult={isAdult!}
+                      searchScreenType={SEARCH_SCREEN_TYPE.MAIN}
                     />
                   )}
               </div>
@@ -144,7 +151,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
 /**
  * 각 미디어 검색결과 컴포넌트
  */
-const DisplayResults = memo(
+export const DisplaySearchResults = memo(
   ({
     mediaName,
     results,
@@ -152,7 +159,8 @@ const DisplayResults = memo(
     mediaType,
     keyword,
     isAdult,
-  }: SearchResultsPropsType) => {
+    searchScreenType,
+  }: DisplaySearchResultsPropsType) => {
     // i18n 번역 훅
     const { t } = useTranslation();
     // navigate 훅
@@ -162,28 +170,38 @@ const DisplayResults = memo(
 
     return (
       <div>
-        {/* 미디어 이름 */}
-        <div className="ml-6 mt-6 flex justify-between items-center">
-          <div className="text-4xl font-bold">{mediaName}</div>
-          {
-            // 전체보기 링크
-            isViewMore && (
-              <div className="text-xl hover:font-bold">
-                <Link
-                  to={viewMoreUrlQuery({
-                    keyword: keyword,
-                    isAdult: isAdult,
-                    mediaType: mediaType,
-                  })}
-                >
-                  {t('info.viewMore')} &gt;
-                </Link>
-              </div>
-            )
-          }
-        </div>
+        {searchScreenType === SEARCH_SCREEN_TYPE.MAIN && (
+          // 미디어 이름
+          <div className="ml-6 mt-6 flex justify-between items-center">
+            <div className="text-4xl font-bold">{mediaName}</div>
+            {
+              // 전체보기 링크
+              isViewMore && (
+                <div className="text-xl hover:font-bold">
+                  <Link
+                    to={viewMoreUrlQuery({
+                      keyword: keyword,
+                      isAdult: isAdult,
+                      mediaType: mediaType,
+                    })}
+                  >
+                    {t('info.viewMore')} &gt;
+                  </Link>
+                </div>
+              )
+            }
+          </div>
+        )}
+        {searchScreenType === SEARCH_SCREEN_TYPE.VIEW_MORE && (
+          // 키워드 미디어 검색 결과
+          <div className="text-3xl font-bold ml-5">
+            "{keyword}" {mediaName} {t('info.searchResults')}
+          </div>
+        )}
         {/* 검색 결과 */}
-        <div className="w-full flex flex-wrap items-start mt-5 ml-5">
+        <div
+          className={`"w-full flex flex-wrap items-start mt-6 " ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
+        >
           {results.length !== 0 &&
             results.map((items, index) => {
               return (
@@ -192,7 +210,7 @@ const DisplayResults = memo(
                   className={
                     'ml-1 mr-1 block hover:font-bold cursor-pointer ' +
                     (mediaType === MEDIA_TYPE.COMICS
-                      ? 'w-[200px]'
+                      ? 'w-[195px]'
                       : 'w-[300px]')
                   }
                   onClick={commonErrorHandler(() => {
@@ -228,15 +246,16 @@ const DisplayResults = memo(
                       }}
                       className={
                         (mediaType === MEDIA_TYPE.COMICS
-                          ? 'w-[190px] h-[270px]'
-                          : 'w-full h-[180px]') + ' object-scale-down'
+                          ? 'max-w-full h-[270px]'
+                          : 'max-w-full h-[180px]') + ' object-scale-down'
                       }
                       alt={'Thumbnail Image'}
                     />
                   </li>
                   {/* 제목 */}
                   <li key={'title' + index} className="ml-1 mr-1 mb-4 text-lg">
-                    {isSearchTvType(items, mediaType)
+                    {isSearchTvType(items, mediaType) ||
+                    isRecommendationsTvType(items, mediaType)
                       ? items.name
                       : items.title}
                   </li>

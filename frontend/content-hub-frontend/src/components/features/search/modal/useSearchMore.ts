@@ -12,9 +12,9 @@ import {
   MEDIA_TYPE,
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { SearchCommonResultListType } from '../useSearch';
+import { SearchCommonResultType } from '../useSearch';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 
@@ -33,7 +33,7 @@ type UseSearchConentModalReturnType = {
  * 무한스크롤 결과 타입
  */
 export type UseInfiniteQueryResultType = {
-  pages: SearchCommonResultListType[];
+  pages: SearchCommonResultType[][];
   pageParams: (number | undefined)[];
 };
 
@@ -125,7 +125,7 @@ export const useSearchMore = (
     isFetchingNextPage, // 다음페이지 로딩중 여부
     hasNextPage, // 가져올 다음페이지가 있는지 여부를 나타냄(boolean). getNextPageParam옵션을 통해 확인가능
   } = useInfiniteQuery<
-    SearchCommonResultListType, // queryFn이 반환하는 원본 데이터
+    SearchCommonResultType[], // queryFn이 반환하는 원본 데이터
     AxiosError, // 에러 타입 (보통 AxiosError)
     UseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
     [string, string, boolean, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
@@ -139,7 +139,6 @@ export const useSearchMore = (
     ) as [string, string, boolean, string],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 1 }) => {
-      console.log('queryFn★★★★★');
       const responseDataResults = await judgeExecApi(pageParam);
       return responseDataResults ?? []; // 제네릭 1번째 인자가 배열이므로 반드시 배열 반환
     },

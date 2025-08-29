@@ -8,17 +8,21 @@ import {
 } from '@api/data-contracts';
 import { useQuery } from '@tanstack/react-query';
 import { searchQueryKeys } from './queryKeys/searchQueryKeys';
+import { AxiosError, isAxiosError } from 'axios';
+import { toast } from 'react-toastify';
+import {
+  changeConsoleColor,
+  formattingErrorMsg,
+  formattingApiErrorMsg,
+} from '@/components/common/utils/errorUtil';
+import { ERROR_MESSAGE } from '@/components/common/constants/constants';
+import { AxiosErrorType } from '@/components/common/config/queryClientConfig';
 
 // 공통 검색 결과 타입
 export type SearchCommonResultType =
   | TmdbSearchTvResultsDto
   | TmdbSearchMovieResultsDto
   | SearchComicsMediaResultDto;
-// 공통 검색 결과 리스트 타입
-export type SearchCommonResultListType =
-  | TmdbSearchTvResultsDto[]
-  | TmdbSearchMovieResultsDto[]
-  | SearchComicsMediaResultDto[];
 
 /**
  * 검색 훅 반환 타입
@@ -54,6 +58,35 @@ export const useSearch = (
       searchVideoApi(),
       searchComicsApi(),
     ]);
+    // 에러인 경우
+    if (
+      videoResult.status === 'rejected' ||
+      comicsResult.status === 'rejected'
+    ) {
+      const videoError: AxiosError<AxiosErrorType> | undefined =
+        videoResult.status === 'rejected' && videoResult.reason
+          ? videoResult.reason
+          : undefined;
+      const comicsError: AxiosError<AxiosErrorType> | undefined =
+        comicsResult.status === 'rejected' && comicsResult.reason
+          ? comicsResult.reason
+          : undefined;
+      if (videoError) {
+        if (!isAxiosError(videoError) || !videoError.response) {
+          throw videoError;
+        } else {
+          searchErrorMessage(videoError.response.data);
+        }
+      }
+      if (comicsError) {
+        if (!isAxiosError(comicsError) || !comicsError.response) {
+          throw comicsError;
+        } else {
+          searchErrorMessage(comicsError.response.data);
+        }
+      }
+    }
+    // 정상인 경우
     return {
       videoResult:
         videoResult.status === 'fulfilled' ? videoResult.value : undefined,
@@ -101,4 +134,34 @@ export const useSearch = (
     isLoading: isLoading,
     data: data,
   };
+};
+
+/**
+ * 검색 에러 메시지 출력 함수
+ * @param errorData 에러 데이터
+ */
+const searchErrorMessage = (errorData: AxiosErrorType) => {
+  const name = errorData.name;
+  const path = errorData.path;
+  const status = errorData.status;
+  const message = errorData.message;
+  const body = errorData.body;
+  changeConsoleColor(
+    formattingApiErrorMsg({
+      name: name,
+      path: path,
+      status: status,
+      message: message,
+      body: body,
+    }) || ERROR_MESSAGE.API_RESPONSE_ERROR.message
+  );
+  toast.error(
+    formattingErrorMsg(
+      ERROR_MESSAGE.API_RESPONSE_ERROR.name,
+      ERROR_MESSAGE.API_RESPONSE_ERROR.message
+    ),
+    {
+      toastId: 'apiResponseError', // 중복 토스트 방지
+    }
+  );
 };

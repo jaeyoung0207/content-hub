@@ -111,6 +111,8 @@ public class CommonEnum {
 		MEDIA_TYPE_MOVIE("3", "movie"),
 		/** Comics */
 		MEDIA_TYPE_COMICS("4", "comics"),
+		/** Variety */
+		MEDIA_TYPE_VARIETY("5", "variety"),
 		/** TV(TMDB API) */
 		TMDB_MEDIA_TYPE_TV("11", "tv"),
 		/** Movie(TMDB API) */

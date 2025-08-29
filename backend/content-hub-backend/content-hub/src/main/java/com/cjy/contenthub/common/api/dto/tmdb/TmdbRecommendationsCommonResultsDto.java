@@ -54,5 +54,8 @@ public abstract class TmdbRecommendationsCommonResultsDto {
 	
 	/** 투표 수 */
 	private int voteCount;
+	
+	/** 원작품 미디어 타입 */
+	private String originalMediaType;
 
 }

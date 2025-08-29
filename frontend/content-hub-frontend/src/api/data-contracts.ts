@@ -49,9 +49,9 @@ export interface SearchVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
+  aniViewMore?: boolean;
   dramaViewMore?: boolean;
   movieViewMore?: boolean;
-  aniViewMore?: boolean;
 }
 
 export interface TmdbSearchMovieResultsDto {
@@ -279,9 +279,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  leapMonth?: boolean;
   emailValid?: boolean;
   emailVerified?: boolean;
-  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -332,6 +332,7 @@ export interface TmdbRecommendationsTvResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
+  originalMediaType?: string;
   originCountry?: string[];
   originalName?: string;
   firstAirDate?: string;
@@ -361,6 +362,7 @@ export interface TmdbRecommendationsMovieResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
+  originalMediaType?: string;
   originalTitle?: string;
   releaseDate?: string;
   title?: string;
@@ -384,6 +386,7 @@ export interface DetailComicsRecommendationsResultDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
+  originalMediaType?: string;
   title?: string;
 }
 

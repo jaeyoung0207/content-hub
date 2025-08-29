@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -21,6 +22,8 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
@@ -49,6 +52,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	@Qualifier("anilistWebClient")
 	private final WebClient anilistWebClient;
 
+	/** API 유틸리티 클래스 */
+	private final ApiUtil apiUtil;
+
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
 	private String tvRecommendationsPath;
@@ -68,19 +74,10 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	/** AniList API 전체보기화면 작품 표시 개수 */
 	@Value("${anilist.custom.perMorePage}")
 	private int anilistPerMorePage;
-	
+
 	/** AniList API 상세화면 캐릭터 표시 개수 */
 	@Value("${anilist.custom.perCharacterPage}")
 	private int anilistPerCharacterPage;
-
-	/** 리퀘스트 파라미터 키 : TV SERIES ID */
-	private static final String PARAM_TV_SERIES_ID = "series_id";
-
-	/** 리퀘스트 파라미터 키 : MOVIE ID */
-	private static final String PARAM_MOVIE_ID = "movie_id";
-
-	/** 리퀘스트 파라미터 키 : 언어 */
-	private static final String PARAM_LANGUAGE = "language";
 
 	/** 리퀘스트 파라미터 키 : 페이지 번호 */
 	private static final String PARAM_PAGE = "page";
@@ -90,7 +87,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 	/** 리퀘스트 파라미터 키 : 미디어 ID */
 	private static final String PARAM_MEDIA_ID = "mediaId";
-	
+
 	/** 언어 : 한국어 */
 	private static final String LANGUAGE_KOREAN = "ko-KR";
 
@@ -120,53 +117,55 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	@Cacheable(value = "tmdbTvRecommendations", key = "#seriesId + '-' + #page", unless = "#result == null")
 	public TmdbRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page) {
 
+		// TMDB 장르 정보 조회
+		return apiUtil.getTvGenres().flatMap(genreMap -> 
 		// TMDB TV 추천 작품 조회
-		return tmdbWebClient.get()
-				.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_KOREAN))
-				.retrieve()
-				.bodyToMono(TmdbRecommendationsTvDto.class)
-				.onErrorResume(WebClientResponseException.class, ex -> {
-					// 404의 경우 재시도
-					if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-						// 로그 출력
-						log.warn("TMDB TV Recommendations not found then retry for seriesId: {}", seriesId);
-						// 영어로 재시도
-						return tmdbWebClient.get()
-								.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_ENGLISH))
-								.retrieve()
-								.onStatus(HttpStatusCode::isError, response ->
-								response.bodyToMono(String.class).flatMap(body -> {
-									// 404의 경우는 무시하고 빈 응답 반환
-									if (response.statusCode() == HttpStatus.NOT_FOUND) {
-										log.warn("TMDB TV Recommendations not found for seriesId: {}", seriesId);
-										return Mono.empty(); 
-									}
-									// 나머지는 공통 예외 처리로 보냄
-									return Mono.error(new WebClientResponseException(
-											TMDB_TV_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
-								}))
-								.bodyToMono(TmdbRecommendationsTvDto.class);
-					}
-					return Mono.error(new WebClientResponseException(TMDB_TV_API_ERROR_MSG, ex.getStatusCode().value(),
-							null, null, ex.getResponseBodyAsByteArray(), null));
-				})
-				.flatMap(response -> {
-					// 추천 작품이 존재하지 않는 경우, 유사한 작품으로 재시도
-					if (response.getTotalResults() == 0) {
-						return tmdbWebClient.get()
-								.uri(builder -> builder
-										.path(String.format(tvSimilarPath, seriesId))
-										.queryParam(PARAM_TV_SERIES_ID, seriesId)
-										.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-										.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
-										.build())
-								.retrieve()
-								.bodyToMono(TmdbRecommendationsTvDto.class);
-					} else {
-						// 추천 작품이 존재하는 경우, 그대로 응답 반환
-						return Mono.just(response);
-					}
-				}).block();
+		tmdbWebClient.get()
+		.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_KOREAN))
+		.retrieve()
+		.bodyToMono(TmdbRecommendationsTvDto.class)
+		.onErrorResume(WebClientResponseException.class, ex -> {
+			// 404의 경우 재시도
+			if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+				// 로그 출력
+				log.warn("TMDB TV Recommendations not found then retry for seriesId: {}", seriesId);
+				// 영어로 재시도
+				return tmdbWebClient.get()
+						.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_ENGLISH))
+						.retrieve()
+						.onStatus(HttpStatusCode::isError, response ->
+						response.bodyToMono(String.class).flatMap(body -> {
+							// 404의 경우는 무시하고 빈 응답 반환
+							if (response.statusCode() == HttpStatus.NOT_FOUND) {
+								log.warn("TMDB TV Recommendations not found for seriesId: {}", seriesId);
+								return Mono.empty(); 
+							}
+							// 나머지는 공통 예외 처리로 보냄
+							return Mono.error(new WebClientResponseException(
+									TMDB_TV_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
+						}))
+						.bodyToMono(TmdbRecommendationsTvDto.class)
+						.map(response -> {
+							// 빈 응답인 경우 빈 객체 반환
+							if (response == null || CollectionUtils.isEmpty(response.getResults())) {
+								return new TmdbRecommendationsTvDto();
+							}
+							// 필터링된 응답 반환
+							return helper.setTvRecommendationResult(response, genreMap);
+						});
+			}
+			// 그 이외의 경우는 공통 예외 처리로 보냄
+			return Mono.error(new WebClientResponseException(TMDB_TV_API_ERROR_MSG, ex.getStatusCode().value(),
+					null, null, ex.getResponseBodyAsByteArray(), null));
+		})
+		.map(response -> {
+			// 빈 응답인 경우 빈 객체 반환
+			if (response == null || CollectionUtils.isEmpty(response.getResults())) {
+				return new TmdbRecommendationsTvDto();
+			}
+			// 필터링된 응답 반환
+			return helper.setTvRecommendationResult(response, genreMap);
+		})).block();
 	}
 
 	/**
@@ -199,33 +198,41 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 									// 404의 경우는 무시하고 빈 응답 반환
 									if (response.statusCode() == HttpStatus.NOT_FOUND) {
 										log.warn("TMDB Movie Recommendations not found for movieId: {}", movieId);
-										return Mono.empty(); 
+										return Mono.empty();
 									}
 									// 나머지는 공통 예외 처리로 보냄
 									return Mono.error(new WebClientResponseException(
 											TMDB_MOVIE_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 								}))
-								.bodyToMono(TmdbRecommendationsMovieDto.class);
+								.bodyToMono(TmdbRecommendationsMovieDto.class)
+								.map(response -> {
+									// 빈 응답인 경우 빈 객체 반환
+									if (response == null || CollectionUtils.isEmpty(response.getResults())) {
+										return new TmdbRecommendationsMovieDto();
+									}
+									// 응답 정보 필터링
+									response.getResults().stream()
+									.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
+									.forEach(result -> result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()));
+									// 필터링된 응답 반환
+									return response;
+								});
 					}
+					// 그 이외의 경우는 공통 예외 처리로 보냄
 					return Mono.error(new WebClientResponseException(TMDB_MOVIE_API_ERROR_MSG, ex.getStatusCode().value(),
 							null, null, ex.getResponseBodyAsByteArray(), null));
 				})
-				.flatMap(response -> {
-					// 추천 작품이 존재하지 않는 경우, 유사한 작품으로 재시도
-					if (response.getTotalResults() == 0) {
-						return tmdbWebClient.get()
-								.uri(builder -> builder
-										.path(String.format(movieSimilarPath, movieId))
-										.queryParam(PARAM_MOVIE_ID, movieId)
-										.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-										.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
-										.build())
-								.retrieve()
-								.bodyToMono(TmdbRecommendationsMovieDto.class);
-					} else {
-						// 추천 작품이 존재하는 경우, 그대로 응답 반환
-						return Mono.just(response);
+				.map(response -> {
+					// 빈 응답인 경우 빈 객체 반환
+					if (response == null || CollectionUtils.isEmpty(response.getResults())) {
+						return new TmdbRecommendationsMovieDto();
 					}
+					// 응답 정보 필터링
+					response.getResults().stream()
+					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
+					.forEach(result -> result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()));
+					// 필터링된 응답 반환
+					return response;
 				}).block();
 	}
 

@@ -13,7 +13,7 @@ import { useDetail } from './useDetail';
 import { ContentComment } from './tabs/contentComment/ContentComment';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { LoadingUi } from '@/components/ui/LoadingUi';
-import { RecommendContent } from './tabs/recommendationContent/RecommendationContent';
+import { RecommendationContent } from './tabs/recommendationContent/RecommendationContent';
 import {
   isDetailComicsType,
   isDetailMovieType,
@@ -378,7 +378,7 @@ export const Detail = memo(() => {
               {tabIndex === DETAIL_TAB_ID.recommendation && (
                 <div>
                   {/* 비슷한 작품 */}
-                  <RecommendContent
+                  <RecommendationContent
                     detailResult={data}
                     originalMediaType={originalMediaType}
                   />

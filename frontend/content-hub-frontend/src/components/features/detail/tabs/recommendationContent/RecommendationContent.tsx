@@ -1,22 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
-import {
-  RecommendationUseInfiniteQueryResultType,
-  useRecommendationContent,
-} from './useRecommendationContent';
-import {
-  COMMON_IMAGES,
-  MEDIA_TYPE,
-  REDIRECT_URL,
-  TMDB_API_IMAGE_DOMAIN,
-  WIDTH_300,
-} from '@/components/common/constants/constants';
+import { useRecommendationContent } from './useRecommendationContent';
+import { SEARCH_SCREEN_TYPE } from '@/components/common/constants/constants';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { useTranslation } from 'react-i18next';
-import { detailUrlQuery } from '@/components/common/utils/urlUtil';
-import { isRecommendationsTvType } from '@/components/common/utils/typeGuardUtil';
-import { commonErrorHandler } from '@/components/common/utils/errorUtil';
+import { DisplaySearchResults } from '@/components/features/search/Search';
 
 /**
  * 추천 콘텐츠 컴포넌트 props 타입
@@ -27,20 +15,12 @@ type RecommendationContentPropsType = {
 };
 
 /**
- * 추천 콘텐츠 결과 표시 컴포넌트 props 타입
- */
-type DisplayRecommendationResultsPropsType = {
-  data: RecommendationUseInfiniteQueryResultType;
-  originalMediaType: string;
-};
-
-/**
  * 추천 콘텐츠 컴포넌트
  * @param detailResult 상세 정보 결과
  * @param originalMediaType 원본 미디어 타입
  * @returns 추천 콘텐츠 컴포넌트
  */
-export const RecommendContent = ({
+export const RecommendationContent = ({
   detailResult,
   originalMediaType,
 }: RecommendationContentPropsType) => {
@@ -56,9 +36,14 @@ export const RecommendContent = ({
       {data ? (
         <div>
           {/* 추천 콘텐츠 결과 표시 */}
-          <DisplayRecommendResults
-            data={data}
-            originalMediaType={originalMediaType}
+          <DisplaySearchResults
+            mediaName={t('info.recommendation')}
+            results={data.pages.flat()}
+            isViewMore={hasNextPage}
+            mediaType={originalMediaType}
+            keyword={''}
+            isAdult={'false'}
+            searchScreenType={SEARCH_SCREEN_TYPE.RECOMMENDATION}
           />
           {
             // 다음 페이지 로딩 중인 경우 로딩 UI 표시
@@ -79,94 +64,5 @@ export const RecommendContent = ({
         )
       }
     </>
-  );
-};
-
-/**
- * 추천 콘텐츠 결과 표시 컴포넌트
- * @param data 추천 콘텐츠 데이터
- * @param originalMediaType 원본 미디어 타입
- */
-const DisplayRecommendResults = ({
-  data,
-  originalMediaType,
-}: DisplayRecommendationResultsPropsType) => {
-  // navigate 훅
-  const navigate = useNavigate();
-  // 상세보기 모달에서 사용할 썸네일 이미지 경로
-  const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
-
-  return (
-    <div className="w-full">
-      <div className="flex flex-wrap items-start mt-8">
-        {data.pages.length !== 0 &&
-          data.pages.flat().map((items, index) => {
-            const title =
-              items &&
-              (isRecommendationsTvType(items, originalMediaType)
-                ? items.name
-                : items.title);
-            return (
-              <div key={index}>
-                {items && (
-                  <ul
-                    key={'frame' + index}
-                    className={
-                      'ml-1 mr-1 block hover:font-bold cursor-pointer ' +
-                      (originalMediaType === MEDIA_TYPE.COMICS
-                        ? 'w-[190px]'
-                        : 'w-[300px]')
-                    }
-                    onClick={commonErrorHandler(() => {
-                      // 상세화면 URL 생성
-                      const detailUrl = detailUrlQuery({
-                        originalMediaType: originalMediaType,
-                        contentId: String(items.id),
-                        tabNo: 0,
-                      });
-                      // 리다이렉트용 데이터 저장
-                      sessionStorage.setItem(REDIRECT_URL, detailUrl);
-                      // 상세보기 모달 오픈
-                      navigate(detailUrl);
-                    })}
-                  >
-                    {/* 썸네일 */}
-                    <li
-                      key={'poster_path' + index}
-                      className="flex justify-center items-center w-full"
-                    >
-                      <img
-                        src={
-                          originalMediaType === MEDIA_TYPE.COMICS
-                            ? items.backdropPath
-                            : items.backdropPath
-                              ? thumbnailImagePath + items.backdropPath
-                              : thumbnailImagePath + items.posterPath
-                        }
-                        onError={(e) => {
-                          e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                        }}
-                        alt={'Thumbnail Image'}
-                        className={
-                          (originalMediaType === MEDIA_TYPE.COMICS
-                            ? 'w-[190px] h-[270px]'
-                            : 'w-full h-[180px]') + ' object-scale-down'
-                        }
-                      />
-                    </li>
-                    {/* 제목 */}
-                    <li
-                      key={'title' + index}
-                      className="ml-1 mr-1 mb-4 text-xl"
-                    >
-                      {title}
-                    </li>
-                  </ul>
-                )}
-              </div>
-            );
-          })}
-      </div>
-    </div>
   );
 };

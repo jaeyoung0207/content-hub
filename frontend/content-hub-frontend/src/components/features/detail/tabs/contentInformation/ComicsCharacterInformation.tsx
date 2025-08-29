@@ -1,15 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import {
-  COMICS_CREDITS_TYPE,
-  COMMON_IMAGES,
-} from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../useDetail';
-import { characterUrlQuery } from '@/components/common/utils/urlUtil';
-import { Link } from 'react-router-dom';
 import { useComicsCharacterInformation } from './useComicsCharacterInformation';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
-import { checkCharacterId } from '@/components/common/utils/checkUtil';
+import { DisplayComicsCredits } from './ComicsInformation';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -38,58 +32,15 @@ export const ComicsCharacterInformation = ({
 
   return (
     <div className="ml-5 mr-5">
-      {data ? (
+      {data && data.pages.length > 0 ? (
         <>
-          {/* 캐릭터 */}
-          <div className="text-3xl font-bold mt-5 mb-5">
-            {t('info.characters')}
-          </div>
-          <div className="flex flex-wrap items-start mt-5">
-            {data.pages.length !== 0 &&
-              data.pages.flat().map((items, index) => {
-                const characterInfo = items?.node;
-                return (
-                  <>
-                    {characterInfo && (
-                      <div
-                        key={index}
-                        className="ml-1 mr-1 w-[110px]"
-                        onClick={() => checkCharacterId(characterInfo.id)}
-                      >
-                        <Link
-                          to={
-                            characterInfo.id
-                              ? characterUrlQuery({
-                                  comicsCreditsType:
-                                    COMICS_CREDITS_TYPE.CHARACTER,
-                                  creditsId: characterInfo.id,
-                                })
-                              : '#'
-                          }
-                        >
-                          <ul className="block hover:font-bold">
-                            {/* 캐릭터 이미지 */}
-                            <li className="flex justify-center items-center w-full h-[180px]">
-                              <img
-                                src={characterInfo.image?.medium}
-                                onError={(e) => {
-                                  e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                                }}
-                                alt={characterInfo.name?.full}
-                              />
-                            </li>
-                            {/* 캐릭터 이름 */}
-                            <li className="ml-1 mr-1 mb-4 text-lg">
-                              {characterInfo.name?.full}
-                            </li>
-                          </ul>
-                        </Link>
-                      </div>
-                    )}
-                  </>
-                );
-              })}
-          </div>
+          <DisplayComicsCredits
+            contentId={detailResult.id!}
+            originalMediaType={originalMediaType}
+            creditsAllList={data.pages.flat()}
+            creditsType={creditsType}
+            isOmit={false}
+          />
           {
             // 다음 페이지 로딩 중인 경우 로딩 UI 표시
             isFetchingNextPage && <LoadingUi />

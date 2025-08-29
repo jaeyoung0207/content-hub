@@ -2,6 +2,7 @@ import { ERROR_MESSAGE } from '../constants/constants';
 import { isAxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import i18n from 'i18next';
+import { AxiosErrorType } from '../config/queryClientConfig';
 
 /**
  * 콘솔 출력시 글자색을 붉은색으로 출력
@@ -11,7 +12,7 @@ import i18n from 'i18next';
 export const handleUnExceptedError = (error: unknown, message?: string) => {
   // axios에러가 아닌경우에만 에러 표시
   if (!isAxiosError(error)) {
-    changConsoleColor('[ERROR]: ' + error); // 콘솔 출력시 글자색을 붉은색으로 출력
+    changeConsoleColor('[ERROR]: ' + error); // 콘솔 출력시 글자색을 붉은색으로 출력
     toast.error(message ?? i18n.t('error.problemsOccurred'));
   }
 };
@@ -34,7 +35,7 @@ export const commonErrorHandler =
  * 콘솔 출력시 글자색을 붉은색으로 출력
  * @param text 콘솔 출력 텍스트
  */
-export const changConsoleColor = (text: string) => {
+export const changeConsoleColor = (text: string) => {
   console.error('%c' + text, 'color:red');
 };
 
@@ -44,11 +45,33 @@ export const changConsoleColor = (text: string) => {
  * @param message 에러 메세지
  * @returns 포맷팅된 에러 메세지
  */
-export const formattingErrorMessage = (
+export const formattingErrorMsg = (
   errorName: string,
   message: string
 ): string => {
   return `[${errorName}]: ${message}`;
+};
+
+/**
+ * API 에러 메세지 포멧팅
+ * @param name 에러 이름
+ * @param message 에러 메세지
+ * @param path 에러가 발생한 경로
+ * @param status HTTP 상태 코드
+ * @param body 에러 응답 본문
+ * @returns 포멧팅된 에러 메세지
+ */
+export const formattingApiErrorMsg = ({
+  name,
+  path,
+  status,
+  message,
+  body,
+}: AxiosErrorType) => {
+  return (
+    `[${name}]: path=${path}, status=${status}, message=${message}` +
+    (body ? `, body=${body}` : '')
+  );
 };
 
 /**
