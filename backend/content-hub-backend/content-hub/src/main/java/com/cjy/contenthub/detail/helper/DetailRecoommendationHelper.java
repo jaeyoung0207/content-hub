@@ -96,8 +96,8 @@ public class DetailRecoommendationHelper {
 			) {
 		List<TmdbRecommendationsTvResultsDto> filterdResultList = new ArrayList<>();
 		for (TmdbRecommendationsTvResultsDto result : results) {
+			// 장르 정보에 따라 미디어 타입 설정 및 필터링
 			if (!CollectionUtils.isEmpty(result.getGenreIds())) {
-				// 장르 정보에 따라 미디어 타입 설정 및 필터링
 				if (result.getGenreIds().contains(
 						genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))) {
 					result.setOriginalMediaType(
@@ -116,6 +116,10 @@ public class DetailRecoommendationHelper {
 							CommonMediaTypeEnum.MEDIA_TYPE_VARIETY.getMediaTypeCode());
 					filterdResultList.add(result);
 				}
+			} else {
+				result.setOriginalMediaType(
+						CommonMediaTypeEnum.MEDIA_TYPE_VARIETY.getMediaTypeCode());
+				filterdResultList.add(result);
 			}
 		}
 		return filterdResultList;
@@ -161,6 +165,7 @@ public class DetailRecoommendationHelper {
 							.title(node.getTitle().getUserPreferred())
 							.backdropPath(node.getCoverImage().getLarge())
 							.posterPath(node.getCoverImage().getExtraLarge())
+							.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
 							.build())
 					);
 		}

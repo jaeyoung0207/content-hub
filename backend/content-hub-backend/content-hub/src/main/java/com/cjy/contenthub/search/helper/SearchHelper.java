@@ -23,24 +23,20 @@ import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
  */
 @Component
 public class SearchHelper {
-	
+
 	/** TMDB API 페이지당 작품 표시 개수 */
 	@Value("${tmdb.custom.perMainPage}")
 	private int tmdbPerMainPage;
-	
-	/** TMDB API TV시리즈 검색 API 패스 */
-	@Value("${tmdb.url.tvSearchPath}")
-	private String tvSearchPath;
-	
+
 	/** 리퀘스트 파라미터 키 : 검색어 */
 	private static final String PARAM_QUERY = "query";
 
 	/** 리퀘스트 파라미터 키 : 페이지 */
 	private static final String PARAM_PAGE = "page";
-	
+
 	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
 	private static final String PARAM_INCLUDE_ADULT = "include_adult";
-	
+
 	/** 리퀘스트 파라미터 키 : 언어 */
 	private static final String PARAM_LANGUAGE = "language";
 
@@ -83,7 +79,7 @@ public class SearchHelper {
 		// 정렬된 리스트 반환
 		return sortedList;
 	}
-	
+
 	/**
 	 * TV시리즈 검색 URI 생성
 	 * 
@@ -92,8 +88,8 @@ public class SearchHelper {
 	 * @param page    페이지 번호
 	 * @return 생성된 URI 문자열
 	 */
-	public String getTvSearchUri(String keyword, boolean isAdult, int page) {
-		return UriComponentsBuilder.fromPath(tvSearchPath)
+	public String getSearchUri(String searchPath, String keyword, boolean isAdult, int page) {
+		return UriComponentsBuilder.fromPath(searchPath)
 				.queryParam(PARAM_QUERY, keyword)
 				.queryParam(PARAM_INCLUDE_ADULT, isAdult)
 				.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
@@ -101,7 +97,6 @@ public class SearchHelper {
 				.toUriString();
 	}
 
-	
 	/**
 	 * 비디오 검색 결과 DTO를 설정
 	 * 

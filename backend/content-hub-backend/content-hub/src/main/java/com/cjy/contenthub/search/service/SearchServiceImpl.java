@@ -2,6 +2,7 @@ package com.cjy.contenthub.search.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +151,7 @@ public class SearchServiceImpl implements SearchService {
 						List<TmdbSearchMultiResultsDto> resultList = response.getResults();
 						// 검색 결과가 없는 경우, 빈 리스트 반환
 						if (CollectionUtils.isEmpty(resultList)) {
-							List<String> emptyList = new ArrayList<>();
+							List<String> emptyList = Collections.emptyList();
 							return emptyList;
 						}
 						// 검색 결과에서 TV, 영화 정보만 추출
@@ -199,11 +200,11 @@ public class SearchServiceImpl implements SearchService {
 
 			// 애니, 드라마 정보 조회
 			Mono<SearchTvResponseDto> tvResponseMono = Flux
-					.range(FIRST_PAGE_NO, tmdbRetryCount) // 재시도할 범위의 페이지 번호 생성
-					.concatMap(
+					.range(FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
-							.uri(helper.getTvSearchUri(keyword, isAdult, page))
+							.uri(helper.getSearchUri(tvSearchPath, keyword, isAdult, page))
 							.retrieve()
 							.bodyToMono(TmdbSearchTvDto.class)
 							.map(response -> {
@@ -216,9 +217,13 @@ public class SearchServiceImpl implements SearchService {
 										.totalPages(response.getTotalPages())
 										.totalResults(response.getTotalResults())
 										.build();
-							}))
+							}), tmdbRetryCount) // 병렬로 동시에 호출할 최대 페이지 수
 					.collectList() // 모든 페이지의 결과를 리스트로 모음
 					.map(resultList -> {
+						// 검색 결과가 없는 경우 빈 응답 반환
+						if (CollectionUtils.isEmpty(resultList)) {
+							return new SearchTvResponseDto();
+						}
 						// 결과 리스트를 모아서 하나의 응답 오브젝트로 반환
 						SearchTvResponseDto tvResponse = SearchTvResponseDto.builder()
 								.aniResults(new ArrayList<>())
@@ -231,24 +236,45 @@ public class SearchServiceImpl implements SearchService {
 							tvResponse.getAniResults().addAll(result.getAniResults());
 							tvResponse.getDramaResults().addAll(result.getDramaResults());
 						}
-						tvResponse.setPage(resultList.isEmpty() ? 0 : resultList.get(0).getPage());
-						tvResponse.setTotalPages(resultList.isEmpty() ? 0 : resultList.get(0).getTotalPages());
-						tvResponse.setTotalResults(resultList.isEmpty() ? 0 : resultList.get(0).getTotalResults());
+						tvResponse.setPage(resultList.get(0).getPage());
+						tvResponse.setTotalPages(resultList.get(0).getTotalPages());
+						tvResponse.setTotalResults(resultList.get(0).getTotalResults());
 						return tvResponse;
 					})
 					.defaultIfEmpty(new SearchTvResponseDto()); // 조회 결과가 없는 경우 빈 응답 오브젝트 반환
 
 			// 영화 정보 조회
-			Mono<TmdbSearchMovieDto> movieResponseMono = tmdbWebClient.get()
-					.uri(builder -> builder
-							.path(movieSearchPath)
-							.queryParam(PARAM_QUERY, keyword)
-							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-							.queryParam(PARAM_PAGE, 1) // 첫번째 페이지 고정(기본값)
-							.build())
-					.retrieve()
-					.bodyToMono(TmdbSearchMovieDto.class);
+			Mono<TmdbSearchMovieDto> movieResponseMono = Flux
+					.range(FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.flatMap(
+							// 설정한 페이지 수 만큼 TMDB API 호출
+							page -> tmdbWebClient.get()
+							.uri(helper.getSearchUri(movieSearchPath, keyword, isAdult, page))
+							.retrieve()
+							.bodyToMono(TmdbSearchMovieDto.class)
+							, tmdbRetryCount) // 병렬로 동시에 호출할 최대 페이지 수
+					.collectList() // 모든 페이지의 결과를 리스트로 모음
+					.map(resultList -> {
+						// 검색 결과가 없는 경우 빈 응답 반환
+						if (CollectionUtils.isEmpty(resultList)) {
+							return new TmdbSearchMovieDto();
+						}
+						// 결과 리스트를 모아서 하나의 응답 오브젝트로 반환
+						TmdbSearchMovieDto movieResponse = TmdbSearchMovieDto.builder()
+								.results(new ArrayList<>())
+								.page(0)
+								.totalPages(0)
+								.totalResults(0)
+								.build();
+						for (TmdbSearchMovieDto result : resultList) {
+							movieResponse.getResults().addAll(result.getResults());
+						}
+						movieResponse.setPage(resultList.get(0).getPage());
+						movieResponse.setTotalPages(resultList.get(0).getTotalPages());
+						movieResponse.setTotalResults(resultList.get(0).getTotalResults());
+						return movieResponse;
+					})
+					.defaultIfEmpty(new TmdbSearchMovieDto()); // 조회 결과가 없는 경우 빈 응답 오브젝트 반환
 
 			return Mono.zip(tvResponseMono, movieResponseMono).map(dtoTuple -> {
 				// TV 응답 DTO 
@@ -256,17 +282,16 @@ public class SearchServiceImpl implements SearchService {
 				// 영화 응답 DTO
 				TmdbSearchMovieDto movieResponse = dtoTuple.getT2();
 				// 애니 검색 결과 리스트
-				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getAniResults()).orElse(new ArrayList<>());
+				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getAniResults()).orElse(Collections.emptyList());
 				// 드라마 검색 결과 리스트
-				List<TmdbSearchTvResultsDto> dramaResultList = Optional.ofNullable(tvResponse.getDramaResults()).orElse(new ArrayList<>());
+				List<TmdbSearchTvResultsDto> dramaResultList = Optional.ofNullable(tvResponse.getDramaResults()).orElse(Collections.emptyList());
 				// 영화 검색 결과 리스트
-				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
-
-				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
+				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(Collections.emptyList());
+				// 필터링된 영화 리스트
 				List<TmdbSearchMovieResultsDto> filteredMovieList = new ArrayList<>();
 				// 영화 정보에서 애니메이션 정보 추출 
 				aniResultList.addAll(helper.getAniMovieList(movieResultList, movieGenreMap));
-				// 영화 정보 필터링
+				// 영화 정보에서 애니영화 제외한 정보 추출
 				filteredMovieList.addAll(helper.getMovieList(movieResultList, movieGenreMap));
 
 				// 응답 오브젝트 설정				
@@ -300,13 +325,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// TV 애니 정보 조회
 			Mono<TmdbSearchTvDto> tvResponseMono = tmdbWebClient.get()
-					.uri(builder -> builder
-							.path(tvSearchPath)
-							.queryParam(PARAM_QUERY, keyword)
-							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-							.queryParam(PARAM_PAGE, currentPage)
-							.build())
+					.uri(helper.getSearchUri(tvSearchPath, keyword, isAdult, currentPage))
 					.retrieve()
 					.bodyToMono(TmdbSearchTvDto.class)
 					.map(response -> 
@@ -337,9 +356,9 @@ public class SearchServiceImpl implements SearchService {
 				// 영화 응답 DTO
 				TmdbSearchMovieDto movieResponse = tuple.getT2();
 				// 애니 검색 결과 리스트
-				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getResults()).orElse(new ArrayList<>());
+				List<TmdbSearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getResults()).orElse(Collections.emptyList());
 				// 영화 검색 결과 리스트
-				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(new ArrayList<>());
+				List<TmdbSearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getResults()).orElse(Collections.emptyList());
 
 				// 영화 정보 리스트 -> 애니 정보 리스트와 결합
 				aniResultList.addAll(helper.getAniMovieList(movieResultList, movieGenreMap));
@@ -371,13 +390,7 @@ public class SearchServiceImpl implements SearchService {
 		// 드라마 장르 정보 조회
 		return apiUtil.getTvGenres().flatMap(tvGenreMap -> 
 		tmdbWebClient.get()
-		.uri(builder -> builder
-				.path(tvSearchPath)
-				.queryParam(PARAM_QUERY, keyword)
-				.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-				.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-				.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
-				.build())
+		.uri(helper.getSearchUri(tvSearchPath, keyword, isAdult, Optional.ofNullable(page).orElse(1)))
 		.retrieve()
 		.bodyToMono(TmdbSearchTvDto.class)
 		.map(response -> {
@@ -409,13 +422,7 @@ public class SearchServiceImpl implements SearchService {
 		return apiUtil.getMovieGenres().flatMap(movieGenreMap -> 
 		// 영화 정보 조회
 		tmdbWebClient.get()
-		.uri(builder -> builder
-				.path(movieSearchPath)
-				.queryParam(PARAM_QUERY, keyword)
-				.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-				.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-				.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
-				.build())
+		.uri(helper.getSearchUri(movieSearchPath, keyword, isAdult, Optional.ofNullable(page).orElse(1)))
 		.retrieve()
 		.bodyToMono(TmdbSearchMovieDto.class)
 		.map(response -> {

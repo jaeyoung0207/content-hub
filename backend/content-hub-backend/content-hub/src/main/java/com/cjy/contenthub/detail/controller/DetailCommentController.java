@@ -2,6 +2,7 @@ package com.cjy.contenthub.detail.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -166,7 +167,9 @@ public class DetailCommentController {
 			) {
 
 		// 별점 평균 조회 서비스 호출
-		BigDecimal starRating = commentService.getStarRatingAverage(originalMediaType, apiId);
+		BigDecimal starRating = 
+				Optional.ofNullable(commentService.getStarRatingAverage(originalMediaType, apiId))
+				.orElse(BigDecimal.ZERO);
 
 		// 별점 평균 반환
 		return ResponseEntity.status(HttpStatus.OK).body(starRating);

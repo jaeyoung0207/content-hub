@@ -295,27 +295,22 @@ export const Detail = memo(() => {
                         </div>
                       </li>
                       {/* 볼 수 있는 곳 */}
-                      {isTvType ||
-                        (isMovieType && (
-                          <li className="mb-2 flex">
-                            <div className="mr-2">
-                              {t('info.ableToWatching') + t('info.colon')}
-                            </div>
-                            <div>
-                              {data.link ? (
-                                <a
-                                  className="text-blue-600"
-                                  href={data.link}
-                                  target="_blank"
-                                >
-                                  {data.link}
-                                </a>
-                              ) : (
-                                t('info.unknown')
-                              )}
-                            </div>
-                          </li>
-                        ))}
+                      {(isTvType || isMovieType) && data.link && (
+                        <li className="mb-2 flex">
+                          <div className="mr-2">
+                            {t('info.ableToWatching') + t('info.colon')}
+                          </div>
+                          <div>
+                            <a
+                              className="text-blue-600"
+                              href={data.link}
+                              target="_blank"
+                            >
+                              {data.link}
+                            </a>
+                          </div>
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>

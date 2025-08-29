@@ -229,7 +229,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					}
 					// 응답 정보 필터링
 					response.getResults().stream()
-					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
 					.forEach(result -> result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()));
 					// 필터링된 응답 반환
 					return response;

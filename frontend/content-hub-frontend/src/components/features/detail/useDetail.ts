@@ -6,10 +6,7 @@ import {
   DetailMovieResponseDto,
   DetailComicsResponseDto,
 } from '@/api/data-contracts';
-import {
-  MEDIA_TYPE,
-  REDIRECT_URL,
-} from '@/components/common/constants/constants';
+import { MEDIA_TYPE } from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 
