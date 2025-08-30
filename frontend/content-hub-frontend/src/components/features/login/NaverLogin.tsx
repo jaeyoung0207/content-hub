@@ -10,3 +10,5 @@ export const NaverLogin = () => {
   // 컴포넌트는 렌더링할 내용이 없으므로 빈 Fragment 반환
   return <></>;
 };
+
+export default NaverLogin;

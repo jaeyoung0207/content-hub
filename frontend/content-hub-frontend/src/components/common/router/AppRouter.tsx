@@ -1,9 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Login } from '../../features/login/Login';
-import { NaverLogin } from '@/components/features/login/NaverLogin';
-import { Logout } from '@/components/features/login/Logout';
-import { Home } from '@/components/features/home/Home';
-import { SearchPage } from '@/components/features/search/SearchPage';
+import { Suspense, lazy } from 'react';
 import { Layout } from '@/components/features/common/Layout';
 import { ErrorPageWithHalfScreen } from '@/components/common/error/ErrorPageWithHalfScreen';
 import { ErrorPageWithFullScreen } from '@/components/common/error/ErrorPageWithFullScreen';
@@ -12,10 +8,22 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientConfig } from '../config/queryClientConfig';
 import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
-import { KakaoLogin } from '@/components/features/login/KakaoLogin';
-import { Detail } from '@/components/features/detail/Detail';
-import { Person } from '@/components/features/person/Person';
-import { Character } from '@/components/features/character/Character';
+import { LoadingUi } from '@/components/ui/LoadingUi';
+
+// lazy loading
+const Home = lazy(() => import('@/components/features/home/Home'));
+const SearchPage = lazy(
+  () => import('@/components/features/search/SearchPage')
+);
+const Detail = lazy(() => import('@/components/features/detail/Detail'));
+const Person = lazy(() => import('@/components/features/person/Person'));
+const Character = lazy(
+  () => import('@/components/features/character/Character')
+);
+const Login = lazy(() => import('@/components/features/login/Login'));
+const NaverLogin = lazy(() => import('@/components/features/login/NaverLogin'));
+const KakaoLogin = lazy(() => import('@/components/features/login/KakaoLogin'));
+const Logout = lazy(() => import('@/components/features/login/Logout'));
 
 /**
  * AppBrowserRouter 컴포넌트
@@ -55,28 +63,30 @@ const AppRouter = () => {
         }}
       >
         <QueryClientProvider client={queryClientConfig}>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route
-                path="/detail/:originalMediaType/:contentId"
-                element={<Detail />}
-              />
-              <Route path="/person/:personId" element={<Person />} />
-              <Route
-                path="/character/:comicsCreditsType/:creditsId"
-                element={<Character />}
-              />
-              <Route path="/login" element={<Login />} />
-              <Route path="/login/naver" element={<NaverLogin />} />
-              <Route path="/login/kakao" element={<KakaoLogin />} />
-              <Route path="/logout" element={<Logout />} />
-              <Route path="/error" element={<ErrorPageWithHalfScreen />} />
-              <Route path="*" element={<ErrorPageWithHalfScreen />} />
-            </Route>
-            <Route path="/maintenance" element={<Maintenance />} />
-          </Routes>
+          <Suspense fallback={<LoadingUi />}>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route
+                  path="/detail/:originalMediaType/:contentId"
+                  element={<Detail />}
+                />
+                <Route path="/person/:personId" element={<Person />} />
+                <Route
+                  path="/character/:comicsCreditsType/:creditsId"
+                  element={<Character />}
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/login/naver" element={<NaverLogin />} />
+                <Route path="/login/kakao" element={<KakaoLogin />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/error" element={<ErrorPageWithHalfScreen />} />
+                <Route path="*" element={<ErrorPageWithHalfScreen />} />
+              </Route>
+              <Route path="/maintenance" element={<Maintenance />} />
+            </Routes>
+          </Suspense>
         </QueryClientProvider>
       </ErrorBoundary>
     </>

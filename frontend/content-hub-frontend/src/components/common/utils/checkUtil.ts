@@ -8,7 +8,7 @@ import i18n from 'i18next';
 export const checkContentId = (contentId: number | undefined) => {
   if (!contentId) {
     console.error('no contentId');
-    toast.error(i18n.t('warn.noContentId'), { toastId: 'noContentId' });
+    toast.error(i18n.t('warn.noContentInfo'), { toastId: 'noContentInfo' });
   }
 };
 
@@ -19,7 +19,7 @@ export const checkContentId = (contentId: number | undefined) => {
 export const checkPersonId = (personId: number | undefined) => {
   if (!personId) {
     console.error('no personId');
-    toast.error(i18n.t('warn.noPersonId'), { toastId: 'noPersonId' });
+    toast.error(i18n.t('warn.noPersonInfo'), { toastId: 'noPersonInfo' });
   }
 };
 
@@ -30,7 +30,7 @@ export const checkPersonId = (personId: number | undefined) => {
 export const checkCharacterId = (characterId: number | undefined) => {
   if (!characterId) {
     console.error('no characterId');
-    toast.error(i18n.t('warn.noCharacterId'), { toastId: 'noCharacterId' });
+    toast.error(i18n.t('warn.noCharacterInfo'), { toastId: 'noCharacterInfo' });
   }
 };
 
@@ -41,6 +41,6 @@ export const checkCharacterId = (characterId: number | undefined) => {
 export const checkStaffId = (staffId: number | undefined) => {
   if (!staffId) {
     console.error('no staffId');
-    toast.error(i18n.t('warn.noStaffId'), { toastId: 'noStaffId' });
+    toast.error(i18n.t('warn.noStaffInfo'), { toastId: 'noStaffInfo' });
   }
 };

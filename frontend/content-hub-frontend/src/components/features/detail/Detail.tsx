@@ -5,24 +5,40 @@ import {
   WIDTH_300,
   COMMON_IMAGES,
   DETAIL_TAB_ID,
+  WIDTH_185,
 } from '@/components/common/constants/constants';
-import { memo } from 'react';
+import { Suspense, lazy, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { VideoInformation } from './tabs/contentInformation/VideoInformation';
 import { useDetail } from './useDetail';
-import { ContentComment } from './tabs/contentComment/ContentComment';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { LoadingUi } from '@/components/ui/LoadingUi';
-import { RecommendationContent } from './tabs/recommendationContent/RecommendationContent';
 import {
   isDetailComicsType,
   isDetailMovieType,
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
-import { ComicsInfomation } from './tabs/contentInformation/ComicsInformation';
-import { CastInformation } from './tabs/CastInformation';
-import { CrewInformation } from './tabs/CrewInformation';
+import { LazyImage } from '@/components/ui/common/LazyImageUi';
+
+// lazy loading
+const VideoInformation = lazy(
+  () => import('./tabs/contentInformation/VideoInformation')
+);
+const ComicsInformation = lazy(
+  () => import('./tabs/contentInformation/ComicsInformation')
+);
+const CastInformation = lazy(
+  () => import('./tabs/creditsInformation/CastInformation')
+);
+const CrewInformation = lazy(
+  () => import('./tabs/creditsInformation/CrewInformation')
+);
+const ContentComment = lazy(
+  () => import('./tabs/contentComment/ContentComment')
+);
+const RecommendationContent = lazy(
+  () => import('./tabs/recommendationContent/RecommendationContent')
+);
 
 /**
  * 상세 화면 컴포넌트
@@ -138,20 +154,19 @@ export const Detail = memo(() => {
             <>
               {/* 작품 이미지 */}
               <div className="flex justify-center items-center mb-4 w-[30%]">
-                <img
+                <LazyImage
                   src={
-                    originalMediaType === MEDIA_TYPE.COMICS
-                      ? data?.posterPath
-                      : TMDB_API_IMAGE_DOMAIN +
-                        (IS_MOBILE ? WIDTH_300 : WIDTH_300) +
-                        data?.posterPath // TODO
+                    data.posterPath
+                      ? originalMediaType === MEDIA_TYPE.COMICS
+                        ? data.posterPath
+                        : TMDB_API_IMAGE_DOMAIN +
+                          (IS_MOBILE ? WIDTH_185 : WIDTH_300) +
+                          data.posterPath
+                      : COMMON_IMAGES.NO_IMAGE
                   }
                   className={
                     (IS_MOBILE ? 'w-[200px]' : 'w-[300px]') + ' h-full'
                   }
-                  onError={(e) => {
-                    e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                  }}
                   alt={
                     isTvType
                       ? data.name
@@ -324,60 +339,70 @@ export const Detail = memo(() => {
           {data && originalMediaType && (
             <>
               {tabIndex === DETAIL_TAB_ID.mediaInfo && (
-                <div>
-                  {/* 만화 정보 */}
-                  {originalMediaType === MEDIA_TYPE.COMICS && (
-                    <ComicsInfomation
-                      detailResult={data}
-                      originalMediaType={originalMediaType}
-                    />
-                  )}
-                  {/* 애니, 드라마, 영화 정보 */}
-                  {(originalMediaType === MEDIA_TYPE.ANI ||
-                    originalMediaType === MEDIA_TYPE.DRAMA ||
-                    originalMediaType === MEDIA_TYPE.MOVIE) && (
-                    <VideoInformation
-                      detailResult={data}
-                      originalMediaType={originalMediaType}
-                    />
-                  )}
-                </div>
+                <Suspense fallback={<LoadingUi />}>
+                  <div>
+                    {/* 만화 정보 */}
+                    {originalMediaType === MEDIA_TYPE.COMICS && (
+                      <ComicsInformation
+                        detailResult={data}
+                        originalMediaType={originalMediaType}
+                      />
+                    )}
+                    {/* 애니, 드라마, 영화 정보 */}
+                    {(originalMediaType === MEDIA_TYPE.ANI ||
+                      originalMediaType === MEDIA_TYPE.DRAMA ||
+                      originalMediaType === MEDIA_TYPE.MOVIE) && (
+                      <VideoInformation
+                        detailResult={data}
+                        originalMediaType={originalMediaType}
+                      />
+                    )}
+                  </div>
+                </Suspense>
               )}
               {tabIndex === DETAIL_TAB_ID.cast && (
-                <div>
-                  {/* 출연진 */}
-                  <CastInformation
-                    detailResult={data}
-                    originalMediaType={originalMediaType}
-                  />
-                </div>
+                <Suspense fallback={<LoadingUi />}>
+                  <div>
+                    {/* 출연진 */}
+                    <CastInformation
+                      detailResult={data}
+                      originalMediaType={originalMediaType}
+                    />
+                  </div>
+                </Suspense>
               )}
               {tabIndex === DETAIL_TAB_ID.crew && (
-                <div>
-                  {/* 제작진 */}
-                  <CrewInformation
-                    detailResult={data}
-                    originalMediaType={originalMediaType}
-                  />
-                </div>
+                <Suspense fallback={<LoadingUi />}>
+                  <div>
+                    {/* 제작진 */}
+                    <CrewInformation
+                      detailResult={data}
+                      originalMediaType={originalMediaType}
+                    />
+                  </div>
+                </Suspense>
               )}
               {tabIndex === DETAIL_TAB_ID.review && (
-                <div>
-                  {/* 평가&리뷰 */}
-                  <ContentComment
-                    detailResult={data}
-                    originalMediaType={originalMediaType}
-                  />
-                </div>
+                <Suspense fallback={<LoadingUi />}>
+                  <div>
+                    {/* 평가&리뷰 */}
+                    <ContentComment
+                      detailResult={data}
+                      originalMediaType={originalMediaType}
+                    />
+                  </div>
+                </Suspense>
               )}
               {tabIndex === DETAIL_TAB_ID.recommendation && (
-                <div>
-                  {/* 비슷한 작품 */}
-                  <RecommendationContent
-                    detailResult={data}
-                    originalMediaType={originalMediaType}
-                  />
-                </div>
+                <Suspense fallback={<LoadingUi />}>
+                  <div>
+                    {/* 비슷한 작품 */}
+                    <RecommendationContent
+                      detailResult={data}
+                      originalMediaType={originalMediaType}
+                    />
+                  </div>
+                </Suspense>
               )}
             </>
           )}
@@ -386,3 +411,5 @@ export const Detail = memo(() => {
     </>
   );
 });
+
+export default Detail;

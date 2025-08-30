@@ -9,7 +9,7 @@ import { SearchCommonResultType } from '../useSearch';
 import { memo } from 'react';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from '../SearchPage';
-import { DisplaySearchResults } from '../Search';
+import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
 
 /**
  * 전체보기 모달화면 컴포넌트 props 타입
@@ -99,3 +99,5 @@ export const SearchMore = memo(
     );
   }
 );
+
+export default SearchMore;

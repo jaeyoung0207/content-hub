@@ -3,7 +3,7 @@ import { DetailResponseType } from '../../useDetail';
 import { useComicsCharacterInformation } from './useComicsCharacterInformation';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
-import { DisplayComicsCredits } from './ComicsInformation';
+import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -58,7 +58,7 @@ export const ComicsCharacterInformation = ({
       {
         // 데이터가 없을 때 표시할 메시지
         data && data.pages[0]?.length === 0 && (
-          <NodataMessageUi message={t('warn.noCharacterId')} />
+          <NodataMessageUi message={t('warn.noCharacterInfo')} />
         )
       }
     </div>

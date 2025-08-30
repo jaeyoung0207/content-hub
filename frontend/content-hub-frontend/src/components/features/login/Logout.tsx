@@ -1,5 +1,4 @@
 import { Login } from '@/api/Login';
-import { settings } from '@/components/common/config/settings';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
 import {
   useProviderStore,
@@ -69,3 +68,5 @@ export const Logout = () => {
 
   return <></>;
 };
+
+export default Logout;

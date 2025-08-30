@@ -213,3 +213,5 @@ export const ContentComment = ({
     </>
   );
 };
+
+export default ContentComment;

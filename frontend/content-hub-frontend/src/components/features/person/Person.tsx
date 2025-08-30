@@ -18,6 +18,7 @@ import {
 } from '@/api/data-contracts';
 import { memo } from 'react';
 import { isPersonCreditsCastType } from '@/components/common/utils/typeGuardUtil';
+import { LazyImage } from '@/components/ui/common/LazyImageUi';
 
 export type PersonCredits = PersonCreditsCastDto | PersonCreditsCrewDto;
 
@@ -28,7 +29,7 @@ type DisplayPersonCreditsType = {
 /**
  * 인물 화면 컴포넌트
  */
-export const Person = () => {
+export const Person = memo(() => {
   // i18n 번역 훅
   const { t } = useTranslation();
   // URL 파라미터에서 personId 추출
@@ -58,7 +59,7 @@ export const Person = () => {
           <div className="flex justify-center m-5">
             {/* 인물 이미지 */}
             <div className="flex justify-center items-center mb-4 w-[30%]">
-              <img
+              <LazyImage
                 src={
                   data?.profilePath
                     ? TMDB_API_IMAGE_DOMAIN +
@@ -67,9 +68,6 @@ export const Person = () => {
                     : COMMON_IMAGES.NO_IMAGE
                 }
                 className={(IS_MOBILE ? 'w-[200px]' : 'w-[300px]') + ' h-full'}
-                onError={(e) => {
-                  e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                }}
                 alt={data.name}
               />
             </div>
@@ -208,7 +206,7 @@ export const Person = () => {
       )}
     </div>
   );
-};
+});
 
 /**
  * 크레딧 정보를 표시하는 컴포넌트
@@ -269,3 +267,5 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
     </div>
   );
 });
+
+export default Person;

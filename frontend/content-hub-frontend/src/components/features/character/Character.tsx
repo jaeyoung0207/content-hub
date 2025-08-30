@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { COMMON_IMAGES } from '@/components/common/constants/constants';
 import { convertDate } from '@/components/common/utils/convertUtil';
 import { isStaffType } from '@/components/common/utils/typeGuardUtil';
+import { memo } from 'react';
+import { LazyImage } from '@/components/ui/common/LazyImageUi';
 
 /**
  * 캐릭터 화면 컴포넌트
  */
-export const Character = () => {
+export const Character = memo(() => {
   // URL 파라미터에서 값을 가져오는 useParams 훅
   const { comicsCreditsType, creditsId } = useParams();
   // i18n 훅
@@ -68,13 +70,10 @@ export const Character = () => {
           <div className="flex justify-center m-5">
             {/* 캐릭터 이미지 */}
             <div className="flex justify-center items-center mb-4 w-[30%]">
-              <img
+              <LazyImage
                 src={
                   data.image?.large ? data.image.large : COMMON_IMAGES.NO_IMAGE
                 }
-                onError={(e) => {
-                  e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                }}
                 alt={data.name?.full}
               />
             </div>
@@ -180,4 +179,6 @@ export const Character = () => {
       )}
     </div>
   );
-};
+});
+
+export default Character;

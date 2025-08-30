@@ -21,3 +21,5 @@ export const ErrorPageWithHalfScreen = () => {
     </div>
   );
 };
+
+export default ErrorPageWithHalfScreen;
