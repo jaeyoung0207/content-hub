@@ -25,7 +25,7 @@ type DisplayComicsCreditsPropsType = {
     | AniListStaffEdgesDto
     | undefined
   )[];
-  creditsType?: String;
+  creditsType?: string;
   isOmit?: boolean;
 };
 

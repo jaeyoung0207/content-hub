@@ -30,7 +30,9 @@ export const isSearchTvType = (
   results: SearchCommonResultType,
   mediaType: string
 ): results is TmdbSearchTvResultsDto => {
-  return mediaType === MEDIA_TYPE.ANI || mediaType === MEDIA_TYPE.DRAMA;
+  return (
+    results && (mediaType === MEDIA_TYPE.ANI || mediaType === MEDIA_TYPE.DRAMA)
+  );
 };
 
 /**
@@ -43,7 +45,7 @@ export const isSearchMovieType = (
   results: SearchCommonResultType,
   mediaType: string
 ): results is TmdbSearchMovieResultsDto => {
-  return mediaType === MEDIA_TYPE.MOVIE;
+  return results && mediaType === MEDIA_TYPE.MOVIE;
 };
 
 /**
@@ -56,7 +58,7 @@ export const isSearchComicsType = (
   results: SearchCommonResultType,
   mediaType: string
 ): results is SearchComicsMediaResultDto => {
-  return mediaType === MEDIA_TYPE.COMICS;
+  return results && mediaType === MEDIA_TYPE.COMICS;
 };
 
 /**
@@ -70,8 +72,9 @@ export const isRecommendationsTvType = (
   originalMediaType: string
 ): results is TmdbRecommendationsTvResultsDto => {
   return (
-    originalMediaType === MEDIA_TYPE.ANI ||
-    originalMediaType === MEDIA_TYPE.DRAMA
+    results &&
+    (originalMediaType === MEDIA_TYPE.ANI ||
+      originalMediaType === MEDIA_TYPE.DRAMA)
   );
 };
 
@@ -85,7 +88,7 @@ export const isRecommendationsMovieType = (
   results: RecommendationContentResultType,
   originalMediaType: string
 ): results is TmdbRecommendationsMovieResultsDto => {
-  return originalMediaType === MEDIA_TYPE.MOVIE;
+  return results && originalMediaType === MEDIA_TYPE.MOVIE;
 };
 
 /**
@@ -98,7 +101,7 @@ export const isRecommendationsComicsType = (
   results: RecommendationContentResultType,
   originalMediaType: string
 ): results is DetailComicsResponseDto => {
-  return originalMediaType === MEDIA_TYPE.COMICS;
+  return results && originalMediaType === MEDIA_TYPE.COMICS;
 };
 
 /**
@@ -112,8 +115,9 @@ export const isDetailTvType = (
   originalMediaType: string
 ): detailResult is DetailTvResponseDto => {
   return (
-    originalMediaType === MEDIA_TYPE.ANI ||
-    originalMediaType === MEDIA_TYPE.DRAMA
+    detailResult &&
+    (originalMediaType === MEDIA_TYPE.ANI ||
+      originalMediaType === MEDIA_TYPE.DRAMA)
   );
 };
 
@@ -127,7 +131,7 @@ export const isDetailMovieType = (
   detailResult: DetailResponseType,
   originalMediaType: string
 ): detailResult is DetailMovieResponseDto => {
-  return originalMediaType === MEDIA_TYPE.MOVIE;
+  return detailResult && originalMediaType === MEDIA_TYPE.MOVIE;
 };
 
 /**
@@ -140,7 +144,7 @@ export const isDetailComicsType = (
   detailResult: DetailResponseType,
   originalMediaType: string
 ): detailResult is DetailComicsResponseDto => {
-  return originalMediaType === MEDIA_TYPE.COMICS;
+  return detailResult && originalMediaType === MEDIA_TYPE.COMICS;
 };
 
 /**

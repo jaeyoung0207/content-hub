@@ -1,5 +1,5 @@
 import { Control, useForm, useWatch } from 'react-hook-form';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useProviderStore,
@@ -24,7 +24,6 @@ import {
   ENTER_KEY,
   ESC_KEY,
   LOGIN_PROVIDER,
-  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useCookies } from 'react-cookie';
@@ -99,8 +98,6 @@ export const useHeader = (): useHeaderReturnType => {
 
   // navigate 훅
   const navigate = useNavigate();
-  // location 훅
-  const location = useLocation();
 
   // 쿠키 훅: 리프레시 토큰
   const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
