@@ -6,7 +6,6 @@ import { detailUrlQuery, viewMoreUrlQuery } from '../common/utils/urlUtil';
 import {
   COMMON_IMAGES,
   MEDIA_TYPE,
-  REDIRECT_URL,
   SEARCH_SCREEN_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
@@ -103,8 +102,6 @@ export const DisplaySearchResults = ({
                     contentId: String(items.id),
                     tabNo: 0,
                   });
-                  // 상세화면 URL 저장
-                  sessionStorage.setItem(REDIRECT_URL, detailUrl);
                   // 상세화면 이동
                   navigate(detailUrl);
                 })}

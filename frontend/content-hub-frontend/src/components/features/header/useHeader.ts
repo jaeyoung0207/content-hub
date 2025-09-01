@@ -24,6 +24,7 @@ import {
   ENTER_KEY,
   ESC_KEY,
   LOGIN_PROVIDER,
+  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useCookies } from 'react-cookie';
@@ -436,12 +437,12 @@ export const useHeader = (): useHeaderReturnType => {
    */
   const handleLoginOnClick = useCallback(() => {
     // URL 생성
-    // const searchUrl = location.pathname + location.search;
-    // // URL 저장
-    // sessionStorage.setItem(REDIRECT_URL, searchUrl);
+    const searchUrl = location.pathname + location.search;
+    // URL 저장
+    sessionStorage.setItem(REDIRECT_URL, searchUrl);
     // 로그인 페이지로 이동
     navigate('/login');
-  }, [navigate]);
+  }, [location.pathname, location.search, navigate]);
 
   /**
    * 로그아웃 클릭시 처리
@@ -449,9 +450,9 @@ export const useHeader = (): useHeaderReturnType => {
   const handleLogoutOnClick = useCallback(() => {
     // URL 생성
     // const searchUrl = location.pathname + `?keyword=${keyword}&isAdult=${adultFlg}`;
-    // const searchUrl = location.pathname + location.search;
-    // // URL 저장
-    // sessionStorage.setItem(REDIRECT_URL, searchUrl);
+    const searchUrl = location.pathname + location.search;
+    // URL 저장
+    sessionStorage.setItem(REDIRECT_URL, searchUrl);
     // 로그아웃 페이지로 이동
     navigate('/logout');
   }, [keyword, adultFlg, navigate]);

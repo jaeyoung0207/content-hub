@@ -10,7 +10,6 @@ import { Search } from '@/api/Search';
 import {
   ESC_KEY,
   MEDIA_TYPE,
-  REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -186,8 +185,6 @@ export const useSearchMore = (
    * 모달 닫을 시 처리
    */
   const handleModalClose = useCallback(() => {
-    // 리다이렉트 주소 삭제
-    sessionStorage.removeItem(REDIRECT_URL);
     // URL 쿼리스트링 제거
     searchParams.delete('viewMore');
     setSearchParams(searchParams); //  URL이 바뀌면 React Router가 감지해서 리렌더링 발생

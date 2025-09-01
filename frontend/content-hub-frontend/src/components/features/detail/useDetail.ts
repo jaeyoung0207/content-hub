@@ -142,17 +142,6 @@ export const useDetail = (
     }
   }, [tabNo, tabIndex]);
 
-  /**
-   * 컴포넌트 마운트/언마운트 시 실행되는 useEffect
-   */
-  useEffect(() => {
-    // 언마운트시 실행
-    return () => {
-      // 리다이렉트 주소 삭제
-      // sessionStorage.removeItem(REDIRECT_URL);
-    };
-  }, []);
-
   // ================================================================================================== return
 
   return {
