@@ -86,6 +86,14 @@ export const DisplaySearchResults = ({
       >
         {results.length !== 0 &&
           results.map((items, index) => {
+            // 썸네일 이미지 경로
+            const thumbnail = items.backdropPath
+              ? mediaType === MEDIA_TYPE.COMICS
+                ? items.backdropPath
+                : thumbnailImagePath + items.backdropPath
+              : items.posterPath
+                ? thumbnailImagePath + items.posterPath
+                : COMMON_IMAGES.NO_IMAGE;
             return (
               <ul
                 key={'frame' + index}
@@ -112,15 +120,7 @@ export const DisplaySearchResults = ({
                   className="flex justify-center items-center"
                 >
                   <LazyImage
-                    src={
-                      items.backdropPath
-                        ? mediaType === MEDIA_TYPE.COMICS
-                          ? items.backdropPath
-                          : items.backdropPath
-                            ? thumbnailImagePath + items.backdropPath
-                            : thumbnailImagePath + items.posterPath
-                        : COMMON_IMAGES.NO_IMAGE
-                    }
+                    src={thumbnail}
                     alt={'Thumbnail Image'}
                     className={
                       (mediaType === MEDIA_TYPE.COMICS

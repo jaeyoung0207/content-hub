@@ -7,10 +7,7 @@ import {
   useState,
 } from 'react';
 import { Search } from '@/api/Search';
-import {
-  ESC_KEY,
-  MEDIA_TYPE,
-} from '@/components/common/constants/constants';
+import { ESC_KEY, MEDIA_TYPE } from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { SearchCommonResultType } from '../useSearch';

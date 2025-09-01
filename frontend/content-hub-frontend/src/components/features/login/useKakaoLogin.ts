@@ -82,6 +82,11 @@ export const useKakaoLogin = () => {
   useEffect(() => {
     // URL에서 인증 코드를 가져옴
     const code = searchParams.get('code')!;
+    // 인증 코드가 없으면 종료
+    if (!code) {
+      navigate('/login');
+      return;
+    }
     // 카카오 로그인 인증 및 유저 정보 조회 API 호출
     getKakaoLoginInfo(code).catch((err) => {
       console.error('카카오 로그인 실패', err);

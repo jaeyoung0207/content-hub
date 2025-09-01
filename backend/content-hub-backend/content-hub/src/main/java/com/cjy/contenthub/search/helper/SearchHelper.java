@@ -201,13 +201,14 @@ public class SearchHelper {
 			Map<String, Integer> tvGenreMap) {
 		List<TmdbSearchTvResultsDto> dramaList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds())
+		.filter(result -> result.getGenreIds() != null && result.getGenreIds().isEmpty()
+		|| (!CollectionUtils.isEmpty(result.getGenreIds())
 				&& (!result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()))
 						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_KIDS.getGenreEnglish()))
 						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()))
 						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()))
-						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish())))
+						&& !result.getGenreIds().contains(tvGenreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()))))
 				)
 		.forEach(result -> {
 			result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());

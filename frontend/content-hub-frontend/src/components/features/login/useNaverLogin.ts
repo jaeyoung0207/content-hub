@@ -83,6 +83,11 @@ export const useNaverLogin = () => {
     // URL에서 인증 코드와 상태를 가져옴
     const code = searchParams.get('code')!;
     const state = searchParams.get('state')!;
+    // 인증 코드와 상태가 없으면 종료
+    if (!code || !state) {
+      navigate('/login');
+      return;
+    }
     // 네이버 로그인 인증 및 유저 정보 조회 API 요청
     getNaverLoginInfo(code, state).catch((err) => {
       console.error('네이버 로그인 실패', err);
