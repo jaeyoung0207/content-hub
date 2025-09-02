@@ -8,7 +8,7 @@ import {
 import i18n from '@/i18n';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
-import { ERROR_CODE, ERROR_MESSAGE } from '../constants/constants';
+import { ERROR_CODE, ERROR_MESSAGE, ONE_MINUTE } from '../constants/constants';
 
 /**
  * AxiosErrorType
@@ -30,8 +30,8 @@ export const queryClientConfig = new QueryClient({
       throwOnError: true,
       retry: false, // 재시도 해제
       refetchOnWindowFocus: false, // 브라우저 포커스시 재요청 방지
-      staleTime: 1000 * 60 * 5, // 데이터를 5분간 fresh로 간주
-      gcTime: 1000 * 60 * 10, // 캐시된 데이터를 10분간 유지(旧 react-query의 cacheTime)
+      staleTime: ONE_MINUTE * 5, // 데이터를 5분간 fresh로 간주
+      gcTime: ONE_MINUTE * 10, // 캐시된 데이터를 10분간 유지(旧 react-query의 cacheTime)
       // refetchOnMount: false, // 컴포넌트 리마운트 시 재요청 방지
     },
   },

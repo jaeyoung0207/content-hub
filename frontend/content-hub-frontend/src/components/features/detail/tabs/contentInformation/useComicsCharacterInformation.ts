@@ -14,7 +14,12 @@ import {
 } from '@/api/data-contracts';
 import { AxiosError } from 'axios';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
+import {
+  COMICS_CREDITS_TYPE,
+  INFINITE_SCROLL_THROTTLE_DELAY,
+  ONE_MINUTE,
+} from '@/components/common/constants/constants';
+import throttle from 'lodash/throttle';
 
 /**
  * 만화 정보 무한스크롤 쿼리 결과 타입
@@ -98,9 +103,16 @@ export const useComicsCharacterInformation = (
         pageParams: data.pageParams,
       }),
       initialPageParam: 1,
-      staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
-      gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
+      staleTime: ONE_MINUTE * 1,
+      gcTime: ONE_MINUTE * 2,
     });
+
+  /**
+   * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
+   */
+  const throttledFetchNextPage = throttle(() => {
+    fetchNextPage();
+  }, INFINITE_SCROLL_THROTTLE_DELAY);
 
   /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
@@ -114,11 +126,11 @@ export const useComicsCharacterInformation = (
         if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
           console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
-          fetchNextPage();
+          throttledFetchNextPage();
         }
       });
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage]
+    [hasNextPage, isFetchingNextPage, throttledFetchNextPage]
   );
 
   // ================================================================================================== useEffect

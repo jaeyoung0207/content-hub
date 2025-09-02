@@ -33,7 +33,11 @@ import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import { REDIRECT_URL } from '@/components/common/constants/constants';
+import {
+  INFINITE_SCROLL_THROTTLE_DELAY,
+  REDIRECT_URL,
+} from '@/components/common/constants/constants';
+import throttle from 'lodash/throttle';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -575,6 +579,13 @@ export const useContentComment = (
   };
 
   /**
+   * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
+   */
+  const throttledFetchNextPage = throttle(() => {
+    fetchNextPage();
+  }, INFINITE_SCROLL_THROTTLE_DELAY);
+
+  /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
    * observeTarget가 화면에 나타나면 observerCallback이 호출되어 fetchNextPage를 호출
    * @param entries 관찰 대상의 교차 상태를 나타내는 IntersectionObserverEntry 배열
@@ -591,11 +602,11 @@ export const useContentComment = (
         ) {
           console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
-          fetchNextPage();
+          throttledFetchNextPage();
         }
       });
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage, isLoading]
+    [hasNextPage, isFetchingNextPage, throttledFetchNextPage, isLoading]
   );
 
   // ================================================================================================== useEffect

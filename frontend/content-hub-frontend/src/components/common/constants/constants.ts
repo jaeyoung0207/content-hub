@@ -49,6 +49,12 @@ export const SEPERATE_SLASH = ' / ';
 // 리다이렉트 URL
 export const REDIRECT_URL = 'redirectUrl';
 
+// 1분
+export const ONE_MINUTE = 1000 * 60;
+
+// 무한스크롤 스로틀 딜레이
+export const INFINITE_SCROLL_THROTTLE_DELAY = 1000;
+
 // 미디어 타입
 export enum MEDIA_TYPE {
   'ANI' = '1',

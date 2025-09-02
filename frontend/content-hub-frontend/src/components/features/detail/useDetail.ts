@@ -6,7 +6,7 @@ import {
   DetailMovieResponseDto,
   DetailComicsResponseDto,
 } from '@/api/data-contracts';
-import { MEDIA_TYPE } from '@/components/common/constants/constants';
+import { MEDIA_TYPE, ONE_MINUTE } from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 
@@ -96,8 +96,8 @@ export const useDetail = (
       // 상세 정보를 가져오는 API 호출
       return await getDetailApi();
     },
-    staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
-    gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
+    staleTime: ONE_MINUTE * 1,
+    gcTime: ONE_MINUTE * 2,
     enabled: !!originalMediaType, // originalMediaType이 존재할 때만 쿼리 실행
   });
 

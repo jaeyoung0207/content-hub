@@ -35,6 +35,7 @@ export default defineConfig({
             if (id.includes('react-icons')) return 'icons-vendor';
             if (id.includes('react-hook-form')) return 'react-hook-form-vendor';
             if (id.includes('react')) return 'react-vendor';
+            if (id.includes('lodash')) return 'lodash-vendor';
             return 'vendor';
           }
         },

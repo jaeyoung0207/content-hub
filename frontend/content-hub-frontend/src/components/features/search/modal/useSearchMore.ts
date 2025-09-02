@@ -7,12 +7,18 @@ import {
   useState,
 } from 'react';
 import { Search } from '@/api/Search';
-import { ESC_KEY, MEDIA_TYPE } from '@/components/common/constants/constants';
+import {
+  ESC_KEY,
+  INFINITE_SCROLL_THROTTLE_DELAY,
+  MEDIA_TYPE,
+  ONE_MINUTE,
+} from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { SearchCommonResultType } from '../useSearch';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
+import throttle from 'lodash/throttle';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -153,11 +159,18 @@ export const useSearchMore = (
     }),
     initialPageParam: 1, // 초기 페이지 매개변수를 지정
     enabled: !!keyword && !!mediaType, // useInfiniteQuery가 실행되는 조건 지정
-    staleTime: 1000 * 60 * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
-    gcTime: 1000 * 60 * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
+    staleTime: ONE_MINUTE * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
+    gcTime: ONE_MINUTE * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
   });
 
   // ================================================================================================== function
+
+  /**
+   * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
+   */
+  const throttledFetchNextPage = throttle(() => {
+    fetchNextPage();
+  }, INFINITE_SCROLL_THROTTLE_DELAY);
 
   /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
@@ -171,11 +184,11 @@ export const useSearchMore = (
         if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
           console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
-          fetchNextPage();
+          throttledFetchNextPage();
         }
       });
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage]
+    [hasNextPage, isFetchingNextPage, throttledFetchNextPage]
   );
 
   /**
