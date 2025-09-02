@@ -14,8 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DetailCommentDataServiceDto {
 	
-	/** 코멘트 번호 */
-	private Long commentNo;
+	/** 코멘트 ID */
+	private Long commentId;
 	
 	/** 원본 미디어 타입 */
 	private String originalMediaType;
@@ -23,11 +23,17 @@ public class DetailCommentDataServiceDto {
 	/** API ID */
 	private String apiId;
 	
+	/** 제목 */
+	private String title;
+	
+	/** 썸네일 이미지 URL */
+	private String thumbnailImageUrl;
+	
 	/** 로그인 제공자 */
 	private String provider;
 	
 	/** 유저 ID */
-	private String userId;
+	private String providerId;
 	
 	/** 닉네임 */
 	private String nickname;

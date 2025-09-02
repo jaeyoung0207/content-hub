@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.cjy.contenthub.common.repository.ContentRepository;
+import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentViewEntity;
 
@@ -21,6 +23,9 @@ public class DetailCommentHelper {
 
 	/** 코멘트 뷰 엔티티 리포지토리 */
 	private final DetailCommentViewRepository commentViewRepository;
+	
+	/** 콘텐츠 엔티티 리포지토리 */
+	private final ContentRepository contentRepository;
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
@@ -30,6 +35,7 @@ public class DetailCommentHelper {
 	@Value("${tmdb.url.movieRecommendationsPath}")
 	private String movieRecommendationsPath;
 
+	/** 첫번째 페이지 인덱스 */
 	private static final int FIRST_PAGE_INDEX = 0;
 
 	/**
@@ -40,21 +46,21 @@ public class DetailCommentHelper {
 	 * @param originalMediaType 원본 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
-	 * @param userId 유저 ID
+	 * @param providerId 프로바이더 ID
 	 */
 	public void getCommentListPerPage(
 			List<DetailCommentViewEntity> commentList,
 			String originalMediaType,
 			String apiId,
 			Integer page,
-			String userId
+			String providerId
 			) {
 
 		// 유저ID에 해당하는 코멘트를 추출
 		DetailCommentViewEntity myCommentViewEntity = commentList.stream()
-				.filter(e -> StringUtils.equals(e.getUserId(), userId))
+				.filter(e -> StringUtils.equals(e.getProviderId(), providerId))
 				.findFirst()
-				.orElse(commentViewRepository.findByOriginalMediaTypeAndApiIdAndUserId(originalMediaType, apiId, userId));
+				.orElse(commentViewRepository.findByOriginalMediaTypeAndApiIdAndProviderId(originalMediaType, apiId, providerId));
 
 		// 유저ID에 해당하는 코멘트가 없는 경우 처리 종료
 		if (ObjectUtils.isEmpty(myCommentViewEntity)) {
@@ -62,11 +68,37 @@ public class DetailCommentHelper {
 		}
 
 		// 유저ID에 해당하는 코멘트 삭제
-		commentList.removeIf(e -> StringUtils.equals(e.getUserId(), userId));
+		commentList.removeIf(e -> StringUtils.equals(e.getProviderId(), providerId));
 
 		// 첫번째 페이지의 경우 유저ID의 코멘트 추가
 		if (page.equals(FIRST_PAGE_INDEX)) {
 			commentList.add(0, myCommentViewEntity);
 		}
 	}
+	
+	/**
+	 * 콘텐츠 엔티티 조회 또는 등록
+	 * 
+	 * @param originalMediaType 원본 미디어 타입
+	 * @param apiId             API ID
+	 * @param title             제목
+	 * @param thumbnailImageUrl 썸네일 이미지 URL
+	 * @return 콘텐츠 엔티티
+	 */
+	public ContentEntity getContentEntity(String originalMediaType, String apiId, String title, String thumbnailImageUrl) {
+		// 콘텐츠 엔티티 조회
+		ContentEntity content = contentRepository.findByOriginalMediaTypeAndApiId(originalMediaType, apiId);
+		// 콘텐츠 엔티티가 존재하지 않는 경우 콘텐츠 테이블 등록
+		if (ObjectUtils.isEmpty(content)) {
+			ContentEntity newContent = ContentEntity.builder()
+					.originalMediaType(originalMediaType)
+					.apiId(apiId)
+					.title(title)
+					.thumbnailImageUrl(thumbnailImageUrl)
+					.build();
+			content = contentRepository.save(newContent);
+		}
+		return content;
+	}
+	
 }

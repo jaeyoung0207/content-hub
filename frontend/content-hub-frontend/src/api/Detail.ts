@@ -267,7 +267,7 @@ export class Detail<
       apiId: string;
       /** @format int32 */
       page?: number;
-      userId?: string;
+      providerId?: string;
     },
     params: RequestParams = {}
   ) =>
@@ -287,7 +287,7 @@ export class Detail<
   deleteComment = (
     query: {
       /** @format int64 */
-      commentNo: number;
+      commentId: number;
     },
     params: RequestParams = {}
   ) =>

@@ -244,11 +244,11 @@ public class LoginClient {
 					// 카카오 프로필
 					KakaoProfileDto profile = response.getKakaoAccount().getProfile();
 					// ID
-					String userId = response.getId().toString();
+					String providerId = response.getId().toString();
 					// 유저 서비스 파라미터 설정
 					LoginUserServiceDto userServiceDto = 
 							LoginUserServiceDto.builder()
-							.providerId(userId)
+							.providerId(providerId)
 							.provider(LoginProviderEnum.KAKAO.getProvider())
 							.nickname(profile.getNickname())
 							.build();
@@ -279,13 +279,13 @@ public class LoginClient {
 									calendar.add(Calendar.SECOND, expiresIn);
 									expireDate = calendar.getTime();
 									// jwt 생성
-									jwt = jwtUtil.createToken(userId, LoginProviderEnum.KAKAO.getProvider(), profile.getNickname(), currentDate, expireDate);
+									jwt = jwtUtil.createToken(providerId, LoginProviderEnum.KAKAO.getProvider(), profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException("create JWT error!", ex);
 								}
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()
-										.id(userId)
+										.id(providerId)
 										.nickname(profile.getNickname())
 										.build();
 
@@ -306,7 +306,7 @@ public class LoginClient {
 								// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
 									// refresh token을 redis에 저장
-									redisUtil.saveRefreshToken(LoginProviderEnum.KAKAO.getProvider(), userId,
+									redisUtil.saveRefreshToken(LoginProviderEnum.KAKAO.getProvider(), providerId,
 											refreshToken);
 									// 리프레시 토큰 쿠키
 									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)

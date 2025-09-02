@@ -21,7 +21,8 @@ public interface LoginService {
 	/**
 	 * 네이버 로그인 토큰 발행
 	 *
-	 * @param userId 유저 ID
+	 * @param code 인증 코드
+	 * @param state 상태 값
 	 * @return 네이버 토큰 발행 DTO
 	 */
 	NaverIssueTokenDto getNaverIssueToken(String code, String state);

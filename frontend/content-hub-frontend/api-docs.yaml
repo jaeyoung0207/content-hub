@@ -624,7 +624,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: userId
+        - name: providerId
           in: query
           required: false
           schema:
@@ -698,7 +698,7 @@ paths:
         - detail-comment-controller
       operationId: deleteComment
       parameters:
-        - name: commentNo
+        - name: commentId
           in: query
           required: true
           schema:
@@ -717,21 +717,21 @@ components:
       required:
         - apiId
         - comment
-        - commentNo
+        - commentId
         - nickname
         - originalMediaType
+        - providerId
         - starRating
-        - userId
       type: object
       properties:
-        commentNo:
+        commentId:
           type: integer
           format: int64
         originalMediaType:
           type: string
         apiId:
           type: string
-        userId:
+        providerId:
           type: string
         nickname:
           type: string
@@ -752,16 +752,21 @@ components:
         - nickname
         - originalMediaType
         - provider
-        - userId
+        - providerId
+        - title
       type: object
       properties:
         originalMediaType:
           type: string
         apiId:
           type: string
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
         provider:
           type: string
-        userId:
+        providerId:
           type: string
         nickname:
           type: string
@@ -1855,14 +1860,14 @@ components:
     DetailCommentGetDataDto:
       type: object
       properties:
-        commentNo:
+        commentId:
           type: integer
           format: int64
         originalMediaType:
           type: string
         apiId:
           type: string
-        userId:
+        providerId:
           type: string
         nickname:
           type: string

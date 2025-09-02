@@ -29,10 +29,10 @@ public interface DetailCommentService {
 	/**
 	 * 코멘트 삭제 메소드
 	 * 
-	 * @param commentNo 코멘트 번호
+	 * @param commentId 코멘트 번호
 	 * @return 성공 여부
 	 */
-	boolean deleteComment(Long commentNo);
+	boolean deleteComment(Long commentId);
 	
 	/**
 	 * 코멘트 목록 조회 메소드
@@ -40,10 +40,10 @@ public interface DetailCommentService {
 	 * @param originalMediaType 원본 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
-	 * @param userId 유저 ID
+	 * @param providerId 프로바이더 ID
 	 * @return 상세 코멘트 서비스 DTO
 	 */
-	DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String userId);
+	DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String providerId);
 	
 	/**
 	 * 별점 평균 조회 메소드

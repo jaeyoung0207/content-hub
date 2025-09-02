@@ -12,10 +12,10 @@
 
 export interface DetailCommentUpdateRequestDto {
   /** @format int64 */
-  commentNo: number;
+  commentId: number;
   originalMediaType: string;
   apiId: string;
-  userId: string;
+  providerId: string;
   nickname: string;
   starRating: number;
   comment: string;
@@ -28,8 +28,10 @@ export interface DetailCommentUpdateRequestDto {
 export interface DetailCommentSaveRequestDto {
   originalMediaType: string;
   apiId: string;
+  title: string;
+  thumbnailImageUrl?: string;
   provider: string;
-  userId: string;
+  providerId: string;
   nickname: string;
   starRating?: number;
   comment: string;
@@ -637,10 +639,10 @@ export interface DetailComicsResponseDto {
 
 export interface DetailCommentGetDataDto {
   /** @format int64 */
-  commentNo?: number;
+  commentId?: number;
   originalMediaType?: string;
   apiId?: string;
-  userId?: string;
+  providerId?: string;
   nickname?: string;
   starRating?: number;
   comment?: string;

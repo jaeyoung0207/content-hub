@@ -1,7 +1,6 @@
 package com.cjy.contenthub.common.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.cjy.contenthub.common.repository.entity.UserEntity;
@@ -11,7 +10,7 @@ import com.cjy.contenthub.common.repository.entity.UserEntity;
  * Spring Data JPA의 JpaRepository를 상속받아 기본적인 CRUD 메소드를 제공
  */
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Integer> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	
 	/**
 	 * provider와 providerId에 해당하는 UserEntity를 조회
@@ -20,7 +19,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 	 * @param providerId 로그인 ID
 	 * @return UserEntity
 	 */
-	UserEntity findByProviderAndProviderId(@Param("provider") String provider, @Param("provider_id")String providerId);
+	UserEntity findByProviderAndProviderId(String provider, String providerId);
 	
 	/**
 	 * provider와 providerId에 해당하는 UserEntity가 존재하는지 확인
@@ -29,6 +28,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 	 * @param providerId 로그인 ID
 	 * @return 존재 여부
 	 */
-	boolean existsByProviderAndProviderId(@Param("provider") String provider, @Param("provider_id")String providerId);
+	boolean existsByProviderAndProviderId(String provider, String providerId);
 	
 }

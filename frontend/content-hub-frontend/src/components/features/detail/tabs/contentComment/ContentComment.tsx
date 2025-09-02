@@ -165,7 +165,7 @@ export const ContentComment = ({
                       {/* 작성 일자 */}
                       <div>{items.createTime}</div>
                     </div>
-                    {user?.id === items.userId && (
+                    {user?.id === items.providerId && (
                       <div>
                         <ul className="flex">
                           {/* 수정 버튼 */}
@@ -184,7 +184,7 @@ export const ContentComment = ({
                             <button
                               className={`cursor-pointer ${isCommentEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                               onClick={commonErrorHandler(() =>
-                                handleDeleteOnClick(items.commentNo!)
+                                handleDeleteOnClick(items.commentId!)
                               )}
                               disabled={isCommentEditable}
                             >

@@ -29,8 +29,10 @@ import lombok.NoArgsConstructor;
 @Immutable // 뷰 엔티티로, 데이터베이스에서 수정되지 않음을 나타냄
 @Subselect(
 		"SELECT "
-		+ "c.comment_no, c.original_media_type, c.api_id, u.provider_id as user_id, u.nickname, c.star_rating, c.comment, c.create_time "
-		+ "FROM content.comment c INNER JOIN content.user u ON c.user_seq = u.seq"
+		+ "c.comment_id, ct.original_media_type, ct.api_id, u.provider_id, u.nickname, c.star_rating, c.comment, c.create_time "
+		+ "FROM content.comment c "
+		+ "INNER JOIN content.user u ON c.user_id = u.user_id "
+		+ "INNER JOIN content.content ct ON c.content_id = ct.content_id"
 		)
 public class DetailCommentViewEntity implements Serializable {
 	
@@ -39,8 +41,8 @@ public class DetailCommentViewEntity implements Serializable {
 	
 	/** 코멘트 번호 */
 	@Id
-	@Column(name = "comment_no")
-	private Long commentNo;
+	@Column(name = "comment_id")
+	private Long commentId;
 	
 	/** 원본 미디어 타입 */
 	@Column(name = "original_media_type", length = 1)
@@ -51,8 +53,8 @@ public class DetailCommentViewEntity implements Serializable {
 	private String apiId;
 	
 	/** 유저 ID */
-	@Column(name = "user_id")
-	private String userId;
+	@Column(name = "provider_id")
+	private String providerId;
 	
 	/** 닉네임 */
 	@Column(name = "nickname", length = 100)

@@ -47,7 +47,7 @@ public class DetailCommentController {
 	private final DetailMapper mapper;
 
 	/** 리퀘스트 파라미터 키 : 코멘트 번호 */
-	private static final String PARAM_COMMENT_NO = "commentNo";
+	private static final String PARAM_COMMENT_ID = "commentId";
 
 	/** 리퀘스트 파라미터 키 : Original Media Type */
 	private static final String PARAM_ORIGINAL_MEDIATYPE = "originalMediaType";
@@ -58,8 +58,8 @@ public class DetailCommentController {
 	/** 리퀘스트 파라미터 키 : 페이지 번호 */
 	private static final String PARAM_PAGE = "page";
 
-	/** 리퀘스트 파라미터 키 : 유저ID */
-	private static final String PARAM_USER_ID = "userId";
+	/** 리퀘스트 파라미터 키 : 프로바이더ID */
+	private static final String PARAM_PROVIDER_ID = "providerId";
 
 	/**
 	 * 코멘트 등록 API
@@ -104,14 +104,14 @@ public class DetailCommentController {
 	/**
 	 * 코멘트 삭제 API
 	 * 
-	 * @param commentNo 코멘트 번호
+	 * @param commentId 코멘트 ID
 	 * @return ResponseEntity<Boolean> 삭제 결과
 	 */
 	@DeleteMapping(value = "/deleteComment")
-	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_NO) @NotNull Long commentNo) {
+	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_ID) @NotNull Long commentId) {
 
 		// 삭제 서비스 호출
-		Boolean deleteResult = commentService.deleteComment(commentNo);
+		Boolean deleteResult = commentService.deleteComment(commentId);
 
 		// 삭제 결과 반환
 		return ResponseEntity.ok(deleteResult);
@@ -123,8 +123,8 @@ public class DetailCommentController {
 	 * 
 	 * @param originalMediaType 원본 미디어 타입
 	 * @param apiId API ID
-	 * @param page 페이지 번호 (선택)
-	 * @param userId 유저 ID (선택)
+	 * @param page 페이지 번호
+	 * @param providerId 프로바이더 ID
 	 * @return ResponseEntity<DetailCommentGetResponseDto> 코멘트 목록 응답 DTO
 	 */
 	@GetMapping(value = "/getCommentList")
@@ -132,14 +132,14 @@ public class DetailCommentController {
 			@NotEmpty @RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType,
 			@NotEmpty @RequestParam(PARAM_API_ID)  String apiId,
 			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_USER_ID)  String userId
+			@Nullable @RequestParam(PARAM_PROVIDER_ID)  String providerId
 			) {
 
 		// 응답 DTO 초기화
 		DetailCommentGetResponseDto response = new DetailCommentGetResponseDto();
 
 		// 코멘트 조회 서비스 호출
-		DetailCommentServiceDto serviceResult = commentService.getCommentList(originalMediaType, apiId, page, userId);
+		DetailCommentServiceDto serviceResult = commentService.getCommentList(originalMediaType, apiId, page, providerId);
 
 		// 서비스 DTO를 응답 DTO로 변환
 		List<DetailCommentGetDataDto> responseDtoList = mapper.commentServiceDtoListToCommentGetResponseDtoList(serviceResult.getDataList());

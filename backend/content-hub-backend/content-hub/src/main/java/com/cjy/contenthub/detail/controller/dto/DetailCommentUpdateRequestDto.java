@@ -18,9 +18,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DetailCommentUpdateRequestDto {
 	
-	/** 코멘트 번호 */
+	/** 코멘트 ID */
 	@NotNull
-	private Long commentNo;
+	private Long commentId;
 	
 	/** 원본 미디어 타입 */
 	@NotEmpty
@@ -32,7 +32,7 @@ public class DetailCommentUpdateRequestDto {
 	
 	/** 유저 ID */
 	@NotEmpty
-	private String userId;
+	private String providerId;
 	
 	/** 닉네임 */
 	@NotEmpty

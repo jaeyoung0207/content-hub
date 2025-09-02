@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
+import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
 import com.cjy.contenthub.detail.helper.DetailCommentHelper;
 import com.cjy.contenthub.detail.mapper.DetailMapper;
@@ -52,7 +53,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	
 	/** 유저 엔티티 리포지토리 */
 	private final UserRepository userRepository;
-
+	
 	/** 상세 페이지 매퍼 */
 	private final DetailMapper mapper;
 	
@@ -63,57 +64,64 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	/**
 	 * 코멘트 등록
 	 * 
-	 * @param commentDto 상세 코멘트 데이터 서비스 DTO
+	 * @param commentParam 상세 코멘트 데이터 서비스 DTO
 	 * @return boolean 등록 성공 여부
 	 */
 	@Override
 	@CacheEvict(value = "commentList", allEntries = true)
-	public boolean saveComment(DetailCommentDataServiceDto commentDto) {
+	public boolean saveComment(DetailCommentDataServiceDto commentParam) {
 
 		// 서비스 DTO를 엔티티로 변환
-		DetailCommentEntity commentEntity = mapper.commentServiceToCommentEntity(commentDto);
+		DetailCommentEntity comment = mapper.commentServiceToCommentEntity(commentParam);
 		
 		// 유저 엔티티 조회
-		UserEntity userEntity = userRepository.findByProviderAndProviderId(commentDto.getProvider(), commentDto.getUserId());
+		UserEntity user = userRepository.findByProviderAndProviderId(commentParam.getProvider(), commentParam.getProviderId());
 		// 유저 엔티티가 존재하지 않는 경우 예외 처리
-		if (ObjectUtils.isEmpty(userEntity)) {
+		if (ObjectUtils.isEmpty(user)) {
 			throw new CommonBusinessException("유저 정보가 존재하지 않습니다.");
 		}
-		// 유저 시퀀스 설정
-		commentEntity.setUserSeq(userEntity.getSeq());
+		// 유저 ID 설정
+		comment.setUserEntity(user);
+		
+		// 콘텐츠 엔티티 조회
+		ContentEntity content = helper.getContentEntity(
+				commentParam.getOriginalMediaType(), commentParam.getApiId(),
+				commentParam.getTitle(), commentParam.getThumbnailImageUrl());
+		// 콘텐츠 ID 설정
+		comment.setContentEntity(content);
 
 		// 테이블에 등록
-		DetailCommentEntity saveResultEntity = commentRepository.save(commentEntity);
+		DetailCommentEntity saveResult = commentRepository.save(comment);
 		
 		// 등록 결과가 비어있지 않으면 true 반환
-		return ObjectUtils.isNotEmpty(saveResultEntity);
+		return ObjectUtils.isNotEmpty(saveResult);
 
 	}
 	
 	/**
 	 * 코멘트 갱신
 	 * 
-	 * @param commentDto 상세 코멘트 데이터 서비스 DTO
+	 * @param commentParam 상세 코멘트 데이터 서비스 DTO
 	 * @return boolean 갱신 성공 여부
 	 */
 	@Override
 	@CacheEvict(value = "commentList", allEntries = true)
-	public boolean updateComment(DetailCommentDataServiceDto commentDto) {
+	public boolean updateComment(DetailCommentDataServiceDto commentParam) {
 		
 		// 서비스 DTO를 엔티티로 변환
-		DetailCommentEntity commentEntity = mapper.commentServiceToCommentEntity(commentDto);
+		DetailCommentEntity comment = mapper.commentServiceToCommentEntity(commentParam);
 
 		// 코멘트 엔티티를 조회
-		Optional<DetailCommentEntity> selectedEntity = commentRepository.findById(commentEntity.getCommentNo());
+		Optional<DetailCommentEntity> selectedComment = commentRepository.findById(comment.getCommentId());
 		// 코멘트가 존재하지 않는 경우 예외 처리
-		if (!selectedEntity.isPresent()) {
+		if (!selectedComment.isPresent()) {
 			throw new CommonBusinessException("코멘트가 존재하지 않습니다.");
 		}
 		// 코멘트 및 별점 설정
-		selectedEntity.get().setCommentAndStarRating(commentDto.getComment(), commentDto.getStarRating());
+		selectedComment.get().setCommentAndStarRating(commentParam.getComment(), commentParam.getStarRating());
 		
 		// 테이블에 등록(갱신)
-		DetailCommentEntity updateResultEntity = commentRepository.save(selectedEntity.get());
+		DetailCommentEntity updateResultEntity = commentRepository.save(selectedComment.get());
 
 		// 등록 결과가 비어있지 않으면 true 반환
 		return ObjectUtils.isNotEmpty(updateResultEntity);
@@ -123,15 +131,15 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	/**
 	 * 코멘트 삭제
 	 * 
-	 * @param commentNo 코멘트 번호
+	 * @param commentId 코멘트 ID
 	 * @return boolean 삭제 성공 여부
 	 */
 	@Override
 	@CacheEvict(value = "commentList", allEntries = true)
-	public boolean deleteComment(Long commentNo) {
+	public boolean deleteComment(Long commentId) {
 		
 		// 해당 코멘트 삭제
-		commentRepository.deleteById(commentNo);
+		commentRepository.deleteById(commentId);
 		
 		// 처리 성공 여부 반환
 		return true;
@@ -143,12 +151,12 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @param originalMediaType 원본 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
-	 * @param userId 유저 ID
+	 * @param providerId 유저 ID
 	 * @return 상세 코멘트 서비스 DTO
 	 */
 	@Override
-	@Cacheable(value = "commentList", key = "#originalMediaType + '_' + #apiId + '_' + #page + '_' + #userId", unless = "#result == null")
-	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String userId) {
+	@Cacheable(value = "commentList", key = "#originalMediaType + '_' + #apiId + '_' + #page + '_' + #providerId", unless = "#result == null")
+	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String providerId) {
 
 		// 페이지 번호 설정
 		Integer commentPage = Optional.ofNullable(page).orElse(0);
@@ -161,9 +169,9 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		List<DetailCommentViewEntity> commentList = new ArrayList<>(commentEntityPage.getContent());
 
 		// 코멘트 & 유저ID가 존재하는 경우
-		if (!commentList.isEmpty() && StringUtils.isNotEmpty(userId)) {
+		if (!commentList.isEmpty() && StringUtils.isNotEmpty(providerId)) {
 			// 각 페이지당 코멘트 리스트 처리
-			helper.getCommentListPerPage(commentList, originalMediaType, apiId, commentPage, userId);
+			helper.getCommentListPerPage(commentList, originalMediaType, apiId, commentPage, providerId);
 		}
 		
 		// 서비스 DTO 리스트 생성

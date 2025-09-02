@@ -38,6 +38,7 @@ import {
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
 import throttle from 'lodash/throttle';
+import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -60,7 +61,7 @@ type useContentCommentReturnType = {
   isDeleteConfirmOpen: boolean; // 삭제 확인 모달 열림 여부
   handleDeleteConfirmOk: () => void; // 삭제 확인 모달에서 확인 버튼 클릭 시 처리 함수
   handleDeleteConfirmCancel: () => void; // 삭제 확인 모달에서 취소 버튼 클릭 시 처리 함수
-  handleDeleteOnClick: (commentNo: number) => void; // 삭제 버튼 클릭 시 처리 함수
+  handleDeleteOnClick: (commentId: number) => void; // 삭제 버튼 클릭 시 처리 함수
   textAreaRef: RefObject<HTMLTextAreaElement | null>; // 코멘트 작성 시 포커스를 주기 위한 ref
   isMyComment: boolean | null; // 로그인한 유저의 코멘트 여부 상태
   comment: string; // 코멘트 작성 시 입력된 값
@@ -96,7 +97,7 @@ export const useContentComment = (
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
   // 코멘트 번호 상태
-  const [commentNo, setCommentNo] = useState<number>();
+  const [commentId, setCommentNo] = useState<number>();
   // 코멘트 총 개수 상태
   const [totalElements, setTotalElements] = useState<number>(0);
   // 무한스크롤 div태그 관찰용 상태
@@ -114,7 +115,7 @@ export const useContentComment = (
   // 코멘트 작성 시 포커스를 주기 위한 ref
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   // 코멘트 수정 시 해당 코멘트 번호를 저장하기 위한 ref
-  const commentNoRef = useRef<number>(null);
+  const commentIdRef = useRef<number>(null);
   // 등록 중 상태
   const [isSaving, setIsSaving] = useState(false);
   // 수정 중 상태
@@ -193,7 +194,7 @@ export const useContentComment = (
           apiId: contentId,
           originalMediaType: originalMediaType,
           page: pageParam,
-          userId: user?.id,
+          providerId: user?.id,
         })
       ).data;
       setTotalElements(response.totalElements!);
@@ -255,8 +256,12 @@ export const useContentComment = (
       const requestData = {
         originalMediaType: originalMediaType,
         apiId: contentId,
+        title: isDetailTvType(detailResult, originalMediaType)
+          ? detailResult.name
+          : detailResult.title,
+        thumbnailImageUrl: detailResult.backdropPath ?? detailResult.posterPath,
         provider: provider,
-        userId: user?.id,
+        providerId: user?.id,
         nickname: user?.nickname,
         comment: data.comment,
         starRating: data.starRating,
@@ -292,10 +297,10 @@ export const useContentComment = (
       setIsUpdating(true);
       // 코멘트 갱신 요청 데이터 생성
       const requestData = {
-        commentNo: commentNo,
+        commentId: commentId,
         originalMediaType: originalMediaType,
         apiId: contentId,
-        userId: user?.id,
+        providerId: user?.id,
         nickname: user?.nickname,
         comment: data.comment,
         starRating: data.starRating,
@@ -319,18 +324,18 @@ export const useContentComment = (
    * 코멘트 삭제 API 호출 처리
    * 코멘트 삭제 시 호출되며, 해당 코멘트를 서버에서 삭제
    * 코멘트 수정 후 최신 코멘트 목록 및 별점 데이터를 조회
-   * @param commentNo 삭제할 코멘트 번호
+   * @param commentId 삭제할 코멘트 번호
    */
   const deleteCommentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.delete(
       originalMediaType,
       contentId
     ),
-    mutationFn: async (commentNo: number) => {
+    mutationFn: async (commentId: number) => {
       // 코멘트 삭제 중 상태 설정
       setIsDeleting(true);
       // 코멘트 삭제 API 호출
-      return (await detailApi.deleteComment({ commentNo })).data;
+      return (await detailApi.deleteComment({ commentId })).data;
     },
     // 성공 후 처리
     onSuccess: () => {
@@ -394,10 +399,10 @@ export const useContentComment = (
 
   /**
    * 코멘트 삭제 함수
-   * @param commentNo 코멘트 번호
+   * @param commentId 코멘트 번호
    * @returns Promise<void>
    */
-  const deleteComment = async (commentNo: number): Promise<void> => {
+  const deleteComment = async (commentId: number): Promise<void> => {
     // 이미 저장, 수정, 삭제 중인 경우 함수 종료
     if (isSaving || isUpdating || isDeleting) {
       return;
@@ -405,7 +410,7 @@ export const useContentComment = (
     setIsLoading(true);
     try {
       // 코멘트 삭제 mutation 호출
-      await deleteCommentMutation.mutateAsync(commentNo);
+      await deleteCommentMutation.mutateAsync(commentId);
     } finally {
       setIsLoading(false);
     }
@@ -449,14 +454,14 @@ export const useContentComment = (
   /**
    * 삭제 버튼 클릭 시 처리
    */
-  const handleDeleteOnClick = (commentNo: number) => {
+  const handleDeleteOnClick = (commentId: number) => {
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
       setIsLoginConfirmOpen(true);
     } else {
       // 코멘트 번호를 Ref에저장
-      commentNoRef.current = commentNo;
+      commentIdRef.current = commentId;
       // 삭제 확인 모달 열기
       setIsDeleteConfirmOpen(true);
     }
@@ -469,9 +474,9 @@ export const useContentComment = (
     //  삭제 확인 모달 닫기
     setIsDeleteConfirmOpen(false);
     // Ref에 저장된 코멘트 번호를 가져옴
-    const commentNo = commentNoRef.current!;
+    const commentId = commentIdRef.current!;
     // 코멘트 삭제 함수 호출
-    handleDeleteComment(commentNo);
+    handleDeleteComment(commentId);
   };
 
   /**
@@ -481,7 +486,7 @@ export const useContentComment = (
     // 삭제 확인 모달 닫기
     setIsDeleteConfirmOpen(false);
     // 코멘트 번호Ref 초기화
-    commentNoRef.current = null;
+    commentIdRef.current = null;
   };
 
   /**
@@ -541,7 +546,7 @@ export const useContentComment = (
       if (!isCommentEditable) {
         setValue('comment', commentData.comment!);
         setValue('starRating', commentData.starRating!);
-        setCommentNo(commentData.commentNo!);
+        setCommentNo(commentData.commentId!);
       }
       // 아직 isCommentEditable가 안바뀌었으므로 true로 판정
       // 셋팅 되었던 코멘트관련 데이터 삭제
@@ -557,9 +562,9 @@ export const useContentComment = (
 
   /**
    * 코멘트 삭제 처리
-   * @param commentNo 삭제할 코멘트 번호
+   * @param commentId 삭제할 코멘트 번호
    */
-  const handleDeleteComment = async (commentNo: number) => {
+  const handleDeleteComment = async (commentId: number) => {
     // 로딩 중이면 함수 종료
     if (isLoading) {
       return;
@@ -570,7 +575,7 @@ export const useContentComment = (
       setIsLoginConfirmOpen(true);
     } else {
       // 코멘트 삭제 API 호출
-      await deleteComment(commentNo);
+      await deleteComment(commentId);
       // 로그인한 유저의 코멘트 여부 상태를 false로 변경
       setIsMyComment(false);
       // 코멘트 수정 가능 상태를 false로 변경
@@ -673,7 +678,7 @@ export const useContentComment = (
       // 로그인한 유저의 코멘트 여부 상태를 업데이트
       const isCommentExist = data?.pages
         .flat()
-        .find((items) => items?.userId === user?.id);
+        .find((items) => items?.providerId === user?.id);
       setIsMyComment(!!isCommentExist);
     }
   }, [data, hasPreviousPage, user]);

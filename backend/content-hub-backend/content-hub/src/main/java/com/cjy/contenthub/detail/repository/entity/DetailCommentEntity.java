@@ -5,17 +5,21 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.repository.entity.ContentEntity;
+import com.cjy.contenthub.common.repository.entity.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +29,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 상세 코멘트 엔티티 클래스 
- * 상세 페이지에서 유저 코멘트 정보를 저장하는 엔티티 클래스
  * JPA를 사용하여 ORM 매핑을 수행하며, 데이터베이스의 comment 테이블에 매핑됨
  */
 @Entity
@@ -36,71 +39,77 @@ import lombok.NoArgsConstructor;
 @Table(
 		schema = CommonConstants.SCHEMA_NAME_CONTENT,
 		name = "comment",
-		uniqueConstraints = @UniqueConstraint(name = "comment_unique" ,columnNames = {"originalMediaType", "apiId", "commentNo"}),
-		indexes = {@Index(name = "idx_original_media_type_api_id_create_time", columnList = "originalMediaType, apiId, createTime")}
+		indexes = {@Index(name = "idx_content_id", columnList = "content_id"), @Index(name = "idx_user_id", columnList = "user_id"),
+				@Index(name = "idx_create_time", columnList = "create_time")}
 		)
 public class DetailCommentEntity implements Serializable {
-	
+
 	/** 직렬화 ID */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** 코멘트 번호 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "comment_no")
-	private Long commentNo;
-	
-	/** 원본 미디어 타입 */
+	@Column(name = "comment_id")
+	private Long commentId;
+
+	/** content 테이블 시퀀스 */
 	@NotNull
-	@Column(name = "original_media_type", length = 1)
-	private String originalMediaType;
-	
-	/** API ID */
-	@NotNull
-	@Column(name = "api_id")
-	private String apiId;
-	
+	@ManyToOne(targetEntity = ContentEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "content_id", referencedColumnName = "content_id")
+	private ContentEntity content;
+
 	/** user 테이블 시퀀스 */
 	@NotNull
-	@Column(name = "user_seq")
-	private int userSeq;
-	
+	@ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	private UserEntity user;
+
 	/** 별점 */
 	@Column(name = "star_rating", precision = 2, scale = 1)
 	private BigDecimal starRating;
-	
+
 	/** 코멘트 */
 	@NotNull
 	@Column(name = "comment")
 	private String comment;
-	
+
 	/** 추천 수 */
 	@Column(name = "good")
 	private Long good;
-	
+
 	/** 비추천 수 */
 	@Column(name = "bad")
 	private Long bad;
-	
+
 	/** 작성 시간 */
 	@NotNull
 	@Column(name = "create_time")
 	private LocalDateTime createTime;
-	
+
 	/** 갱신 시간 */
 	@NotNull
 	@Column(name = "update_time")
 	private LocalDateTime updateTime;
-	
+
 	/**
-	 * 유저 시퀀스 설정
+	 * 유저 엔티티를 설정(내부적으로 user_id에 설정)
 	 * 
-	 * @param seq 유저 시퀀스
+	 * @param seq 유저 ID
 	 */
-	public void setUserSeq(int seq) {
-		this.userSeq = seq;
+	public void setUserEntity(UserEntity user) {
+		this.user = user;
 	}
-	
+
+	/**
+	 * 콘텐츠 엔티티를 설정(내부적으로 content_id에 설정)
+	 * 
+	 * @param id 콘텐츠 ID
+	 */
+	public void setContentEntity(ContentEntity content) {
+		this.content = content;
+	}
+
 	/**
 	 * 코멘트 및 별점 설정
 	 * 
@@ -117,8 +126,8 @@ public class DetailCommentEntity implements Serializable {
 	 */
 	@PrePersist
 	public void prePersist() {
-	    this.createTime = LocalDateTime.now();
-	    this.updateTime = LocalDateTime.now();
+		this.createTime = LocalDateTime.now();
+		this.updateTime = LocalDateTime.now();
 	}
 
 	/**
@@ -126,6 +135,6 @@ public class DetailCommentEntity implements Serializable {
 	 */
 	@PreUpdate
 	public void preUpdate() {
-	    this.updateTime = LocalDateTime.now();
+		this.updateTime = LocalDateTime.now();
 	}
 }

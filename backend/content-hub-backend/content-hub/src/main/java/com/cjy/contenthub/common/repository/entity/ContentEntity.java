@@ -23,55 +23,51 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 유저 정보를 저장하는 엔티티 클래스
- * JPA를 사용하여 ORM 매핑을 수행하며, 데이터베이스의 user 테이블에 매핑됨
+ * 콘텐츠 엔티티 클래스
+ * JPA를 사용하여 ORM 매핑을 수행하며, 데이터베이스의 content 테이블에 매핑됨
  */
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자는 protected로 설정하여 외부에서 직접 생성하지 못하도록 함
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(
-		schema = CommonConstants.SCHEMA_NAME_CONTENT, // 스키마 이름 
-		name = "user", // 테이블 이름
-		uniqueConstraints = @UniqueConstraint(name = "user_unique" ,columnNames = {"provider", "provider_id"}), // provider와 providerId의 조합이 유일해야 함
-		indexes = {@Index(name = "idx_provider_provider_id", columnList = "provider, provider_id")} // provider와 providerId에 대한 인덱스 생성
+		schema = CommonConstants.SCHEMA_NAME_CONTENT, 
+		name = "content",
+		uniqueConstraints = @UniqueConstraint(name = "content_unique", columnNames = {"original_media_type", "api_id"}),
+		indexes = {@Index(name = "idx_original_media_type_api_id", columnList = "original_media_type, api_id")}
 		)
-public class UserEntity implements Serializable {
+public class ContentEntity implements Serializable {
 
 	/** 직렬화 ID */
 	private static final long serialVersionUID = 1L;
 
-	/** 시퀀스 */
+	/** 콘텐츠 ID */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Long userId;
+	@Column(name = "content_id")
+	private Long contentId;
 
-	/** 로그인 제공자 */
+	/** 원본 미디어 타입 */
 	@NotNull
-	@Column(name = "provider", length = 50)
-	private String provider;
+	@Column(name = "original_media_type", length = 1)
+	private String originalMediaType;
 
-	/** 로그인 제공자가 발급한 ID */
+	/** API ID */
 	@NotNull
-	@Column(name = "provider_id")
-	private String providerId;
+	@Column(name = "api_id")
+	private String apiId;	
 
-	/** 닉네임 */
+	/** 제목 */
 	@NotNull
-	@Column(name = "nickname", length = 50)
-	private String nickname;
-
-	/** email */
-	@Column(name = "email")
-	private String email;
+	@Column(name = "title", length = 500)
+	private String title;
 	
-	/** 상태 */
-	@Column(name = "status")
-	private String status;
+	/** 썸네일 이미지 URL */
+	@Column(name = "thumbnail_image_url")
+	private String thumbnailImageUrl;
 
-	/** 생성 시간 */
+	/** 작성 시간 */
 	@NotNull
 	@Column(name = "create_time")
 	private LocalDateTime createTime;
@@ -97,5 +93,4 @@ public class UserEntity implements Serializable {
 	public void preUpdate() {
 		this.updateTime = LocalDateTime.now();
 	}
-
 }

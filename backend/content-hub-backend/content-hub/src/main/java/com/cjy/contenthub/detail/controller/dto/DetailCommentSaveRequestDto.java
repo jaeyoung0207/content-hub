@@ -25,13 +25,20 @@ public class DetailCommentSaveRequestDto {
 	@NotEmpty
 	private String apiId;
 	
+	/** 제목 */
+	@NotEmpty
+	private String title;
+	
+	/** 썸네일 이미지 URL */
+	private String thumbnailImageUrl;
+	
 	/** 콘텐츠 제공자 */
 	@NotEmpty
 	private String provider;
 	
 	/** 유저 ID */
 	@NotEmpty
-	private String userId;
+	private String providerId;
 	
 	/** 닉네임 */
 	@NotEmpty

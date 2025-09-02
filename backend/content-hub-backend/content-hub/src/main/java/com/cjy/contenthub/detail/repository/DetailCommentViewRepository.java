@@ -34,10 +34,10 @@ public interface DetailCommentViewRepository extends JpaRepository<DetailComment
 	 * 
 	 * @param originalMediaType 원본 미디어 타입
 	 * @param apiId API ID
-	 * @param userId 유저 ID
+	 * @param providerId 프로바이더 ID
 	 * @return 상세 코멘트 뷰 엔티티
 	 */
-	DetailCommentViewEntity findByOriginalMediaTypeAndApiIdAndUserId(String originalMediaType, String apiId, String userId);
+	DetailCommentViewEntity findByOriginalMediaTypeAndApiIdAndProviderId(String originalMediaType, String apiId, String providerId);
 
 	/**
 	 * 별점 평균 조회
@@ -49,7 +49,8 @@ public interface DetailCommentViewRepository extends JpaRepository<DetailComment
 	 */
 	@Query(value = "SELECT ROUND(AVG(comment.star_rating),1) AS star_rating_average "
 			+ "FROM \"content\".\"comment\" comment "
-			+ "WHERE comment.original_media_type = :originalMediaType AND comment.api_id = :apiId",
+			+ "INNER JOIN \"content\".\"content\" content ON comment.content_id = content.content_id "
+			+ "WHERE content.original_media_type = :originalMediaType AND content.api_id = :apiId",
 			nativeQuery = true
 			)
 	BigDecimal getStarRatingAverage(@Param("originalMediaType") String originalMediaType, @Param("apiId") String apiId);
