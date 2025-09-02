@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import homeIcon from '@assets/icons/home.png';
-import { useUserStore } from '@/components/common/store/globalStateStore';
 import { SearchTextUi } from '@/components/ui/SearchTextUi';
 import { HeaderType, useHeader } from './useHeader';
 import { CheckBoxUi } from '@/components/ui/CheckBoxUi';
@@ -34,8 +33,6 @@ type autoCompletePropsType = {
  * 헤더는 페이지 상단에 고정되어 있으며, 사용자가 사이트를 탐색할 때 항상 표시됨
  */
 export const Header = () => {
-  // 유저 정보 전역 상태 훅
-  const { user } = useUserStore();
   // i18n 번역 함수
   const { t } = useTranslation();
 
@@ -66,6 +63,7 @@ export const Header = () => {
     handleSetCurrentIndex,
     handleDeleteKeyword,
     savedKeyword,
+    user,
   } = useHeader();
 
   // 체크박스용 인자 타입 정의

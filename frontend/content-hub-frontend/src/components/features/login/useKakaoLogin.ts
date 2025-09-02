@@ -22,7 +22,7 @@ export const useKakaoLogin = () => {
   // URL 쿼리 파라미터 훅
   const [searchParams] = useSearchParams();
   // 유저 정보 전역 상태 저장 훅
-  const { setUser } = useUserStore();
+  const { user, setUser } = useUserStore();
   // provider 전역 상태 저장 훅
   const { setProvider } = useProviderStore();
   // 로그인 API 인스턴스 생성
@@ -56,34 +56,13 @@ export const useKakaoLogin = () => {
     return loginInfo;
   };
 
-  // const getKakaoUserInfo = async (accessToken: string, expiresIn: number) => {
-  //     const response = await loginApi.getKakaoUserInfo({
-  //         accessToken: accessToken,
-  //         expiresIn: expiresIn
-  //     });
-  //     const loginInfo = response.data;
-  //     if (loginInfo && loginInfo.response) {
-  //         // 유저정보를 전역상태저장
-  //         setUser(loginInfo.response!);
-  //         // provider 전역상태저장
-  //         setProvider(LOGIN_PROVIDER.KAKAO);
-  //         // 액세스 토큰을 sessionStorage에 저장
-  //         sessionStorage.setItem("accessToken", loginInfo.accessToken!);
-  //         // JWT를 sessionStorage에 저장
-  //         sessionStorage.setItem("jwt", loginInfo.jwt!);
-  //         // 만료시각을 sessionStorage에 저장
-  //         sessionStorage.setItem("expireDate", loginInfo.expireDate!);
-  //     }
-  //     return loginInfo;
-  // }
-
   /* eslint-disable react-hooks/exhaustive-deps */
   // 최초 한번만 실행돼야 하므로 의존성 배열 미지정
   useEffect(() => {
     // URL에서 인증 코드를 가져옴
     const code = searchParams.get('code')!;
-    // 인증 코드가 없으면 종료
-    if (!code) {
+    // 유저정보가 존재하거나, 인증 코드가 없으면 종료
+    if (user || !code) {
       navigate('/login');
       return;
     }

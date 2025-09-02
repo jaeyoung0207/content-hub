@@ -21,7 +21,7 @@ export const useNaverLogin = () => {
   // URL 쿼리 파라미터 훅
   const [searchParams] = useSearchParams();
   // 유저 정보 전역 상태 저장 훅
-  const { setUser } = useUserStore();
+  const { user, setUser } = useUserStore();
   // provider 전역 상태 저장 훅
   const { setProvider } = useProviderStore();
   // 로그인 API 인스턴스 생성
@@ -55,23 +55,6 @@ export const useNaverLogin = () => {
     return loginInfo;
   };
 
-  // /**
-  //  * 네이버 로그인 유저 정보 요청
-  //  * @param accessToken 접근 토큰
-  //  * @returns 유저 정보
-  //  */
-  // const getNaverProfile = async (accessToken: string) => {
-  //     const expireDate = localStorage.getItem("expireDate")!;
-  //     const response = await loginApi.getNaverProfile({ accessToken: accessToken, expireDate: expireDate });
-  //     // 유저정보를 전역상태저장
-  //     if (response.data.response) {
-  //         setUser(response.data.response);
-  //         // 액세스 토큰을 localStorage에 저장
-  //         localStorage.setItem("accessToken", response.data.jwt!);
-  //     }
-  //     return response.data;
-  // }
-
   /**
    * URL에서 인증 코드를 가져와 네이버 로그인 API를 호출
    * 로그인 성공 후, 리다이렉트 URL이 있다면 해당 URL로 이동하고, 없으면 홈으로 이동
@@ -83,8 +66,8 @@ export const useNaverLogin = () => {
     // URL에서 인증 코드와 상태를 가져옴
     const code = searchParams.get('code')!;
     const state = searchParams.get('state')!;
-    // 인증 코드와 상태가 없으면 종료
-    if (!code || !state) {
+    // 유저정보가 존재하거나, 인증 코드와 상태가 없으면 종료
+    if (user || !code || !state) {
       navigate('/login');
       return;
     }

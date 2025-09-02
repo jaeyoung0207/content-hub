@@ -6,7 +6,10 @@ import {
   DetailMovieResponseDto,
   DetailComicsResponseDto,
 } from '@/api/data-contracts';
-import { MEDIA_TYPE, ONE_MINUTE } from '@/components/common/constants/constants';
+import {
+  MEDIA_TYPE,
+  ONE_MINUTE,
+} from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 

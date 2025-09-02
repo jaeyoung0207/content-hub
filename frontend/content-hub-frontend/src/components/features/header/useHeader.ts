@@ -31,6 +31,7 @@ import { useCookies } from 'react-cookie';
 import { settings } from '@/components/common/config/settings';
 import { headerQueryKeys } from './queryKeys/headerQueryKeys';
 import { searchUrlQuery } from '@/components/common/utils/urlUtil';
+import { LoginUserInfoDto } from '@/api/data-contracts';
 
 /**
  * 헤더 컴포넌트의 폼 필드 타입 정의
@@ -78,6 +79,7 @@ type useHeaderReturnType = {
   handleSetCurrentIndex: (index: number) => void; // 자동완성 박스 인덱스 설정 함수
   handleDeleteKeyword: () => void; // 검색창 클리어 함수
   savedKeyword: string; // 저장된 검색어
+  user: LoginUserInfoDto | null; // 유저 정보
 };
 
 /**
@@ -132,7 +134,7 @@ export const useHeader = (): useHeaderReturnType => {
   // ================================================================================================== zustand
 
   // 유저 정보 전역 상태 저장용 훅
-  const { setUser } = useUserStore();
+  const { user, setUser } = useUserStore();
   // provider 정보 전역 상태 저장용 훅
   const { setProvider } = useProviderStore();
   // 검색 종류 전역 상태 저장용 훅
@@ -770,5 +772,6 @@ export const useHeader = (): useHeaderReturnType => {
     handleSetCurrentIndex: handleSetCurrentIndex,
     handleDeleteKeyword: handleDeleteKeyword,
     savedKeyword: savedKeyword.current,
+    user: user,
   };
 };
