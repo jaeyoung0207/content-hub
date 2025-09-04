@@ -47,7 +47,7 @@ export const DisplaySearchResults = ({
   const { t } = useTranslation();
   // navigate 훅
   const navigate = useNavigate();
-  // 검색 화면에서 사용할 썸네일 이미지 경로
+  // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
 
   return (
@@ -82,7 +82,7 @@ export const DisplaySearchResults = ({
       )}
       {/* 검색 결과 */}
       <div
-        className={`"w-full flex flex-wrap items-start mt-6 " ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
+        className={`'w-full flex flex-wrap items-start mt-6 ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
       >
         {results.length !== 0 &&
           results.map((items, index) => {
@@ -125,7 +125,8 @@ export const DisplaySearchResults = ({
                     className={
                       (mediaType === MEDIA_TYPE.COMICS
                         ? 'max-w-full h-[270px]'
-                        : 'max-w-full h-[180px]') + ' object-scale-down'
+                        : 'max-w-full h-[180px]') +
+                      ' object-scale-down rounded-2xl'
                     }
                   />
                 </li>

@@ -39,7 +39,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
     {
       displayFlg: searchTypeState.aniFlg,
       dataResults: aniSearchResults,
-      media: t('info.ani'),
+      media: t('info.animation'),
       isViewMore: isAniViewMore,
       mediaType: MEDIA_TYPE.ANI,
     },

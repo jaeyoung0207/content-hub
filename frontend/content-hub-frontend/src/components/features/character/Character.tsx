@@ -75,6 +75,7 @@ export const Character = memo(() => {
                   data.image?.large ? data.image.large : COMMON_IMAGES.NO_IMAGE
                 }
                 alt={data.name?.full}
+                className="rounded-xl"
               />
             </div>
             {/* 캐릭터 정보 */}

@@ -111,6 +111,7 @@ export const DisplayComicsCredits = ({
                               COMMON_IMAGES.NO_IMAGE
                             }
                             alt={creditsInfo.name?.full}
+                            className="rounded-xl"
                           />
                         </li>
                         {/* 이름 */}

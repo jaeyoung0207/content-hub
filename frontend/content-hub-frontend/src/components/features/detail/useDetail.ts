@@ -36,7 +36,7 @@ type useDetailReturnType = {
 /**
  * 상세 화면 커스텀 훅
  * @param originalMediaType 원본 미디어 타입
- * @param contentId 컨텐츠 ID
+ * @param contentId 콘텐츠 ID
  * @param tabNo 탭 번호
  * @returns
  */
@@ -60,7 +60,7 @@ export const useDetail = (
   const queryClient = useQueryClient();
   // 상세 API 인스턴스 생성
   const detailApi = useMemo(() => new Detail(), []);
-  // 리퀘스트 파라미터용 컨텐츠ID
+  // 리퀘스트 파라미터용 콘텐츠ID
   const contentIdParam = Number(contentId);
 
   /**

@@ -19,7 +19,7 @@ import com.cjy.contenthub.search.controller.dto.SearchComicsMediaResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 
 /**
- * 검색 컨텐츠 헬퍼 클래스
+ * 검색 콘텐츠 헬퍼 클래스
  */
 @Component
 public class SearchHelper {

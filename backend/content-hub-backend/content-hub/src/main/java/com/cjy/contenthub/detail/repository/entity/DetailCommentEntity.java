@@ -40,7 +40,7 @@ import lombok.NoArgsConstructor;
 		schema = CommonConstants.SCHEMA_NAME_CONTENT,
 		name = "comment",
 		indexes = {@Index(name = "idx_content_id", columnList = "content_id"), @Index(name = "idx_user_id", columnList = "user_id"),
-				@Index(name = "idx_create_time", columnList = "create_time")}
+				@Index(name = "idx_create_time", columnList = "create_time"), @Index(name = "idx_star_rating", columnList = "star_rating")}
 		)
 public class DetailCommentEntity implements Serializable {
 

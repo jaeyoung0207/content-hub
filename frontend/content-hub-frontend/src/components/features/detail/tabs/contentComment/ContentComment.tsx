@@ -195,7 +195,9 @@ export const ContentComment = ({
                       </div>
                     )}
                   </div>
-                  <div className="mr-1">{items.comment}</div>
+                  <div className="mr-1 whitespace-pre-line">
+                    {items.comment}
+                  </div>
                 </div>
               )}
             </div>

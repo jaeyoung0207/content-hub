@@ -8,7 +8,7 @@ import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 
 /**
- * 검색 컨텐츠 서비스 인터페이스
+ * 검색 콘텐츠 서비스 인터페이스
  */
 public interface SearchService {
 	

@@ -397,6 +397,18 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/KakaoUserInfoDto'
+  /home/rankings:
+    get:
+      tags:
+        - home-controller
+      operationId: getContentRankings
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/HomeRankingListResponseDto'
   /detail/recommendation/getTvRecommendations:
     get:
       tags:
@@ -804,11 +816,11 @@ components:
         totalResults:
           type: integer
           format: int32
-        aniViewMore:
-          type: boolean
         dramaViewMore:
           type: boolean
         movieViewMore:
+          type: boolean
+        aniViewMore:
           type: boolean
     TmdbSearchMovieResultsDto:
       type: object
@@ -1232,11 +1244,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
-        leapMonth:
+        emailVerified:
           type: boolean
         emailValid:
           type: boolean
-        emailVerified:
+        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1252,9 +1264,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultNickname:
-          type: boolean
         defaultImage:
+          type: boolean
+        defaultNickname:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -1278,6 +1290,47 @@ components:
           $ref: '#/components/schemas/KakaoAccountDto'
         forPartner:
           $ref: '#/components/schemas/KakaoPartnerDto'
+    HomeRankingListResponseDto:
+      type: object
+      properties:
+        aniRankingList:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeRankingServiceDto'
+        dramaRankingList:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeRankingServiceDto'
+        movieRankingList:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeRankingServiceDto'
+        comicsRankingList:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeRankingServiceDto'
+    HomeRankingServiceDto:
+      type: object
+      properties:
+        contentId:
+          type: integer
+          format: int64
+        rowNum:
+          type: integer
+          format: int64
+        originalMediaType:
+          type: string
+        apiId:
+          type: string
+        starRatingAverage:
+          type: number
+        starRatingCount:
+          type: integer
+          format: int64
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
     TmdbRecommendationsTvDto:
       type: object
       properties:

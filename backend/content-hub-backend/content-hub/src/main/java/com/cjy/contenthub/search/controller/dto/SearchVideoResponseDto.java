@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 검색 컨텐츠 비디오 응답 DTO
+ * 검색 콘텐츠 비디오 응답 DTO
  */
 @Setter
 @Getter

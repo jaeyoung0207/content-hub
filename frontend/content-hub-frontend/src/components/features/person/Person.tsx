@@ -67,7 +67,10 @@ export const Person = memo(() => {
                       data?.profilePath
                     : COMMON_IMAGES.NO_IMAGE
                 }
-                className={(IS_MOBILE ? 'w-[200px]' : 'w-[300px]') + ' h-full'}
+                className={
+                  (IS_MOBILE ? 'w-[200px]' : 'w-[300px]') +
+                  ' h-full rounded-2xl'
+                }
                 alt={data.name}
               />
             </div>

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 /**
  * 상세 코멘트 뷰 엔티티 클래스
  * 상세 페이지에서 유저 코멘트 정보를 조회하기 위한 뷰 엔티티 클래스
- * JPA를 사용하여 ORM 매핑을 수행하며, 데이터베이스의 comment 테이블과 user 테이블을 조인하여 조회
+ * JPA를 사용하여 ORM 매핑을 수행
  */
 @Entity
 @Getter

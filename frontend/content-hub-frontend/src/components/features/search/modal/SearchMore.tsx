@@ -46,7 +46,7 @@ export const SearchMore = memo(
     // 각 미디어 이름을 가져오는 함수
     const getMediaName = () => {
       if (mediaType === MEDIA_TYPE.ANI) {
-        return 'info.ani';
+        return 'info.animation';
       } else if (mediaType === MEDIA_TYPE.DRAMA) {
         return 'info.drama';
       } else if (mediaType === MEDIA_TYPE.MOVIE) {

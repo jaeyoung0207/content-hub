@@ -85,7 +85,7 @@ export const Header = () => {
   // 검색 종류 체크박스용 인자값 리스트
   const checkBoxList: CheckBoxProps<CheckboxType>[] = [
     {
-      label: 'info.ani',
+      label: 'info.animation',
       name: 'aniFlg',
       state: aniFlg!,
     },

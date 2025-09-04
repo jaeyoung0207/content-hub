@@ -51,9 +51,9 @@ export interface SearchVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
-  aniViewMore?: boolean;
   dramaViewMore?: boolean;
   movieViewMore?: boolean;
+  aniViewMore?: boolean;
 }
 
 export interface TmdbSearchMovieResultsDto {
@@ -281,9 +281,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  leapMonth?: boolean;
-  emailValid?: boolean;
   emailVerified?: boolean;
+  emailValid?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -294,8 +294,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultNickname?: boolean;
   defaultImage?: boolean;
+  defaultNickname?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -309,6 +309,27 @@ export interface KakaoUserInfoDto {
   properties?: Record<string, string>;
   kakaoAccount?: KakaoAccountDto;
   forPartner?: KakaoPartnerDto;
+}
+
+export interface HomeRankingListResponseDto {
+  aniRankingList?: HomeRankingServiceDto[];
+  dramaRankingList?: HomeRankingServiceDto[];
+  movieRankingList?: HomeRankingServiceDto[];
+  comicsRankingList?: HomeRankingServiceDto[];
+}
+
+export interface HomeRankingServiceDto {
+  /** @format int64 */
+  contentId?: number;
+  /** @format int64 */
+  rowNum?: number;
+  originalMediaType?: string;
+  apiId?: string;
+  starRatingAverage?: number;
+  /** @format int64 */
+  starRatingCount?: number;
+  title?: string;
+  thumbnailImageUrl?: string;
 }
 
 export interface TmdbRecommendationsTvDto {

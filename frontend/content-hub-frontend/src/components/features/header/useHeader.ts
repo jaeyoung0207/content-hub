@@ -96,7 +96,7 @@ export const useHeader = (): useHeaderReturnType => {
   const isAdultParam = searchParams.get('isAdult');
   // 전체보기 여부 파라미터
   const viewMore = searchParams.get('viewMore');
-  // 컨텐츠 ID 파라미터
+  // 콘텐츠 ID 파라미터
   const contentId = searchParams.get('contentId');
 
   // navigate 훅

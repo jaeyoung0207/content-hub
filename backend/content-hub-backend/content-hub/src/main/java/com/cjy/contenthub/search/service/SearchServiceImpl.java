@@ -40,7 +40,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * 검색 컨텐츠 API 컨트롤러 클래스
+ * 검색 콘텐츠 API 컨트롤러 클래스
  */
 @Service
 @RequiredArgsConstructor

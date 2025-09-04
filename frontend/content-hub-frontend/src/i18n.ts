@@ -14,7 +14,7 @@ const resources = {
         /* 공통 */
         login: '로그인',
         logout: '로그아웃',
-        ani: '애니메이션',
+        animation: '애니메이션',
         comics: '만화',
         movie: '영화',
         drama: '드라마',
@@ -26,6 +26,9 @@ const resources = {
         notExist: '없음',
         description: '설명',
         colon: ' : ',
+        /* 홈 화면 */
+        rankingTitle: '실시간 순위',
+        top10: 'TOP 10',
         /* 전체보기 */
         searchResults: '검색 결과',
         /* 상세 화면 */

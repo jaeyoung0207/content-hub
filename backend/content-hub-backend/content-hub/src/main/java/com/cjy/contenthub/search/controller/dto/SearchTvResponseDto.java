@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 검색 컨텐츠 TV 응답 DTO
+ * 검색 콘텐츠 TV 응답 DTO
  */
 @Setter
 @Getter

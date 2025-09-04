@@ -43,7 +43,7 @@ const RecommendationContent = lazy(
 /**
  * 상세 화면 컴포넌트
  * @param originalMediaType 원본 미디어 타입
- * @param contentId 컨텐츠 ID
+ * @param contentId 콘텐츠 ID
  * @param tabNo 탭 번호
  */
 export const Detail = memo(() => {
@@ -165,7 +165,8 @@ export const Detail = memo(() => {
                       : COMMON_IMAGES.NO_IMAGE
                   }
                   className={
-                    (IS_MOBILE ? 'w-[200px]' : 'w-[300px]') + ' h-full'
+                    (IS_MOBILE ? 'w-[200px]' : 'w-[300px]') +
+                    ' h-full rounded-2xl'
                   }
                   alt={
                     isTvType

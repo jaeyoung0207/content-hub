@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 검색 컨텐츠 API 컨트롤러 클래스
+ * 검색 콘텐츠 API 컨트롤러 클래스
  */
 @RestController
 @RequestMapping("/search")

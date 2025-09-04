@@ -124,6 +124,7 @@ export const DisplayVideoCredits = ({
                               : COMMON_IMAGES.NO_IMAGE
                           }
                           alt={items.name}
+                          className="rounded-2xl"
                         />
                       </li>
                       <li className="flex items-center ml-4 mr-1 text-lg w-[70%] break-words">
