@@ -17,6 +17,7 @@ import {
   isSearchTvType,
 } from '../common/utils/typeGuardUtil';
 import { LazyImage } from './common/LazyImageUi';
+import { highlightHoverColor } from '../common/constants/tailwindStyles';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입
@@ -59,7 +60,7 @@ export const DisplaySearchResults = ({
           {
             // 전체보기 링크
             isViewMore && (
-              <div className="text-xl hover:font-bold">
+              <div className={`text-xl ${highlightHoverColor}`}>
                 <Link
                   to={viewMoreUrlQuery({
                     keyword: keyword,
@@ -96,9 +97,9 @@ export const DisplaySearchResults = ({
                 : COMMON_IMAGES.NO_IMAGE;
             return (
               <ul
-                key={'frame' + index}
+                key={'frame_' + index}
                 className={
-                  'ml-1 mr-1 block hover:font-bold cursor-pointer ' +
+                  `${highlightHoverColor} ml-1 mr-1 block cursor-pointer ` +
                   (mediaType === MEDIA_TYPE.COMICS ? 'w-[195px]' : 'w-[300px]')
                 }
                 onClick={commonErrorHandler(() => {

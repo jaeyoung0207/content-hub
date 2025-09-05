@@ -14,6 +14,7 @@ import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { checkContentId } from '@/components/common/utils/checkUtil';
 import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
+import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
 
 type DisplayRankingsProps = {
   title: string;
@@ -128,7 +129,7 @@ const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
           return (
             <ul
               key={index}
-              className={`ml-1 mr-1 block hover:font-bold cursor-pointer ${widthStyle}`}
+              className={`ml-1 mr-1 block ${highlightHoverColor} cursor-pointer ${widthStyle}`}
               onClick={commonErrorHandler(() => {
                 // contentId 체크
                 checkContentId(Number(items.apiId));

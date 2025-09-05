@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { detailUrlQuery, personUrlQuery } from '../common/utils/urlUtil';
 import { checkPersonId } from '../common/utils/checkUtil';
 import { LazyImage } from './common/LazyImageUi';
+import { highlightHoverColor } from '../common/constants/tailwindStyles';
 
 /**
  * 크레딧 정보 표시 컴포넌트 props 타입
@@ -62,13 +63,13 @@ export const DisplayVideoCredits = ({
     (isOmit
       ? creditsAll.filter((_, index) => index < settings.detailVideoCount)
       : creditsAll);
-  // 링크 스타일
-  const linkStyle = 'ml-5 hover:font-bold';
   // 탭 번호
   const tabNo =
     creditsType === VIDEO_CREDITS_TYPE.CAST
       ? DETAIL_TAB_ID.cast
       : DETAIL_TAB_ID.crew;
+  // 높이 스타일
+  const heightStyle = 190;
   return (
     <div className="mb-8">
       {creditsList && (
@@ -80,6 +81,7 @@ export const DisplayVideoCredits = ({
                 ? t('info.crew')
                 : t('info.cast')}
             </div>
+            {/* 더보기 링크 */}
             <div className="text-lx">
               {isOmit && creditsAll.length > settings.detailVideoCount && (
                 <Link
@@ -88,7 +90,7 @@ export const DisplayVideoCredits = ({
                     contentId: String(detailResult.id),
                     tabNo: tabNo,
                   })}
-                  className={linkStyle}
+                  className={`ml-5 ${highlightHoverColor}`}
                 >
                   {t('info.seeMore') + ' >'}
                 </Link>
@@ -109,14 +111,17 @@ export const DisplayVideoCredits = ({
               return (
                 <div
                   key={index}
-                  className="ml-1 mr-1 w-[390px] h-[190px]"
+                  className={`ml-1 mr-1 w-[390px] h-[${heightStyle}px]`}
                   onClick={() => checkPersonId(items.id)}
                 >
                   <Link
                     to={items.id ? personUrlQuery({ personId: items.id }) : '#'}
                   >
-                    <ul className="flex hover:font-bold w-full h-full">
-                      <li className="flex justify-center items-center max-w-[30%]">
+                    <ul
+                      className={`flex justify-center items-center ${highlightHoverColor} w-full h-full`}
+                    >
+                      {/* 이미지 */}
+                      <li className="max-w-[30%]">
                         <LazyImage
                           src={
                             items.profilePath
@@ -127,12 +132,17 @@ export const DisplayVideoCredits = ({
                           className="rounded-2xl"
                         />
                       </li>
-                      <li className="flex items-center ml-4 mr-1 text-lg w-[70%] break-words">
-                        <div className="block">
-                          <span className="mr-1">{items.name!}</span>
-                          <span className="flex items-center">
-                            {role && '(' + role + ')'}
-                          </span>
+                      {/* 이름 & 역할 */}
+                      <li className="ml-4 mr-1 text-lg w-[70%] break-words">
+                        <div
+                          className={`flex items-center-safe h-[${heightStyle - 15}px] overflow-y-auto not-hover:scrollbar-default`}
+                        >
+                          <div>
+                            <div className="mr-1">{items.name!}</div>
+                            <div className="flex items-center">
+                              {role && '(' + role + ')'}
+                            </div>
+                          </div>
                         </div>
                       </li>
                     </ul>

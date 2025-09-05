@@ -6,7 +6,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [
-    scrollbarHide,
-  ],
+  plugins: [scrollbarHide],
 } satisfies Config;

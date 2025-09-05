@@ -112,11 +112,11 @@ export const Detail = memo(() => {
                 <div
                   key={index}
                   className={`text-sm sm:text-lg md:text-xl px-4 py-2 mx-2 transition duration-200
-                                            ${
-                                              isActive
-                                                ? 'font-bold border-b-4 border-blue-500 text-blue-600'
-                                                : 'text-gray-500 hover:text-blue-500 hover:border-b-4 hover:border-blue-300'
-                                            }`}
+                    ${
+                      isActive
+                        ? 'font-bold border-b-4 text-blue-600'
+                        : 'text-gray-500 hover:text-blue-500 hover:border-b-4 hover:border-blue-300'
+                    }`}
                 >
                   <button
                     role="tab"
