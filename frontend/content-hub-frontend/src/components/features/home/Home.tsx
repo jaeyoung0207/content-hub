@@ -110,7 +110,7 @@ const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
     <div className="block mb-10">
       {/* 각 랭킹 타이틀 */}
       <div className="flex items-start text-2xl font-bold mb-5">{title}</div>
-      <div className={'whitespace-nowrap flex overflow-x-auto scrollbar-hide'}>
+      <div className="whitespace-nowrap flex overflow-x-auto not-hover:scrollbar-default">
         {items.map((items, index) => {
           // 썸네일 이미지
           const thumbnailImageUrl =

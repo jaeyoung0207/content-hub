@@ -62,7 +62,7 @@ export const SearchMore = memo(
       <>
         {
           <div className="flex justify-center items-center fixed top-0 left-0 w-full h-full bg-black/30 z-50">
-            <div className="w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl overflow-auto mx-auto mt-10">
+            <div className="w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl overflow-auto mx-auto mt-10 not-hover:scrollbar-default">
               <div className="mb-5 p-4">
                 {/* 닫기 버튼 */}
                 <CloseButtonUi modalClose={handleModalClose} />
