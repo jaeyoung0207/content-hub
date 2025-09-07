@@ -41,6 +41,9 @@ public class LoginController {
 	/** 로그인 클라이언트 */
 	private final LoginClient loginClient;
 	
+	/** 로그인 헬퍼 */
+	private final LoginHelper loginHelper;
+	
 	/** Redis 유틸리티 */
 	private final RedisUtil redisUtil;
 
@@ -64,6 +67,9 @@ public class LoginController {
 
 	/** 파라미터 : 대상 ID */
 	private static final String PARAM_TARGET_ID = "target_id";
+	
+	/** 파라미터 : 유저 테이블 ID */
+	private static final String PARAM_USER_ID = "user_id";
 
 	/**
 	 * 네이버 로그인 정보 조회
@@ -104,7 +110,7 @@ public class LoginController {
 	public ResponseEntity<LoginUserResponseDto> updateNaverLoginInfo(HttpServletRequest request) {
 
 		// 쿠키에서 리프레시 토큰 추출
-		String refreshToken = LoginHelper.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
+		String refreshToken = loginHelper.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
 
 		// refresh token이 없는 경우 처리 종료
 		if (StringUtils.isEmpty(refreshToken)) {
@@ -141,16 +147,19 @@ public class LoginController {
 	 * 네이버 토큰 삭제
 	 * 
 	 * @param accessToken 액세스 토큰
+	 * @param targetId 대상 ID
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
 	@GetMapping("/deleteNaverToken")
 	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
-			@RequestParam(PARAM_TARGET_ID) String targetId
+			@RequestParam(PARAM_TARGET_ID) String targetId,
+			@RequestParam(PARAM_USER_ID) Long userId
 			) {
 
 		// 네이버 토큰 삭제 서비스 호출
-		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken);
+		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken, userId);
 		
 		// Redis에서 리프레시 토큰 삭제
 		redisUtil.deleteRefreshToken(LoginProviderEnum.NAVER.getProvider(), targetId);
@@ -216,7 +225,7 @@ public class LoginController {
 			) {
 
 		// 쿠키에서 리프레시 토큰 추출
-		String refreshTokenFromCookie = LoginHelper.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
+		String refreshTokenFromCookie = loginHelper.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
 
 		// 리프레시 토큰이 없는 경우 처리 종료
 		if (StringUtils.isEmpty(refreshTokenFromCookie)) {
@@ -263,17 +272,19 @@ public class LoginController {
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
 	 * @param targetId 대상 ID
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<KakaoUserInfoDto>
 	 */
 	@GetMapping("/deleteKakaoToken")
 	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
-			@RequestParam(PARAM_TARGET_ID) String targetId
+			@RequestParam(PARAM_TARGET_ID) String targetId,
+			@RequestParam(PARAM_USER_ID) Long userId
 			) {
 
 		// 카카오 토큰 삭제 서비스 호출
-		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId);
+		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId, userId);
 		
 		// Redis에서 리프레시 토큰 삭제
 		redisUtil.deleteRefreshToken(LoginProviderEnum.KAKAO.getProvider(), targetId);

@@ -2,9 +2,9 @@ package com.cjy.contenthub.search.service;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 
 /**
@@ -28,7 +28,7 @@ public interface SearchService {
 	 * @param isAdult 성인물 포함 여부
 	 * @return 검색 결과 DTO
 	 */
-	SearchVideoResponseDto searchVideo(String keyword, boolean isAdult);
+	SearchVideoResponseDto searchVideo(String keyword, boolean isAdult, Long userId);
 	
 	/**
 	 * 애니 검색 데이터 조회
@@ -38,7 +38,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 애니 검색 결과 DTO
 	 */
-	TmdbSearchTvDto searchAni(String keyword, boolean isAdult, Integer page);
+	SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page, Long userId);
 	
 	/**
 	 * 드라마 검색 데이터 조회
@@ -48,7 +48,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 드라마 검색 결과 DTO
 	 */
-	TmdbSearchTvDto searchDrama(String keyword, boolean isAdult, Integer page);
+	SearchTvResponseDto searchDrama(String keyword, boolean isAdult, Integer page, Long userId);
 	
 	/**
 	 * 영화 검색 데이터 조회
@@ -58,7 +58,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 영화 검색 결과 DTO
 	 */
-	TmdbSearchMovieDto searchMovie(String keyword, boolean isAdult, Integer page);
+	SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page, Long userId);
 	
 	/**
 	 * 만화 검색 데이터 조회
@@ -69,5 +69,5 @@ public interface SearchService {
 	 * @param isMainPage 메인 페이지 여부
 	 * @return 만화 검색 결과 DTO
 	 */
-	SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage);
+	SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage, Long userId);
 }

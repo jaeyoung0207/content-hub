@@ -30,6 +30,7 @@ import com.cjy.contenthub.common.api.dto.naver.NaverProfileResultDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverUserDetails;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
 import com.cjy.contenthub.common.constants.CommonEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
@@ -128,13 +129,15 @@ public class LoginClient {
 
 					// 프로필 정보
 					NaverProfileDataDto profile = response.getResponse();
+					// provider
+					String provider = LoginProviderEnum.NAVER.getProvider();
 					// 유저 서비스 파라미터 설정
 					LoginUserServiceDto userServiceDto = mapper.profileDataDtoToUserServiceDto(profile);
-					userServiceDto.setProvider(LoginProviderEnum.NAVER.getProvider());
+					userServiceDto.setProvider(provider);
 
 					// user 등록 확인 후 등록
-					return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
-							.then(Mono.fromSupplier(() -> {
+					return Mono.fromCallable(() -> service.saveUser(userServiceDto))
+							.map(saveResponse -> {
 
 								// 유저 정보 설정
 								NaverUserDetails userDetails = new NaverUserDetails(profile);
@@ -158,7 +161,7 @@ public class LoginClient {
 									calendar.add(Calendar.SECOND, expiresIn);
 									expireDate = calendar.getTime();
 									// jwt 생성
-									jwt = jwtUtil.createToken(profile.getId(), LoginProviderEnum.NAVER.getProvider(), profile.getNickname(), currentDate, expireDate);
+									jwt = jwtUtil.createToken(profile.getId(), provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException("create JWT error!", ex);
 								}
@@ -169,6 +172,10 @@ public class LoginClient {
 
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = mapper.profileDataDtoToProfileDataDto(profile);
+								// 유저 테이블 PK 설정
+								userInfo.setUserId(saveResponse.getUserId());
+								// provider 설정
+								userInfo.setProvider(provider);
 								// 결과값 설정
 								LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
 										.resultcode(response.getResultcode())
@@ -182,14 +189,14 @@ public class LoginClient {
 								// 파라미터에 리프레시 토큰이 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
 									// refresh token을 redis에 저장
-									redisUtil.saveRefreshToken(LoginProviderEnum.NAVER.getProvider(), profile.getId(),
+									redisUtil.saveRefreshToken(provider, profile.getId(),
 											refreshToken);
 									// 리프레시 토큰 쿠키
 									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
 											.path("/")
 											.build();
 									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.NAVER.getProvider())
+									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, provider)
 											.path("/")
 											.build();
 									// 쿠키 배열 생성
@@ -203,7 +210,7 @@ public class LoginClient {
 								else {
 									return ResponseEntity.ok().body(userResponse);
 								}
-							}));
+							});
 				});
 	}
 
@@ -245,17 +252,19 @@ public class LoginClient {
 					KakaoProfileDto profile = response.getKakaoAccount().getProfile();
 					// ID
 					String providerId = response.getId().toString();
+					// Provider
+					String provider = LoginProviderEnum.KAKAO.getProvider();
 					// 유저 서비스 파라미터 설정
 					LoginUserServiceDto userServiceDto = 
 							LoginUserServiceDto.builder()
 							.providerId(providerId)
-							.provider(LoginProviderEnum.KAKAO.getProvider())
+							.provider(provider)
 							.nickname(profile.getNickname())
 							.build();
 
 					// user 등록 확인 후 등록
-					return Mono.fromRunnable(() -> service.saveUser(userServiceDto))
-							.then(Mono.fromSupplier(() -> {
+					return Mono.fromCallable(() -> service.saveUser(userServiceDto))
+							.map(saveResponse -> {
 
 								// 유저 정보 설정
 								KakaoUserDetails userDetails = new KakaoUserDetails(response);
@@ -279,12 +288,14 @@ public class LoginClient {
 									calendar.add(Calendar.SECOND, expiresIn);
 									expireDate = calendar.getTime();
 									// jwt 생성
-									jwt = jwtUtil.createToken(providerId, LoginProviderEnum.KAKAO.getProvider(), profile.getNickname(), currentDate, expireDate);
+									jwt = jwtUtil.createToken(providerId, provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException("create JWT error!", ex);
 								}
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()
+										.userId(saveResponse.getUserId())
+										.provider(provider)
 										.id(providerId)
 										.nickname(profile.getNickname())
 										.build();
@@ -306,14 +317,14 @@ public class LoginClient {
 								// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
 									// refresh token을 redis에 저장
-									redisUtil.saveRefreshToken(LoginProviderEnum.KAKAO.getProvider(), providerId,
+									redisUtil.saveRefreshToken(provider, providerId,
 											refreshToken);
 									// 리프레시 토큰 쿠키
 									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
 											.path("/")
 											.build();
 									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, LoginProviderEnum.KAKAO.getProvider())
+									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, provider)
 											.path("/")
 											.build();
 									// 쿠키 배열 생성
@@ -327,7 +338,7 @@ public class LoginClient {
 								else {
 									return ResponseEntity.ok().body(userResponse);
 								}
-							}));
+							});
 				});
 	}
 

@@ -24,6 +24,43 @@ paths:
             '*/*':
               schema:
                 type: boolean
+  /wishlist/save:
+    post:
+      tags:
+        - wishlist-controller
+      operationId: saveWishlist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishlistRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /wishlist/getWishlist:
+    post:
+      tags:
+        - wishlist-controller
+      operationId: getWishlist
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WishlistListResponseDto'
   /detail/comment/saveComment:
     post:
       tags:
@@ -75,6 +112,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -99,13 +142,19 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/TmdbSearchMovieDto'
+                $ref: '#/components/schemas/SearchMovieResponseDto'
   /search/searchKeyword:
     get:
       tags:
@@ -143,13 +192,19 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/TmdbSearchTvDto'
+                $ref: '#/components/schemas/SearchTvResponseDto'
   /search/searchComics:
     get:
       tags:
@@ -172,6 +227,12 @@ paths:
           required: true
           schema:
             type: boolean
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -196,13 +257,19 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/TmdbSearchTvDto'
+                $ref: '#/components/schemas/SearchTvResponseDto'
   /person/details:
     get:
       tags:
@@ -367,6 +434,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -390,6 +463,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -704,6 +783,24 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AniListCharactersNodeDto'
+  /wishlist/delete:
+    delete:
+      tags:
+        - wishlist-controller
+      operationId: deleteWishlist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishlistRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
   /detail/comment/deleteComment:
     delete:
       tags:
@@ -757,6 +854,57 @@ components:
         bad:
           type: integer
           format: int64
+    WishlistRequestDto:
+      required:
+        - apiId
+        - originalMediaType
+        - userId
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        originalMediaType:
+          type: string
+        apiId:
+          type: string
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
+    WishlistListResponseDto:
+      type: object
+      properties:
+        aniWishlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishlistResponseDto'
+        dramaWishlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishlistResponseDto'
+        movieWishlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishlistResponseDto'
+        comicsWishlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishlistResponseDto'
+    WishlistResponseDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        originalMediaType:
+          type: string
+        apiId:
+          type: string
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
     DetailCommentSaveRequestDto:
       required:
         - apiId
@@ -792,37 +940,7 @@ components:
         bad:
           type: integer
           format: int64
-    SearchVideoResponseDto:
-      type: object
-      properties:
-        aniResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmdbSearchTvResultsDto'
-        dramaResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmdbSearchTvResultsDto'
-        movieResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmdbSearchMovieResultsDto'
-        page:
-          type: integer
-          format: int32
-        totalPages:
-          type: integer
-          format: int32
-        totalResults:
-          type: integer
-          format: int32
-        dramaViewMore:
-          type: boolean
-        movieViewMore:
-          type: boolean
-        aniViewMore:
-          type: boolean
-    TmdbSearchMovieResultsDto:
+    SearchMovieResultsDto:
       type: object
       properties:
         adult:
@@ -852,12 +970,6 @@ components:
         voteCount:
           type: integer
           format: int32
-        genreNames:
-          type: array
-          items:
-            type: string
-        originalMediaType:
-          type: string
         originalTitle:
           type: string
         releaseDate:
@@ -866,7 +978,18 @@ components:
           type: string
         video:
           type: boolean
-    TmdbSearchTvResultsDto:
+        originalMediaType:
+          type: string
+        genreNames:
+          type: array
+          items:
+            type: string
+        contentId:
+          type: integer
+          format: int64
+        wishlist:
+          type: boolean
+    SearchTvResultsDto:
       type: object
       properties:
         adult:
@@ -896,12 +1019,6 @@ components:
         voteCount:
           type: integer
           format: int32
-        genreNames:
-          type: array
-          items:
-            type: string
-        originalMediaType:
-          type: string
         originCountry:
           type: array
           items:
@@ -910,83 +1027,90 @@ components:
           type: string
         name:
           type: string
-    TmdbSearchMovieDto:
-      type: object
-      properties:
-        page:
-          type: integer
-          format: int32
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmdbSearchMovieResultsDto'
-        totalPages:
-          type: integer
-          format: int32
-        totalResults:
-          type: integer
-          format: int32
-    TmdbSearchTvDto:
-      type: object
-      properties:
-        page:
-          type: integer
-          format: int32
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmdbSearchTvResultsDto'
-        totalPages:
-          type: integer
-          format: int32
-        totalResults:
-          type: integer
-          format: int32
-    SearchComicsMediaResultDto:
-      type: object
-      properties:
-        adult:
-          type: boolean
-        backdropPath:
+        originalMediaType:
           type: string
-        genreIds:
-          type: array
-          items:
-            type: integer
-            format: int32
-        id:
-          type: integer
-          format: int32
-        originalLanguage:
-          type: string
-        originalName:
-          type: string
-        overview:
-          type: string
-        popularity:
-          type: number
-        posterPath:
-          type: string
-        voteAverage:
-          type: number
-        voteCount:
-          type: integer
-          format: int32
         genreNames:
           type: array
           items:
             type: string
-        originalMediaType:
-          type: string
-        title:
-          type: string
+        contentId:
+          type: integer
+          format: int64
+        wishlist:
+          type: boolean
+    SearchVideoResponseDto:
+      type: object
+      properties:
+        aniResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchTvResultsDto'
+        dramaResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchTvResultsDto'
+        movieResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchMovieResultsDto'
+        page:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalResults:
+          type: integer
+          format: int32
+        movieViewMore:
+          type: boolean
+        aniViewMore:
+          type: boolean
+        dramaViewMore:
+          type: boolean
+    SearchMovieResponseDto:
+      type: object
+      properties:
+        movieResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchMovieResultsDto'
+        page:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalResults:
+          type: integer
+          format: int32
+    SearchTvResponseDto:
+      type: object
+      properties:
+        aniResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchTvResultsDto'
+        dramaResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchTvResultsDto'
+        page:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalResults:
+          type: integer
+          format: int32
     SearchComicsResponseDto:
       type: object
       properties:
         comicsResults:
           type: array
           items:
-            $ref: '#/components/schemas/SearchComicsMediaResultDto'
+            $ref: '#/components/schemas/SearchComicsResultDto'
         page:
           type: integer
           format: int32
@@ -997,6 +1121,49 @@ components:
           type: integer
           format: int32
         comicsViewMore:
+          type: boolean
+    SearchComicsResultDto:
+      type: object
+      properties:
+        adult:
+          type: boolean
+        backdropPath:
+          type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+        id:
+          type: integer
+          format: int32
+        originalLanguage:
+          type: string
+        originalName:
+          type: string
+        overview:
+          type: string
+        popularity:
+          type: number
+        posterPath:
+          type: string
+        voteAverage:
+          type: number
+        voteCount:
+          type: integer
+          format: int32
+        title:
+          type: string
+        originalMediaType:
+          type: string
+        genreNames:
+          type: array
+          items:
+            type: string
+        contentId:
+          type: integer
+          format: int64
+        wishlist:
           type: boolean
     PersonCreditsCastDto:
       type: object
@@ -1144,6 +1311,9 @@ components:
     LoginUserInfoDto:
       type: object
       properties:
+        userId:
+          type: integer
+          format: int64
         id:
           type: string
         nickname:
@@ -1163,6 +1333,8 @@ components:
         birthyear:
           type: string
         mobile:
+          type: string
+        status:
           type: string
     LoginUserResponseDto:
       type: object
@@ -1244,9 +1416,9 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
-        emailVerified:
-          type: boolean
         emailValid:
+          type: boolean
+        emailVerified:
           type: boolean
         leapMonth:
           type: boolean
@@ -1264,9 +1436,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultImage:
-          type: boolean
         defaultNickname:
+          type: boolean
+        defaultImage:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -1868,9 +2040,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favouriteBlocked:
-          type: boolean
         favourite:
+          type: boolean
+        favouriteBlocked:
           type: boolean
     DetailComicsResponseDto:
       type: object

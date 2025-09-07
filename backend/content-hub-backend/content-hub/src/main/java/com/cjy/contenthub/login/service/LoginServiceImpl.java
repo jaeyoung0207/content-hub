@@ -14,8 +14,10 @@ import com.cjy.contenthub.common.api.dto.naver.NaverDeleteTokenDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverIssueTokenDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.login.helper.LoginHelper;
 import com.cjy.contenthub.login.mapper.LoginMapper;
 import com.cjy.contenthub.login.service.dto.LoginUserServiceDto;
 
@@ -30,10 +32,13 @@ import lombok.RequiredArgsConstructor;
 public class LoginServiceImpl implements LoginService {
 
 	/** 유저 리포지토리 */
-	private final UserRepository repository;
+	private final UserRepository userRepository;
+	
+	/** 로그인 헬퍼 */
+	private final LoginHelper loginHelper;
 
 	/** 로그인 매퍼 */
-	private final LoginMapper mapper;
+	private final LoginMapper loginMapper;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -126,18 +131,25 @@ public class LoginServiceImpl implements LoginService {
 	 * @param loginUserServiceDto 로그인 유저 서비스 DTO
 	 */
 	@Override
-	public void saveUser(LoginUserServiceDto loginUserServiceDto) {
+	public LoginUserServiceDto saveUser(LoginUserServiceDto loginUserServiceDto) {
 
 		// provider, providerId에 해당하는 유저정보가 등록되어 있는지 확인
-		boolean isSaved = repository.existsByProviderAndProviderId(loginUserServiceDto.getProvider(), loginUserServiceDto.getProviderId());
+		UserEntity userInfo = userRepository.findByProviderAndProviderId(loginUserServiceDto.getProvider(), loginUserServiceDto.getProviderId());
 
 		// 유저 정보가 등록되어 있지 않은 경우
-		if (!isSaved) {
+		if (userInfo == null) {
 			// LoginUserServiceDto -> UserEntity 매핑
-			UserEntity userEntity = mapper.userServiceDtoToUserEntity(loginUserServiceDto);
+			UserEntity userEntity = loginMapper.userServiceDtoToUserEntity(loginUserServiceDto);
 			// 유저 정보 등록
-			repository.save(userEntity);
+			userInfo = userRepository.save(userEntity);
+		} 
+		// 유저 정보가 등록되어 있는 경우
+		else {
+			// 유저 상태를 LOGIN으로 변경
+			loginHelper.updateUserStatus(userInfo.getUserId(), LoginStatusEmum.LOGIN.getLoginStatus());
 		}
+		// UserEntity -> LoginUserServiceDto 매핑 후 리턴
+		return loginMapper.userEntityToUserServiceDto(userInfo);
 	}
 
 	/**
@@ -196,10 +208,14 @@ public class LoginServiceImpl implements LoginService {
 	 * 네이버 로그인 토큰 삭제
 	 *
 	 * @param accessToken 액세스 토큰
+	 * @param userId      유저 테이블 ID
 	 * @return NaverDeleteTokenDto
 	 */
 	@Override
-	public NaverDeleteTokenDto deleteNaverToken(String accessToken) {
+	public NaverDeleteTokenDto deleteNaverToken(String accessToken, Long userId) {
+		
+		// 유저 상태를 LOGOUT으로 변경
+		loginHelper.updateUserStatus(userId, LoginStatusEmum.LOGOUT.getLoginStatus());
 
 		// 네이버 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -277,10 +293,14 @@ public class LoginServiceImpl implements LoginService {
 	 *
 	 * @param accessToken 액세스 토큰
 	 * @param targetId    대상 ID (유저 ID)
+	 * @param userId      유저 테이블 ID
 	 * @return KakaoUserInfoDto
 	 */
 	@Override
-	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId) {
+	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId) {
+		
+		// 유저 상태를 LOGOUT으로 변경
+		loginHelper.updateUserStatus(userId, LoginStatusEmum.LOGOUT.getLoginStatus());
 
 		// 카카오 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(kakaoLogoutUrl)

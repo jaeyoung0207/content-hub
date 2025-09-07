@@ -146,6 +146,8 @@ export class Login<
     query: {
       access_token: string;
       target_id: string;
+      /** @format int64 */
+      user_id: number;
     },
     params: RequestParams = {}
   ) =>
@@ -166,6 +168,8 @@ export class Login<
     query: {
       access_token: string;
       target_id: string;
+      /** @format int64 */
+      user_id: number;
     },
     params: RequestParams = {}
   ) =>

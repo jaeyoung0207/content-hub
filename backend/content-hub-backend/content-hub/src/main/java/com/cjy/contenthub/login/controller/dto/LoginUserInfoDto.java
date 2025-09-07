@@ -12,6 +12,12 @@ import lombok.Setter;
 @Builder
 public class LoginUserInfoDto {
 	
+	/** 유저 테이블 식별 ID */
+	private Long userId;
+	
+	/** 로그인 제공자 */
+	private String provider;
+	
 	/** ID */
 	private String id;
 	
@@ -41,5 +47,8 @@ public class LoginUserInfoDto {
 	
 	/** 휴대폰 번호 */
 	private String mobile;
+	
+	/** 상태 */
+	private String status;
 
 }

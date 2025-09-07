@@ -30,6 +30,13 @@ public interface LoginMapper {
 	UserEntity userServiceDtoToUserEntity(LoginUserServiceDto serviceDto);
 	
 	/**
+	 * UserEntity를 LoginUserServiceDto로 변환
+	 * 
+	 * @param userEntity UserEntity
+	 */
+	LoginUserServiceDto userEntityToUserServiceDto(UserEntity userEntity);
+	
+	/**
 	 * NaverProfileDataDto를 LoginUserInfoDto로 변환
 	 * 
 	 * @param userEntity UserEntity

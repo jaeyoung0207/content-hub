@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.service.SearchService;
 
@@ -100,12 +100,16 @@ public class SearchController {
 	 * 애니메이션/드라마/영화 검색 API
 	 * 
 	 * @param keyword 검색어
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<SearchVideoResponseDto> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchVideo")
-	public ResponseEntity<SearchVideoResponseDto> searchVideo(@NotEmpty @RequestParam(PARAM_QUERY) String keyword) {
+	public ResponseEntity<SearchVideoResponseDto> searchVideo(
+			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
+			@Nullable Long userId
+			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchVideo(keyword, isAdult));
+		return ResponseEntity.ok(searchService.searchVideo(keyword, isAdult, userId));
 	}
 
 	/**
@@ -113,15 +117,17 @@ public class SearchController {
 	 * 
 	 * @param keyword 검색어
 	 * @param page 페이지
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchTvDto> 애니 정보 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchAni")
-	public ResponseEntity<TmdbSearchTvDto> searchAni(
+	public ResponseEntity<SearchTvResponseDto> searchAni(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page
+			@Nullable @RequestParam(PARAM_PAGE) Integer page,
+			@Nullable Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchAni(keyword, isAdult, page));
+		return ResponseEntity.ok(searchService.searchAni(keyword, isAdult, page, userId));
 	}
 
 	/**
@@ -129,14 +135,17 @@ public class SearchController {
 	 * 
 	 * @param keyword 검색어
 	 * @param page 페이지
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchTvDto> 드라마 정보 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchDrama")
-	public ResponseEntity<TmdbSearchTvDto> searchDrama(
+	public ResponseEntity<SearchTvResponseDto> searchDrama(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
-			@Nullable @RequestParam(PARAM_PAGE) Integer page) {
+			@Nullable @RequestParam(PARAM_PAGE) Integer page,
+			@Nullable Long userId
+			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchDrama(keyword, isAdult, page));
+		return ResponseEntity.ok(searchService.searchDrama(keyword, isAdult, page, userId));
 	}
 
 	/**
@@ -144,15 +153,17 @@ public class SearchController {
 	 * 
 	 * @param keyword 검색어
 	 * @param page 페이지
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchMovieDto> 영화 정보 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchMovie")
-	public ResponseEntity<TmdbSearchMovieDto> searchMovie(
+	public ResponseEntity<SearchMovieResponseDto> searchMovie(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
-			@Nullable @RequestParam(PARAM_PAGE) Integer page
+			@Nullable @RequestParam(PARAM_PAGE) Integer page,
+			@Nullable Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchMovie(keyword, isAdult, page));
+		return ResponseEntity.ok(searchService.searchMovie(keyword, isAdult, page, userId));
 	}
 
 	/**
@@ -160,16 +171,19 @@ public class SearchController {
 	 * 
 	 * @param keyword 검색어
 	 * @param page 페이지
+	 * @param isMainPage API 입구 판단용 파라미터 (true: 메인화면, false: 전체보기화면)
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<SearchComicsResponseDto> 만화 정보 응답 오브젝트
 	 */
 	@GetMapping(value = "/searchComics")
 	public ResponseEntity<SearchComicsResponseDto> searchComics(
 			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
 			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage
+			@RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage,
+			@Nullable Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchComics(keyword, isAdult, page, isMainPage));
+		return ResponseEntity.ok(searchService.searchComics(keyword, isAdult, page, isMainPage, userId));
 	}
 
 }

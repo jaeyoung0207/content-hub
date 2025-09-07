@@ -53,13 +53,13 @@ public class DetailCommentEntity implements Serializable {
 	@Column(name = "comment_id")
 	private Long commentId;
 
-	/** content 테이블 시퀀스 */
+	/** content 테이블 ID */
 	@NotNull
 	@ManyToOne(targetEntity = ContentEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "content_id", referencedColumnName = "content_id")
 	private ContentEntity content;
 
-	/** user 테이블 시퀀스 */
+	/** user 테이블 ID */
 	@NotNull
 	@ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")

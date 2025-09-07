@@ -8,11 +8,11 @@ import {
   DetailTvResponseDto,
   PersonCreditsCastDto,
   PersonCreditsCrewDto,
-  SearchComicsMediaResultDto,
+  SearchComicsResultDto,
   TmdbRecommendationsMovieResultsDto,
   TmdbRecommendationsTvResultsDto,
-  TmdbSearchMovieResultsDto,
-  TmdbSearchTvResultsDto,
+  SearchMovieResultsDto,
+  SearchTvResultsDto,
   TmdbVideoCreditsCastDto,
   TmdbVideoCreditsCrewDto,
 } from '@/api/data-contracts';
@@ -29,7 +29,7 @@ import { PersonCredits } from '@/components/features/person/Person';
 export const isSearchTvType = (
   results: SearchCommonResultType,
   mediaType: string
-): results is TmdbSearchTvResultsDto => {
+): results is SearchTvResultsDto => {
   return (
     results && (mediaType === MEDIA_TYPE.ANI || mediaType === MEDIA_TYPE.DRAMA)
   );
@@ -44,7 +44,7 @@ export const isSearchTvType = (
 export const isSearchMovieType = (
   results: SearchCommonResultType,
   mediaType: string
-): results is TmdbSearchMovieResultsDto => {
+): results is SearchMovieResultsDto => {
   return results && mediaType === MEDIA_TYPE.MOVIE;
 };
 
@@ -57,7 +57,7 @@ export const isSearchMovieType = (
 export const isSearchComicsType = (
   results: SearchCommonResultType,
   mediaType: string
-): results is SearchComicsMediaResultDto => {
+): results is SearchComicsResultDto => {
   return results && mediaType === MEDIA_TYPE.COMICS;
 };
 

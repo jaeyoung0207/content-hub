@@ -32,8 +32,10 @@ export const Logout = () => {
   useEffect(() => {
     const logout = async () => {
       try {
+        // 제공자가 부여한 ID
+        const providerId = user!.id!;
         // 유저 ID
-        const userId = user!.id!;
+        const userId = user!.userId!;
         // 접근토큰 취득
         const accessToken = sessionStorage.getItem('accessToken');
         // 접근토큰이나 provider가 존재하지 않는 경우는 처리 종료
@@ -45,7 +47,8 @@ export const Logout = () => {
           // 로그아웃 처리
           await loginApi.deleteNaverToken({
             access_token: accessToken,
-            target_id: userId,
+            target_id: providerId,
+            user_id: userId,
           });
         }
         // 카카오로 로그인한 경우
@@ -53,7 +56,8 @@ export const Logout = () => {
           // 로그아웃 처리
           await loginApi.deleteKakaoToken({
             access_token: accessToken,
-            target_id: userId,
+            target_id: providerId,
+            user_id: userId,
           });
         }
       } finally {

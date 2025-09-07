@@ -289,6 +289,20 @@ public class CommonEnum {
 	}
 	
 	/**
+	 * 로그인 상태 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum LoginStatusEmum {
+		/** 로그인 */
+		LOGIN("1"),
+		/** 로그아웃 */
+		LOGOUT("0");
+		
+		private String loginStatus;
+	}
+	
+	/**
 	 * JWT Validate 결과값 enum
 	 */
 	@AllArgsConstructor

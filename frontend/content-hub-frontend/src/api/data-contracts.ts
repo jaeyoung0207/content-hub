@@ -25,6 +25,31 @@ export interface DetailCommentUpdateRequestDto {
   bad?: number;
 }
 
+export interface WishlistRequestDto {
+  /** @format int64 */
+  userId: number;
+  originalMediaType: string;
+  apiId: string;
+  title?: string;
+  thumbnailImageUrl?: string;
+}
+
+export interface WishlistListResponseDto {
+  aniWishlist?: WishlistResponseDto[];
+  dramaWishlist?: WishlistResponseDto[];
+  movieWishlist?: WishlistResponseDto[];
+  comicsWishlist?: WishlistResponseDto[];
+}
+
+export interface WishlistResponseDto {
+  /** @format int64 */
+  userId?: number;
+  originalMediaType?: string;
+  apiId?: string;
+  title?: string;
+  thumbnailImageUrl?: string;
+}
+
 export interface DetailCommentSaveRequestDto {
   originalMediaType: string;
   apiId: string;
@@ -41,22 +66,7 @@ export interface DetailCommentSaveRequestDto {
   bad?: number;
 }
 
-export interface SearchVideoResponseDto {
-  aniResults?: TmdbSearchTvResultsDto[];
-  dramaResults?: TmdbSearchTvResultsDto[];
-  movieResults?: TmdbSearchMovieResultsDto[];
-  /** @format int32 */
-  page?: number;
-  /** @format int32 */
-  totalPages?: number;
-  /** @format int32 */
-  totalResults?: number;
-  dramaViewMore?: boolean;
-  movieViewMore?: boolean;
-  aniViewMore?: boolean;
-}
-
-export interface TmdbSearchMovieResultsDto {
+export interface SearchMovieResultsDto {
   adult?: boolean;
   backdropPath?: string;
   genreIds?: number[];
@@ -70,15 +80,18 @@ export interface TmdbSearchMovieResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
-  genreNames?: string[];
-  originalMediaType?: string;
   originalTitle?: string;
   releaseDate?: string;
   title?: string;
   video?: boolean;
+  originalMediaType?: string;
+  genreNames?: string[];
+  /** @format int64 */
+  contentId?: number;
+  wishlist?: boolean;
 }
 
-export interface TmdbSearchTvResultsDto {
+export interface SearchTvResultsDto {
   adult?: boolean;
   backdropPath?: string;
   genreIds?: number[];
@@ -92,54 +105,54 @@ export interface TmdbSearchTvResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
-  genreNames?: string[];
-  originalMediaType?: string;
   originCountry?: string[];
   firstAirDate?: string;
   name?: string;
-}
-
-export interface TmdbSearchMovieDto {
-  /** @format int32 */
-  page?: number;
-  results?: TmdbSearchMovieResultsDto[];
-  /** @format int32 */
-  totalPages?: number;
-  /** @format int32 */
-  totalResults?: number;
-}
-
-export interface TmdbSearchTvDto {
-  /** @format int32 */
-  page?: number;
-  results?: TmdbSearchTvResultsDto[];
-  /** @format int32 */
-  totalPages?: number;
-  /** @format int32 */
-  totalResults?: number;
-}
-
-export interface SearchComicsMediaResultDto {
-  adult?: boolean;
-  backdropPath?: string;
-  genreIds?: number[];
-  /** @format int32 */
-  id?: number;
-  originalLanguage?: string;
-  originalName?: string;
-  overview?: string;
-  popularity?: number;
-  posterPath?: string;
-  voteAverage?: number;
-  /** @format int32 */
-  voteCount?: number;
-  genreNames?: string[];
   originalMediaType?: string;
-  title?: string;
+  genreNames?: string[];
+  /** @format int64 */
+  contentId?: number;
+  wishlist?: boolean;
+}
+
+export interface SearchVideoResponseDto {
+  aniResults?: SearchTvResultsDto[];
+  dramaResults?: SearchTvResultsDto[];
+  movieResults?: SearchMovieResultsDto[];
+  /** @format int32 */
+  page?: number;
+  /** @format int32 */
+  totalPages?: number;
+  /** @format int32 */
+  totalResults?: number;
+  movieViewMore?: boolean;
+  aniViewMore?: boolean;
+  dramaViewMore?: boolean;
+}
+
+export interface SearchMovieResponseDto {
+  movieResults?: SearchMovieResultsDto[];
+  /** @format int32 */
+  page?: number;
+  /** @format int32 */
+  totalPages?: number;
+  /** @format int32 */
+  totalResults?: number;
+}
+
+export interface SearchTvResponseDto {
+  aniResults?: SearchTvResultsDto[];
+  dramaResults?: SearchTvResultsDto[];
+  /** @format int32 */
+  page?: number;
+  /** @format int32 */
+  totalPages?: number;
+  /** @format int32 */
+  totalResults?: number;
 }
 
 export interface SearchComicsResponseDto {
-  comicsResults?: SearchComicsMediaResultDto[];
+  comicsResults?: SearchComicsResultDto[];
   /** @format int32 */
   page?: number;
   /** @format int32 */
@@ -147,6 +160,28 @@ export interface SearchComicsResponseDto {
   /** @format int32 */
   totalResults?: number;
   comicsViewMore?: boolean;
+}
+
+export interface SearchComicsResultDto {
+  adult?: boolean;
+  backdropPath?: string;
+  genreIds?: number[];
+  /** @format int32 */
+  id?: number;
+  originalLanguage?: string;
+  originalName?: string;
+  overview?: string;
+  popularity?: number;
+  posterPath?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  title?: string;
+  originalMediaType?: string;
+  genreNames?: string[];
+  /** @format int64 */
+  contentId?: number;
+  wishlist?: boolean;
 }
 
 export interface PersonCreditsCastDto {
@@ -225,6 +260,8 @@ export interface PersonResponseDto {
 }
 
 export interface LoginUserInfoDto {
+  /** @format int64 */
+  userId?: number;
   id?: string;
   nickname?: string;
   name?: string;
@@ -235,6 +272,7 @@ export interface LoginUserInfoDto {
   profileImage?: string;
   birthyear?: string;
   mobile?: string;
+  status?: string;
 }
 
 export interface LoginUserResponseDto {
@@ -281,8 +319,8 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  emailVerified?: boolean;
   emailValid?: boolean;
+  emailVerified?: boolean;
   leapMonth?: boolean;
 }
 
@@ -294,8 +332,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultImage?: boolean;
   defaultNickname?: boolean;
+  defaultImage?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -633,8 +671,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface DetailComicsResponseDto {

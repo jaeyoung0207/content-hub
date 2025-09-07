@@ -42,7 +42,7 @@ public class UserEntity implements Serializable {
 	/** 직렬화 ID */
 	private static final long serialVersionUID = 1L;
 
-	/** 시퀀스 */
+	/** 유저 ID */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
@@ -80,6 +80,14 @@ public class UserEntity implements Serializable {
 	@NotNull
 	@Column(name = "update_time")
 	private LocalDateTime updateTime;
+	
+	/**
+	 * status 설정
+	 * @param status
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	/**
 	 * Entitiy가 저장되기 전에 실행되는 메소드

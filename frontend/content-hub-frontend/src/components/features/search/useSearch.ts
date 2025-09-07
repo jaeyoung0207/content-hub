@@ -1,10 +1,10 @@
 import { Search } from '@api/Search';
 import {
   SearchComicsResponseDto,
-  SearchComicsMediaResultDto,
+  SearchComicsResultDto,
   SearchVideoResponseDto,
-  TmdbSearchMovieResultsDto,
-  TmdbSearchTvResultsDto,
+  SearchMovieResultsDto,
+  SearchTvResultsDto,
 } from '@api/data-contracts';
 import { useQuery } from '@tanstack/react-query';
 import { searchQueryKeys } from './queryKeys/searchQueryKeys';
@@ -20,9 +20,9 @@ import { AxiosErrorType } from '@/components/common/config/queryClientConfig';
 
 // 공통 검색 결과 타입
 export type SearchCommonResultType =
-  | TmdbSearchTvResultsDto
-  | TmdbSearchMovieResultsDto
-  | SearchComicsMediaResultDto;
+  | SearchTvResultsDto
+  | SearchMovieResultsDto
+  | SearchComicsResultDto;
 
 /**
  * 검색 훅 반환 타입

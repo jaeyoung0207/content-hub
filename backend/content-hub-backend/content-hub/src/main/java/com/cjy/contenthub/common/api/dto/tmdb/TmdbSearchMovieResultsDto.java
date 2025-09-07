@@ -1,8 +1,10 @@
 package com.cjy.contenthub.common.api.dto.tmdb;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * TMDB API 영화 검색 결과 Response DTO
@@ -13,7 +15,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class TmdbSearchMovieResultsDto extends TmdbSearchCommonResultsDto {
 
 	/** 원제목 */

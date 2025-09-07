@@ -18,6 +18,7 @@ import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
+import com.cjy.contenthub.login.helper.LoginHelper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +38,10 @@ public class SecurityConfig {
 	private final RedisUtil redisUtil;
 	
 	/** User 리포지토리 */
-	private final UserRepository repository;
+	private final UserRepository userRepository;
+	
+	/** 로그인 헬퍼 */
+	private final LoginHelper loginHelper;
 	
 	/** 인증 예외 처리 필터 */
 	private final CommonAuthenticationEntryPoint authenticationEntryPoint;
@@ -68,16 +72,17 @@ public class SecurityConfig {
 		httpSecurity
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
-//				.requestMatchers("/wishList/**").authenticated() // "/wishList/**" 경로에 대한 요청은 인증 필요
+//				.requestMatchers("/wishlist/**").authenticated() // "/wishlist/**" 경로에 대한 요청은 인증 필요
 				.anyRequest().permitAll() // 로그인 없이 접근 가능하므로, 모든 요청에 대해 인증 없이 접근 허용
 				)
 		.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
+//		.csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
 		.csrf(csrf -> csrf
 				.csrfTokenRepository(csrfTokenRepository)
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers("/login/**")
 				) // CSRF 보호 활성화
-		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, redisUtil, repository), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, redisUtil, userRepository, loginHelper), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 
 		// HTTP 보안 설정을 빌드하여 반환

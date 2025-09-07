@@ -61,9 +61,4 @@ public abstract class TmdbSearchCommonResultsDto {
 	/** 투표 수 */
 	private int voteCount;
 	
-	/** 장르명 리스트 */
-	private List<String> genreNames;
-
-	/** 원작품 미디어 타입 */
-	private String originalMediaType;
 }

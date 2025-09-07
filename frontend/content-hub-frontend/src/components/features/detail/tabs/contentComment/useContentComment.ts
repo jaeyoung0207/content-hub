@@ -216,6 +216,8 @@ export const useContentComment = (
     // 초기 페이지 매개변수를 지정
     initialPageParam: 0,
     // enabled: !!tabIndex, // useInfiniteQuery가 실행되는 조건 지정
+    staleTime: 0, // 캐시를 무효화 하여 최신 데이터 조회
+    gcTime: 0, // 캐시를 무효화 하여 최신 데이터 조회
   });
 
   /**

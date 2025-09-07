@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,7 +66,6 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 등록 성공 여부
 	 */
 	@Override
-	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean saveComment(DetailCommentDataServiceDto commentParam) {
 
 		// 서비스 DTO를 엔티티로 변환
@@ -105,7 +102,6 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 갱신 성공 여부
 	 */
 	@Override
-	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean updateComment(DetailCommentDataServiceDto commentParam) {
 		
 		// 서비스 DTO를 엔티티로 변환
@@ -135,7 +131,6 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return boolean 삭제 성공 여부
 	 */
 	@Override
-	@CacheEvict(value = "commentList", allEntries = true)
 	public boolean deleteComment(Long commentId) {
 		
 		// 해당 코멘트 삭제
@@ -155,7 +150,6 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	 * @return 상세 코멘트 서비스 DTO
 	 */
 	@Override
-	@Cacheable(value = "commentList", key = "#originalMediaType + '_' + #apiId + '_' + #page + '_' + #providerId", unless = "#result == null")
 	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String providerId) {
 
 		// 페이지 번호 설정
@@ -175,12 +169,12 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		}
 		
 		// 서비스 DTO 리스트 생성
-		List<DetailCommentDataServiceDto> commentDatServiceDtoList = 
+		List<DetailCommentDataServiceDto> commentDataServiceDtoList = 
 				commentList.isEmpty() ? new ArrayList<>() 
 						: mapper.commentEntityListToCommentServiceList(commentList);
 		// 서비스 DTO 반환
 		return DetailCommentServiceDto.builder()
-				.dataList(commentDatServiceDtoList)
+				.dataList(commentDataServiceDtoList)
 				.totalElements(commentEntityPage.getTotalElements())
 				.build();
 

@@ -2,9 +2,6 @@ package com.cjy.contenthub.search.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,13 +15,13 @@ import lombok.Setter;
 public class SearchVideoResponseDto {
 
 	/** TMDB API TV 프로그램 검색 결과 DTO 애니 리스트 */
-	private List<TmdbSearchTvResultsDto> aniResults;
+	private List<SearchTvResultsDto> aniResults;
 	
 	/** TMDB API TV 프로그램 검색 결과 DTO 드라마 리스트 */
-	private List<TmdbSearchTvResultsDto> dramaResults;
+	private List<SearchTvResultsDto> dramaResults;
 	
 	/** TMDB API 영화 검색 결과 DTO 영화 리스트 */
-	private List<TmdbSearchMovieResultsDto> movieResults;
+	private List<SearchMovieResultsDto> movieResults;
 	
 	/** 페이지 */
 	private int page;

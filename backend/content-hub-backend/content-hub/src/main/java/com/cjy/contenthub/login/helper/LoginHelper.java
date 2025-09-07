@@ -3,22 +3,31 @@ package com.cjy.contenthub.login.helper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
+import com.cjy.contenthub.common.exception.CommonBusinessException;
+import com.cjy.contenthub.common.repository.UserRepository;
+import com.cjy.contenthub.common.repository.entity.UserEntity;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 로그인 관련 유틸리티 클래스
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
+@RequiredArgsConstructor
 public class LoginHelper {
+	
+	/** 유저 리포지토리 */
+	private final UserRepository userRepository;
 
 	/**
 	 * 쿠키에서 로그인 유저의 프로바이더 정보를 추출
@@ -27,7 +36,7 @@ public class LoginHelper {
 	 * @param provider 로그인 제공자
 	 * @return 리프레시 토큰
 	 */
-	public static String getRefreshToken(HttpServletRequest request, String provider) {
+	public String getRefreshToken(HttpServletRequest request, String provider) {
 		// 쿠키 추출
 		String refreshToken = null;
 		Cookie[] cookies = request.getCookies();
@@ -53,4 +62,28 @@ public class LoginHelper {
 		// 리프레시 토큰 반환
 		return refreshToken;
 	}
+	
+	/**
+	 * 유저 상태 갱신
+	 * 
+	 * @param userId 유저 ID
+	 * @param status 유저 상태
+	 */
+	public void updateUserStatus(Long userId, String status) {
+		
+		// 유저 정보 조회
+		Optional<UserEntity> userInfo = userRepository.findById(userId);
+		
+		// 유저 정보가 존재하지 않는 경우 예외 처리
+		if (!userInfo.isPresent()) {
+			throw new CommonBusinessException("유저 정보가 존재하지 않습니다.");
+		}
+		
+		// 유저 상태를 LOGOUT으로 변경
+		userInfo.get().setStatus(status);
+		
+		// 테이블에 등록(갱신)
+		userRepository.save(userInfo.get());
+	}
+	
 }

@@ -16,13 +16,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchTvResponseDto {
+public class SearchMovieResponseDto {
 
-	/** TMDB API TV 프로그램 검색 결과 DTO 애니 리스트 */
-	private List<SearchTvResultsDto> aniResults;
-	
-	/** TMDB API TV 프로그램 검색 결과 DTO 드라마 리스트 */
-	private List<SearchTvResultsDto> dramaResults;
+    /** TMDB API 영화 검색 결과 DTO 영화 */
+	private List<SearchMovieResultsDto> movieResults;
 	
 	/** 페이지 */
 	private int page;

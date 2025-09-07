@@ -19,7 +19,7 @@ import lombok.Setter;
 public class SearchComicsResponseDto {
 
 	/** 만화 결과 DTO 리스트 */
-	private List<SearchComicsMediaResultDto> comicsResults;
+	private List<SearchComicsResultDto> comicsResults;
 	
 	/** 페이지 */
 	private int page;

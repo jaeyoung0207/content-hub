@@ -12,9 +12,9 @@
 
 import {
   SearchComicsResponseDto,
+  SearchMovieResponseDto,
+  SearchTvResponseDto,
   SearchVideoResponseDto,
-  TmdbSearchMovieDto,
-  TmdbSearchTvDto,
 } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
@@ -31,6 +31,8 @@ export class Search<
   searchVideo = (
     query: {
       query: string;
+      /** @format int64 */
+      userId?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -52,10 +54,12 @@ export class Search<
       query: string;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      userId?: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<TmdbSearchMovieDto, any>({
+    this.request<SearchMovieResponseDto, any>({
       path: `/search/searchMovie`,
       method: 'GET',
       query: query,
@@ -92,10 +96,12 @@ export class Search<
       query: string;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      userId?: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<TmdbSearchTvDto, any>({
+    this.request<SearchTvResponseDto, any>({
       path: `/search/searchDrama`,
       method: 'GET',
       query: query,
@@ -114,6 +120,8 @@ export class Search<
       /** @format int32 */
       page?: number;
       isMainPage: boolean;
+      /** @format int64 */
+      userId?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -135,10 +143,12 @@ export class Search<
       query: string;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      userId?: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<TmdbSearchTvDto, any>({
+    this.request<SearchTvResponseDto, any>({
       path: `/search/searchAni`,
       method: 'GET',
       query: query,

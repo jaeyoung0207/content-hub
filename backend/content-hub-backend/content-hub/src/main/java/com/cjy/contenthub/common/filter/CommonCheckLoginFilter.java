@@ -39,7 +39,10 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	private final RedisUtil redisUtil;
 	
 	/** User 리포지토리 */
-	private final UserRepository repository;
+	private final UserRepository userRepository;
+	
+	/** 로그인 헬퍼 */
+	private final LoginHelper loginHelper;
 	
 	/**
 	 * 필터가 적용될 URL 패턴을 정의
@@ -86,14 +89,14 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			String provider = (String) claims.get("provider");
 			
 			// 쿠키에서 리프레시 토큰 추출
-			String refreshToken = LoginHelper.getRefreshToken(request, provider);
+			String refreshToken = loginHelper.getRefreshToken(request, provider);
 			// 리프레시 토큰 검증
 			if (!redisUtil.validateRefreshToken(provider, providerId, refreshToken)) {
 				throw new AccountExpiredException("No available refresh token");
 			}
 			
 			// user 테이블에 등록되어 있는지 확인
-			boolean isSaved = repository.existsByProviderAndProviderId(provider, providerId);
+			boolean isSaved = userRepository.existsByProviderAndProviderId(provider, providerId);
 			// 유저가 존재하지 않는 경우, 예외를 발생시킴
 			if(!isSaved) {
 				throw new UsernameNotFoundException("User ID is not registered");

@@ -16,7 +16,7 @@ public interface LoginService {
 	 *
 	 * @param loginUserServiceDto 로그인 유저 서비스 DTO
 	 */
-	void saveUser(LoginUserServiceDto loginUserServiceDto);
+	LoginUserServiceDto saveUser(LoginUserServiceDto loginUserServiceDto);
 	
 	/**
 	 * 네이버 로그인 토큰 발행
@@ -41,9 +41,10 @@ public interface LoginService {
 	 * 네이버 로그인 토큰 삭제
 	 *
 	 * @param accessToken 액세스 토큰
+	 * @param userId      유저 테이블 ID
 	 * @return 네이버 토큰 삭제 DTO
 	 */
-	NaverDeleteTokenDto deleteNaverToken(String accessToken);
+	NaverDeleteTokenDto deleteNaverToken(String accessToken, Long userId);
 	
 	/**
 	 * 카카오 로그인 토큰 발행
@@ -69,8 +70,9 @@ public interface LoginService {
 	 *
 	 * @param accessToken 액세스 토큰
 	 * @param targetId    타겟 ID
+	 * @param userId      유저 테이블 ID
 	 * @return 카카오 유저 정보 DTO
 	 */
-	KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId);
+	KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId);
 
 }
