@@ -111,7 +111,8 @@ export const DisplayVideoCredits = ({
               return (
                 <div
                   key={index}
-                  className={`ml-1 mr-1 w-[390px] h-[${heightStyle}px]`}
+                  className={`ml-1 mr-1 w-[390px]`}
+                  style={{ height: `${heightStyle}px` }}
                   onClick={() => checkPersonId(items.id)}
                 >
                   <Link
@@ -135,7 +136,8 @@ export const DisplayVideoCredits = ({
                       {/* 이름 & 역할 */}
                       <li className="ml-4 mr-1 text-lg w-[70%] break-words">
                         <div
-                          className={`flex items-center-safe h-[${heightStyle - 15}px] overflow-y-auto not-hover:scrollbar-default`}
+                          className={`flex items-center-safe overflow-y-auto not-hover:scrollbar-default`}
+                          style={{ height: `${heightStyle - 15}px` }}
                         >
                           <div>
                             <div className="mr-1">{items.name!}</div>

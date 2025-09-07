@@ -86,7 +86,8 @@ export const DisplayComicsCredits = ({
                 {creditsInfo && (
                   <div
                     key={index}
-                    className={`ml-1 mr-1 w-[220px] h-[${heightStyle}px]`}
+                    className={`ml-1 mr-1 w-[220px]`}
+                    style={{ height: `${heightStyle}px` }}
                     onClick={() =>
                       isCharacter
                         ? checkCharacterId(creditsInfo.id)
@@ -122,7 +123,8 @@ export const DisplayComicsCredits = ({
                         {/* 이름 & 역할 */}
                         <li className={`ml-4 mr-1 text-sm w-[65%] break-words`}>
                           <div
-                            className={`flex items-center-safe h-[${heightStyle - 15}px] overflow-y-auto not-hover:scrollbar-default`}
+                            className={`flex items-center-safe overflow-y-auto not-hover:scrollbar-default`}
+                            style={{ height: `${heightStyle - 15}px` }}
                           >
                             <div>
                               <div className="mr-1">
