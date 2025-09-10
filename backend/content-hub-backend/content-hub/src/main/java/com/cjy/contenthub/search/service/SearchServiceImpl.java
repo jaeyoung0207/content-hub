@@ -29,8 +29,10 @@ import com.cjy.contenthub.common.constants.CommonEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.util.ApiUtil;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
@@ -38,6 +40,7 @@ import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.helper.SearchHelper;
 import com.cjy.contenthub.search.mapper.SearchMapper;
+import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +71,9 @@ public class SearchServiceImpl implements SearchService {
 
 	/** 검색 매퍼 클래스 */
 	private final SearchMapper mapper;
+
+	/** wishlist 레포지토리 */
+	private final WishlistRepository wishlistRepository;
 
 	/** TMDB API TV시리즈 검색 API 패스 */
 	@Value("${tmdb.url.tvSearchPath}")
@@ -196,7 +202,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchVideo", key = "#keyword + '_' + #isAdult", unless = "#result == null")
+	@Cacheable(value = "searchVideo", key = "#keyword + '_' + #isAdult + '_' + #userId", unless = "#result == null")
 	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult, Long userId) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
@@ -317,11 +323,29 @@ public class SearchServiceImpl implements SearchService {
 				// 영화 정보에서 애니영화 제외한 정보 추출
 				filteredMovieList.addAll(helper.getMovieList(movieResultList, movieGenreMap));
 
-				// 로그인한 유저 정보가 존재하는 경우 위시리스트 설정
+				// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
 				if (userId != null) {
-					helper.setWishlist(aniResultList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), userId);
-					helper.setWishlist(dramaResultList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), userId);
-					helper.setWishlist(filteredMovieList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), userId);
+					BusinessUtil.setWishlisted(
+							aniResultList, 
+							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+							userId, 
+							dto -> String.valueOf(dto.getId()),
+							SearchTvResultsDto::setWishlisted, // (dto, wishlisted) -> dto.setWishlisted(wishlisted)
+							wishlistRepository);
+					BusinessUtil.setWishlisted(
+							dramaResultList, 
+							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+							userId, 
+							dto -> String.valueOf(dto.getId()),
+							SearchTvResultsDto::setWishlisted,
+							wishlistRepository);
+					BusinessUtil.setWishlisted(
+							filteredMovieList, 
+							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
+							userId, 
+							dto -> String.valueOf(dto.getId()),
+							SearchMovieResultsDto::setWishlisted, 
+							wishlistRepository);
 				}
 
 				// 응답 오브젝트 설정
@@ -341,7 +365,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 애니 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchAni", key = "#keyword + '_' + #isAdult + '_' + #page", unless = "#result == null")
+	@Cacheable(value = "searchAni", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
 	public SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page, Long userId) {
 
 		int currentPage = Optional.ofNullable(page).orElse(1);
@@ -397,9 +421,16 @@ public class SearchServiceImpl implements SearchService {
 					aniResultList.addAll(helper.getAniMovieList(movieList, movieGenreMap));
 				}
 
-				// 로그인한 유저 정보가 존재하는 경우 위시리스트 설정
+				// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
 				if (userId != null) {
-					helper.setWishlist(aniResultList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), userId);
+					BusinessUtil.setWishlisted(
+							aniResultList, 
+							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+							userId, 
+							dto -> String.valueOf(dto.getId()),
+							SearchTvResultsDto::setWishlisted, 
+							wishlistRepository);
+//					helper.setWishlisted(aniResultList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), userId);
 				}
 
 				// 반환값 설정
@@ -423,7 +454,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 드라마 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchDrama", key = "#keyword + '_' + #isAdult + '_' + #page", unless = "#result == null")
+	@Cacheable(value = "searchDrama", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
 	public SearchTvResponseDto searchDrama(String keyword, boolean isAdult, Integer page, Long userId) {
 
 		// 드라마 장르 정보 조회
@@ -436,9 +467,16 @@ public class SearchServiceImpl implements SearchService {
 			// TBMD TV 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchTvResultsDto> tvResultsList = mapper.tvResultsListToTmdbTvResultsList(response.getResults());
 
-			// 로그인한 유저 정보가 존재하는 경우 위시리스트 설정
+			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
 			if (userId != null) {
-				helper.setWishlist(tvResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), userId);
+				BusinessUtil.setWishlisted(
+						tvResultsList, 
+						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+						userId,
+						dto -> String.valueOf(dto.getId()),
+						SearchTvResultsDto::setWishlisted, 
+						wishlistRepository);
+//				helper.setWishlisted(tvResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), userId);
 			}
 
 			// 결과값 설정
@@ -462,7 +500,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 영화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchMovie", key = "#keyword + '_' + #isAdult + '_' + #page", unless = "#result == null")
+	@Cacheable(value = "searchMovie", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
 	public SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page, Long userId) {
 
 		// 영화 장르 정보 조회
@@ -476,9 +514,16 @@ public class SearchServiceImpl implements SearchService {
 			// TBMD Movie 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchMovieResultsDto> movieResultsList = mapper.movieResultsListToTmdbMovieResultsList(response.getResults());
 
-			// 로그인한 유저 정보가 존재하는 경우 위시리스트 설정
+			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
 			if (userId != null) {
-				helper.setWishlist(movieResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), userId);
+				BusinessUtil.setWishlisted(
+						movieResultsList, 
+						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
+						userId,
+						dto -> String.valueOf(dto.getId()),
+						SearchMovieResultsDto::setWishlisted, 
+						wishlistRepository);
+//				helper.setWishlisted(movieResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), userId);
 			}
 
 			// 결과값 설정
@@ -502,7 +547,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 만화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchComics", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #isMainPage", unless = "#result == null")
+	@Cacheable(value = "searchComics", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #isMainPage + '_' + #userId", unless = "#result == null")
 	public SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage, Long userId) {
 
 		// API를 어디서 불렀는지에 따라 표시 건수를 다르게 설정
@@ -542,12 +587,28 @@ public class SearchServiceImpl implements SearchService {
 							AniListPageInfoDto comicsPageDto = response.getData().getPage().getPageInfo();
 							int currentPage = comicsPageDto.getCurrentPage();
 							int lastPage = comicsPageDto.getLastPage();
+							
+							// 응답 데이터 매핑
+							List<SearchComicsResultDto> comicsResultsList = 
+									helper.setComicsResponse(response.getData().getPage().getMedia());
+							
+							// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+							if (userId != null) {
+								BusinessUtil.setWishlisted(
+										comicsResultsList, 
+										CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode(), 
+										userId,
+										dto -> String.valueOf(dto.getId()),
+										SearchComicsResultDto::setWishlisted, 
+										wishlistRepository);
+							}
+							
 							// 응답 데이터 재분배
 							SearchComicsResponseDto comicsResponse = SearchComicsResponseDto.builder()
 									.page(currentPage)
 									.totalPages(lastPage)
 									.isComicsViewMore(currentPage < lastPage)
-									.comicsResults(helper.setComicsResponse(response.getData().getPage().getMedia(), userId))
+									.comicsResults(comicsResultsList)
 									.build();
 
 							// 응답 오브젝트 반환

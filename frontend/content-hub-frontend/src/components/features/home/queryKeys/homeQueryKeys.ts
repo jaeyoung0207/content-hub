@@ -1,3 +1,4 @@
+// 홈 메인 쿼리 키
 const homeMainKey = 'home';
 
 /**

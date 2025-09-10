@@ -31,7 +31,7 @@ import com.cjy.contenthub.detail.service.dto.DetailCommentServiceDto;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 상세 페이지 코멘트 관련 서비스 구현 클래스
+ * 상세 코멘트 서비스 구현 클래스
  * 
  * @see DetailCommentService
  */

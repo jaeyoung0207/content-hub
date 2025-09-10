@@ -224,7 +224,7 @@ paths:
             format: int32
         - name: isMainPage
           in: query
-          required: true
+          required: false
           schema:
             type: boolean
         - name: userId
@@ -481,6 +481,13 @@ paths:
       tags:
         - home-controller
       operationId: getContentRankings
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -512,7 +519,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/TmdbRecommendationsTvDto'
+                $ref: '#/components/schemas/DetailRecommendationsTvDto'
   /detail/recommendation/getMovieRecommendations:
     get:
       tags:
@@ -537,7 +544,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/TmdbRecommendationsMovieDto'
+                $ref: '#/components/schemas/DetailRecommendationsMovieDto'
   /detail/recommendation/getComicsRecommendations:
     get:
       tags:
@@ -984,10 +991,7 @@ components:
           type: array
           items:
             type: string
-        contentId:
-          type: integer
-          format: int64
-        wishlist:
+        wishlisted:
           type: boolean
     SearchTvResultsDto:
       type: object
@@ -1033,10 +1037,7 @@ components:
           type: array
           items:
             type: string
-        contentId:
-          type: integer
-          format: int64
-        wishlist:
+        wishlisted:
           type: boolean
     SearchVideoResponseDto:
       type: object
@@ -1064,9 +1065,9 @@ components:
           format: int32
         movieViewMore:
           type: boolean
-        aniViewMore:
-          type: boolean
         dramaViewMore:
+          type: boolean
+        aniViewMore:
           type: boolean
     SearchMovieResponseDto:
       type: object
@@ -1160,10 +1161,7 @@ components:
           type: array
           items:
             type: string
-        contentId:
-          type: integer
-          format: int64
-        wishlist:
+        wishlisted:
           type: boolean
     PersonCreditsCastDto:
       type: object
@@ -1314,6 +1312,8 @@ components:
         userId:
           type: integer
           format: int64
+        provider:
+          type: string
         id:
           type: string
         nickname:
@@ -1416,11 +1416,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        leapMonth:
+          type: boolean
         emailValid:
           type: boolean
         emailVerified:
-          type: boolean
-        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1503,7 +1503,9 @@ components:
           type: string
         thumbnailImageUrl:
           type: string
-    TmdbRecommendationsTvDto:
+        wishlisted:
+          type: boolean
+    DetailRecommendationsTvDto:
       type: object
       properties:
         page:
@@ -1512,14 +1514,14 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/TmdbRecommendationsTvResultsDto'
+            $ref: '#/components/schemas/DetailRecommendationsTvResultsDto'
         totalPages:
           type: integer
           format: int32
         totalResults:
           type: integer
           format: int32
-    TmdbRecommendationsTvResultsDto:
+    DetailRecommendationsTvResultsDto:
       type: object
       properties:
         adult:
@@ -1547,8 +1549,6 @@ components:
         voteCount:
           type: integer
           format: int32
-        originalMediaType:
-          type: string
         originCountry:
           type: array
           items:
@@ -1559,7 +1559,11 @@ components:
           type: string
         name:
           type: string
-    TmdbRecommendationsMovieDto:
+        originalMediaType:
+          type: string
+        wishlisted:
+          type: boolean
+    DetailRecommendationsMovieDto:
       type: object
       properties:
         page:
@@ -1568,14 +1572,14 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/TmdbRecommendationsMovieResultsDto'
+            $ref: '#/components/schemas/DetailRecommendationsMovieResultsDto'
         totalPages:
           type: integer
           format: int32
         totalResults:
           type: integer
           format: int32
-    TmdbRecommendationsMovieResultsDto:
+    DetailRecommendationsMovieResultsDto:
       type: object
       properties:
         adult:
@@ -1603,8 +1607,6 @@ components:
         voteCount:
           type: integer
           format: int32
-        originalMediaType:
-          type: string
         originalTitle:
           type: string
         releaseDate:
@@ -1612,6 +1614,10 @@ components:
         title:
           type: string
         video:
+          type: boolean
+        originalMediaType:
+          type: string
+        wishlisted:
           type: boolean
     DetailComicsRecommendationsResponseDto:
       type: object
@@ -1648,10 +1654,12 @@ components:
         voteCount:
           type: integer
           format: int32
-        originalMediaType:
-          type: string
         title:
           type: string
+        originalMediaType:
+          type: string
+        wishlisted:
+          type: boolean
     DetailTvResponseDto:
       type: object
       properties:

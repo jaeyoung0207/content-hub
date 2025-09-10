@@ -23,10 +23,7 @@ public class SearchMovieResultsDto extends TmdbSearchMovieResultsDto {
 	/** 장르명 리스트 */
 	private List<String> genreNames;
 	
-	/** 콘텐츠 ID */
-	private Long contentId;
-	
 	/** 위시리스트 여부 */
-	private boolean isWishlist;
+	private boolean isWishlisted;
 
 }

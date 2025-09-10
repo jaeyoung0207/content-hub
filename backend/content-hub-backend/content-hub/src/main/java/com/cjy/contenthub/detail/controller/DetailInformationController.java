@@ -2,14 +2,11 @@ package com.cjy.contenthub.detail.controller;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
@@ -23,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 상세 화면 API 컨트롤러 클래스
+ * 상세 화면 기본 정보 API 컨트롤러 클래스
  */
 @RestController
 @RequestMapping("/detail/information")
@@ -33,59 +30,7 @@ public class DetailInformationController {
 
 	/** 상세 정보 서비스 */
 	private final DetailInformationService informationService;
-
-	/** TMDB API 통신용 WebClient 클래스 */
-	@Qualifier("tmdbWebClient")
-	private final WebClient tmdbWebClient;
-
-	/** AniList API 통신용 WebClient 클래스 */
-	@Qualifier("anilistWebClient")
-	private final WebClient anilistWebClient;
-
-	/** DeepL API 통신용 WebClient 클래스 */
-	@Qualifier("deeplWebClient")
-	private final WebClient deeplWebClient;
-
-	/** TMDB API TV Detail API 패스 */
-	@Value("${tmdb.url.tvDetailPath}")
-	private String tvDetailPath;
-
-	/** TMDB API Movie Detail API 패스 */
-	@Value("${tmdb.url.movieDetailPath}")
-	private String movieDetailPath;
-
-	/** TMDB API TV Watch Providers API 패스 */
-	@Value("${tmdb.url.tvWatchProvidersPath}")
-	private String tvWatchProvidersPath;
-
-	/** TMDB API Movie Watch Providers API 패스 */
-	@Value("${tmdb.url.movieWatchProvidersPath}")
-	private String movieWatchProvidersPath;
-
-	/** TMDB API TV 추천 작품 API 패스 */
-	@Value("${tmdb.url.tvRecommendationsPath}")
-	private String tvRecommendationsPath;
-
-	/** TMDB API Movie 추천 작품 API 패스 */
-	@Value("${tmdb.url.movieRecommendationsPath}")
-	private String movieRecommendationsPath;
-
-	/** TMDB API TV 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.tvSimilarPath}")
-	private String tvSimilarPath;
-
-	/** TMDB API Movie 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.movieSimilarPath}")
-	private String movieSimilarPath;
-
-	/** AniList API 전체보기화면 작품 표시 개수 */
-	@Value("${anilist.custom.perMorePage}")
-	private int anilistPerMorePage;
 	
-	/** AniList API 상세화면 캐릭터 표시 개수 */
-	@Value("${anilist.custom.perCharacterPage}")
-	private int anilistPerCharacterPage;
-
 	/** 리퀘스트 파라미터 키 : TV SERIES ID */
 	private static final String PARAM_TV_SERIES_ID = "series_id";
 

@@ -81,7 +81,7 @@ export const useSearchMore = (
       if (response.data.page === 1) {
         totalPagesRef.current = response.data.totalPages;
       }
-      return response.data.results;
+      return response.data.aniResults;
     } else if (mediaType == MEDIA_TYPE.DRAMA) {
       // 드라마 검색 API 호출
       const response = await await searchApi.searchDrama(
@@ -92,7 +92,7 @@ export const useSearchMore = (
       if (response.data.page === 1) {
         totalPagesRef.current = response.data.totalPages;
       }
-      return response.data.results;
+      return response.data.dramaResults;
     } else if (mediaType == MEDIA_TYPE.MOVIE) {
       // 영화 검색 API 호출
       const response = await await searchApi.searchMovie(
@@ -103,7 +103,7 @@ export const useSearchMore = (
       if (response.data.page === 1) {
         totalPagesRef.current = response.data.totalPages;
       }
-      return response.data.results;
+      return response.data.movieResults;
     } else if (mediaType == MEDIA_TYPE.COMICS) {
       // 만화 검색 API 호출
       const response = await await searchApi.searchComics(

@@ -9,8 +9,8 @@ import {
   PersonCreditsCastDto,
   PersonCreditsCrewDto,
   SearchComicsResultDto,
-  TmdbRecommendationsMovieResultsDto,
-  TmdbRecommendationsTvResultsDto,
+  DetailRecommendationsMovieResultsDto,
+  DetailRecommendationsTvResultsDto,
   SearchMovieResultsDto,
   SearchTvResultsDto,
   TmdbVideoCreditsCastDto,
@@ -70,7 +70,7 @@ export const isSearchComicsType = (
 export const isRecommendationsTvType = (
   results: RecommendationContentResultType,
   originalMediaType: string
-): results is TmdbRecommendationsTvResultsDto => {
+): results is DetailRecommendationsTvResultsDto => {
   return (
     results &&
     (originalMediaType === MEDIA_TYPE.ANI ||
@@ -87,7 +87,7 @@ export const isRecommendationsTvType = (
 export const isRecommendationsMovieType = (
   results: RecommendationContentResultType,
   originalMediaType: string
-): results is TmdbRecommendationsMovieResultsDto => {
+): results is DetailRecommendationsMovieResultsDto => {
   return results && originalMediaType === MEDIA_TYPE.MOVIE;
 };
 

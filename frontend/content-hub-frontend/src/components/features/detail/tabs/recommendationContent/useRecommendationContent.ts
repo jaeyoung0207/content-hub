@@ -1,7 +1,7 @@
 import {
   DetailComicsRecommendationsResultDto,
-  TmdbRecommendationsMovieResultsDto,
-  TmdbRecommendationsTvResultsDto,
+  DetailRecommendationsMovieResultsDto,
+  DetailRecommendationsTvResultsDto,
 } from '@/api/data-contracts';
 import { Detail } from '@/api/Detail';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -42,8 +42,8 @@ type useRecommendationContentReturnType = {
 
 // 추천 콘텐츠 결과 타입
 export type RecommendationContentResultType =
-  | TmdbRecommendationsTvResultsDto
-  | TmdbRecommendationsMovieResultsDto
+  | DetailRecommendationsTvResultsDto
+  | DetailRecommendationsMovieResultsDto
   | DetailComicsRecommendationsResultDto;
 
 /**

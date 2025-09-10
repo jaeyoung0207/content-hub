@@ -8,11 +8,15 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieResultsDto;
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentGetDataDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentSaveRequestDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentUpdateRequestDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsMovieResultsDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentEntity;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentViewEntity;
@@ -102,5 +106,39 @@ public interface DetailMapper {
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
 	DetailMovieResponseDto detailMovieToDetailMovieResponse(TmdbMovieDetailsDto apiResponse);
+	
+	/**
+	 * TmdbRecommendationsTvResultsDto를 DetailRecommendationsTvResultsDto로 변환
+	 * 
+	 * @param apiResponse TMDB 추천 TV API 응답 DTO
+	 */
+	@Named("tmdbRecommendationsTvToDetailRecommendationsTv")
+	DetailRecommendationsTvResultsDto tmdbRecommendationsTvToDetailRecommendationsTv(TmdbRecommendationsTvResultsDto apiResponse);
+	
+	/**
+	 * List<TmdbRecommendationsTvResultsDto>를
+	 * List<DetailRecommendationsTvResultsDto>로 변환
+	 * 
+	 * @param apiResponseList TMDB 추천 TV API 응답 DTO 리스트
+	 */
+	@IterableMapping(qualifiedByName = "tmdbRecommendationsTvToDetailRecommendationsTv")
+	List<DetailRecommendationsTvResultsDto> tmdbRecommendationsTvListToDetailRecommendationsTvList(List<TmdbRecommendationsTvResultsDto> apiResponseList);
+	
+	/**
+	 * TmdbRecommendationsMovieResultsDto를 DetailRecommendationsMovieResultsDto로 변환
+	 * 
+	 * @param apiResponse TMDB 추천 영화 API 응답 DTO
+	 */
+	@Named("tmdbRecommendationsMovieToDetailRecommendationsMovie")
+	DetailRecommendationsMovieResultsDto tmdbRecommendationsMovieToDetailRecommendationsMovie(TmdbRecommendationsMovieResultsDto apiResponse);
+	
+	/**
+	 * List<TmdbRecommendationsMovieResultsDto>를
+	 * List<DetailRecommendationsMovieResultsDto>로 변환
+	 * 
+	 * @param apiResponseList TMDB 추천 영화 API 응답 DTO 리스트
+	 */
+	@IterableMapping(qualifiedByName = "tmdbRecommendationsMovieToDetailRecommendationsMovie")
+	List<DetailRecommendationsMovieResultsDto> tmdbRecommendationsMovieListToDetailRecommendationsMovieList(List<TmdbRecommendationsMovieResultsDto> apiResponseList);
 
 }

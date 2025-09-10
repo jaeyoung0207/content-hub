@@ -11,15 +11,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchCommonResultsDto;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
-import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +26,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class SearchHelper {
-
-	/** wishlist 레포지토리 */
-	private final WishlistRepository wishlistRepository;
 
 	/** TMDB API 페이지당 작품 표시 개수 */
 	@Value("${tmdb.custom.perMainPage}")
@@ -265,10 +259,9 @@ public class SearchHelper {
 	 * 만화 검색 결과를 설정
 	 * 
 	 * @param resultList 검색 결과 리스트
-	 * @param userId 유저 테이블 ID
 	 * @return 만화 검색 결과 리스트
 	 */
-	public List<SearchComicsResultDto> setComicsResponse(List<AniListMediaDto> resultList, Long userId) {
+	public List<SearchComicsResultDto> setComicsResponse(List<AniListMediaDto> resultList) {
 		List<SearchComicsResultDto> comicsList = new ArrayList<>();
 		for (AniListMediaDto result : resultList) {
 			String mediaTitle = ObjectUtils.isNotEmpty(result.getTitle()) ? result.getTitle().getUserPreferred() : "";
@@ -283,55 +276,7 @@ public class SearchHelper {
 					.build();
 			comicsList.add(mediaResult);
 		}
-		// 로그인 유저의 위시리스트 등록 여부 설정
-		if (userId != null) {
-			setWishlist(comicsList, CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode(), userId);
-		}
-		
 		return comicsList;
-	}
-
-	/**
-	 * 위시리스트 등록 여부 설정
-	 * 
-	 * @param resultsList       검색 결과 리스트
-	 * @param originalMediaType 원작품 미디어 타입
-	 * @param userId       사용자 테이블 ID
-	 */
-	public void setWishlist(List<? extends TmdbSearchCommonResultsDto> resultsList, String originalMediaType, Long userId) {
-		
-		// 검색 결과가 비어있으면 처리 종료
-		if (resultsList == null || resultsList.isEmpty()) {
-			return;
-		}
-
-		// 검색 결과에서 ID 리스트 추출
-		List<String> apiIdList = resultsList.stream().map(e -> String.valueOf(e.getId())).toList();
-
-		// 로그인 유저가 위시리스트에 등록한 컨텐츠 조회
-		List<ContentEntity> contentList = wishlistRepository.getRegisteredWishlist(userId, originalMediaType, apiIdList);
-		
-		// 위시리스트에 등록한 컨텐츠가 없으면 처리 종료
-		if (contentList == null || contentList.isEmpty()) {
-			return;
-		}
-
-		// 검색 결과와 위시리스트에 등록한 컨텐츠를 비교하여 위시리스트 여부 설정
-		for (TmdbSearchCommonResultsDto results : resultsList) {
-			for (ContentEntity content : contentList) {
-				if (content.getOriginalMediaType().equals(originalMediaType)
-						&& content.getApiId().equals(String.valueOf(results.getId()))) {
-					if (results instanceof SearchTvResultsDto tvResults) {
-						tvResults.setWishlist(true);
-					} else if (results instanceof SearchMovieResultsDto movieResults) {
-						movieResults.setWishlist(true);
-					} else if (results instanceof SearchComicsResultDto comicsResults) {
-						comicsResults.setWishlist(true);
-					}
-					break;
-				}
-			}
-		}
 	}
 
 }

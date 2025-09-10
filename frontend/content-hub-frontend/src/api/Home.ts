@@ -23,10 +23,17 @@ export class Home<
    * @name GetContentRankings
    * @request GET:/home/rankings
    */
-  getContentRankings = (params: RequestParams = {}) =>
+  getContentRankings = (
+    query?: {
+      /** @format int64 */
+      userId?: number;
+    },
+    params: RequestParams = {}
+  ) =>
     this.request<HomeRankingListResponseDto, any>({
       path: `/home/rankings`,
       method: 'GET',
+      query: query,
       ...params,
     });
 }

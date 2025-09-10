@@ -19,9 +19,9 @@ import {
   DetailCommentSaveRequestDto,
   DetailCommentUpdateRequestDto,
   DetailMovieResponseDto,
+  DetailRecommendationsMovieDto,
+  DetailRecommendationsTvDto,
   DetailTvResponseDto,
-  TmdbRecommendationsMovieDto,
-  TmdbRecommendationsTvDto,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
@@ -80,7 +80,7 @@ export class Detail<
     },
     params: RequestParams = {}
   ) =>
-    this.request<TmdbRecommendationsTvDto, any>({
+    this.request<DetailRecommendationsTvDto, any>({
       path: `/detail/recommendation/getTvRecommendations`,
       method: 'GET',
       query: query,
@@ -102,7 +102,7 @@ export class Detail<
     },
     params: RequestParams = {}
   ) =>
-    this.request<TmdbRecommendationsMovieDto, any>({
+    this.request<DetailRecommendationsMovieDto, any>({
       path: `/detail/recommendation/getMovieRecommendations`,
       method: 'GET',
       query: query,

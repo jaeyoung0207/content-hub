@@ -37,5 +37,8 @@ public class HomeRankingReponseDto {
 
 	/** 썸네일 이미지 URL */
 	private String thumbnailImageUrl;
+	
+	/** 위시리스트 여부 */
+	private boolean isWishlisted;
 
 }

@@ -8,6 +8,9 @@ import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
 
+/**
+ * 상세 정보 서비스 인터페이스
+ */
 public interface DetailInformationService {
 	
 	/**

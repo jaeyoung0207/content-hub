@@ -20,5 +20,11 @@ public class DetailComicsRecommendationsResultDto extends TmdbRecommendationsCom
 	
 	/** 만화 제목 */
 	private String title;
+	
+	/** 원작품 미디어 타입 */
+	private String originalMediaType;
+	
+	/** 위시리스트 여부 */
+	private boolean isWishlisted;
 
 }

@@ -22,19 +22,27 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
+import com.cjy.contenthub.common.constants.CommonEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.util.ApiUtil;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsMovieDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsMovieResultsDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvDto;
+import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
 import com.cjy.contenthub.detail.helper.DetailRecoommendationHelper;
+import com.cjy.contenthub.detail.mapper.DetailMapper;
+import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
- * 상세 화면 추천 서비스
+ * 상세 추천 서비스 구현 클래스
  */
 @Service
 @RequiredArgsConstructor
@@ -42,7 +50,13 @@ import reactor.core.publisher.Mono;
 public class DetailRecommendationServiceImpl implements DetailRecommendationService {
 
 	/** 상세 헬퍼 */
-	private final DetailRecoommendationHelper helper;
+	private final DetailRecoommendationHelper recommendationHelper;
+
+	/** 상세 매퍼 */
+	private final DetailMapper detailMapper;
+	
+	/** 위시리스트 리포지토리 */
+	private final WishlistRepository wishlistRepository;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -110,18 +124,19 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * TMDB TV 추천 작품 조회 API
 	 * 
 	 * @param seriesId TV 시리즈 ID
-	 * @param page 페이지 번호 (선택)
+	 * @param page 페이지 번호
+	 * @param userId 유저 테이블 ID
 	 * @return 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tmdbTvRecommendations", key = "#seriesId + '-' + #page", unless = "#result == null")
-	public TmdbRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page) {
+	@Cacheable(value = "tmdbTvRecommendations", key = "#seriesId + '-' + #page + '-' + #userId", unless = "#result == null")
+	public DetailRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page, Long userId) {
 
 		// TMDB 장르 정보 조회
 		return apiUtil.getTvGenres().flatMap(genreMap -> 
 		// TMDB TV 추천 작품 조회
 		tmdbWebClient.get()
-		.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_KOREAN))
+		.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, LANGUAGE_KOREAN))
 		.retrieve()
 		.bodyToMono(TmdbRecommendationsTvDto.class)
 		.onErrorResume(WebClientResponseException.class, ex -> {
@@ -131,7 +146,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				log.warn("TMDB TV Recommendations not found then retry for seriesId: {}", seriesId);
 				// 영어로 재시도
 				return tmdbWebClient.get()
-						.uri(helper.getTVRecommendationUri(seriesId, page, LANGUAGE_ENGLISH))
+						.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, LANGUAGE_ENGLISH))
 						.retrieve()
 						.onStatus(HttpStatusCode::isError, response ->
 						response.bodyToMono(String.class).flatMap(body -> {
@@ -144,27 +159,51 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 							return Mono.error(new WebClientResponseException(
 									TMDB_TV_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 						}))
-						.bodyToMono(TmdbRecommendationsTvDto.class)
-						.map(response -> {
-							// 빈 응답인 경우 빈 객체 반환
-							if (response == null || CollectionUtils.isEmpty(response.getResults())) {
-								return new TmdbRecommendationsTvDto();
-							}
-							// 필터링된 응답 반환
-							return helper.setTvRecommendationResult(response, genreMap);
-						});
+						.bodyToMono(TmdbRecommendationsTvDto.class);
 			}
 			// 그 이외의 경우는 공통 예외 처리로 보냄
 			return Mono.error(new WebClientResponseException(TMDB_TV_API_ERROR_MSG, ex.getStatusCode().value(),
 					null, null, ex.getResponseBodyAsByteArray(), null));
 		})
 		.map(response -> {
+
 			// 빈 응답인 경우 빈 객체 반환
 			if (response == null || CollectionUtils.isEmpty(response.getResults())) {
-				return new TmdbRecommendationsTvDto();
+				return new DetailRecommendationsTvDto();
 			}
+			// TMDB 응답 DTO -> 상세 화면 DTO 변환
+			List<DetailRecommendationsTvResultsDto> tvResultList =
+					detailMapper.tmdbRecommendationsTvListToDetailRecommendationsTvList(response.getResults());
+			// 응답 정보 필터링
+			List<DetailRecommendationsTvResultsDto> filterdResultList = 
+					recommendationHelper.setTvRecommendationResults(tvResultList, genreMap);
+
+			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+			if (userId != null) {
+				BusinessUtil.setWishlisted(
+						filterdResultList, 
+						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+						userId,
+						dto -> String.valueOf(dto.getId()),
+						DetailRecommendationsTvResultsDto::setWishlisted, 
+						wishlistRepository);
+				BusinessUtil.setWishlisted(
+						filterdResultList, 
+						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+						userId,
+						dto -> String.valueOf(dto.getId()),
+						DetailRecommendationsTvResultsDto::setWishlisted, 
+						wishlistRepository);
+			}
+
 			// 필터링된 응답 반환
-			return helper.setTvRecommendationResult(response, genreMap);
+			return DetailRecommendationsTvDto.builder()
+					.page(response.getPage())
+					.totalPages(response.getTotalPages())
+					.totalResults(response.getTotalResults())
+					.results(filterdResultList)
+					.build();
+
 		})).block();
 	}
 
@@ -172,16 +211,17 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * TMDB 영화 추천 작품 조회 API
 	 * 
 	 * @param movieId 영화 ID
-	 * @param page 페이지 번호 (선택)
+	 * @param page 페이지 번호
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbRecommendationsMovieDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tmdbMovieRecommendations", key = "#movieId + '-' + #page", unless = "#result == null")
-	public TmdbRecommendationsMovieDto getMovieRecommendations(Integer movieId, Integer page) {
+	@Cacheable(value = "tmdbMovieRecommendations", key = "#movieId + '-' + #page + '-' + #userId", unless = "#result == null")
+	public DetailRecommendationsMovieDto getMovieRecommendations(Integer movieId, Integer page, Long userId) {
 
 		// TMDB 영화 추천 작품 조회
 		return tmdbWebClient.get()
-				.uri(helper.getMovieRecommendationUri(movieId, page, LANGUAGE_KOREAN))
+				.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, LANGUAGE_KOREAN))
 				.retrieve()
 				.bodyToMono(TmdbRecommendationsMovieDto.class)
 				.onErrorResume(WebClientResponseException.class, ex -> {
@@ -191,7 +231,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						log.warn("TMDB Movie Recommendations not found then retry for movieId: {}", movieId);
 						// 영어로 재시도
 						return tmdbWebClient.get()
-								.uri(helper.getMovieRecommendationUri(movieId, page, LANGUAGE_ENGLISH))
+								.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, LANGUAGE_ENGLISH))
 								.retrieve()
 								.onStatus(HttpStatusCode::isError, response ->
 								response.bodyToMono(String.class).flatMap(body -> {
@@ -204,19 +244,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 									return Mono.error(new WebClientResponseException(
 											TMDB_MOVIE_API_ERROR_MSG, response.statusCode().value(), null, null, body.getBytes(), null));
 								}))
-								.bodyToMono(TmdbRecommendationsMovieDto.class)
-								.map(response -> {
-									// 빈 응답인 경우 빈 객체 반환
-									if (response == null || CollectionUtils.isEmpty(response.getResults())) {
-										return new TmdbRecommendationsMovieDto();
-									}
-									// 응답 정보 필터링
-									response.getResults().stream()
-									.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
-									.forEach(result -> result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()));
-									// 필터링된 응답 반환
-									return response;
-								});
+								.bodyToMono(TmdbRecommendationsMovieDto.class);
 					}
 					// 그 이외의 경우는 공통 예외 처리로 보냄
 					return Mono.error(new WebClientResponseException(TMDB_MOVIE_API_ERROR_MSG, ex.getStatusCode().value(),
@@ -225,13 +253,37 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				.map(response -> {
 					// 빈 응답인 경우 빈 객체 반환
 					if (response == null || CollectionUtils.isEmpty(response.getResults())) {
-						return new TmdbRecommendationsMovieDto();
+						return new DetailRecommendationsMovieDto();
 					}
+					// TMDB 응답 DTO -> 상세 화면 DTO 변환
+					List<DetailRecommendationsMovieResultsDto> movieResultList = 
+							detailMapper.tmdbRecommendationsMovieListToDetailRecommendationsMovieList(response.getResults());
+
+					// 미디어 타입
+					String originalMediaType = CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
+
 					// 응답 정보 필터링
-					response.getResults().stream()
-					.forEach(result -> result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()));
+					movieResultList.stream()
+					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
+					.forEach(result -> result.setOriginalMediaType(originalMediaType));
+
+					// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+					if (userId != null) {
+						BusinessUtil.setWishlisted(
+								movieResultList,
+								CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+								userId,
+								dto -> String.valueOf(dto.getId()),
+								DetailRecommendationsMovieResultsDto::setWishlisted, 
+								wishlistRepository);
+					}
+
 					// 필터링된 응답 반환
-					return response;
+					return DetailRecommendationsMovieDto.builder()
+							.page(response.getPage())
+							.totalPages(response.getTotalPages())
+							.totalResults(response.getTotalResults())
+							.results(movieResultList).build();
 				}).block();
 	}
 
@@ -239,12 +291,13 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * AniList Comics 추천 작품 조회 API
 	 * 
 	 * @param mediaId 미디어 추천 ID
-	 * @param page 페이지 번호 (선택)
+	 * @param page 페이지 번호
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<DetailComicsRecommendationsResponseDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "anilistComicsRecommendations", key = "#mediaId + '-' + #page", unless = "#result == null")
-	public DetailComicsRecommendationsResponseDto getComicsRecommendations(Integer mediaId, Integer page) throws IOException {
+	@Cacheable(value = "anilistComicsRecommendations", key = "#mediaId + '-' + #page + '-' + #userId", unless = "#result == null")
+	public DetailComicsRecommendationsResponseDto getComicsRecommendations(Integer mediaId, Integer page, Long userId) throws IOException {
 
 		// graphql 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsRecomendationList.graphql");
@@ -285,10 +338,21 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 						// 첫번째 페이지인 경우, 관련 작품 노드 리스트를 추가
 						if (page == FIRST_PAGE_NO) {
-							helper.getComicsRelations(media, results);
+							recommendationHelper.getComicsRelations(media, results);
 						}
 						// 추천 작품 설정
-						helper.getComicsRecommendations(media, results);
+						recommendationHelper.getComicsRecommendations(media, results);
+
+						// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+						if (userId != null) {
+							BusinessUtil.setWishlisted(
+									results,
+									CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+									userId,
+									dto -> String.valueOf(dto.getId()),
+									DetailComicsRecommendationsResultDto::setWishlisted, 
+									wishlistRepository);
+						}
 
 						// 추천 작품 응답 DTO 설정
 						recommendationResponse = DetailComicsRecommendationsResponseDto.builder()

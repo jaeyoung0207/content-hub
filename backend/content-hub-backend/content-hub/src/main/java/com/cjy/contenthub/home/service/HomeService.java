@@ -10,8 +10,9 @@ public interface HomeService {
 	/**
 	 * 콘텐츠 랭킹 정보를 필터링하여 조회
 	 * 
+	 * @param userId 유저 테이블 ID
 	 * @return 필터링된 콘텐츠 랭킹 정보 DTO
 	 */
-	HomeRankingListServiceDto getContentRankings();
+	HomeRankingListServiceDto getContentRankings(Long userId);
 
 }

@@ -86,9 +86,7 @@ export interface SearchMovieResultsDto {
   video?: boolean;
   originalMediaType?: string;
   genreNames?: string[];
-  /** @format int64 */
-  contentId?: number;
-  wishlist?: boolean;
+  wishlisted?: boolean;
 }
 
 export interface SearchTvResultsDto {
@@ -110,9 +108,7 @@ export interface SearchTvResultsDto {
   name?: string;
   originalMediaType?: string;
   genreNames?: string[];
-  /** @format int64 */
-  contentId?: number;
-  wishlist?: boolean;
+  wishlisted?: boolean;
 }
 
 export interface SearchVideoResponseDto {
@@ -126,8 +122,8 @@ export interface SearchVideoResponseDto {
   /** @format int32 */
   totalResults?: number;
   movieViewMore?: boolean;
-  aniViewMore?: boolean;
   dramaViewMore?: boolean;
+  aniViewMore?: boolean;
 }
 
 export interface SearchMovieResponseDto {
@@ -179,9 +175,7 @@ export interface SearchComicsResultDto {
   title?: string;
   originalMediaType?: string;
   genreNames?: string[];
-  /** @format int64 */
-  contentId?: number;
-  wishlist?: boolean;
+  wishlisted?: boolean;
 }
 
 export interface PersonCreditsCastDto {
@@ -262,6 +256,7 @@ export interface PersonResponseDto {
 export interface LoginUserInfoDto {
   /** @format int64 */
   userId?: number;
+  provider?: string;
   id?: string;
   nickname?: string;
   name?: string;
@@ -319,9 +314,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  leapMonth?: boolean;
   emailValid?: boolean;
   emailVerified?: boolean;
-  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -368,19 +363,20 @@ export interface HomeRankingServiceDto {
   starRatingCount?: number;
   title?: string;
   thumbnailImageUrl?: string;
+  wishlisted?: boolean;
 }
 
-export interface TmdbRecommendationsTvDto {
+export interface DetailRecommendationsTvDto {
   /** @format int32 */
   page?: number;
-  results?: TmdbRecommendationsTvResultsDto[];
+  results?: DetailRecommendationsTvResultsDto[];
   /** @format int32 */
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
 }
 
-export interface TmdbRecommendationsTvResultsDto {
+export interface DetailRecommendationsTvResultsDto {
   adult?: boolean;
   backdropPath?: string;
   genreIds?: number[];
@@ -393,24 +389,25 @@ export interface TmdbRecommendationsTvResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
-  originalMediaType?: string;
   originCountry?: string[];
   originalName?: string;
   firstAirDate?: string;
   name?: string;
+  originalMediaType?: string;
+  wishlisted?: boolean;
 }
 
-export interface TmdbRecommendationsMovieDto {
+export interface DetailRecommendationsMovieDto {
   /** @format int32 */
   page?: number;
-  results?: TmdbRecommendationsMovieResultsDto[];
+  results?: DetailRecommendationsMovieResultsDto[];
   /** @format int32 */
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
 }
 
-export interface TmdbRecommendationsMovieResultsDto {
+export interface DetailRecommendationsMovieResultsDto {
   adult?: boolean;
   backdropPath?: string;
   genreIds?: number[];
@@ -423,11 +420,12 @@ export interface TmdbRecommendationsMovieResultsDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
-  originalMediaType?: string;
   originalTitle?: string;
   releaseDate?: string;
   title?: string;
   video?: boolean;
+  originalMediaType?: string;
+  wishlisted?: boolean;
 }
 
 export interface DetailComicsRecommendationsResponseDto {
@@ -447,8 +445,9 @@ export interface DetailComicsRecommendationsResultDto {
   voteAverage?: number;
   /** @format int32 */
   voteCount?: number;
-  originalMediaType?: string;
   title?: string;
+  originalMediaType?: string;
+  wishlisted?: boolean;
 }
 
 export interface DetailTvResponseDto {

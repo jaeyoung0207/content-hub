@@ -119,7 +119,7 @@ export class Search<
       query: string;
       /** @format int32 */
       page?: number;
-      isMainPage: boolean;
+      isMainPage?: boolean;
       /** @format int64 */
       userId?: number;
     },

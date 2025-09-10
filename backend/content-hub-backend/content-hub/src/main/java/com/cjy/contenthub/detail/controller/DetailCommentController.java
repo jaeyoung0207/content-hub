@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 상세 화면 API 컨트롤러 클래스
+ * 상세 화면 코멘트 API 컨트롤러 클래스
  */
 @RestController
 @RequestMapping("/detail/comment")

@@ -6,7 +6,7 @@ import com.cjy.contenthub.detail.service.dto.DetailCommentDataServiceDto;
 import com.cjy.contenthub.detail.service.dto.DetailCommentServiceDto;
 
 /**
- * 상세 페이지 코멘트 서비스 인터페이스
+ * 상세 코멘트 서비스 인터페이스
  */
 public interface DetailCommentService {
 	
