@@ -26,7 +26,7 @@ export class Person<
   getPersonDetails = (
     query: {
       /** @format int32 */
-      personId: number;
+      person_id: number;
     },
     params: RequestParams = {}
   ) =>

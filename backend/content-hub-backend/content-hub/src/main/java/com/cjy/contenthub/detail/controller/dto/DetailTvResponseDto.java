@@ -27,5 +27,8 @@ public class DetailTvResponseDto extends TmdbTvDetailsDto {
 	
 	/** 별점 */
 	private BigDecimal starRatingAverage;
+	
+	/** 위시리스트 여부 */
+	private boolean wishlisted;
 
 }

@@ -37,10 +37,10 @@ export const useCharacter = (
     queryFn: async () => {
       if (comicsCreditsType === COMICS_CREDITS_TYPE.CHARACTER) {
         return (
-          await characterApi.getCharacter({ characterId: Number(creditsId) })
+          await characterApi.getCharacter({ character_id: Number(creditsId) })
         ).data;
       } else {
-        return (await characterApi.getStaff({ staffId: Number(creditsId) }))
+        return (await characterApi.getStaff({ staff_id: Number(creditsId) }))
           .data;
       }
     },

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.home.mapper.HomeMapper;
 import com.cjy.contenthub.home.repository.HomeRankingViewRepository;
@@ -42,10 +42,10 @@ public class HomeServiceImpl implements HomeService {
 	@Override
 	public HomeRankingListServiceDto getContentRankings(Long userId) {
 		
-		String aniMediaType = CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode();
-		String dramaMediaType = CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode();
-		String movieMediaType = CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
-		String comicsMediaType = CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode();
+		String aniMediaType = CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode();
+		String dramaMediaType = CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode();
+		String movieMediaType = CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
+		String comicsMediaType = CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode();
 		
 		// 콘텐츠 뷰 엔티티 리스트 조회
 		List<HomeRankingViewEntity> entityList = homeRankingViewRepository.findAll();
@@ -66,7 +66,7 @@ public class HomeServiceImpl implements HomeService {
 				e -> e.getOriginalMediaType().equals(comicsMediaType))
 				.toList();
 		
-		// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
 			BusinessUtil.setWishlisted(
 					aniRankingList, 

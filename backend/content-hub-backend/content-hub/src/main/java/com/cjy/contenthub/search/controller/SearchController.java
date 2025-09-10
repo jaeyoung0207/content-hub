@@ -19,8 +19,6 @@ import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.service.SearchService;
 
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,16 +74,16 @@ public class SearchController {
 	private int anilistPerMorePage;
 
 	/** 리퀘스트 파라미터 키 : 검색어 */
-	private static final String PARAM_QUERY = "query";
+	private static final String PARAM_KEYWORD = "keyword";
 
 	/** 리퀘스트 파라미터 키 : 페이지 */
 	private static final String PARAM_PAGE = "page";
 	
 	/** 리퀘스트 파라미터 키 : 유저 테이블 ID */
-	private static final String PARAM_USER_ID = "userId";
+	private static final String PARAM_USER_ID = "user_id";
 
 	/** API 입구 판단용 파라미터 키 문자열  */
-	private static final String PARAM_IS_MAIN_PAGE = "isMainPage";
+	private static final String PARAM_IS_MAIN_PAGE = "is_main_page";
 
 	/**
 	 * 애니메이션/드라마/영화 검색 API
@@ -94,7 +92,7 @@ public class SearchController {
 	 * @return ResponseEntity<List<String>> 검색어 리스트
 	 */
 	@GetMapping(value = "/searchKeyword")
-	public ResponseEntity<List<String>> searchKeyword(@NotEmpty @RequestParam(PARAM_QUERY) String keyword) {
+	public ResponseEntity<List<String>> searchKeyword(@RequestParam(PARAM_KEYWORD) String keyword) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchKeyword(keyword, isAdult));
 	}
@@ -108,8 +106,8 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchVideo")
 	public ResponseEntity<SearchVideoResponseDto> searchVideo(
-			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
-			@Nullable @RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_KEYWORD) String keyword,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchVideo(keyword, isAdult, userId));
@@ -125,9 +123,9 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchAni")
 	public ResponseEntity<SearchTvResponseDto> searchAni(
-			@NotEmpty @RequestParam(PARAM_QUERY) String keyword,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_KEYWORD) String keyword,
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchAni(keyword, isAdult, page, userId));
@@ -143,9 +141,9 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchDrama")
 	public ResponseEntity<SearchTvResponseDto> searchDrama(
-			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_KEYWORD) String keyword, 
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchDrama(keyword, isAdult, page, userId));
@@ -161,9 +159,9 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchMovie")
 	public ResponseEntity<SearchMovieResponseDto> searchMovie(
-			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_KEYWORD) String keyword, 
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchMovie(keyword, isAdult, page, userId));
@@ -180,10 +178,10 @@ public class SearchController {
 	 */
 	@GetMapping(value = "/searchComics")
 	public ResponseEntity<SearchComicsResponseDto> searchComics(
-			@NotEmpty @RequestParam(PARAM_QUERY) String keyword, 
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_IS_MAIN_PAGE) boolean isMainPage,
-			@Nullable @RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_KEYWORD) String keyword, 
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_IS_MAIN_PAGE) boolean isMainPage,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchComics(keyword, isAdult, page, isMainPage, userId));

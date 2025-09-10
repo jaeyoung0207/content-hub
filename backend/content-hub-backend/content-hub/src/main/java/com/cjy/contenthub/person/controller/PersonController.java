@@ -36,7 +36,7 @@ public class PersonController {
 	private String personDetailPath;
 	
 	/** 리퀘스트 파라미터 키 : 인물 ID */
-	private static final String PARAM_PERSON_ID = "personId";
+	private static final String PARAM_PERSON_ID = "person_id";
 	
 	/**
 	 * 인물 상세 정보 조회 API

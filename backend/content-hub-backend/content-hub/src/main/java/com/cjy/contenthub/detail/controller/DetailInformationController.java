@@ -15,7 +15,6 @@ import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
 import com.cjy.contenthub.detail.service.DetailInformationService;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,19 +41,28 @@ public class DetailInformationController {
 
 	/** 리퀘스트 파라미터 키 : 페이지 번호 */
 	private static final String PARAM_PAGE = "page";
+	
+	/** 리퀘스트 파라미터 키 : 원본 미디어 타입 */
+	private static final String PARAM_ORIGINAL_MEDIA_TYPE = "original_media_type";
+	
+	/** 리퀘스트 파라미터 키 : 유저 ID */
+	private static final String PARAM_USER_ID = "user_id";
 
 	/**
 	 * TMDB TV 상세 조회 API
 	 * 
 	 * @param seriesId TV 시리즈 ID
 	 * @param originalMediaType 원본 미디어 타입
+	 * @param userId 유저 테이블 ID
 	 * @return TV 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getTvDetail")
 	public ResponseEntity<DetailTvResponseDto> getTvDetail(
-			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId
+			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
+			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		return ResponseEntity.ok(informationService.getTvDetail(seriesId));
+		return ResponseEntity.ok(informationService.getTvDetail(seriesId, originalMediaType, userId));
 	}
 
 	/**
@@ -62,28 +70,34 @@ public class DetailInformationController {
 	 * 
 	 * @param movieId 영화 ID
 	 * @param originalMediaType 원본 미디어 타입
-	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
+	 * @param userId 유저 테이블 ID
+	 * @return 영화 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getMovieDetail")
 	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
-			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId
+			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
+			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		return ResponseEntity.ok(informationService.getMovieDetail(movieId));
+		return ResponseEntity.ok(informationService.getMovieDetail(movieId, originalMediaType, userId));
 	}
 
 	/**
 	 * AniList Comics 상세 조회 API
 	 * 
 	 * @param comicsId Comics ID
-	 * @param page 페이지 번호
+	 * @param originalMediaType 원본 미디어 타입
+	 * @param userId 유저 테이블 ID
 	 * @return Comics 상세 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@GetMapping(value = "/getComicsDetail")
 	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
-			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId
+			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
+			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) throws IOException {
-		return ResponseEntity.ok(informationService.getComicsDetail(comicsId));
+		return ResponseEntity.ok(informationService.getComicsDetail(comicsId, originalMediaType, userId));
 	}
 	
 	/**
@@ -96,8 +110,8 @@ public class DetailInformationController {
 	 */
 	@GetMapping(value = "/getComicsCharacterList")
 	public ResponseEntity<AniListCharactersDto> getComicsCharacterList(
-			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId,
-			@NotNull @RequestParam(PARAM_PAGE) Integer page
+			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
+			@RequestParam(PARAM_PAGE) Integer page
 			) throws IOException {
 		return ResponseEntity.ok(informationService.getComicsCharacterList(comicsId, page));
 	}
@@ -112,8 +126,8 @@ public class DetailInformationController {
 	 */
 	@GetMapping(value = "/getComicsStaffList")
 	public ResponseEntity<AniListStaffDto> getComicsStaffList(
-			@NotNull @RequestParam(PARAM_COMICS_ID) Integer comicsId,
-			@NotNull @RequestParam(PARAM_PAGE) Integer page
+			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
+			@RequestParam(PARAM_PAGE) Integer page
 			) throws IOException {
 		return ResponseEntity.ok(informationService.getComicsStaffList(comicsId, page));
 	}

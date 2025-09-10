@@ -19,6 +19,7 @@ import { SearchCommonResultType } from '../useSearch';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 import throttle from 'lodash/throttle';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -64,6 +65,11 @@ export const useSearchMore = (
   // 전체 페이지 수를 저장하는 ref
   const totalPagesRef = useRef<number | undefined>(0);
 
+  // ================================================================================================== zustand
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
   // ================================================================================================== react query
 
   // 검색 API 인스턴스 생성
@@ -74,7 +80,7 @@ export const useSearchMore = (
     if (mediaType == MEDIA_TYPE.ANI) {
       // 애니메이션 검색 API 호출
       const response = await await searchApi.searchAni(
-        { query: keyword, page: pageParam },
+        { keyword: keyword, page: pageParam, user_id: user?.userId },
         {}
       );
       // 전체 페이지 수 저장
@@ -85,7 +91,7 @@ export const useSearchMore = (
     } else if (mediaType == MEDIA_TYPE.DRAMA) {
       // 드라마 검색 API 호출
       const response = await await searchApi.searchDrama(
-        { query: keyword, page: pageParam },
+        { keyword: keyword, page: pageParam, user_id: user?.userId },
         {}
       );
       // 전체 페이지 수 저장
@@ -96,7 +102,7 @@ export const useSearchMore = (
     } else if (mediaType == MEDIA_TYPE.MOVIE) {
       // 영화 검색 API 호출
       const response = await await searchApi.searchMovie(
-        { query: keyword, page: pageParam },
+        { keyword: keyword, page: pageParam, user_id: user?.userId },
         {}
       );
       // 전체 페이지 수 저장
@@ -107,7 +113,12 @@ export const useSearchMore = (
     } else if (mediaType == MEDIA_TYPE.COMICS) {
       // 만화 검색 API 호출
       const response = await await searchApi.searchComics(
-        { query: keyword, page: pageParam, isMainPage: false },
+        {
+          keyword: keyword,
+          page: pageParam,
+          is_main_page: false,
+          user_id: user?.userId,
+        },
         {}
       );
       // 전체 페이지 수 저장

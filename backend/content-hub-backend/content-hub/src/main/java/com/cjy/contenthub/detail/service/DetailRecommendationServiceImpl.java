@@ -22,8 +22,10 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
-import com.cjy.contenthub.common.constants.CommonEnum;
+import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
@@ -54,7 +56,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 	/** 상세 매퍼 */
 	private final DetailMapper detailMapper;
-	
+
 	/** 위시리스트 리포지토리 */
 	private final WishlistRepository wishlistRepository;
 
@@ -93,24 +95,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	@Value("${anilist.custom.perCharacterPage}")
 	private int anilistPerCharacterPage;
 
-	/** 리퀘스트 파라미터 키 : 페이지 번호 */
-	private static final String PARAM_PAGE = "page";
-
-	/** 리퀘스트 파라미터 키 : 페이지당 표시 건수 */
-	private static final String PARAM_PER_PAGE = "perPage";
-
-	/** 리퀘스트 파라미터 키 : 미디어 ID */
-	private static final String PARAM_MEDIA_ID = "mediaId";
-
-	/** 언어 : 한국어 */
-	private static final String LANGUAGE_KOREAN = "ko-KR";
-
-	/** 언어 : 영어 */
-	private static final String LANGUAGE_ENGLISH = "en-US";
-
-	/** 첫번째 페이지 번호 */
-	private static final int FIRST_PAGE_NO = 1;
-
 	/** TMDB TV API Error */
 	private static final String TMDB_TV_API_ERROR_MSG = "TMDB TV API Error";
 
@@ -136,7 +120,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 		return apiUtil.getTvGenres().flatMap(genreMap -> 
 		// TMDB TV 추천 작품 조회
 		tmdbWebClient.get()
-		.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, LANGUAGE_KOREAN))
+		.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, TmdbParamConstants.LANGUAGE_KOREAN))
 		.retrieve()
 		.bodyToMono(TmdbRecommendationsTvDto.class)
 		.onErrorResume(WebClientResponseException.class, ex -> {
@@ -146,7 +130,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				log.warn("TMDB TV Recommendations not found then retry for seriesId: {}", seriesId);
 				// 영어로 재시도
 				return tmdbWebClient.get()
-						.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, LANGUAGE_ENGLISH))
+						.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, TmdbParamConstants.LANGUAGE_ENGLISH))
 						.retrieve()
 						.onStatus(HttpStatusCode::isError, response ->
 						response.bodyToMono(String.class).flatMap(body -> {
@@ -178,18 +162,18 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 			List<DetailRecommendationsTvResultsDto> filterdResultList = 
 					recommendationHelper.setTvRecommendationResults(tvResultList, genreMap);
 
-			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 			if (userId != null) {
 				BusinessUtil.setWishlisted(
 						filterdResultList, 
-						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+						CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
 						userId,
 						dto -> String.valueOf(dto.getId()),
 						DetailRecommendationsTvResultsDto::setWishlisted, 
 						wishlistRepository);
 				BusinessUtil.setWishlisted(
 						filterdResultList, 
-						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+						CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
 						userId,
 						dto -> String.valueOf(dto.getId()),
 						DetailRecommendationsTvResultsDto::setWishlisted, 
@@ -221,7 +205,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 		// TMDB 영화 추천 작품 조회
 		return tmdbWebClient.get()
-				.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, LANGUAGE_KOREAN))
+				.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, TmdbParamConstants.LANGUAGE_KOREAN))
 				.retrieve()
 				.bodyToMono(TmdbRecommendationsMovieDto.class)
 				.onErrorResume(WebClientResponseException.class, ex -> {
@@ -231,7 +215,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						log.warn("TMDB Movie Recommendations not found then retry for movieId: {}", movieId);
 						// 영어로 재시도
 						return tmdbWebClient.get()
-								.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, LANGUAGE_ENGLISH))
+								.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, TmdbParamConstants.LANGUAGE_ENGLISH))
 								.retrieve()
 								.onStatus(HttpStatusCode::isError, response ->
 								response.bodyToMono(String.class).flatMap(body -> {
@@ -267,11 +251,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
 					.forEach(result -> result.setOriginalMediaType(originalMediaType));
 
-					// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 					if (userId != null) {
 						BusinessUtil.setWishlisted(
 								movieResultList,
-								CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+								CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
 								userId,
 								dto -> String.valueOf(dto.getId()),
 								DetailRecommendationsMovieResultsDto::setWishlisted, 
@@ -303,9 +287,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 		String query = GraphqlUtil.loadQuery("comicsRecomendationList.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
-				PARAM_MEDIA_ID, mediaId,
-				PARAM_PAGE, Optional.ofNullable(page).orElse(FIRST_PAGE_NO),
-				PARAM_PER_PAGE, anilistPerMorePage
+				AnilistParamConstants.PARAM_MEDIA_ID, mediaId,
+				AnilistParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AnilistParamConstants.PARAM_PER_PAGE, anilistPerMorePage
 				));
 		// graphql 쿼리에 리퀘스트 파라미터 적용
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -337,17 +321,17 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						AniListMediaDto media =  response.getData().getMedia();
 
 						// 첫번째 페이지인 경우, 관련 작품 노드 리스트를 추가
-						if (page == FIRST_PAGE_NO) {
+						if (page == CommonConstants.FIRST_PAGE_NO) {
 							recommendationHelper.getComicsRelations(media, results);
 						}
 						// 추천 작품 설정
 						recommendationHelper.getComicsRecommendations(media, results);
 
-						// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+						// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 						if (userId != null) {
 							BusinessUtil.setWishlisted(
 									results,
-									CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+									CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
 									userId,
 									dto -> String.valueOf(dto.getId()),
 									DetailComicsRecommendationsResultDto::setWishlisted, 

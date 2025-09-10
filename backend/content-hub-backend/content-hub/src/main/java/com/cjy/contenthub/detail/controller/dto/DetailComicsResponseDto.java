@@ -41,5 +41,8 @@ public class DetailComicsResponseDto extends TmdbVideoDetailsDto {
 	
 	/** 연재 시작일 */
 	private String startDate;
+	
+	/** 위시리스트 여부 */
+	private boolean wishlisted;
 
 }

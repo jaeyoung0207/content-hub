@@ -30,9 +30,9 @@ export class Search<
    */
   searchVideo = (
     query: {
-      query: string;
+      keyword: string;
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -51,11 +51,11 @@ export class Search<
    */
   searchMovie = (
     query: {
-      query: string;
+      keyword: string;
       /** @format int32 */
       page?: number;
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -74,7 +74,7 @@ export class Search<
    */
   searchKeyword = (
     query: {
-      query: string;
+      keyword: string;
     },
     params: RequestParams = {}
   ) =>
@@ -93,11 +93,11 @@ export class Search<
    */
   searchDrama = (
     query: {
-      query: string;
+      keyword: string;
       /** @format int32 */
       page?: number;
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -116,12 +116,12 @@ export class Search<
    */
   searchComics = (
     query: {
-      query: string;
+      keyword: string;
       /** @format int32 */
       page?: number;
-      isMainPage?: boolean;
+      is_main_page: boolean;
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -140,11 +140,11 @@ export class Search<
    */
   searchAni = (
     query: {
-      query: string;
+      keyword: string;
       /** @format int32 */
       page?: number;
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>

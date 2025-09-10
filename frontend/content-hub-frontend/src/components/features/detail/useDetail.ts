@@ -12,6 +12,7 @@ import {
 } from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 
 /**
  * 상세 정보 결과 타입
@@ -54,6 +55,11 @@ export const useDetail = (
   // 유저 평균 평점 상태
   const [userStarRating, setUserStarRating] = useState<string>();
 
+  // ================================================================================================== zustand
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
   // ================================================================================================== react query
 
   // react query 클라이언트 훅
@@ -74,17 +80,35 @@ export const useDetail = (
       originalMediaType === MEDIA_TYPE.DRAMA
     ) {
       // TV 상세 정보를 가져오는 API 호출
-      return (await detailApi.getTvDetail({ series_id: apiIdParam })).data;
+      return (
+        await detailApi.getTvDetail({
+          series_id: apiIdParam,
+          original_media_type: originalMediaType,
+          user_id: user?.userId,
+        })
+      ).data;
     }
     // 원본 미디어 타입이 MOVIE인 경우
     else if (originalMediaType === MEDIA_TYPE.MOVIE) {
       // MOVIE 상세 정보를 가져오는 API 호출
-      return (await detailApi.getMovieDetail({ movie_id: apiIdParam })).data;
+      return (
+        await detailApi.getMovieDetail({
+          movie_id: apiIdParam,
+          original_media_type: originalMediaType,
+          user_id: user?.userId,
+        })
+      ).data;
     }
     // 원본 미디어 타입이 COMICS인 경우
     else if (originalMediaType === MEDIA_TYPE.COMICS) {
       // COMICS 상세 정보를 가져오는 API 호출
-      return (await detailApi.getComicsDetail({ comics_id: apiIdParam })).data;
+      return (
+        await detailApi.getComicsDetail({
+          comics_id: apiIdParam,
+          original_media_type: originalMediaType,
+          user_id: user?.userId,
+        })
+      ).data;
     }
   };
 
@@ -119,8 +143,8 @@ export const useDetail = (
         // 유저 평균 평점 취득
         const response = (
           await detailApi.getStarRatingAverage({
-            originalMediaType: originalMediaType,
-            apiId: apiId,
+            original_media_type: originalMediaType,
+            api_id: apiId,
           })
         ).data;
         // 유저 평균 평점 설정

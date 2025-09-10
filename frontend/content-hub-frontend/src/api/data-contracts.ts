@@ -121,9 +121,9 @@ export interface SearchVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
+  aniViewMore?: boolean;
   movieViewMore?: boolean;
   dramaViewMore?: boolean;
-  aniViewMore?: boolean;
 }
 
 export interface SearchMovieResponseDto {
@@ -476,6 +476,7 @@ export interface DetailTvResponseDto {
   aggregateCredits?: TmdbVideoCreditsDto;
   link?: string;
   starRatingAverage?: number;
+  wishlisted?: boolean;
 }
 
 export interface TmdbGenreDto {
@@ -575,6 +576,7 @@ export interface DetailMovieResponseDto {
   credits?: TmdbVideoCreditsDto;
   link?: string;
   starRatingAverage?: number;
+  wishlisted?: boolean;
 }
 
 export interface AniListCoverImageDto {
@@ -670,8 +672,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favourite?: boolean;
   favouriteBlocked?: boolean;
+  favourite?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -693,6 +695,7 @@ export interface DetailComicsResponseDto {
   /** @format int32 */
   chapters?: number;
   startDate?: string;
+  wishlisted?: boolean;
 }
 
 export interface DetailCommentGetDataDto {

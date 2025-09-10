@@ -20,11 +20,15 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
-import com.cjy.contenthub.common.constants.CommonEnum;
+import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.SortEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
+import com.cjy.contenthub.detail.helper.DetailInformationHelper;
 import com.cjy.contenthub.detail.mapper.DetailMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 	/** 상세 매퍼 */
 	private final DetailMapper mapper;
+
+	/** 상세 정보 헬퍼 */
+	private final DetailInformationHelper detailInformationHelper;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -94,69 +101,25 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	@Value("${anilist.custom.perCharacterPage}")
 	private int anilistPerCharacterPage;
 
-	/** 리퀘스트 파라미터 키 : TV SERIES ID */
-	private static final String PARAM_TV_SERIES_ID = "series_id";
-
-	/** 리퀘스트 파라미터 키 : MOVIE ID */
-	private static final String PARAM_MOVIE_ID = "movie_id";
-
-	/** 리퀘스트 파라미터 키 : 언어 */
-	private static final String PARAM_LANGUAGE = "language";
-
-	/** 리퀘스트 파라미터 키 : append_to_response */
-	private static final String PARAM_APPEND_TO_RESPONSE = "append_to_response";
-
-	/** 리퀘스트 파라미터 키 : 페이지 번호 */
-	private static final String PARAM_PAGE = "page";
-
-	/** 리퀘스트 파라미터 키 : 페이지당 표시 건수 */
-	private static final String PARAM_PER_PAGE = "perPage";
-	
-	/** 리퀘스트 파라미터 키 : 정렬 기준 */
-	private static final String PARAM_SORT = "sort";
-
-	/** 리퀘스트 파라미터 키 : 페이지 번호 (Staff) */
-	private static final String PARAM_STAFF_PAGE = "staffPage2";
-
-	/** 리퀘스트 파라미터 키 : 페이지당 표시 건수 (Staff) */
-	private static final String PARAM_STAFF_PERPAGE = "staffPerPage2";
-	
-	/** 리퀘스트 파라미터 키 : 정렬 기준 (Staff) */
-	private static final String PARAM_STAFF_SORT = "staffSort2";
-
-	/** 리퀘스트 파라미터 키 : 미디어 ID */
-	private static final String PARAM_MEDIA_ID = "mediaId";
-
-	/** 언어 : 한국어 */
-	private static final String LANGUAGE_KOREAN = "ko-KR";
-
-	/** 크레딧 : credits */
-	private static final String CREDITS = "credits";
-
-	/** 종합 크레딧 : aggregate credits */
-	private static final String AGGREGATE_CREDITS = "aggregate_credits";
-	
-	/** 첫번째 페이지 번호 */
-	private static final int FIRST_PAGE_NO = 1;
-
 	/**
 	 * TMDB TV 상세 조회
 	 * 
 	 * @param seriesId TV 시리즈 ID
 	 * @param originalMediaType 원본 미디어 타입
+	 * @param userId 유저 테이블 ID
 	 * @return TV 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tvDetailCache", key = "#seriesId", unless = "#result == null")
-	public DetailTvResponseDto getTvDetail(Integer seriesId) {
+	@Cacheable(value = "tvDetailCache", key = "#seriesId + '-' + #originalMediaType + '-' + #userId", unless = "#result == null")
+	public DetailTvResponseDto getTvDetail(Integer seriesId, String originalMediaType, Long userId) {
 
 		// TMDB TV 상세 조회
 		Mono<TmdbTvDetailsDto> detailMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(tvDetailPath, seriesId))
-						.queryParam(PARAM_TV_SERIES_ID, seriesId)
-						.queryParam(PARAM_APPEND_TO_RESPONSE, AGGREGATE_CREDITS)
-						.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, seriesId)
+						.queryParam(TmdbParamConstants.PARAM_APPEND_TO_RESPONSE, TmdbParamConstants.AGGREGATE_CREDITS)
+						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbTvDetailsDto.class);
@@ -164,7 +127,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(tvWatchProvidersPath, seriesId))
-						.queryParam(PARAM_TV_SERIES_ID, seriesId)
+						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, seriesId)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbWatchProvidersDto.class);
@@ -186,6 +149,11 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 			DetailTvResponseDto response = mapper.detailTvToDetailTvResponse(detailResponse);
 			response.setLink(link);
 
+			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+			if (userId != null) {
+				response.setWishlisted(detailInformationHelper.setWishlisted(userId, originalMediaType, String.valueOf(seriesId)));
+			}
+
 			// 응답 DTO 반환
 			return response;
 		}).block();
@@ -196,19 +164,20 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * 
 	 * @param movieId 영화 ID
 	 * @param originalMediaType 원본 미디어 타입
+	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "movieDetailCache", key = "#movieId", unless = "#result == null")
-	public DetailMovieResponseDto getMovieDetail(Integer movieId) {
+	@Cacheable(value = "movieDetailCache", key = "#movieId + '-' + #originalMediaType + '-' + #userId", unless = "#result == null")
+	public DetailMovieResponseDto getMovieDetail(Integer movieId, String originalMediaType, Long userId) {
 
 		// TMDB 영화 상세 조회
 		Mono<TmdbMovieDetailsDto> detailMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(movieDetailPath, movieId))
-						.queryParam(PARAM_MOVIE_ID, movieId)
-						.queryParam(PARAM_APPEND_TO_RESPONSE, CREDITS)
-						.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+						.queryParam(TmdbParamConstants.PARAM_MOVIE_ID, movieId)
+						.queryParam(TmdbParamConstants.PARAM_APPEND_TO_RESPONSE, TmdbParamConstants.CREDITS)
+						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbMovieDetailsDto.class);
@@ -217,7 +186,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(movieWatchProvidersPath, movieId))
-						.queryParam(PARAM_TV_SERIES_ID, movieId)
+						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, movieId)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbWatchProvidersDto.class);
@@ -235,37 +204,43 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 					.orElse(null);
 			// 반환값 설정
 			// TMDB 영화 상세 DTO를 응답 DTO로 변환
-			DetailMovieResponseDto respoonse = mapper.detailMovieToDetailMovieResponse(detailResponse);
-			respoonse.setLink(link);
+			DetailMovieResponseDto response = mapper.detailMovieToDetailMovieResponse(detailResponse);
+			response.setLink(link);
+
+			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+			if (userId != null) {
+				response.setWishlisted(detailInformationHelper.setWishlisted(userId, originalMediaType, String.valueOf(movieId)));
+			}
 
 			// 응답 DTO 반환
-			return respoonse;
+			return response;
 		}).block();
 	}
 
 	/**
 	 * AniList Comics 상세 조회
 	 * 
-	 * @param comicsId Comics ID
-	 * @param page 페이지 번호
+	 * @param comicsId 만화 ID
+	 * @param originalMediaType 원본 미디어 타입
+	 * @param userId 유저 테이블 ID
 	 * @return Comics 상세 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsDetailCache", key = "#comicsId", unless = "#result == null")
-	public DetailComicsResponseDto getComicsDetail(Integer comicsId) throws IOException {
+	@Cacheable(value = "comicsDetailCache", key = "#comicsId + '-' + #originalMediaType + '-' + #userId", unless = "#result == null")
+	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String originalMediaType, Long userId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsDetail.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
-				PARAM_MEDIA_ID, comicsId,
-				PARAM_PAGE, FIRST_PAGE_NO,
-				PARAM_PER_PAGE, anilistPerCharacterPage,
-				PARAM_STAFF_PAGE, FIRST_PAGE_NO,
-				PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
-				PARAM_SORT, List.of(CommonEnum.SortEnum.ID),
-				PARAM_STAFF_SORT, List.of(CommonEnum.SortEnum.ID)
+				AnilistParamConstants.PARAM_MEDIA_ID, comicsId,
+				AnilistParamConstants.PARAM_PAGE, CommonConstants.FIRST_PAGE_NO,
+				AnilistParamConstants.PARAM_PER_PAGE, anilistPerCharacterPage,
+				AnilistParamConstants.PARAM_STAFF_PAGE, CommonConstants.FIRST_PAGE_NO,
+				AnilistParamConstants.PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
+				AnilistParamConstants.PARAM_SORT, List.of(SortEnum.ID),
+				AnilistParamConstants.PARAM_STAFF_SORT, List.of(SortEnum.ID)
 				));
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -308,6 +283,11 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 							.startDate(startDate)
 							.build();
 
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						comicsResponse.setWishlisted(detailInformationHelper.setWishlisted(userId, originalMediaType, String.valueOf(comicsId)));
+					}
+
 					// 응답 DTO 반환
 					return comicsResponse;
 				})
@@ -323,17 +303,17 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsCharacterListCache", key = "'character_' + #comicsId + '_' + #page", unless = "#result == null")
+	@Cacheable(value = "comicsCharacterListCache", key = "'character_' + #comicsId + '-' + #page", unless = "#result == null")
 	public AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsCharacterList.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
-				PARAM_MEDIA_ID, comicsId,
-				PARAM_PAGE, Optional.ofNullable(page).orElse(FIRST_PAGE_NO),
-				PARAM_PER_PAGE, anilistPerCharacterPage,
-				PARAM_SORT, List.of(CommonEnum.SortEnum.ID)
+				AnilistParamConstants.PARAM_MEDIA_ID, comicsId,
+				AnilistParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AnilistParamConstants.PARAM_PER_PAGE, anilistPerCharacterPage,
+				AnilistParamConstants.PARAM_SORT, List.of(SortEnum.ID)
 				));
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -367,21 +347,21 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsStaffListCache", key = "'staff_' + #comicsId + '_' + #page", unless = "#result == null")
+	@Cacheable(value = "comicsStaffListCache", key = "'staff_' + #comicsId + '-' + #page", unless = "#result == null")
 	public AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException {
-		
+
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsStaffList.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
-				PARAM_MEDIA_ID, comicsId,
-				PARAM_STAFF_PAGE, Optional.ofNullable(page).orElse(FIRST_PAGE_NO),
-				PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
-				PARAM_STAFF_SORT, List.of(CommonEnum.SortEnum.ID)
+				AnilistParamConstants.PARAM_MEDIA_ID, comicsId,
+				AnilistParamConstants.PARAM_STAFF_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AnilistParamConstants.PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
+				AnilistParamConstants.PARAM_STAFF_SORT, List.of(SortEnum.ID)
 				));
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
-		
+
 		// AniList 스태프 정보 API 조회
 		return anilistWebClient.post()
 				.bodyValue(requestBody)

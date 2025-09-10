@@ -152,7 +152,7 @@ public class WebClientConfig {
 	@Bean
 	WebClient kakaoWebClient() {
 		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(naverTimeout));
+		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(kakaoTimeout));
 		// WebClient 공통설정
 		return WebClient.builder()
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8") // 헤더에 전송하는 데이터 타입 설정

@@ -1,14 +1,11 @@
 package com.cjy.contenthub.wishlist.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.ContentRepository;
@@ -127,13 +124,13 @@ public class WishlistServiceImpl implements WishlistService {
 			
 			// 미디어 타입별로 필터링
 			List<WishlistServiceDto> aniWishlist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
-					.equals(CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode())).toList();
+					.equals(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode())).toList();
 			List<WishlistServiceDto> dramaWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
-					.equals(CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode())).toList();
+					.equals(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode())).toList();
 			List<WishlistServiceDto> movieWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
-					.equals(CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode())).toList();
+					.equals(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode())).toList();
 			List<WishlistServiceDto> comicsWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
-					.equals(CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())).toList();
+					.equals(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())).toList();
 			
 			// 결과 반환
 			return WishlistListServiceDto.builder()

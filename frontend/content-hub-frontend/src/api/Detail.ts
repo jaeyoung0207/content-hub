@@ -77,6 +77,8 @@ export class Detail<
       series_id: number;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -99,6 +101,8 @@ export class Detail<
       movie_id: number;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -118,9 +122,11 @@ export class Detail<
   getComicsRecommendations = (
     query: {
       /** @format int32 */
-      mediaId: number;
+      media_id: number;
       /** @format int32 */
       page?: number;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -141,6 +147,9 @@ export class Detail<
     query: {
       /** @format int32 */
       series_id: number;
+      original_media_type: string;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -161,6 +170,9 @@ export class Detail<
     query: {
       /** @format int32 */
       movie_id: number;
+      original_media_type: string;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -203,6 +215,9 @@ export class Detail<
     query: {
       /** @format int32 */
       comics_id: number;
+      original_media_type: string;
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
@@ -243,8 +258,8 @@ export class Detail<
    */
   getStarRatingAverage = (
     query: {
-      originalMediaType: string;
-      apiId: string;
+      original_media_type: string;
+      api_id: string;
     },
     params: RequestParams = {}
   ) =>
@@ -263,11 +278,11 @@ export class Detail<
    */
   getCommentList = (
     query: {
-      originalMediaType: string;
-      apiId: string;
+      original_media_type: string;
+      api_id: string;
       /** @format int32 */
       page?: number;
-      providerId?: string;
+      provider_id?: string;
     },
     params: RequestParams = {}
   ) =>
@@ -287,7 +302,7 @@ export class Detail<
   deleteComment = (
     query: {
       /** @format int64 */
-      commentId: number;
+      comment_id: number;
     },
     params: RequestParams = {}
   ) =>

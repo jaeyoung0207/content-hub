@@ -15,9 +15,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.cjy.contenthub.common.api.dto.aniist.AniListCoverImageDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
-import com.cjy.contenthub.common.constants.CommonEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.AniListMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
 import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
 
@@ -29,18 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class DetailRecoommendationHelper {
-
-	/** 리퀘스트 파라미터 키 : TV SERIES ID */
-	private static final String PARAM_TV_SERIES_ID = "series_id";
-
-	/** 리퀘스트 파라미터 키 : MOVIE ID */
-	private static final String PARAM_MOVIE_ID = "movie_id";
-
-	/** 리퀘스트 파라미터 키 : 페이지 번호 */
-	private static final String PARAM_PAGE = "page";
-
-	/** 리퀘스트 파라미터 키 : 언어 */
-	private static final String PARAM_LANGUAGE = "language";
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
@@ -60,9 +49,9 @@ public class DetailRecoommendationHelper {
 	 */
 	public String getMovieRecommendationUri(Integer movieId, Integer page, String language) {
 		return UriComponentsBuilder.fromPath(String.format(movieRecommendationsPath, movieId))
-				.queryParam(PARAM_MOVIE_ID, movieId)
-				.queryParam(PARAM_LANGUAGE, language)
-				.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
+				.queryParam(TmdbParamConstants.PARAM_MOVIE_ID, movieId)
+				.queryParam(TmdbParamConstants.PARAM_LANGUAGE, language)
+				.queryParam(TmdbParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(1))
 				.toUriString();
 	}
 
@@ -76,9 +65,9 @@ public class DetailRecoommendationHelper {
 	 */
 	public String getTVRecommendationUri(Integer seriesId, Integer page, String language) {
 		return UriComponentsBuilder.fromPath(String.format(tvRecommendationsPath, seriesId))
-				.queryParam(PARAM_TV_SERIES_ID, seriesId)
-				.queryParam(PARAM_LANGUAGE, language)
-				.queryParam(PARAM_PAGE, Optional.ofNullable(page).orElse(1))
+				.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, seriesId)
+				.queryParam(TmdbParamConstants.PARAM_LANGUAGE, language)
+				.queryParam(TmdbParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(1))
 				.toUriString();
 	}
 
@@ -129,7 +118,7 @@ public class DetailRecoommendationHelper {
 		if (ObjectUtils.isNotEmpty(media.getRelations()) && ObjectUtils.isNotEmpty(media.getRelations().getNodes())) {
 			media.getRelations().getNodes().stream()
 			.filter(e -> StringUtils.equals(e.getType(),
-					CommonEnum.AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
+					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
 			.forEach(node -> results.add(DetailComicsRecommendationsResultDto.builder()
 					.id(node.getId())
 					.title(node.getTitle().getUserPreferred())
@@ -152,7 +141,7 @@ public class DetailRecoommendationHelper {
 				&& ObjectUtils.isNotEmpty(media.getRecommendations().getNodes())) {
 			media.getRecommendations().getNodes().stream()
 			.filter(e -> StringUtils.equals(e.getMediaRecommendation().getType(),
-					CommonEnum.AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
+					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
 			.forEach(node -> {
 				AniListMediaRecommendationDetailDto recommendationDetail = node.getMediaRecommendation();
 				String title = Optional.ofNullable(recommendationDetail.getTitle())

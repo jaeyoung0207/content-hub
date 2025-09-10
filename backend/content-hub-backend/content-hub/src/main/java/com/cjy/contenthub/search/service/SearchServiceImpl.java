@@ -25,9 +25,11 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
-import com.cjy.contenthub.common.constants.CommonEnum;
+import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
@@ -103,33 +105,6 @@ public class SearchServiceImpl implements SearchService {
 	@Value("${anilist.custom.perMorePage}")
 	private int anilistPerMorePage;
 
-	/** 리퀘스트 파라미터 키 : 검색어 */
-	private static final String PARAM_QUERY = "query";
-
-	/** 리퀘스트 파라미터 키 : 페이지 */
-	private static final String PARAM_PAGE = "page";
-
-	/** 리퀘스트 파라미터 키 : 페이지당 표시 건수 */
-	private static final String PARAM_PER_PAGE = "perPage";
-
-	/** 리퀘스트 파라미터 키 : 검색 */
-	private static final String PARAM_SEARCH = "search";
-
-	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
-	private static final String PARAM_INCLUDE_ADULT = "include_adult";
-
-	/** 리퀘스트 파라미터 키 : 언어 */
-	private static final String PARAM_LANGUAGE = "language";
-
-	/** 리퀘스트 파라미터 키 : 성인물 포함 여부 */
-	private static final String PARAM_IS_ADULT = "isAdult";
-
-	/** 언어 : 한국어 */
-	private static final String LANGUAGE_KOREAN = "ko-KR";
-
-	/** 첫번째 페이지 번호 */
-	private static final int FIRST_PAGE_NO = 1;
-
 	/**
 	 * 검색어 리스트 조회
 	 * 
@@ -154,9 +129,9 @@ public class SearchServiceImpl implements SearchService {
 			return tmdbWebClient.get()
 					.uri(builder -> builder
 							.path(multiSearchPath)
-							.queryParam(PARAM_QUERY, keyword)
-							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+							.queryParam(TmdbParamConstants.PARAM_QUERY, keyword)
+							.queryParam(TmdbParamConstants.PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 							.build())
 					.retrieve()
 					.bodyToMono(TmdbSearchMultiDto.class)
@@ -214,7 +189,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 애니, 드라마 정보 조회
 			Mono<SearchTvResponseDto> tvResponseMono = Flux
-					.range(FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(CommonConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -263,7 +238,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 영화 정보 조회
 			Mono<SearchMovieResponseDto> movieResponseMono = Flux
-					.range(FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(CommonConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -323,25 +298,25 @@ public class SearchServiceImpl implements SearchService {
 				// 영화 정보에서 애니영화 제외한 정보 추출
 				filteredMovieList.addAll(helper.getMovieList(movieResultList, movieGenreMap));
 
-				// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+				// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 				if (userId != null) {
 					BusinessUtil.setWishlisted(
 							aniResultList, 
-							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+							CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
 							userId, 
 							dto -> String.valueOf(dto.getId()),
 							SearchTvResultsDto::setWishlisted, // (dto, wishlisted) -> dto.setWishlisted(wishlisted)
 							wishlistRepository);
 					BusinessUtil.setWishlisted(
 							dramaResultList, 
-							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+							CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
 							userId, 
 							dto -> String.valueOf(dto.getId()),
 							SearchTvResultsDto::setWishlisted,
 							wishlistRepository);
 					BusinessUtil.setWishlisted(
 							filteredMovieList, 
-							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
+							CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
 							userId, 
 							dto -> String.valueOf(dto.getId()),
 							SearchMovieResultsDto::setWishlisted, 
@@ -387,10 +362,10 @@ public class SearchServiceImpl implements SearchService {
 			Mono<TmdbSearchMovieDto> movieResponseMono = tmdbWebClient.get()
 					.uri(builder -> builder
 							.path(movieSearchPath)
-							.queryParam(PARAM_QUERY, keyword)
-							.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-							.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
-							.queryParam(PARAM_PAGE, currentPage)
+							.queryParam(TmdbParamConstants.PARAM_QUERY, keyword)
+							.queryParam(TmdbParamConstants.PARAM_INCLUDE_ADULT, isAdult)
+							.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
+							.queryParam(TmdbParamConstants.PARAM_PAGE, currentPage)
 							.build())
 					.retrieve()
 					.bodyToMono(TmdbSearchMovieDto.class);
@@ -421,11 +396,11 @@ public class SearchServiceImpl implements SearchService {
 					aniResultList.addAll(helper.getAniMovieList(movieList, movieGenreMap));
 				}
 
-				// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+				// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 				if (userId != null) {
 					BusinessUtil.setWishlisted(
 							aniResultList, 
-							CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
+							CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
 							userId, 
 							dto -> String.valueOf(dto.getId()),
 							SearchTvResultsDto::setWishlisted, 
@@ -466,11 +441,11 @@ public class SearchServiceImpl implements SearchService {
 			// TBMD TV 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchTvResultsDto> tvResultsList = mapper.tvResultsListToTmdbTvResultsList(response.getResults());
 
-			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 			if (userId != null) {
 				BusinessUtil.setWishlisted(
 						tvResultsList, 
-						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
+						CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
 						userId,
 						dto -> String.valueOf(dto.getId()),
 						SearchTvResultsDto::setWishlisted, 
@@ -512,11 +487,11 @@ public class SearchServiceImpl implements SearchService {
 			// TBMD Movie 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchMovieResultsDto> movieResultsList = mapper.movieResultsListToTmdbMovieResultsList(response.getResults());
 
-			// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 			if (userId != null) {
 				BusinessUtil.setWishlisted(
 						movieResultsList, 
-						CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
+						CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
 						userId,
 						dto -> String.valueOf(dto.getId()),
 						SearchMovieResultsDto::setWishlisted, 
@@ -557,13 +532,13 @@ public class SearchServiceImpl implements SearchService {
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");
 				// 리퀘스트 파라미터 작성
 				Map<String, Object> variables = new HashMap<>(Map.of(
-						PARAM_PAGE, Optional.ofNullable(page).orElse(1),
-						PARAM_PER_PAGE, perPage,
-						PARAM_SEARCH, jaKeyword
+						AnilistParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(1),
+						AnilistParamConstants.PARAM_PER_PAGE, perPage,
+						AnilistParamConstants.PARAM_SEARCH, jaKeyword
 						));
 				// 성인물 플래그가 false인 경우, 파라미터 추가
 				if (!isAdult) {
-					variables.put(PARAM_IS_ADULT, isAdult);
+					variables.put(AnilistParamConstants.PARAM_IS_ADULT, isAdult);
 				}
 				// graphql 쿼리에 리퀘스트 파라미터 적용
 				String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -589,11 +564,11 @@ public class SearchServiceImpl implements SearchService {
 							List<SearchComicsResultDto> comicsResultsList = 
 									helper.setComicsResponse(response.getData().getPage().getMedia());
 							
-							// 로그인한 유저 정보가 존재하는 경우 위시리스트 여부 설정
+							// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 							if (userId != null) {
 								BusinessUtil.setWishlisted(
 										comicsResultsList, 
-										CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode(), 
+										CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode(), 
 										userId,
 										dto -> String.valueOf(dto.getId()),
 										SearchComicsResultDto::setWishlisted, 

@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
@@ -42,9 +43,6 @@ public class SearchHelper {
 
 	/** 리퀘스트 파라미터 키 : 언어 */
 	private static final String PARAM_LANGUAGE = "language";
-
-	/** 언어 : 한국어 */
-	private static final String LANGUAGE_KOREAN = "ko-KR";
 
 	/**
 	 * 키워드로 시작하는 검색결과가 먼저 오도록 정렬
@@ -90,7 +88,7 @@ public class SearchHelper {
 		return UriComponentsBuilder.fromPath(searchPath)
 				.queryParam(PARAM_QUERY, keyword)
 				.queryParam(PARAM_INCLUDE_ADULT, isAdult)
-				.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+				.queryParam(PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 				.queryParam(PARAM_PAGE, page)
 				.toUriString();
 	}

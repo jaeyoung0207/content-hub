@@ -27,7 +27,7 @@ export const usePerson = (personId: string): UsePersonReturnType => {
   const { data, isLoading, isError } = useQuery<PersonResponseDto>({
     queryKey: personQueryKeys.person(personId),
     queryFn: async () => {
-      return (await personApi.getPersonDetails({ personId: Number(personId) }))
+      return (await personApi.getPersonDetails({ person_id: Number(personId) }))
         .data;
     },
   });

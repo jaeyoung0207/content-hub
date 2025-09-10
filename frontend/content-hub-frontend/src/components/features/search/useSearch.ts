@@ -17,6 +17,7 @@ import {
 } from '@/components/common/utils/errorUtil';
 import { ERROR_MESSAGE } from '@/components/common/constants/constants';
 import { AxiosErrorType } from '@/components/common/config/queryClientConfig';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 
 // 공통 검색 결과 타입
 export type SearchCommonResultType =
@@ -44,6 +45,11 @@ export const useSearch = (
   keyword: string,
   isAdult: string
 ): UseSearchReturnType => {
+  // ================================================================================================== zustand
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
   // ================================================================================================== react query
 
   // 검색 API 인스턴스 생성
@@ -100,7 +106,12 @@ export const useSearch = (
    * @returns 비디오 검색 결과
    */
   const searchVideoApi = async () => {
-    return (await searchApi.searchVideo({ query: keyword }, {})).data;
+    return (
+      await searchApi.searchVideo(
+        { keyword: keyword, user_id: user?.userId },
+        {}
+      )
+    ).data;
   };
 
   /**
@@ -109,7 +120,10 @@ export const useSearch = (
    */
   const searchComicsApi = async () => {
     return (
-      await searchApi.searchComics({ query: keyword, isMainPage: true }, {})
+      await searchApi.searchComics(
+        { keyword: keyword, is_main_page: true, user_id: user?.userId },
+        {}
+      )
     ).data;
   };
 

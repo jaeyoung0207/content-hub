@@ -191,10 +191,10 @@ export const useContentComment = (
     queryFn: async ({ pageParam = 0 }) => {
       const response = (
         await detailApi.getCommentList({
-          apiId: apiId,
-          originalMediaType: originalMediaType,
+          api_id: apiId,
+          original_media_type: originalMediaType,
           page: pageParam,
-          providerId: user?.id,
+          provider_id: user?.id,
         })
       ).data;
       setTotalElements(response.totalElements!);
@@ -337,7 +337,7 @@ export const useContentComment = (
       // 코멘트 삭제 중 상태 설정
       setIsDeleting(true);
       // 코멘트 삭제 API 호출
-      return (await detailApi.deleteComment({ commentId })).data;
+      return (await detailApi.deleteComment({ comment_id: commentId })).data;
     },
     // 성공 후 처리
     onSuccess: () => {

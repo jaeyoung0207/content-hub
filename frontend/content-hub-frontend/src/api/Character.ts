@@ -29,7 +29,7 @@ export class Character<
   getStaff = (
     query: {
       /** @format int32 */
-      staffId: number;
+      staff_id: number;
     },
     params: RequestParams = {}
   ) =>
@@ -49,7 +49,7 @@ export class Character<
   getCharacter = (
     query: {
       /** @format int32 */
-      characterId: number;
+      character_id: number;
     },
     params: RequestParams = {}
   ) =>

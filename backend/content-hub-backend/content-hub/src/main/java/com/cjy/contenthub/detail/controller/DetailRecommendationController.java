@@ -40,7 +40,10 @@ public class DetailRecommendationController {
 	private static final String PARAM_PAGE = "page";
 
 	/** 리퀘스트 파라미터 키 : 미디어 ID */
-	private static final String PARAM_MEDIA_ID = "mediaId";
+	private static final String PARAM_MEDIA_ID = "media_id";
+	
+	/** 리퀘스트 파라미터 키 : 유저 ID */
+	private static final String PARAM_USER_ID = "user_id";
 
 	/**
 	 * TMDB TV 추천 작품 조회 API
@@ -52,9 +55,9 @@ public class DetailRecommendationController {
 	 */
 	@GetMapping(value = "/getTvRecommendations")
 	public ResponseEntity<DetailRecommendationsTvDto> getTvRecommendations(
-			@NotNull @RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_PAGE) Long userId
+			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		return ResponseEntity.ok(recommendationService.getTvRecommendations(seriesId, page, userId));
 	}
@@ -69,9 +72,9 @@ public class DetailRecommendationController {
 	 */
 	@GetMapping(value = "/getMovieRecommendations")
 	public ResponseEntity<DetailRecommendationsMovieDto> getMovieRecommendations(
-			@NotNull @RequestParam(PARAM_MOVIE_ID) Integer movieId,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_PAGE) Long userId
+			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		return ResponseEntity.ok(recommendationService.getMovieRecommendations(movieId, page, userId));
 	}
@@ -86,9 +89,9 @@ public class DetailRecommendationController {
 	 */
 	@GetMapping(value = "/getComicsRecommendations")
 	public ResponseEntity<DetailComicsRecommendationsResponseDto> getComicsRecommendations(
-			@NotNull @RequestParam(PARAM_MEDIA_ID) Integer mediaId,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_PAGE) Long userId
+			@RequestParam(PARAM_MEDIA_ID) Integer mediaId,
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) throws IOException {
 		return ResponseEntity.ok(recommendationService.getComicsRecommendations(mediaId, page, userId));
 	}

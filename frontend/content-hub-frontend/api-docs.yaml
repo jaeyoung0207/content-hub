@@ -107,12 +107,12 @@ paths:
         - search-controller
       operationId: searchVideo
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
             type: string
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -131,7 +131,7 @@ paths:
         - search-controller
       operationId: searchMovie
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
@@ -142,7 +142,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -161,7 +161,7 @@ paths:
         - search-controller
       operationId: searchKeyword
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
@@ -181,7 +181,7 @@ paths:
         - search-controller
       operationId: searchDrama
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
@@ -192,7 +192,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -211,7 +211,7 @@ paths:
         - search-controller
       operationId: searchComics
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
@@ -222,12 +222,12 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: isMainPage
+        - name: is_main_page
           in: query
-          required: false
+          required: true
           schema:
             type: boolean
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -246,7 +246,7 @@ paths:
         - search-controller
       operationId: searchAni
       parameters:
-        - name: query
+        - name: keyword
           in: query
           required: true
           schema:
@@ -257,7 +257,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -276,7 +276,7 @@ paths:
         - person-controller
       operationId: getPersonDetails
       parameters:
-        - name: personId
+        - name: person_id
           in: query
           required: true
           schema:
@@ -482,7 +482,7 @@ paths:
         - home-controller
       operationId: getContentRankings
       parameters:
-        - name: userId
+        - name: user_id
           in: query
           required: false
           schema:
@@ -513,6 +513,12 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -538,6 +544,12 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -551,7 +563,7 @@ paths:
         - detail-recommendation-controller
       operationId: getComicsRecommendations
       parameters:
-        - name: mediaId
+        - name: media_id
           in: query
           required: true
           schema:
@@ -563,6 +575,12 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -582,6 +600,17 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: original_media_type
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -601,6 +630,17 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: original_media_type
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -645,6 +685,17 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: original_media_type
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -683,12 +734,12 @@ paths:
         - detail-comment-controller
       operationId: getStarRatingAverage
       parameters:
-        - name: originalMediaType
+        - name: original_media_type
           in: query
           required: true
           schema:
             type: string
-        - name: apiId
+        - name: api_id
           in: query
           required: true
           schema:
@@ -706,12 +757,12 @@ paths:
         - detail-comment-controller
       operationId: getCommentList
       parameters:
-        - name: originalMediaType
+        - name: original_media_type
           in: query
           required: true
           schema:
             type: string
-        - name: apiId
+        - name: api_id
           in: query
           required: true
           schema:
@@ -722,7 +773,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: providerId
+        - name: provider_id
           in: query
           required: false
           schema:
@@ -758,7 +809,7 @@ paths:
         - character-controller
       operationId: getStaff
       parameters:
-        - name: staffId
+        - name: staff_id
           in: query
           required: true
           schema:
@@ -777,7 +828,7 @@ paths:
         - character-controller
       operationId: getCharacter
       parameters:
-        - name: characterId
+        - name: character_id
           in: query
           required: true
           schema:
@@ -814,7 +865,7 @@ paths:
         - detail-comment-controller
       operationId: deleteComment
       parameters:
-        - name: commentId
+        - name: comment_id
           in: query
           required: true
           schema:
@@ -1063,11 +1114,11 @@ components:
         totalResults:
           type: integer
           format: int32
+        aniViewMore:
+          type: boolean
         movieViewMore:
           type: boolean
         dramaViewMore:
-          type: boolean
-        aniViewMore:
           type: boolean
     SearchMovieResponseDto:
       type: object
@@ -1723,6 +1774,8 @@ components:
           type: string
         starRatingAverage:
           type: number
+        wishlisted:
+          type: boolean
     TmdbGenreDto:
       type: object
       properties:
@@ -1894,6 +1947,8 @@ components:
           type: string
         starRatingAverage:
           type: number
+        wishlisted:
+          type: boolean
     AniListCoverImageDto:
       type: object
       properties:
@@ -2048,9 +2103,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favourite:
-          type: boolean
         favouriteBlocked:
+          type: boolean
+        favourite:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2090,6 +2145,8 @@ components:
           format: int32
         startDate:
           type: string
+        wishlisted:
+          type: boolean
     DetailCommentGetDataDto:
       type: object
       properties:

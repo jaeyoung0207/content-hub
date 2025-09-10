@@ -27,5 +27,8 @@ public class DetailMovieResponseDto extends TmdbMovieDetailsDto {
 	
 	/** 별점 */
 	private BigDecimal starRatingAverage;
+	
+	/** 위시리스트 여부 */
+	private boolean wishlisted;
 
 }

@@ -29,7 +29,7 @@ public class HomeController {
 	private final HomeMapper mapper;
 	
 	/** 리퀘스트 파라미터 키 : 유저 테이블 ID */
-	private static final String PARAM_USER_ID = "userId";
+	private static final String PARAM_USER_ID = "user_id";
 	
 	/**
 	 * 콘텐츠 랭킹 정보를 조회
@@ -38,7 +38,7 @@ public class HomeController {
 	 * @return 콘텐츠 랭킹 응답 DTO 리스트
 	 */
 	@GetMapping("/rankings")
-	public ResponseEntity<HomeRankingListResponseDto> getContentRankings(@Nullable @RequestParam(PARAM_USER_ID) Long userId) {
+	public ResponseEntity<HomeRankingListResponseDto> getContentRankings(@RequestParam(value = PARAM_USER_ID, required = false) Long userId) {
 		// 서비스에서 콘텐츠 랭킹 데이터 조회
 		HomeRankingListServiceDto serviceResult = homeService.getContentRankings(userId);
 		// 서비스 DTO 리스트를 응답 DTO 리스트로 매핑

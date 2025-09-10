@@ -26,7 +26,7 @@ export class Home<
   getContentRankings = (
     query?: {
       /** @format int64 */
-      userId?: number;
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>

@@ -25,9 +25,6 @@ import com.cjy.contenthub.detail.service.DetailCommentService;
 import com.cjy.contenthub.detail.service.dto.DetailCommentDataServiceDto;
 import com.cjy.contenthub.detail.service.dto.DetailCommentServiceDto;
 
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,19 +44,19 @@ public class DetailCommentController {
 	private final DetailMapper mapper;
 
 	/** 리퀘스트 파라미터 키 : 코멘트 번호 */
-	private static final String PARAM_COMMENT_ID = "commentId";
+	private static final String PARAM_COMMENT_ID = "comment_id";
 
 	/** 리퀘스트 파라미터 키 : Original Media Type */
-	private static final String PARAM_ORIGINAL_MEDIATYPE = "originalMediaType";
+	private static final String PARAM_ORIGINAL_MEDIATYPE = "original_media_type";
 
 	/** 리퀘스트 파라미터 키 : API ID */
-	private static final String PARAM_API_ID = "apiId";
+	private static final String PARAM_API_ID = "api_id";
 
 	/** 리퀘스트 파라미터 키 : 페이지 번호 */
 	private static final String PARAM_PAGE = "page";
 
 	/** 리퀘스트 파라미터 키 : 프로바이더ID */
-	private static final String PARAM_PROVIDER_ID = "providerId";
+	private static final String PARAM_PROVIDER_ID = "provider_id";
 
 	/**
 	 * 코멘트 등록 API
@@ -108,7 +105,7 @@ public class DetailCommentController {
 	 * @return ResponseEntity<Boolean> 삭제 결과
 	 */
 	@DeleteMapping(value = "/deleteComment")
-	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_ID) @NotNull Long commentId) {
+	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_ID) Long commentId) {
 
 		// 삭제 서비스 호출
 		Boolean deleteResult = commentService.deleteComment(commentId);
@@ -129,10 +126,10 @@ public class DetailCommentController {
 	 */
 	@GetMapping(value = "/getCommentList")
 	public ResponseEntity<DetailCommentGetResponseDto> getCommentList(
-			@NotEmpty @RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType,
-			@NotEmpty @RequestParam(PARAM_API_ID)  String apiId,
-			@Nullable @RequestParam(PARAM_PAGE) Integer page,
-			@Nullable @RequestParam(PARAM_PROVIDER_ID)  String providerId
+			@RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType,
+			@RequestParam(PARAM_API_ID)  String apiId,
+			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
+			@RequestParam(value = PARAM_PROVIDER_ID, required = false)  String providerId
 			) {
 
 		// 응답 DTO 초기화
@@ -162,8 +159,8 @@ public class DetailCommentController {
 	 */
 	@GetMapping(value = "/getStarRatingAverage")
 	public ResponseEntity<BigDecimal> getStarRatingAverage(
-			@RequestParam(PARAM_ORIGINAL_MEDIATYPE) @NotEmpty String originalMediaType,
-			@RequestParam(PARAM_API_ID) @NotEmpty String apiId
+			@RequestParam(PARAM_ORIGINAL_MEDIATYPE) String originalMediaType,
+			@RequestParam(PARAM_API_ID) String apiId
 			) {
 
 		// 별점 평균 조회 서비스 호출

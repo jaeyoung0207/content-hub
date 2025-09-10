@@ -56,5 +56,8 @@ public class CommonConstants {
     
     /** csrf token 헤더 */
     public static final String CSRF_TOKEN_HEADER = "X-XSRF-TOKEN";
+    
+    /** 첫번째 페이지 번호 */
+	public static final int FIRST_PAGE_NO = 1;
 	
 }

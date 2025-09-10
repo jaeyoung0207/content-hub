@@ -38,10 +38,10 @@ public class CharacterController {
 	private final CharacterService characterService;
 
 	/** 리퀘스트 파라미터 키 : 캐릭터ID */
-	private static final String PARAM_CHARACTER_ID = "characterId";
+	private static final String PARAM_CHARACTER_ID = "character_id";
 	
 	/** 리퀘스트 파라미터 키 : 스태프ID */
-	private static final String PARAM_STAFF_ID = "staffId";
+	private static final String PARAM_STAFF_ID = "staff_id";
 
 
 	/**

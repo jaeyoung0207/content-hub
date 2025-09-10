@@ -21,6 +21,7 @@ import {
 } from '@/components/common/constants/constants';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import throttle from 'lodash/throttle';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 
 /**
  * 추천 콘텐츠 무한 스크롤 결과 타입
@@ -63,6 +64,11 @@ export const useRecommendationContent = (
     null
   );
 
+  // ================================================================================================== zustand
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
   // ================================================================================================== react query
 
   // Detail API 인스턴스 생성
@@ -83,6 +89,7 @@ export const useRecommendationContent = (
         await detailApi.getTvRecommendations({
           series_id: detailResult.id!,
           page: pageParam,
+          user_id: user?.userId,
         })
       ).data.results;
     }
@@ -92,6 +99,7 @@ export const useRecommendationContent = (
         await detailApi.getMovieRecommendations({
           movie_id: detailResult.id!,
           page: pageParam,
+          user_id: user?.userId,
         })
       ).data.results;
     }
@@ -99,8 +107,9 @@ export const useRecommendationContent = (
     else if (originalMediaType == MEDIA_TYPE.COMICS) {
       return (
         await detailApi.getComicsRecommendations({
-          mediaId: detailResult.id!,
+          media_id: detailResult.id!,
           page: pageParam,
+          user_id: user?.userId,
         })
       ).data.results;
     }

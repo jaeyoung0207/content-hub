@@ -45,7 +45,7 @@ public class BusinessUtil {
 		List<String> apiIdList = resultsList.stream().map(idExtractor).toList();
 		
 		// 유저의 위시리스트 목록에서 해당 미디어 타입과 API ID에 해당하는 콘텐츠 조회
-		List<ContentEntity> contentList = wishlistRepository.getRegisteredWishlist(userId, originalMediaType, apiIdList);
+		List<ContentEntity> contentList = wishlistRepository.getWishlistedContent(userId, originalMediaType, apiIdList);
 
 		// 위시리스트에 등록된 콘텐츠가 없으면 처리 종료
 		if (contentList == null || contentList.isEmpty()) {

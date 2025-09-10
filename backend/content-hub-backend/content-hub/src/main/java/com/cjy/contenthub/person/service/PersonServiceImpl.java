@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsDto;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenderEnum;
+import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonDto;
@@ -46,21 +47,6 @@ public class PersonServiceImpl implements PersonService {
 	/** TMDB API 인물 상세 정보 헬퍼 클래스 */
 	private final PersonHelper helper;
 
-	/** 리퀘스트 파라미터 키 : 인물 ID */
-	private static final String PARAM_PERSON_ID = "personId";
-
-	/** 리퀘스트 파라미터 키 : append_to_response */
-	private static final String PARAM_APPEND_TO_RESPONSE = "append_to_response";
-
-	/** 크레딧 : credits */
-	private static final String PERSON_CREDITS = "tv_credits,movie_credits";
-
-	/** 리퀘스트 파라미터 키 : 언어 */
-	private static final String PARAM_LANGUAGE = "language";
-
-	/** 언어 : 한국어 */
-	private static final String LANGUAGE_KOREAN = "ko-KR";
-
 	/**
 	 * 인물 상세 정보 조회
 	 * 
@@ -74,9 +60,9 @@ public class PersonServiceImpl implements PersonService {
 		// TMDB 인물 상세 정보 조회
 		return tmdbWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(String.format(personDetailPath, personId))
-						.queryParam(PARAM_PERSON_ID, personId)
-						.queryParam(PARAM_APPEND_TO_RESPONSE, PERSON_CREDITS)
-						.queryParam(PARAM_LANGUAGE, LANGUAGE_KOREAN)
+						.queryParam(TmdbParamConstants.PARAM_PERSON_ID, personId)
+						.queryParam(TmdbParamConstants.PARAM_APPEND_TO_RESPONSE, TmdbParamConstants.PERSON_CREDITS)
+						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
 				.bodyToMono(PersonDto.class)
