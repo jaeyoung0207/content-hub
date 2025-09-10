@@ -36,13 +36,13 @@ type useDetailReturnType = {
 /**
  * 상세 화면 커스텀 훅
  * @param originalMediaType 원본 미디어 타입
- * @param contentId 콘텐츠 ID
+ * @param apiId API ID
  * @param tabNo 탭 번호
  * @returns
  */
 export const useDetail = (
   originalMediaType: string,
-  contentId: string,
+  apiId: string,
   tabNo: number
 ): useDetailReturnType => {
   // ================================================================================================== react hook
@@ -61,7 +61,7 @@ export const useDetail = (
   // 상세 API 인스턴스 생성
   const detailApi = useMemo(() => new Detail(), []);
   // 리퀘스트 파라미터용 콘텐츠ID
-  const contentIdParam = Number(contentId);
+  const apiIdParam = Number(apiId);
 
   /**
    * 상세 정보를 가져오는 API 호출 함수
@@ -74,19 +74,17 @@ export const useDetail = (
       originalMediaType === MEDIA_TYPE.DRAMA
     ) {
       // TV 상세 정보를 가져오는 API 호출
-      return (await detailApi.getTvDetail({ series_id: contentIdParam })).data;
+      return (await detailApi.getTvDetail({ series_id: apiIdParam })).data;
     }
     // 원본 미디어 타입이 MOVIE인 경우
     else if (originalMediaType === MEDIA_TYPE.MOVIE) {
       // MOVIE 상세 정보를 가져오는 API 호출
-      return (await detailApi.getMovieDetail({ movie_id: contentIdParam }))
-        .data;
+      return (await detailApi.getMovieDetail({ movie_id: apiIdParam })).data;
     }
     // 원본 미디어 타입이 COMICS인 경우
     else if (originalMediaType === MEDIA_TYPE.COMICS) {
       // COMICS 상세 정보를 가져오는 API 호출
-      return (await detailApi.getComicsDetail({ comics_id: contentIdParam }))
-        .data;
+      return (await detailApi.getComicsDetail({ comics_id: apiIdParam })).data;
     }
   };
 
@@ -94,7 +92,7 @@ export const useDetail = (
    * 상세 정보를 가져오는 쿼리
    */
   const { data, isLoading, isError } = useQuery({
-    queryKey: detailQueryKeys.detail.getDetail(originalMediaType, contentId),
+    queryKey: detailQueryKeys.detail.getDetail(originalMediaType, apiId),
     queryFn: async () => {
       // 상세 정보를 가져오는 API 호출
       return await getDetailApi();
@@ -115,14 +113,14 @@ export const useDetail = (
     queryClient.fetchQuery({
       queryKey: detailQueryKeys.detail.getStarRatingAverage(
         originalMediaType,
-        contentId
+        apiId
       ),
       queryFn: async () => {
         // 유저 평균 평점 취득
         const response = (
           await detailApi.getStarRatingAverage({
             originalMediaType: originalMediaType,
-            apiId: contentId,
+            apiId: apiId,
           })
         ).data;
         // 유저 평균 평점 설정
@@ -133,7 +131,7 @@ export const useDetail = (
         return convertResponse;
       },
     });
-  }, [tabIndex, contentId, detailApi, originalMediaType, queryClient, t]);
+  }, [tabIndex, apiId, detailApi, originalMediaType, queryClient, t]);
 
   /**
    * 탭 번호가 변경될 때마다 실행되는 useEffect

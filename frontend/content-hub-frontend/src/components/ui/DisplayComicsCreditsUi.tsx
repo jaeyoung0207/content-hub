@@ -20,7 +20,7 @@ import { highlightHoverColor } from '../common/constants/tailwindStyles';
  */
 type DisplayComicsCreditsPropsType = {
   originalMediaType: string;
-  contentId: number;
+  apiId: number;
   creditsAllList: (
     | AniListCharactersEdgesDto
     | AniListStaffEdgesDto
@@ -34,7 +34,7 @@ type DisplayComicsCreditsPropsType = {
  * 만화 크레딧 표시 컴포넌트
  */
 export const DisplayComicsCredits = ({
-  contentId,
+  apiId,
   originalMediaType,
   creditsAllList,
   creditsType,
@@ -66,7 +66,7 @@ export const DisplayComicsCredits = ({
             <Link
               to={detailUrlQuery({
                 originalMediaType: originalMediaType,
-                contentId: String(contentId),
+                apiId: String(apiId),
                 tabNo: tabNo,
               })}
               className={`ml-5 ${highlightHoverColor}`}

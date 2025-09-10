@@ -249,7 +249,7 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
               <Link
                 to={detailUrlQuery({
                   originalMediaType: originalMediaType,
-                  contentId: String(items.id),
+                  apiId: String(items.id),
                   tabNo: 0,
                 })}
                 className="pl-1 text-lg font-bold hover:underline"

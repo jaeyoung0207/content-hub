@@ -430,7 +430,6 @@ public class SearchServiceImpl implements SearchService {
 							dto -> String.valueOf(dto.getId()),
 							SearchTvResultsDto::setWishlisted, 
 							wishlistRepository);
-//					helper.setWishlisted(aniResultList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), userId);
 				}
 
 				// 반환값 설정
@@ -476,7 +475,6 @@ public class SearchServiceImpl implements SearchService {
 						dto -> String.valueOf(dto.getId()),
 						SearchTvResultsDto::setWishlisted, 
 						wishlistRepository);
-//				helper.setWishlisted(tvResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), userId);
 			}
 
 			// 결과값 설정
@@ -523,7 +521,6 @@ public class SearchServiceImpl implements SearchService {
 						dto -> String.valueOf(dto.getId()),
 						SearchMovieResultsDto::setWishlisted, 
 						wishlistRepository);
-//				helper.setWishlisted(movieResultsList, CommonEnum.CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), userId);
 			}
 
 			// 결과값 설정

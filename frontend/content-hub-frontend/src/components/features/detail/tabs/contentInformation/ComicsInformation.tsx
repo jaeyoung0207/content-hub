@@ -58,7 +58,7 @@ export const ComicsInformation = ({
           <>
             {/* 캐릭터 */}
             <DisplayComicsCredits
-              contentId={detailResult.id!}
+              apiId={detailResult.id!}
               creditsAllList={characterList}
               originalMediaType={originalMediaType}
               creditsType={COMICS_CREDITS_TYPE.CHARACTER}
@@ -75,7 +75,7 @@ export const ComicsInformation = ({
           <>
             {/* 제작진 */}
             <DisplayComicsCredits
-              contentId={detailResult.id!}
+              apiId={detailResult.id!}
               creditsAllList={staffList}
               originalMediaType={originalMediaType}
               creditsType={COMICS_CREDITS_TYPE.STAFF}

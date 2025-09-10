@@ -30,7 +30,6 @@ import com.cjy.contenthub.common.api.dto.naver.NaverProfileResultDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverUserDetails;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
 import com.cjy.contenthub.common.constants.CommonEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.RedisUtil;

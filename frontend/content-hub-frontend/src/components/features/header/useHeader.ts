@@ -96,8 +96,8 @@ export const useHeader = (): useHeaderReturnType => {
   const isAdultParam = searchParams.get('isAdult');
   // 전체보기 여부 파라미터
   const viewMore = searchParams.get('viewMore');
-  // 콘텐츠 ID 파라미터
-  const contentId = searchParams.get('contentId');
+  // API ID 파라미터
+  const apiId = searchParams.get('apiId');
 
   // navigate 훅
   const navigate = useNavigate();
@@ -633,7 +633,7 @@ export const useHeader = (): useHeaderReturnType => {
       setValue('keyword', keywordParam);
     }
     // 전체보기, 상세화면용 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
-    if (!viewMore && !contentId) {
+    if (!viewMore && !apiId) {
       // 초기 포커스
       setFocus('keyword');
     }
@@ -653,7 +653,7 @@ export const useHeader = (): useHeaderReturnType => {
       return;
     }
     // 전체보기, 상세화면용 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
-    if (!viewMore && !contentId) {
+    if (!viewMore && !apiId) {
       // 성인물 체크시 처리
       setAdultFlg();
     }

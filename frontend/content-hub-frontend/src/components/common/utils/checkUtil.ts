@@ -2,12 +2,12 @@ import { toast } from 'react-toastify';
 import i18n from 'i18next';
 
 /**
- * contentId 체크 함수
- * @param contentId 콘텐츠 ID
+ * apiId 체크 함수
+ * @param apiId API ID
  */
-export const checkContentId = (contentId: number | undefined) => {
-  if (!contentId) {
-    console.error('no contentId');
+export const checkApiId = (apiId: number | undefined) => {
+  if (!apiId) {
+    console.error('no apiId');
     toast.error(i18n.t('warn.noContentInfo'), { toastId: 'noContentInfo' });
   }
 };

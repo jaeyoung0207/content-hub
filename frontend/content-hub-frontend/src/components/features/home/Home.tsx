@@ -11,7 +11,7 @@ import {
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { BsStarFill } from 'react-icons/bs';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
-import { checkContentId } from '@/components/common/utils/checkUtil';
+import { checkApiId } from '@/components/common/utils/checkUtil';
 import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
@@ -131,12 +131,12 @@ const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
               key={index}
               className={`ml-1 mr-1 block ${highlightHoverColor} cursor-pointer ${widthStyle}`}
               onClick={commonErrorHandler(() => {
-                // contentId 체크
-                checkContentId(Number(items.apiId));
+                // apiId 체크
+                checkApiId(Number(items.apiId));
                 // 상세화면 URL 생성
                 const detailUrl = detailUrlQuery({
                   originalMediaType: items.originalMediaType!,
-                  contentId: items.apiId,
+                  apiId: items.apiId,
                   tabNo: 0,
                 });
                 // 상세화면 이동

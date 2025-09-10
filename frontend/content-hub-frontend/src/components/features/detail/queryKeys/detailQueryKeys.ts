@@ -7,54 +7,44 @@ export const detailMainKey = 'detail';
  */
 export const detailQueryKeys = {
   detail: {
-    getDetail: (originalMediaType: string, contentId: string) =>
-      [detailMainKey, originalMediaType, contentId] as const,
-    getStarRatingAverage: (originalMediaType: string, contentId: string) =>
+    getDetail: (originalMediaType: string, apiId: string) =>
+      [detailMainKey, originalMediaType, apiId] as const,
+    getStarRatingAverage: (originalMediaType: string, apiId: string) =>
       [
         detailMainKey,
         'getStarRatingAverage',
         originalMediaType,
-        contentId,
+        apiId,
       ] as const,
     contentInformation: {
-      characterList: (originalMediaType: string, contentId: string) =>
+      characterList: (originalMediaType: string, apiId: string) =>
         [
           detailMainKey,
           'getCharacterInformation',
           originalMediaType,
-          contentId,
+          apiId,
         ] as const,
-      staffList: (originalMediaType: string, contentId: string) =>
+      staffList: (originalMediaType: string, apiId: string) =>
         [
           detailMainKey,
           'getStaffInformation',
           originalMediaType,
-          contentId,
+          apiId,
         ] as const,
     },
     contentComment: {
-      list: (originalMediaType: string, contentId: string) =>
-        [
-          detailMainKey,
-          'getCommentList',
-          originalMediaType,
-          contentId,
-        ] as const,
-      save: (originalMediaType: string, contentId: string) =>
-        [detailMainKey, 'saveComment', originalMediaType, contentId] as const,
-      update: (originalMediaType: string, contentId: string) =>
-        [detailMainKey, 'updateComment', originalMediaType, contentId] as const,
-      delete: (originalMediaType: string, contentId: string) =>
-        [detailMainKey, 'deleteComment', originalMediaType, contentId] as const,
+      list: (originalMediaType: string, apiId: string) =>
+        [detailMainKey, 'getCommentList', originalMediaType, apiId] as const,
+      save: (originalMediaType: string, apiId: string) =>
+        [detailMainKey, 'saveComment', originalMediaType, apiId] as const,
+      update: (originalMediaType: string, apiId: string) =>
+        [detailMainKey, 'updateComment', originalMediaType, apiId] as const,
+      delete: (originalMediaType: string, apiId: string) =>
+        [detailMainKey, 'deleteComment', originalMediaType, apiId] as const,
     },
     recommendationContent: {
-      list: (originalMediaType: string, contentId: string) =>
-        [
-          detailMainKey,
-          'getRecommendation',
-          originalMediaType,
-          contentId,
-        ] as const,
+      list: (originalMediaType: string, apiId: string) =>
+        [detailMainKey, 'getRecommendation', originalMediaType, apiId] as const,
     },
   },
 };

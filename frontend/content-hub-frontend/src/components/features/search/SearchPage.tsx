@@ -14,7 +14,7 @@ export type SearchPropsType = {
   mediaType?: string; // 미디어 타입
   viewMore?: string; // 전체보기 여부
   originalMediaType?: string; // 원본 미디어 타입
-  contentId?: string; // 콘텐츠 ID
+  apiId?: string; // API ID
   tabNo?: number; // 탭 번호
 };
 

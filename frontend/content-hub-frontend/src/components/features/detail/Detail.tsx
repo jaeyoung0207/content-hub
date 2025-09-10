@@ -43,13 +43,13 @@ const RecommendationContent = lazy(
 /**
  * 상세 화면 컴포넌트
  * @param originalMediaType 원본 미디어 타입
- * @param contentId 콘텐츠 ID
+ * @param apiId API ID
  * @param tabNo 탭 번호
  */
 export const Detail = memo(() => {
   // URL 파라미터에서 값을 가져오는 useParams 훅
   const { originalMediaType } = useParams();
-  const { contentId } = useParams();
+  const { apiId } = useParams();
 
   // URL query string 값을 가져오는 useSearchParams 훅
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,7 +59,7 @@ export const Detail = memo(() => {
 
   // useDetail 훅을 사용하여 상세 정보 조회
   const { tabIndex, setTabIndex, data, isLoading, isError, userStarRating } =
-    useDetail(originalMediaType!, contentId!, tabNo);
+    useDetail(originalMediaType!, apiId!, tabNo);
 
   // i18n 훅
   const { t } = useTranslation();

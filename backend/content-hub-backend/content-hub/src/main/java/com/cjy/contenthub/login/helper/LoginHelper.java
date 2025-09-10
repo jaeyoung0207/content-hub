@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.UserEntity;

@@ -87,7 +87,7 @@ export const DisplayVideoCredits = ({
                 <Link
                   to={detailUrlQuery({
                     originalMediaType: originalMediaType,
-                    contentId: String(detailResult.id),
+                    apiId: String(detailResult.id),
                     tabNo: tabNo,
                   })}
                   className={`ml-5 ${highlightHoverColor}`}

@@ -35,7 +35,7 @@ export const ComicsCharacterInformation = ({
       {data && data.pages.length > 0 ? (
         <>
           <DisplayComicsCredits
-            contentId={detailResult.id!}
+            apiId={detailResult.id!}
             originalMediaType={originalMediaType}
             creditsAllList={data.pages.flat()}
             creditsType={creditsType}

@@ -164,8 +164,8 @@ export const useContentComment = (
   const detailApi = new Detail();
 
   // useInfiniteQuery의 query key
-  // 콘텐츠 ID
-  const contentId = detailResult.id!.toString();
+  // API ID
+  const apiId = detailResult.id!.toString();
 
   // useInfiniteQuery를 사용하여 코멘트 목록을 가져옴
   // 페이지 매개변수는 페이지가 변경될 때마다 업데이트되며, 페이지가 변경될 때마다 새로운 데이터를 가져옴
@@ -185,13 +185,13 @@ export const useContentComment = (
     // useInfiniteQuery의 키 지정
     queryKey: detailQueryKeys.detail.contentComment.list(
       originalMediaType,
-      contentId
+      apiId
     ) as [string, string, string, string],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 0 }) => {
       const response = (
         await detailApi.getCommentList({
-          apiId: contentId,
+          apiId: apiId,
           originalMediaType: originalMediaType,
           page: pageParam,
           providerId: user?.id,
@@ -228,14 +228,14 @@ export const useContentComment = (
     queryClient.refetchQueries({
       queryKey: detailQueryKeys.detail.contentComment.list(
         originalMediaType,
-        contentId
+        apiId
       ),
     });
     // 최신 별점 평균 조회
     queryClient.refetchQueries({
       queryKey: detailQueryKeys.detail.getStarRatingAverage(
         originalMediaType,
-        contentId
+        apiId
       ),
     });
   };
@@ -249,7 +249,7 @@ export const useContentComment = (
   const saveComentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.save(
       originalMediaType,
-      contentId
+      apiId
     ),
     mutationFn: async (data: ContentCommentSchema) => {
       // 코멘트 저장 중 상태 설정
@@ -257,7 +257,7 @@ export const useContentComment = (
       // 코멘트 저장 요청 데이터 생성
       const requestData = {
         originalMediaType: originalMediaType,
-        apiId: contentId,
+        apiId: apiId,
         title: isDetailTvType(detailResult, originalMediaType)
           ? detailResult.name
           : detailResult.title,
@@ -292,7 +292,7 @@ export const useContentComment = (
   const updateCommentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.update(
       originalMediaType,
-      contentId
+      apiId
     ),
     mutationFn: async (data: ContentCommentSchema) => {
       // 코멘트 갱신 중 상태 설정
@@ -301,7 +301,7 @@ export const useContentComment = (
       const requestData = {
         commentId: commentId,
         originalMediaType: originalMediaType,
-        apiId: contentId,
+        apiId: apiId,
         providerId: user?.id,
         nickname: user?.nickname,
         comment: data.comment,
@@ -331,7 +331,7 @@ export const useContentComment = (
   const deleteCommentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.delete(
       originalMediaType,
-      contentId
+      apiId
     ),
     mutationFn: async (commentId: number) => {
       // 코멘트 삭제 중 상태 설정

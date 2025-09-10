@@ -11,7 +11,7 @@ import {
   WIDTH_300,
 } from '../common/constants/constants';
 import { commonErrorHandler } from '../common/utils/errorUtil';
-import { checkContentId } from '../common/utils/checkUtil';
+import { checkApiId } from '../common/utils/checkUtil';
 import {
   isRecommendationsTvType,
   isSearchTvType,
@@ -103,12 +103,12 @@ export const DisplaySearchResults = ({
                   (mediaType === MEDIA_TYPE.COMICS ? 'w-[195px]' : 'w-[300px]')
                 }
                 onClick={commonErrorHandler(() => {
-                  // contentId 체크
-                  checkContentId(items.id);
+                  // apiId 체크
+                  checkApiId(items.id);
                   // 상세화면 URL 생성
                   const detailUrl = detailUrlQuery({
                     originalMediaType: items.originalMediaType!,
-                    contentId: String(items.id),
+                    apiId: String(items.id),
                     tabNo: 0,
                   });
                   // 상세화면 이동

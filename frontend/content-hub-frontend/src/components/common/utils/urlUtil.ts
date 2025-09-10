@@ -7,7 +7,7 @@ type SearchUrlQueryPropsType = {
   // viewMore?: string, // 전체보기 여부
   mediaType?: string; // 미디어 타입
   originalMediaType?: string; // 원본 미디어 타입
-  contentId?: string; // 콘텐츠 ID
+  apiId?: string; // API ID
   tabNo?: number; // 탭 번호
   personId?: number; // 인물 ID
   creditsId?: number; // 캐릭터 ID
@@ -45,16 +45,16 @@ export const viewMoreUrlQuery = ({
 /**
  * 상세 화면 URL 쿼리 생성 함수
  * @param originalMediaType 원본 미디어 타입
- * @param contentId 콘텐츠 ID
+ * @param apiId API ID
  * @param tabNo 탭 번호
  * @returns 상세화면 URL 쿼리 문자열
  */
 export const detailUrlQuery = ({
   originalMediaType,
-  contentId,
+  apiId,
   tabNo,
 }: SearchUrlQueryPropsType) => {
-  return `/detail/${originalMediaType}/${contentId}?tabNo=${tabNo}`;
+  return `/detail/${originalMediaType}/${apiId}?tabNo=${tabNo}`;
 };
 
 /**
