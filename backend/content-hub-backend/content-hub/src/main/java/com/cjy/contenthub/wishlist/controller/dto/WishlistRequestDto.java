@@ -1,5 +1,7 @@
 package com.cjy.contenthub.wishlist.controller.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,13 +24,19 @@ public class WishlistRequestDto {
 	@NotNull
 	private Long userId;
 	
-	/** originalMediaType */
+	/** 원작품 미디어 타입 */
 	@NotEmpty
 	private String originalMediaType;
 	
 	/** apiId */
 	@NotEmpty
 	private String apiId;
+	
+	/** 장르 ID 리스트 */
+	private List<Integer> genreIds;
+	
+	/** 미디어 타입(화면 표시용) */
+	private String mediaType;
 	
 	/** 제목 */
 	private String title;

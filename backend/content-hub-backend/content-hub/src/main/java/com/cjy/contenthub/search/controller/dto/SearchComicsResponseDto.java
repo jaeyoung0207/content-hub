@@ -31,6 +31,6 @@ public class SearchComicsResponseDto {
 	private int totalResults;
 	
 	/** 만화 전체보기 여부 */
-	private boolean isComicsViewMore;
+	private Boolean isComicsViewMore;
 
 }

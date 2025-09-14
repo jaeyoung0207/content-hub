@@ -1,6 +1,7 @@
 package com.cjy.contenthub.detail.controller.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
 
@@ -21,6 +22,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailMovieResponseDto extends TmdbMovieDetailsDto {
+	
+	/** 장르 ID 목록 */
+	private List<Integer> genreIds;
 	
 	/** 링크 */
 	private String link;

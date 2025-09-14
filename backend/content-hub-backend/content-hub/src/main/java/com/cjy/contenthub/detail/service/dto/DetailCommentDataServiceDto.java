@@ -1,6 +1,7 @@
 package com.cjy.contenthub.detail.service.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,9 @@ public class DetailCommentDataServiceDto {
 	
 	/** API ID */
 	private String apiId;
+	
+	/** 장르 ID 목록 */
+	private List<Integer> genreIds;
 	
 	/** 제목 */
 	private String title;

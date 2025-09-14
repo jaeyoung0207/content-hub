@@ -14,6 +14,7 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
@@ -27,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class SearchHelper {
+	
+	/** 비즈니스 유틸리티 */
+	private final BusinessUtil businessUtil;
 
 	/** TMDB API 페이지당 작품 표시 개수 */
 	@Value("${tmdb.custom.perMainPage}")
@@ -271,6 +275,7 @@ public class SearchHelper {
 					.backdropPath(mediaLargeImage)
 					.posterPath(mediaExtraLargeImage)
 					.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+					.genreIds(businessUtil.genreMappingFromAniListToTmdb(result.getGenres()))
 					.build();
 			comicsList.add(mediaResult);
 		}

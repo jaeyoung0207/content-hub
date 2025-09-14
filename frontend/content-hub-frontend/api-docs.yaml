@@ -926,6 +926,13 @@ components:
           type: string
         apiId:
           type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+        mediaType:
+          type: string
         title:
           type: string
         thumbnailImageUrl:
@@ -967,6 +974,7 @@ components:
       required:
         - apiId
         - comment
+        - genreIds
         - nickname
         - originalMediaType
         - provider
@@ -978,6 +986,11 @@ components:
           type: string
         apiId:
           type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
         title:
           type: string
         thumbnailImageUrl:
@@ -1114,11 +1127,11 @@ components:
         totalResults:
           type: integer
           format: int32
-        aniViewMore:
+        isAniViewMore:
           type: boolean
-        movieViewMore:
+        isDramaViewMore:
           type: boolean
-        dramaViewMore:
+        isMovieViewMore:
           type: boolean
     SearchMovieResponseDto:
       type: object
@@ -1172,7 +1185,7 @@ components:
         totalResults:
           type: integer
           format: int32
-        comicsViewMore:
+        isComicsViewMore:
           type: boolean
     SearchComicsResultDto:
       type: object
@@ -1467,11 +1480,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
-        leapMonth:
-          type: boolean
         emailValid:
           type: boolean
         emailVerified:
+          type: boolean
+        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1487,9 +1500,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultNickname:
-          type: boolean
         defaultImage:
+          type: boolean
+        defaultNickname:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -1519,20 +1532,20 @@ components:
         aniRankingList:
           type: array
           items:
-            $ref: '#/components/schemas/HomeRankingServiceDto'
+            $ref: '#/components/schemas/HomeRankingReponseDto'
         dramaRankingList:
           type: array
           items:
-            $ref: '#/components/schemas/HomeRankingServiceDto'
+            $ref: '#/components/schemas/HomeRankingReponseDto'
         movieRankingList:
           type: array
           items:
-            $ref: '#/components/schemas/HomeRankingServiceDto'
+            $ref: '#/components/schemas/HomeRankingReponseDto'
         comicsRankingList:
           type: array
           items:
-            $ref: '#/components/schemas/HomeRankingServiceDto'
-    HomeRankingServiceDto:
+            $ref: '#/components/schemas/HomeRankingReponseDto'
+    HomeRankingReponseDto:
       type: object
       properties:
         contentId:
@@ -1542,6 +1555,8 @@ components:
           type: integer
           format: int64
         originalMediaType:
+          type: string
+        mediaType:
           type: string
         apiId:
           type: string
@@ -1770,6 +1785,11 @@ components:
           $ref: '#/components/schemas/TmdbVideoCreditsDto'
         aggregateCredits:
           $ref: '#/components/schemas/TmdbVideoCreditsDto'
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
         link:
           type: string
         starRatingAverage:
@@ -1943,6 +1963,11 @@ components:
           type: string
         credits:
           $ref: '#/components/schemas/TmdbVideoCreditsDto'
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
         link:
           type: string
         starRatingAverage:
@@ -2133,6 +2158,11 @@ components:
           type: array
           items:
             type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
         characters:
           $ref: '#/components/schemas/AniListCharactersDto'
         staff:

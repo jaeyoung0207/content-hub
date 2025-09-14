@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
-import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class CharacterServiceImpl implements CharacterService {
 		String query = GraphqlUtil.loadQuery("comicsCharacter.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = Map.of(
-				AnilistParamConstants.PARAM_CHARACTER_ID, characterId
+				AniListParamConstants.PARAM_CHARACTER_ID, characterId
 				);
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -87,7 +87,7 @@ public class CharacterServiceImpl implements CharacterService {
 		String query = GraphqlUtil.loadQuery("comicsStaff.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = Map.of(
-				AnilistParamConstants.PARAM_STAFF_ID, staffId
+				AniListParamConstants.PARAM_STAFF_ID, staffId
 				);
 		// 쿼리에 리퀘스트 파라미터 적용하여 문자열 생성
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);

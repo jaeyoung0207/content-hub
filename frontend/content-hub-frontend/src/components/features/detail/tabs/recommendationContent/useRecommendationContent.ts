@@ -17,7 +17,6 @@ import {
 import {
   INFINITE_SCROLL_THROTTLE_DELAY,
   MEDIA_TYPE,
-  ONE_MINUTE,
 } from '@/components/common/constants/constants';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import throttle from 'lodash/throttle';
@@ -162,8 +161,8 @@ export const useRecommendationContent = (
     }),
     // 초기 페이지 매개변수를 지정
     initialPageParam: 1,
-    staleTime: ONE_MINUTE * 1,
-    gcTime: ONE_MINUTE * 2,
+    staleTime: 0, // 데이터를 바로 stale로 간주
+    gcTime: 0, // 캐시된 데이터를 바로 제거
   });
 
   // ================================================================================================== function

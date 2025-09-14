@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.cjy.contenthub.common.repository.ContentRepository;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentViewEntity;
 
@@ -24,9 +22,6 @@ public class DetailCommentHelper {
 	/** 코멘트 뷰 엔티티 리포지토리 */
 	private final DetailCommentViewRepository commentViewRepository;
 	
-	/** 콘텐츠 엔티티 리포지토리 */
-	private final ContentRepository contentRepository;
-
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
 	private String tvRecommendationsPath;
@@ -74,31 +69,6 @@ public class DetailCommentHelper {
 		if (page.equals(FIRST_PAGE_INDEX)) {
 			commentList.add(0, myCommentViewEntity);
 		}
-	}
-	
-	/**
-	 * 콘텐츠 엔티티 조회 또는 등록
-	 * 
-	 * @param originalMediaType 원본 미디어 타입
-	 * @param apiId             API ID
-	 * @param title             제목
-	 * @param thumbnailImageUrl 썸네일 이미지 URL
-	 * @return 콘텐츠 엔티티
-	 */
-	public ContentEntity getContentEntity(String originalMediaType, String apiId, String title, String thumbnailImageUrl) {
-		// 콘텐츠 엔티티 조회
-		ContentEntity content = contentRepository.findByOriginalMediaTypeAndApiId(originalMediaType, apiId);
-		// 콘텐츠 엔티티가 존재하지 않는 경우 콘텐츠 테이블 등록
-		if (ObjectUtils.isEmpty(content)) {
-			ContentEntity newContent = ContentEntity.builder()
-					.originalMediaType(originalMediaType)
-					.apiId(apiId)
-					.title(title)
-					.thumbnailImageUrl(thumbnailImageUrl)
-					.build();
-			content = contentRepository.save(newContent);
-		}
-		return content;
 	}
 	
 }

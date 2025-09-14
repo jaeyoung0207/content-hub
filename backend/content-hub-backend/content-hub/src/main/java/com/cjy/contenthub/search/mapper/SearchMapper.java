@@ -4,12 +4,17 @@ import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
+import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
+import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
+import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 
 /**
  * 검색 데이터 매핑을 위한 MapStruct 매퍼 인터페이스
@@ -53,5 +58,37 @@ public interface SearchMapper {
 	 */
 	@IterableMapping(qualifiedByName = "movieResultsToTmdbMovieResults")
 	List<SearchMovieResultsDto> movieResultsListToTmdbMovieResultsList(List<TmdbSearchMovieResultsDto> tmdbMovieResultsList);
+	
+	/**
+	 * SearchVideoResponseDto 객체의 깊은 복사본을 생성
+	 * 
+	 * @param source 원본 SearchVideoResponseDto 객체
+	 * @return 깊은 복사된 SearchVideoResponseDto 객체
+	 */
+	SearchVideoResponseDto deepCopyForVideoResponse(SearchVideoResponseDto source);
+	
+	/**
+	 * SearchTvResponseDto 객체의 깊은 복사본을 생성
+	 * 
+	 * @param source 원본 SearchTvResponseDto 객체
+	 * @return 깊은 복사된 SearchTvResponseDto 객체
+	 */
+	SearchTvResponseDto deepCopyForTvResponse(SearchTvResponseDto source);
+	
+	/**
+	 * SearchMovieResponseDto 객체의 깊은 복사본을 생성
+	 * 
+	 * @param source 원본 SearchMovieResponseDto 객체
+	 * @return 깊은 복사된 SearchMovieResponseDto 객체
+	 */
+	SearchMovieResponseDto deepCopyForMovieResponse(SearchMovieResponseDto source);
+	
+	/**
+	 * SearchComicsResponseDto 객체의 깊은 복사본을 생성
+	 * 
+	 * @param source 원본 SearchComicsResponseDto 객체
+	 * @return 깊은 복사된 SearchComicsResponseDto 객체
+	 */
+	SearchComicsResponseDto deepCopyForComicsResponse(SearchComicsResponseDto source);
 
 }

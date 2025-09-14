@@ -258,6 +258,7 @@ export const useContentComment = (
       const requestData = {
         originalMediaType: originalMediaType,
         apiId: apiId,
+        genreIds: detailResult.genreIds,
         title: isDetailTvType(detailResult, originalMediaType)
           ? detailResult.name
           : detailResult.title,

@@ -2,6 +2,7 @@ import { Control, useForm, useWatch } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  useHeaderExecStore,
   useProviderStore,
   useSearchTypeStore,
   useUserStore,
@@ -139,6 +140,8 @@ export const useHeader = (): useHeaderReturnType => {
   const { setProvider } = useProviderStore();
   // 검색 종류 전역 상태 저장용 훅
   const { setSearchTypeState } = useSearchTypeStore();
+  // 헤더 실행 상태 전역 상태 저장용 훅
+  const { setIsHeaderExec } = useHeaderExecStore();
 
   // ================================================================================================== react hook form
 
@@ -642,6 +645,8 @@ export const useHeader = (): useHeaderReturnType => {
     if (isAdultParam && isAdultParam === 'true') {
       setValue('adultFlg', true);
     }
+    // 헤더 실행 상태 전역 상태 저장소에 true 설정
+    setIsHeaderExec(true);
   }, []);
 
   /**

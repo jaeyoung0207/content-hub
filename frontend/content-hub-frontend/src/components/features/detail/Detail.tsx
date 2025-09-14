@@ -19,6 +19,7 @@ import {
 } from '@/components/common/utils/typeGuardUtil';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
+import { WishlistUi } from '@/components/ui/WishlistUi';
 
 // lazy loading
 const VideoInformation = lazy(
@@ -58,8 +59,15 @@ export const Detail = memo(() => {
   const tabNo = Number(searchParams.get('tabNo') ?? 0);
 
   // useDetail 훅을 사용하여 상세 정보 조회
-  const { tabIndex, setTabIndex, data, isLoading, isError, userStarRating } =
-    useDetail(originalMediaType!, apiId!, tabNo);
+  const {
+    tabIndex,
+    setTabIndex,
+    data,
+    isLoading,
+    isError,
+    userStarRating,
+    user,
+  } = useDetail(originalMediaType!, apiId!, tabNo);
 
   // i18n 훅
   const { t } = useTranslation();
@@ -98,7 +106,11 @@ export const Detail = memo(() => {
     data && originalMediaType && isDetailMovieType(data, originalMediaType);
   const isComicsType =
     data && originalMediaType && isDetailComicsType(data, originalMediaType);
-
+  const title = isTvType
+    ? data.name
+    : isMovieType || isComicsType
+      ? data.title
+      : 'No Title';
   return (
     <>
       <div className="mt-30 mb-10">
@@ -178,14 +190,21 @@ export const Detail = memo(() => {
                           : ''
                   }
                 />
+                <div className={'relative top-7/16 right-1/8'}>
+                  <WishlistUi
+                    originalMediaType={originalMediaType!}
+                    apiId={Number(data.id)}
+                    title={title!}
+                    userId={user?.userId!}
+                    isWishlisted={data.wishlisted!}
+                    genreIds={data.genreIds}
+                    thumbnailImageUrl={data.backdropPath!}
+                  />
+                </div>
               </div>
               {/* 제목 */}
               <div className="w-[70%] block">
-                <div className="text-2xl mb-3 mr-3">
-                  {(isTvType && data.name) ||
-                    (isMovieType && data.title) ||
-                    (isComicsType && data.title)}
-                </div>
+                <div className="text-2xl mb-3 mr-3">{title}</div>
                 <div className="flex">
                   <div className="w-full">
                     <ul className="mt-5 mb-5">

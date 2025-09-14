@@ -5,11 +5,9 @@ import {
   DetailTvResponseDto,
   DetailMovieResponseDto,
   DetailComicsResponseDto,
+  LoginUserInfoDto,
 } from '@/api/data-contracts';
-import {
-  MEDIA_TYPE,
-  ONE_MINUTE,
-} from '@/components/common/constants/constants';
+import { MEDIA_TYPE } from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 import { useUserStore } from '@/components/common/store/globalStateStore';
@@ -32,6 +30,7 @@ type useDetailReturnType = {
   isLoading: boolean; // 로딩 중 여부
   isError: boolean; // 에러 여부
   userStarRating?: string; // 유저 평균 평점
+  user: LoginUserInfoDto | null; // 유저 정보
 };
 
 /**
@@ -116,13 +115,17 @@ export const useDetail = (
    * 상세 정보를 가져오는 쿼리
    */
   const { data, isLoading, isError } = useQuery({
-    queryKey: detailQueryKeys.detail.getDetail(originalMediaType, apiId),
+    queryKey: detailQueryKeys.detail.getDetail(
+      originalMediaType,
+      apiId,
+      user?.userId
+    ),
     queryFn: async () => {
       // 상세 정보를 가져오는 API 호출
       return await getDetailApi();
     },
-    staleTime: ONE_MINUTE * 1,
-    gcTime: ONE_MINUTE * 2,
+    staleTime: 0, // 데이터를 바로 stale로 간주
+    gcTime: 0, // 캐시된 데이터를 바로 제거
     enabled: !!originalMediaType, // originalMediaType이 존재할 때만 쿼리 실행
   });
 
@@ -176,5 +179,6 @@ export const useDetail = (
     data: data,
     isError: isError,
     userStarRating: userStarRating,
+    user: user,
   };
 };

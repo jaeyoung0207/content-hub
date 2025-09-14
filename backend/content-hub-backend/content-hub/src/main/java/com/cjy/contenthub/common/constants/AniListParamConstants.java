@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
  * AniList API 파라미터 상수 클래스
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AnilistParamConstants {
+public class AniListParamConstants {
 	
 	/** 리퀘스트 파라미터 키 : 캐릭터ID */
 	public static final String PARAM_CHARACTER_ID = "characterId";

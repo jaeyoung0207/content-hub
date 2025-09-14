@@ -7,30 +7,22 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentGetDataDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentSaveRequestDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentUpdateRequestDto;
-import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
-import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsMovieResultsDto;
-import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
-import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentEntity;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentViewEntity;
 import com.cjy.contenthub.detail.service.dto.DetailCommentDataServiceDto;
 
 /**
- * 상세 페이지 관련 데이터 매핑을 위한 MapStruct 매퍼 인터페이스
+ * 상세 코멘트 관련 데이터 매핑을 위한 MapStruct 매퍼 인터페이스
  * MapStruct를 사용하여 빌드시 자동으로 구현체가 생성됨
  * 상세 페이지의 코멘트와 미디어 정보를 DTO 간에 변환하는 메서드를 정의
  * 각 메서드는 매핑 규칙을 정의하며, 특정 필드를 무시하거나 날짜 형식을 지정하는 등의 작업을 수행함
  * 각 DTO 간의 변환을 통해 각 컨트롤러 계층, 서비스 계층, 리포지토리 계층 간의 데이터 전송을 용이하게 함
  */
 @Mapper(componentModel = "spring")
-public interface DetailMapper {
+public interface DetailCommentMapper {
 	
 	/**
 	 * DetailCommentSaveRequestDto를 DetailCommentDataServiceDto로 변환
@@ -87,58 +79,5 @@ public interface DetailMapper {
 	 */
 	@IterableMapping(qualifiedByName = "commentServiceToCommentGetData")
 	List<DetailCommentGetDataDto> commentServiceDtoListToCommentGetResponseDtoList(List<DetailCommentDataServiceDto> entityList);
-	
-	/**
-	 * TmdbDetailsTvDto를 DetailTvResponseDto로 변환
-	 * 
-	 * @param apiResponse TMDB 상세 TV API 응답 DTO 
-	 */
-	@Mapping(target = "link", ignore = true)
-	@Mapping(target = "starRatingAverage", ignore = true)
-	@Mapping(target = "credits", source = "aggregateCredits")
-	DetailTvResponseDto detailTvToDetailTvResponse(TmdbTvDetailsDto apiResponse);
-	
-	/**
-	 * TmdbDetailsMovieDto를 DetailMovieResponseDto로 변환
-	 * 
-	 * @param apiResponse TMDB 상세 영화 API 응답 DTO
-	 */
-	@Mapping(target = "link", ignore = true)
-	@Mapping(target = "starRatingAverage", ignore = true)
-	DetailMovieResponseDto detailMovieToDetailMovieResponse(TmdbMovieDetailsDto apiResponse);
-	
-	/**
-	 * TmdbRecommendationsTvResultsDto를 DetailRecommendationsTvResultsDto로 변환
-	 * 
-	 * @param apiResponse TMDB 추천 TV API 응답 DTO
-	 */
-	@Named("tmdbRecommendationsTvToDetailRecommendationsTv")
-	DetailRecommendationsTvResultsDto tmdbRecommendationsTvToDetailRecommendationsTv(TmdbRecommendationsTvResultsDto apiResponse);
-	
-	/**
-	 * List<TmdbRecommendationsTvResultsDto>를
-	 * List<DetailRecommendationsTvResultsDto>로 변환
-	 * 
-	 * @param apiResponseList TMDB 추천 TV API 응답 DTO 리스트
-	 */
-	@IterableMapping(qualifiedByName = "tmdbRecommendationsTvToDetailRecommendationsTv")
-	List<DetailRecommendationsTvResultsDto> tmdbRecommendationsTvListToDetailRecommendationsTvList(List<TmdbRecommendationsTvResultsDto> apiResponseList);
-	
-	/**
-	 * TmdbRecommendationsMovieResultsDto를 DetailRecommendationsMovieResultsDto로 변환
-	 * 
-	 * @param apiResponse TMDB 추천 영화 API 응답 DTO
-	 */
-	@Named("tmdbRecommendationsMovieToDetailRecommendationsMovie")
-	DetailRecommendationsMovieResultsDto tmdbRecommendationsMovieToDetailRecommendationsMovie(TmdbRecommendationsMovieResultsDto apiResponse);
-	
-	/**
-	 * List<TmdbRecommendationsMovieResultsDto>를
-	 * List<DetailRecommendationsMovieResultsDto>로 변환
-	 * 
-	 * @param apiResponseList TMDB 추천 영화 API 응답 DTO 리스트
-	 */
-	@IterableMapping(qualifiedByName = "tmdbRecommendationsMovieToDetailRecommendationsMovie")
-	List<DetailRecommendationsMovieResultsDto> tmdbRecommendationsMovieListToDetailRecommendationsMovieList(List<TmdbRecommendationsMovieResultsDto> apiResponseList);
 
 }

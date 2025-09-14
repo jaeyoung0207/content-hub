@@ -15,12 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbGenreDto;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.detail.helper.DetailCommentHelper;
-import com.cjy.contenthub.detail.mapper.DetailMapper;
+import com.cjy.contenthub.detail.mapper.DetailCommentMapper;
 import com.cjy.contenthub.detail.repository.DetailCommentRepository;
 import com.cjy.contenthub.detail.repository.DetailCommentViewRepository;
 import com.cjy.contenthub.detail.repository.entity.DetailCommentEntity;
@@ -53,7 +55,10 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	private final UserRepository userRepository;
 	
 	/** 상세 페이지 매퍼 */
-	private final DetailMapper mapper;
+	private final DetailCommentMapper commentMapper;
+	
+	/** 비즈니스 유틸리티 */
+	private final BusinessUtil businessUtil;
 	
 	/** 페이지당 코멘트 수 */
 	@Value("${app.comment.perPage}")
@@ -69,7 +74,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	public boolean saveComment(DetailCommentDataServiceDto commentParam) {
 
 		// 서비스 DTO를 엔티티로 변환
-		DetailCommentEntity comment = mapper.commentServiceToCommentEntity(commentParam);
+		DetailCommentEntity comment = commentMapper.commentServiceToCommentEntity(commentParam);
 		
 		// 유저 엔티티 조회
 		UserEntity user = userRepository.findByProviderAndProviderId(commentParam.getProvider(), commentParam.getProviderId());
@@ -81,9 +86,9 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		comment.setUserEntity(user);
 		
 		// 콘텐츠 엔티티 조회
-		ContentEntity content = helper.getContentEntity(
+		ContentEntity content = businessUtil.getContentEntity(
 				commentParam.getOriginalMediaType(), commentParam.getApiId(),
-				commentParam.getTitle(), commentParam.getThumbnailImageUrl());
+				commentParam.getTitle(), commentParam.getThumbnailImageUrl(), commentParam.getGenreIds(), null);
 		// 콘텐츠 ID 설정
 		comment.setContentEntity(content);
 
@@ -105,7 +110,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	public boolean updateComment(DetailCommentDataServiceDto commentParam) {
 		
 		// 서비스 DTO를 엔티티로 변환
-		DetailCommentEntity comment = mapper.commentServiceToCommentEntity(commentParam);
+		DetailCommentEntity comment = commentMapper.commentServiceToCommentEntity(commentParam);
 
 		// 코멘트 엔티티를 조회
 		Optional<DetailCommentEntity> selectedComment = commentRepository.findById(comment.getCommentId());
@@ -171,7 +176,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		// 서비스 DTO 리스트 생성
 		List<DetailCommentDataServiceDto> commentDataServiceDtoList = 
 				commentList.isEmpty() ? new ArrayList<>() 
-						: mapper.commentEntityListToCommentServiceList(commentList);
+						: commentMapper.commentEntityListToCommentServiceList(commentList);
 		// 서비스 DTO 반환
 		return DetailCommentServiceDto.builder()
 				.dataList(commentDataServiceDtoList)

@@ -1,6 +1,5 @@
-import { HomeRankingServiceDto } from '@/api/data-contracts';
+import { HomeRankingReponseDto, LoginUserInfoDto } from '@/api/data-contracts';
 import { useHome } from './useHome';
-import { ConfirmModalUi } from '@/components/ui/ConfirmModalUi';
 import { useTranslation } from 'react-i18next';
 import {
   COMMON_IMAGES,
@@ -15,10 +14,12 @@ import { checkApiId } from '@/components/common/utils/checkUtil';
 import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
+import { WishlistUi } from '@/components/ui/WishlistUi';
 
 type DisplayRankingsProps = {
   title: string;
-  items: HomeRankingServiceDto[];
+  items: HomeRankingReponseDto[];
+  user: LoginUserInfoDto | null;
 };
 
 /**
@@ -29,13 +30,7 @@ export const Home = () => {
   const { t } = useTranslation();
 
   // 홈 화면 훅 호출
-  const {
-    isConfirmDialogOpen,
-    handleConfirmOk,
-    handleConfirmCancle,
-    data,
-    isLoading,
-  } = useHome();
+  const { data, isLoading, user } = useHome();
 
   // 각 콘텐츠 랭킹 데이터
   const contentRankings = [
@@ -59,18 +54,6 @@ export const Home = () => {
 
   return (
     <div className="w-sm lg:w-7xl">
-      {isConfirmDialogOpen && (
-        <div className="flex justify-center items-center fixed top-0 left-0">
-          <div className="mt-40">
-            <ConfirmModalUi
-              isOpen={isConfirmDialogOpen}
-              onOk={handleConfirmOk}
-              onCancel={handleConfirmCancle}
-              confirmMsg={t('info.loginConfirmMsg1')}
-            />
-          </div>
-        </div>
-      )}
       <div className="mt-30">
         {isLoading ? (
           <LoadingUi />
@@ -80,11 +63,11 @@ export const Home = () => {
               <h2 className="text-3xl font-bold mb-10">
                 {t('info.rankingTitle')}
               </h2>
-              {contentRankings.map((ranking, index) => (
+              {contentRankings.map((ranking) => (
                 <DisplayRankings
-                  key={index}
                   title={ranking.title}
                   items={ranking.items}
+                  user={user}
                 />
               ))}
             </>
@@ -102,7 +85,7 @@ export default Home;
  * @param title 랭킹 타이틀
  * @param items 랭킹 아이템 배열
  */
-const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
+const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
   // navigate 훅
   const navigate = useNavigate();
   // 썸네일 이미지 경로
@@ -126,6 +109,10 @@ const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
             items.originalMediaType === MEDIA_TYPE.COMICS
               ? 'h-[270px]'
               : 'h-[180px]';
+          const heartStyle =
+            items.originalMediaType === MEDIA_TYPE.COMICS
+              ? 'relative top-5/12 right-1/6'
+              : 'relative top-5/14 right-1/8';
           return (
             <ul
               key={index}
@@ -157,6 +144,17 @@ const DisplayRankings = ({ title, items }: DisplayRankingsProps) => {
                     e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
                   }}
                 />
+                <div className={heartStyle}>
+                  <WishlistUi
+                    originalMediaType={items.originalMediaType!}
+                    apiId={Number(items.apiId)}
+                    title={items.title!}
+                    userId={user?.userId!}
+                    isWishlisted={items.wishlisted!}
+                    thumbnailImageUrl={items.thumbnailImageUrl!}
+                    mediaType={items.mediaType}
+                  />
+                </div>
               </li>
               <li className="flex items-center text-lg">
                 <BsStarFill className={'text-red-500 mr-2'} />

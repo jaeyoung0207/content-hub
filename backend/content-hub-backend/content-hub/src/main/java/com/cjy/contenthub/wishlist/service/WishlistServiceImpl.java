@@ -11,7 +11,7 @@ import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.ContentRepository;
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
-import com.cjy.contenthub.detail.helper.DetailCommentHelper;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.wishlist.mapper.WishlistMapper;
 import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 import com.cjy.contenthub.wishlist.repository.entity.WishlistEntity;
@@ -36,11 +36,11 @@ public class WishlistServiceImpl implements WishlistService {
 	/** wishlist 레포지토리 */
 	private final WishlistRepository wishlistRepository;
 	
-	/** 상세 페이지 헬퍼 */
-	private final DetailCommentHelper detailCommentHelper;
-	
 	/** 위시리스트 매퍼 */
 	private final WishlistMapper wishlistMapper;
+	
+	/** 비즈니스 유틸리티 */
+	private final BusinessUtil businessUtil;
 	
 	/**
 	 * 위시리스트에 콘텐츠 추가
@@ -52,8 +52,10 @@ public class WishlistServiceImpl implements WishlistService {
 	public boolean addToWishlist(WishlistServiceDto saveServiceDto) {
 		
 		// Content 조회 또는 생성
-		ContentEntity content = detailCommentHelper.getContentEntity(
-				saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId(), saveServiceDto.getTitle(), saveServiceDto.getThumbnailImageUrl());
+		ContentEntity content = businessUtil.getContentEntity(
+				saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId(),
+				saveServiceDto.getTitle(), saveServiceDto.getThumbnailImageUrl(),
+				saveServiceDto.getGenreIds(), saveServiceDto.getMediaType());
 
 		// 위시리스트에서 해당 항목 조회
 		List<WishlistEntity> wishlistList = wishlistRepository.findByUser_UserIdAndContent_ContentId(saveServiceDto.getUserId(), content.getContentId());

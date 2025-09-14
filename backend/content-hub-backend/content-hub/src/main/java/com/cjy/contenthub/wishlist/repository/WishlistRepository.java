@@ -50,12 +50,12 @@ public interface WishlistRepository extends JpaRepository<WishlistEntity, Long> 
 			+ "FROM \"content\".\"wishlist\" wish "
 			+ "INNER JOIN content.content con ON wish.content_id = con.content_id "
 			+ "WHERE wish.user_id = :userId "
-			+ "AND con.original_media_type = :originalMediaType "
+			+ "AND con.original_media_type IN ( :originalMediaTypeList )"
 			+ "AND con.api_id IN ( :apiIdList )",
 			nativeQuery = true
 			)
 	List<ContentEntity> getWishlistedContent(@Param("userId") Long userId, 
-			@Param("originalMediaType")String originalMediaType, @Param("apiIdList") List<String> apiIdList);
+			@Param("originalMediaTypeList") List<String> originalMediaTypeList, @Param("apiIdList") List<String> apiIdList);
 
 	/**
 	 * 특정 유저가 특정 콘텐츠를 위시리스트에 등록했는지 여부를 조회

@@ -22,12 +22,11 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
-import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
-import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
@@ -36,8 +35,7 @@ import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsMovieResult
 import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvDto;
 import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
 import com.cjy.contenthub.detail.helper.DetailRecoommendationHelper;
-import com.cjy.contenthub.detail.mapper.DetailMapper;
-import com.cjy.contenthub.wishlist.repository.WishlistRepository;
+import com.cjy.contenthub.detail.mapper.DetailRecommendationMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +53,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	private final DetailRecoommendationHelper recommendationHelper;
 
 	/** 상세 매퍼 */
-	private final DetailMapper detailMapper;
-
-	/** 위시리스트 리포지토리 */
-	private final WishlistRepository wishlistRepository;
+	private final DetailRecommendationMapper detailRecommendationMapper;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -157,29 +152,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 			}
 			// TMDB 응답 DTO -> 상세 화면 DTO 변환
 			List<DetailRecommendationsTvResultsDto> tvResultList =
-					detailMapper.tmdbRecommendationsTvListToDetailRecommendationsTvList(response.getResults());
+					detailRecommendationMapper.tmdbRecommendationsTvListToDetailRecommendationsTvList(response.getResults());
 			// 응답 정보 필터링
 			List<DetailRecommendationsTvResultsDto> filterdResultList = 
 					recommendationHelper.setTvRecommendationResults(tvResultList, genreMap);
-
-			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-			if (userId != null) {
-				BusinessUtil.setWishlisted(
-						filterdResultList, 
-						CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
-						userId,
-						dto -> String.valueOf(dto.getId()),
-						DetailRecommendationsTvResultsDto::setWishlisted, 
-						wishlistRepository);
-				BusinessUtil.setWishlisted(
-						filterdResultList, 
-						CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
-						userId,
-						dto -> String.valueOf(dto.getId()),
-						DetailRecommendationsTvResultsDto::setWishlisted, 
-						wishlistRepository);
-			}
-
+			
 			// 필터링된 응답 반환
 			return DetailRecommendationsTvDto.builder()
 					.page(response.getPage())
@@ -241,7 +218,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					}
 					// TMDB 응답 DTO -> 상세 화면 DTO 변환
 					List<DetailRecommendationsMovieResultsDto> movieResultList = 
-							detailMapper.tmdbRecommendationsMovieListToDetailRecommendationsMovieList(response.getResults());
+							detailRecommendationMapper.tmdbRecommendationsMovieListToDetailRecommendationsMovieList(response.getResults());
 
 					// 미디어 타입
 					String originalMediaType = CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
@@ -250,17 +227,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					movieResultList.stream()
 					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
 					.forEach(result -> result.setOriginalMediaType(originalMediaType));
-
-					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-					if (userId != null) {
-						BusinessUtil.setWishlisted(
-								movieResultList,
-								CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
-								userId,
-								dto -> String.valueOf(dto.getId()),
-								DetailRecommendationsMovieResultsDto::setWishlisted, 
-								wishlistRepository);
-					}
 
 					// 필터링된 응답 반환
 					return DetailRecommendationsMovieDto.builder()
@@ -287,9 +253,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 		String query = GraphqlUtil.loadQuery("comicsRecomendationList.graphql");
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
-				AnilistParamConstants.PARAM_MEDIA_ID, mediaId,
-				AnilistParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
-				AnilistParamConstants.PARAM_PER_PAGE, anilistPerMorePage
+				AniListParamConstants.PARAM_MEDIA_ID, mediaId,
+				AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AniListParamConstants.PARAM_PER_PAGE, anilistPerMorePage
 				));
 		// graphql 쿼리에 리퀘스트 파라미터 적용
 		String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -326,17 +292,6 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						}
 						// 추천 작품 설정
 						recommendationHelper.getComicsRecommendations(media, results);
-
-						// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-						if (userId != null) {
-							BusinessUtil.setWishlisted(
-									results,
-									CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
-									userId,
-									dto -> String.valueOf(dto.getId()),
-									DetailComicsRecommendationsResultDto::setWishlisted, 
-									wishlistRepository);
-						}
 
 						// 추천 작품 응답 DTO 설정
 						recommendationResponse = DetailComicsRecommendationsResponseDto.builder()

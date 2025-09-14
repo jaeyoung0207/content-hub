@@ -42,7 +42,13 @@ type useStarRatingStoreType = {
  */
 type useConfirmDialogStoreType = {
   isConfirmDialogOpen: boolean;
-  setIsConfirmDialogOpen: () => void;
+  setIsConfirmDialogOpen: (isConfirmDialogOpen: boolean) => void;
+  onOk: () => void;
+  setOnOk: (onOk: () => void) => void;
+  onCancel: () => void;
+  setOnCancel: (onCancel: () => void) => void;
+  confirmMsg: string;
+  setConfirmMsg: (confirmMsg: string) => void;
 };
 
 /**
@@ -82,6 +88,11 @@ type useProviderStoreType = {
   provider?: string;
   setProvider: (provider: string) => void;
   clearProvider: () => void;
+};
+
+type useHeaderExecStoreType = {
+  isHeaderExec: boolean;
+  setIsHeaderExec: (isHeaderExec: boolean) => void;
 };
 
 // ================================================================================================== store
@@ -153,8 +164,14 @@ export const useStarRatingStore = create<useStarRatingStoreType>((set) => ({
 export const useConfirmDialogStore = create<useConfirmDialogStoreType>(
   (set) => ({
     isConfirmDialogOpen: false,
-    setIsConfirmDialogOpen: () =>
-      set((state) => ({ isConfirmDialogOpen: !state.isConfirmDialogOpen })),
+    setIsConfirmDialogOpen: (isConfirmDialogOpen) =>
+      set(() => ({ isConfirmDialogOpen: isConfirmDialogOpen })),
+    onOk: () => {},
+    setOnOk: (onOk) => set(() => ({ onOk })),
+    onCancel: () => {},
+    setOnCancel: (onCancel) => set(() => ({ onCancel })),
+    confirmMsg: '',
+    setConfirmMsg: (confirmMsg) => set(() => ({ confirmMsg })),
   })
 );
 
@@ -175,4 +192,9 @@ export const useProviderStore = create<useProviderStoreType>((set) => ({
   provider: undefined,
   setProvider: (provider) => set({ provider }),
   clearProvider: () => set({ provider: undefined }),
+}));
+
+export const useHeaderExecStore = create<useHeaderExecStoreType>((set) => ({
+  isHeaderExec: false,
+  setIsHeaderExec: (isHeaderExec: boolean) => set({ isHeaderExec }),
 }));

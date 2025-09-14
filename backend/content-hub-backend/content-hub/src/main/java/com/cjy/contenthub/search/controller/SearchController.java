@@ -17,6 +17,8 @@ import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
+import com.cjy.contenthub.search.mapper.SearchMapper;
+import com.cjy.contenthub.search.service.SearchNoCacheService;
 import com.cjy.contenthub.search.service.SearchService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,12 @@ public class SearchController {
 
 	/** 검색 서비스 클래스 */
 	private final SearchService searchService;
+	
+	/** 검색 서비스 클래스(캐시 미사용) */
+	private final SearchNoCacheService searchNoCacheService;
+	
+	/** 검색 매퍼 클래스 */
+	private final SearchMapper searchMapper;
 	
 	/** 세션 유틸 클래스 */
 	private final SessionUtil session;
@@ -86,7 +94,7 @@ public class SearchController {
 	private static final String PARAM_IS_MAIN_PAGE = "is_main_page";
 
 	/**
-	 * 애니메이션/드라마/영화 검색 API
+	 * 검색어 리스트 조회 API
 	 * 
 	 * @param keyword 검색어
 	 * @return ResponseEntity<List<String>> 검색어 리스트
@@ -110,7 +118,16 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchVideo(keyword, isAdult, userId));
+		SearchVideoResponseDto cachedResponse = searchService.searchVideo(keyword, isAdult, userId);
+		
+		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+		SearchVideoResponseDto newResponse = searchMapper.deepCopyForVideoResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			searchNoCacheService.setWishlistFromVideoResponse(newResponse, userId);
+		}
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -128,7 +145,16 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchAni(keyword, isAdult, page, userId));
+		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page, userId);
+		
+		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			searchNoCacheService.setWishlistFromAniResponse(newResponse, userId);
+		}
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -146,7 +172,16 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchDrama(keyword, isAdult, page, userId));
+		SearchTvResponseDto cachedResponse = searchService.searchDrama(keyword, isAdult, page, userId);
+		
+		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			searchNoCacheService.setWishlistFromDramaResponse(newResponse, userId);
+		}
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -164,7 +199,16 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchMovie(keyword, isAdult, page, userId));
+		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page, userId);
+		
+		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+		SearchMovieResponseDto newResponse = searchMapper.deepCopyForMovieResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			searchNoCacheService.setWishlistFromMovieResponse(newResponse, userId);
+		}
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -184,7 +228,16 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchComics(keyword, isAdult, page, isMainPage, userId));
+		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage, userId);
+		
+		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+		SearchComicsResponseDto newResponse = searchMapper.deepCopyForComicsResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			searchNoCacheService.setWishlistFromComicsResponse(newResponse, userId);
+		}
+		return ResponseEntity.ok(newResponse);
 	}
 
 }

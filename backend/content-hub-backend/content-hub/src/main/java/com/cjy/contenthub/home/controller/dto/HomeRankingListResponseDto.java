@@ -2,8 +2,6 @@ package com.cjy.contenthub.home.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.home.service.dto.HomeRankingServiceDto;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,15 +15,15 @@ import lombok.Setter;
 public class HomeRankingListResponseDto {
 	
 	/** 애니 랭킹 리스트 */
-	List<HomeRankingServiceDto> aniRankingList;
+	List<HomeRankingReponseDto> aniRankingList;
 	
 	/** 드라마 랭킹 리스트 */
-	List<HomeRankingServiceDto> dramaRankingList;
+	List<HomeRankingReponseDto> dramaRankingList;
 	
 	/** 영화 랭킹 리스트 */
-	List<HomeRankingServiceDto> movieRankingList;
+	List<HomeRankingReponseDto> movieRankingList;
 	
 	/** 만화 랭킹 리스트 */
-	List<HomeRankingServiceDto> comicsRankingList;
+	List<HomeRankingReponseDto> comicsRankingList;
 
 }

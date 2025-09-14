@@ -25,13 +25,12 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
-import com.cjy.contenthub.common.constants.AnilistParamConstants;
+import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
-import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -42,7 +41,6 @@ import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.helper.SearchHelper;
 import com.cjy.contenthub.search.mapper.SearchMapper;
-import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,9 +71,6 @@ public class SearchServiceImpl implements SearchService {
 
 	/** 검색 매퍼 클래스 */
 	private final SearchMapper mapper;
-
-	/** wishlist 레포지토리 */
-	private final WishlistRepository wishlistRepository;
 
 	/** TMDB API TV시리즈 검색 API 패스 */
 	@Value("${tmdb.url.tvSearchPath}")
@@ -298,31 +293,6 @@ public class SearchServiceImpl implements SearchService {
 				// 영화 정보에서 애니영화 제외한 정보 추출
 				filteredMovieList.addAll(helper.getMovieList(movieResultList, movieGenreMap));
 
-				// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-				if (userId != null) {
-					BusinessUtil.setWishlisted(
-							aniResultList, 
-							CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
-							userId, 
-							dto -> String.valueOf(dto.getId()),
-							SearchTvResultsDto::setWishlisted, // (dto, wishlisted) -> dto.setWishlisted(wishlisted)
-							wishlistRepository);
-					BusinessUtil.setWishlisted(
-							dramaResultList, 
-							CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
-							userId, 
-							dto -> String.valueOf(dto.getId()),
-							SearchTvResultsDto::setWishlisted,
-							wishlistRepository);
-					BusinessUtil.setWishlisted(
-							filteredMovieList, 
-							CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
-							userId, 
-							dto -> String.valueOf(dto.getId()),
-							SearchMovieResultsDto::setWishlisted, 
-							wishlistRepository);
-				}
-
 				// 응답 오브젝트 설정
 				return helper.setVideoResponse(
 						aniResultList, dramaResultList,
@@ -396,17 +366,6 @@ public class SearchServiceImpl implements SearchService {
 					aniResultList.addAll(helper.getAniMovieList(movieList, movieGenreMap));
 				}
 
-				// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-				if (userId != null) {
-					BusinessUtil.setWishlisted(
-							aniResultList, 
-							CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(), 
-							userId, 
-							dto -> String.valueOf(dto.getId()),
-							SearchTvResultsDto::setWishlisted, 
-							wishlistRepository);
-				}
-
 				// 반환값 설정
 				SearchTvResponseDto aniResponse = SearchTvResponseDto.builder()
 						.aniResults(aniResultList)
@@ -440,17 +399,6 @@ public class SearchServiceImpl implements SearchService {
 		.map(response -> {
 			// TBMD TV 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchTvResultsDto> tvResultsList = mapper.tvResultsListToTmdbTvResultsList(response.getResults());
-
-			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-			if (userId != null) {
-				BusinessUtil.setWishlisted(
-						tvResultsList, 
-						CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode(), 
-						userId,
-						dto -> String.valueOf(dto.getId()),
-						SearchTvResultsDto::setWishlisted, 
-						wishlistRepository);
-			}
 
 			// 결과값 설정
 			SearchTvResponseDto dramaResponse = SearchTvResponseDto.builder()
@@ -487,17 +435,6 @@ public class SearchServiceImpl implements SearchService {
 			// TBMD Movie 결과를 검색 결과 DTO 리스트로 변환
 			List<SearchMovieResultsDto> movieResultsList = mapper.movieResultsListToTmdbMovieResultsList(response.getResults());
 
-			// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-			if (userId != null) {
-				BusinessUtil.setWishlisted(
-						movieResultsList, 
-						CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode(), 
-						userId,
-						dto -> String.valueOf(dto.getId()),
-						SearchMovieResultsDto::setWishlisted, 
-						wishlistRepository);
-			}
-
 			// 결과값 설정
 			SearchMovieResponseDto movieResponse = SearchMovieResponseDto.builder()
 					.movieResults(helper.getMovieList(movieResultsList, movieGenreMap))
@@ -532,13 +469,13 @@ public class SearchServiceImpl implements SearchService {
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");
 				// 리퀘스트 파라미터 작성
 				Map<String, Object> variables = new HashMap<>(Map.of(
-						AnilistParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(1),
-						AnilistParamConstants.PARAM_PER_PAGE, perPage,
-						AnilistParamConstants.PARAM_SEARCH, jaKeyword
+						AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(1),
+						AniListParamConstants.PARAM_PER_PAGE, perPage,
+						AniListParamConstants.PARAM_SEARCH, jaKeyword
 						));
 				// 성인물 플래그가 false인 경우, 파라미터 추가
 				if (!isAdult) {
-					variables.put(AnilistParamConstants.PARAM_IS_ADULT, isAdult);
+					variables.put(AniListParamConstants.PARAM_IS_ADULT, isAdult);
 				}
 				// graphql 쿼리에 리퀘스트 파라미터 적용
 				String requestBody = GraphqlUtil.buildRequestBody(query, variables);
@@ -563,17 +500,6 @@ public class SearchServiceImpl implements SearchService {
 							// 응답 데이터 매핑
 							List<SearchComicsResultDto> comicsResultsList = 
 									helper.setComicsResponse(response.getData().getPage().getMedia());
-							
-							// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-							if (userId != null) {
-								BusinessUtil.setWishlisted(
-										comicsResultsList, 
-										CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode(), 
-										userId,
-										dto -> String.valueOf(dto.getId()),
-										SearchComicsResultDto::setWishlisted, 
-										wishlistRepository);
-							}
 							
 							// 응답 데이터 재분배
 							SearchComicsResponseDto comicsResponse = SearchComicsResponseDto.builder()

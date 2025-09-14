@@ -23,15 +23,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class HomeServiceImpl implements HomeService {
-	
+
 	/** 콘텐츠 뷰 리포지토리 */
 	private final HomeRankingViewRepository homeRankingViewRepository;
-	
+
 	/** 홈 매퍼 */
 	private final HomeMapper mapper;
-	
+
 	/** 위시리스트 리포지토리 */
 	private final WishlistRepository wishlistRepository;
+	
+	/** 비즈니스 유틸리티 */
+	private final BusinessUtil businessUtil;
 
 	/**
 	 * 콘텐츠 랭킹 정보를 조회
@@ -41,63 +44,63 @@ public class HomeServiceImpl implements HomeService {
 	 */
 	@Override
 	public HomeRankingListServiceDto getContentRankings(Long userId) {
-		
+
 		String aniMediaType = CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode();
 		String dramaMediaType = CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode();
 		String movieMediaType = CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
 		String comicsMediaType = CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode();
-		
+
 		// 콘텐츠 뷰 엔티티 리스트 조회
 		List<HomeRankingViewEntity> entityList = homeRankingViewRepository.findAll();
-		
+
 		// 엔티티 리스트를 서비스 DTO 리스트로 매핑
 		List<HomeRankingServiceDto> serviceList =  mapper.entityListToServiceList(entityList);
-		
+
 		// 미디어 타입별로 필터링
 		List<HomeRankingServiceDto> aniRankingList = serviceList.stream().filter(
-				e -> e.getOriginalMediaType().equals(aniMediaType))
+				e -> e.getMediaType().equals(aniMediaType))
 				.toList();
-		List<HomeRankingServiceDto> dramaRankingList = serviceList.stream().filter(e -> e.getOriginalMediaType()
+		List<HomeRankingServiceDto> dramaRankingList = serviceList.stream().filter(e -> e.getMediaType()
 				.equals(dramaMediaType)).toList();
 		List<HomeRankingServiceDto> movieRankingList = serviceList.stream().filter(
-				e -> e.getOriginalMediaType().equals(movieMediaType))
+				e -> e.getMediaType().equals(movieMediaType))
 				.toList();
 		List<HomeRankingServiceDto> comicsRankingList = serviceList.stream().filter(
-				e -> e.getOriginalMediaType().equals(comicsMediaType))
+				e -> e.getMediaType().equals(comicsMediaType))
 				.toList();
-		
+
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			BusinessUtil.setWishlisted(
+			businessUtil.setWishlisted(
 					aniRankingList, 
-					aniMediaType, 
+					List.of(aniMediaType, movieMediaType),
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			BusinessUtil.setWishlisted(
+			businessUtil.setWishlisted(
 					dramaRankingList, 
-					dramaMediaType, 
+					List.of(dramaMediaType), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			BusinessUtil.setWishlisted(
+			businessUtil.setWishlisted(
 					movieRankingList, 
-					movieMediaType, 
+					List.of(movieMediaType), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			BusinessUtil.setWishlisted(
+			businessUtil.setWishlisted(
 					comicsRankingList, 
-					comicsMediaType, 
+					List.of(comicsMediaType), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
 		}
-		
+
 		// 필터링 된 서비스 DTO 반환
 		return HomeRankingListServiceDto.builder()
 				.aniRankingList(aniRankingList)

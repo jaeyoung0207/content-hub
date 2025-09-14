@@ -18,6 +18,8 @@ import {
 } from '../common/utils/typeGuardUtil';
 import { LazyImage } from './common/LazyImageUi';
 import { highlightHoverColor } from '../common/constants/tailwindStyles';
+import { WishlistUi } from './WishlistUi';
+import { useUserStore } from '../common/store/globalStateStore';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입
@@ -48,6 +50,8 @@ export const DisplaySearchResults = ({
   const { t } = useTranslation();
   // navigate 훅
   const navigate = useNavigate();
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
   // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
 
@@ -95,6 +99,15 @@ export const DisplaySearchResults = ({
               : items.posterPath
                 ? thumbnailImagePath + items.posterPath
                 : COMMON_IMAGES.NO_IMAGE;
+            const heartStyle =
+              mediaType === MEDIA_TYPE.COMICS
+                ? 'z-0 relative top-1/3 right-1/6'
+                : 'z-0 relative top-10 right-1/8';
+            const title =
+              isSearchTvType(items, mediaType) ||
+              isRecommendationsTvType(items, mediaType)
+                ? items.name
+                : items.title;
             return (
               <ul
                 key={'frame_' + index}
@@ -130,13 +143,21 @@ export const DisplaySearchResults = ({
                       ' object-scale-down rounded-2xl'
                     }
                   />
+                  <div className={heartStyle}>
+                    <WishlistUi
+                      originalMediaType={items.originalMediaType!}
+                      apiId={Number(items.id)}
+                      title={title!}
+                      userId={user?.userId!}
+                      isWishlisted={items.wishlisted!}
+                      thumbnailImageUrl={items.backdropPath!}
+                      genreIds={items.genreIds ?? []}
+                    />
+                  </div>
                 </li>
                 {/* 제목 */}
                 <li key={'title' + index} className="ml-1 mr-1 mb-4 text-lg">
-                  {isSearchTvType(items, mediaType) ||
-                  isRecommendationsTvType(items, mediaType)
-                    ? items.name
-                    : items.title}
+                  {title}
                 </li>
               </ul>
             );

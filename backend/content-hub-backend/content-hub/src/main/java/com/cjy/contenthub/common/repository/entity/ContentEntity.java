@@ -52,6 +52,11 @@ public class ContentEntity implements Serializable {
 	@NotNull
 	@Column(name = "original_media_type", length = 1)
 	private String originalMediaType;
+	
+	/** 미디어 타입(화면 표시용) */
+	@NotNull
+	@Column(name = "media_type")
+	private String mediaType;
 
 	/** API ID */
 	@NotNull

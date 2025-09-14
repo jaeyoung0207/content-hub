@@ -19,6 +19,7 @@ import com.cjy.contenthub.common.constants.CommonEnum.AniListMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsRecommendationsResultDto;
 import com.cjy.contenthub.detail.controller.dto.DetailRecommendationsTvResultsDto;
 
@@ -30,6 +31,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class DetailRecoommendationHelper {
+	
+	/** 비즈니스 유틸리티 */
+	private final BusinessUtil businessUtil;
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
@@ -125,6 +129,7 @@ public class DetailRecoommendationHelper {
 					.backdropPath(node.getCoverImage().getLarge())
 					.posterPath(node.getCoverImage().getExtraLarge())
 					.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+					.genreIds(businessUtil.genreMappingFromAniListToTmdb(node.getGenres()))
 					.build()));
 		}
 	}
@@ -159,6 +164,7 @@ public class DetailRecoommendationHelper {
 						.backdropPath(backdropPath)
 						.posterPath(posterPath)
 						.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+						.genreIds(businessUtil.genreMappingFromAniListToTmdb(recommendationDetail.getGenres()))
 						.build());
 			});
 		}

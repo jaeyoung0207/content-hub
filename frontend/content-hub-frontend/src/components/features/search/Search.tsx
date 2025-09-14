@@ -29,10 +29,10 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
   const dramaSearchResults = data?.videoResult?.dramaResults;
   const movieSearchResults = data?.videoResult?.movieResults;
   const comicsSearchResults = data?.comicsResult?.comicsResults;
-  const isAniViewMore = data?.videoResult?.aniViewMore;
-  const isDramaViewMore = data?.videoResult?.dramaViewMore;
-  const isMovieViewMore = data?.videoResult?.movieViewMore;
-  const isComicsViewMore = data?.comicsResult?.comicsViewMore;
+  const isAniViewMore = data?.videoResult?.isAniViewMore;
+  const isDramaViewMore = data?.videoResult?.isDramaViewMore;
+  const isMovieViewMore = data?.videoResult?.isMovieViewMore;
+  const isComicsViewMore = data?.comicsResult?.isComicsViewMore;
 
   // 검색 결과 인자값 리스트
   const dataList = [

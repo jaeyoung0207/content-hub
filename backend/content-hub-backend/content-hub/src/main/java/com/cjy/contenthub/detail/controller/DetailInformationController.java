@@ -13,6 +13,8 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.detail.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailTvResponseDto;
+import com.cjy.contenthub.detail.mapper.DetailInformationMapper;
+import com.cjy.contenthub.detail.service.DetailInformationNoCacheService;
 import com.cjy.contenthub.detail.service.DetailInformationService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,12 @@ public class DetailInformationController {
 
 	/** 상세 정보 서비스 */
 	private final DetailInformationService informationService;
+	
+	/** 상세 정보 서비스(캐시 미사용) */
+	private final DetailInformationNoCacheService detailInformationNoCacheService;
+	
+	/** 상세 정보 매퍼 */
+	private final DetailInformationMapper detailInformationMapper;
 	
 	/** 리퀘스트 파라미터 키 : TV SERIES ID */
 	private static final String PARAM_TV_SERIES_ID = "series_id";
@@ -62,7 +70,19 @@ public class DetailInformationController {
 			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		return ResponseEntity.ok(informationService.getTvDetail(seriesId, originalMediaType, userId));
+		
+		// TV 상세 정보 조회
+		DetailTvResponseDto cachedResponse = informationService.getTvDetail(seriesId, originalMediaType);
+		
+		// 깊은 복사 수행
+		DetailTvResponseDto newResponse = detailInformationMapper.deepCopyForTvResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			detailInformationNoCacheService.setWishlistFromResponse(DetailTvResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+		}
+		// 응답 반환
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -79,7 +99,19 @@ public class DetailInformationController {
 			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		return ResponseEntity.ok(informationService.getMovieDetail(movieId, originalMediaType, userId));
+		
+		// 영화 상세 정보 조회
+		DetailMovieResponseDto cachedResponse = informationService.getMovieDetail(movieId, originalMediaType);
+		
+		// 깊은 복사 수행
+		DetailMovieResponseDto newResponse = detailInformationMapper.deepCopyForMovieResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			detailInformationNoCacheService.setWishlistFromResponse(DetailMovieResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+		}
+		// 응답 반환
+		return ResponseEntity.ok(newResponse);
 	}
 
 	/**
@@ -97,7 +129,19 @@ public class DetailInformationController {
 			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) throws IOException {
-		return ResponseEntity.ok(informationService.getComicsDetail(comicsId, originalMediaType, userId));
+		
+		// 만화 상세 정보 조회
+		DetailComicsResponseDto cachedResponse = informationService.getComicsDetail(comicsId, originalMediaType);
+		
+		// 깊은 복사 수행
+		DetailComicsResponseDto newResponse = detailInformationMapper.deepCopyForComicsResponse(cachedResponse);
+		
+		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+		if (userId != null) {
+			detailInformationNoCacheService.setWishlistFromResponse(DetailComicsResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+		}
+		// 응답 반환
+		return ResponseEntity.ok(newResponse);
 	}
 	
 	/**

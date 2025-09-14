@@ -1,5 +1,7 @@
 package com.cjy.contenthub.wishlist.service.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +26,12 @@ public class WishlistServiceDto {
 	
 	/** apiId */
 	private String apiId;
+	
+	/** 장르 ID 리스트 */
+	private List<Integer> genreIds;
+	
+	/** 미디어 타입(화면 표시용) */
+	private String mediaType;
 	
 	/** 제목 */
 	private String title;

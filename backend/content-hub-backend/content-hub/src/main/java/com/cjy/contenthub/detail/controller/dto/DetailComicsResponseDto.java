@@ -26,6 +26,9 @@ public class DetailComicsResponseDto extends TmdbVideoDetailsDto {
 	
 	/** 만화 장르 */
 	private List<String> comicsGenres;
+	
+	/** 장르 ID 목록 */
+	private List<Integer> genreIds;
 
 	/** 캐릭터 DTO */
 	private AniListCharactersDto characters;

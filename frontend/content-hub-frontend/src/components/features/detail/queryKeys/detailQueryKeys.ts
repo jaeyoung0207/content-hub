@@ -7,8 +7,8 @@ export const detailMainKey = 'detail';
  */
 export const detailQueryKeys = {
   detail: {
-    getDetail: (originalMediaType: string, apiId: string) =>
-      [detailMainKey, originalMediaType, apiId] as const,
+    getDetail: (originalMediaType: string, apiId: string, userId?: number) =>
+      [detailMainKey, originalMediaType, apiId, userId] as const,
     getStarRatingAverage: (originalMediaType: string, apiId: string) =>
       [
         detailMainKey,

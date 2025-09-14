@@ -5,12 +5,16 @@
 export const searchQueryKeys = {
   // 검색 화면에서 검색 결과를 가져오기 위한 쿼리 키
   search: {
-    search: (keyword: string, isAdult: string) =>
-      ['search', keyword, isAdult] as const,
+    search: (keyword: string, isAdult: string, userId?: number) =>
+      ['search', keyword, isAdult, userId] as const,
   },
   // 전체보기 화면의 검색 결과를 가져오기 위한 쿼리 키
   searchMore: {
-    searchMore: (keyword: string, isAdult: boolean, mediaType: string) =>
-      ['searchMore', keyword, isAdult, mediaType] as const,
+    searchMore: (
+      keyword: string,
+      isAdult: boolean,
+      mediaType: string,
+      userId?: number
+    ) => ['searchMore', keyword, isAdult, mediaType, userId] as const,
   },
 };

@@ -149,7 +149,7 @@ export class HttpClient<SecurityDataType = unknown> {
           // 유저정보 클리어
           clearUserData();
           // 로그인 확인 다이얼로그 표시
-          // useConfirmDialogStore.getState().setIsConfirmDialogOpen();
+          // useConfirmDialogStore.getState().setIsConfirmDialogOpen(true);
         }
         return request;
       },
@@ -167,12 +167,17 @@ export class HttpClient<SecurityDataType = unknown> {
       },
       (error: AxiosError<AxiosErrorType>) => {
         const data = error.response?.data;
-        // 로그인 만료시
-        if (data?.status === 401 || data?.status === '401') {
+        // 로그인 만료시 로그인 만료시 또는 권한없음인 경우
+        if (
+          data?.status === 401 ||
+          data?.status === '401' ||
+          data?.status === 403 ||
+          data?.status === '403'
+        ) {
           // 유저정보 클리어
           clearUserData();
           // 로그인 확인 다이얼로그 표시
-          useConfirmDialogStore.getState().setIsConfirmDialogOpen();
+          useConfirmDialogStore.getState().setIsConfirmDialogOpen(true); // TODO
         }
         return Promise.reject(error);
       }

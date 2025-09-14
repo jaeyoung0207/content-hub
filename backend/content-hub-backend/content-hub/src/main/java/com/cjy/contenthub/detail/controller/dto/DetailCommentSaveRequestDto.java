@@ -1,6 +1,9 @@
 package com.cjy.contenthub.detail.controller.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.cjy.contenthub.common.api.dto.tmdb.TmdbGenreDto;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,6 +27,10 @@ public class DetailCommentSaveRequestDto {
 	/** API ID */
 	@NotEmpty
 	private String apiId;
+	
+	/** 장르 ID 목록 */
+	@NotEmpty
+	private List<Integer> genreIds;
 	
 	/** 제목 */
 	@NotEmpty

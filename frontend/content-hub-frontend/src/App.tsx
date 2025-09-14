@@ -2,11 +2,17 @@ import { AppBrowserRouter } from './components/common/router/AppRouter';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
 import { CookiesProvider } from 'react-cookie';
+import { ConfirmModalUi } from './components/ui/ConfirmModalUi';
+import { useConfirmDialogStore } from './components/common/store/globalStateStore';
 
 /**
  * 메인 애플리케이션 컴포넌트
  */
 function App() {
+  // confirm dialog 상태 훅
+  const { isConfirmDialogOpen, onOk, onCancel, confirmMsg } =
+    useConfirmDialogStore();
+
   return (
     <>
       <div className="sm:w-sm md:w-md lg:w-7xl m-auto">
@@ -19,6 +25,17 @@ function App() {
           {/* AppBrowserRouter 컴포넌트는 애플리케이션의 라우팅을 관리하고, URL 경로에 따라 적절한 컴포넌트를 렌더링 함 */}
           <AppBrowserRouter />
         </CookiesProvider>
+      </div>
+      {/* 확인 다이얼로그 */}
+      <div className="flex justify-center items-center fixed top-0 left-0">
+        <div className="mt-40">
+          <ConfirmModalUi
+            isOpen={isConfirmDialogOpen}
+            onOk={onOk!}
+            onCancel={onCancel!}
+            confirmMsg={confirmMsg!}
+          />
+        </div>
       </div>
     </>
   );

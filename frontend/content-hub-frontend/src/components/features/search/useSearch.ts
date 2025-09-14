@@ -134,12 +134,14 @@ export const useSearch = (
     data, // 검색 결과 데이터
     isLoading, // 로딩 중 여부
   } = useQuery({
-    queryKey: searchQueryKeys.search.search(keyword, isAdult),
+    queryKey: searchQueryKeys.search.search(keyword, isAdult, user?.userId),
     queryFn: async () => {
       // 비디오 및 만화 검색 결과를 가져오는 API 호출
       return await getSearchResult();
     },
     enabled: !!keyword,
+    staleTime: 0, // 데이터를 바로 stale로 간주
+    gcTime: 0, // 캐시된 데이터를 바로 제거
   });
 
   // ================================================================================================== return

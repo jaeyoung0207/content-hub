@@ -7,5 +7,6 @@ const homeMainKey = 'home';
  */
 export const homeQueryKeys = {
   // 홈 화면의 콘텐츠 랭킹 조회 쿼리 키
-  getContentRankings: [homeMainKey, 'getContentRankings'] as const,
+  getContentRankings: (userId: number | undefined) =>
+    [homeMainKey, 'getContentRankings', userId] as const,
 };

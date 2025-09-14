@@ -30,6 +30,8 @@ export interface WishlistRequestDto {
   userId: number;
   originalMediaType: string;
   apiId: string;
+  genreIds?: number[];
+  mediaType?: string;
   title?: string;
   thumbnailImageUrl?: string;
 }
@@ -53,6 +55,7 @@ export interface WishlistResponseDto {
 export interface DetailCommentSaveRequestDto {
   originalMediaType: string;
   apiId: string;
+  genreIds: number[];
   title: string;
   thumbnailImageUrl?: string;
   provider: string;
@@ -121,9 +124,9 @@ export interface SearchVideoResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
-  aniViewMore?: boolean;
-  movieViewMore?: boolean;
-  dramaViewMore?: boolean;
+  isAniViewMore?: boolean;
+  isDramaViewMore?: boolean;
+  isMovieViewMore?: boolean;
 }
 
 export interface SearchMovieResponseDto {
@@ -155,7 +158,7 @@ export interface SearchComicsResponseDto {
   totalPages?: number;
   /** @format int32 */
   totalResults?: number;
-  comicsViewMore?: boolean;
+  isComicsViewMore?: boolean;
 }
 
 export interface SearchComicsResultDto {
@@ -314,9 +317,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
-  leapMonth?: boolean;
   emailValid?: boolean;
   emailVerified?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -327,8 +330,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultNickname?: boolean;
   defaultImage?: boolean;
+  defaultNickname?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -345,18 +348,19 @@ export interface KakaoUserInfoDto {
 }
 
 export interface HomeRankingListResponseDto {
-  aniRankingList?: HomeRankingServiceDto[];
-  dramaRankingList?: HomeRankingServiceDto[];
-  movieRankingList?: HomeRankingServiceDto[];
-  comicsRankingList?: HomeRankingServiceDto[];
+  aniRankingList?: HomeRankingReponseDto[];
+  dramaRankingList?: HomeRankingReponseDto[];
+  movieRankingList?: HomeRankingReponseDto[];
+  comicsRankingList?: HomeRankingReponseDto[];
 }
 
-export interface HomeRankingServiceDto {
+export interface HomeRankingReponseDto {
   /** @format int64 */
   contentId?: number;
   /** @format int64 */
   rowNum?: number;
   originalMediaType?: string;
+  mediaType?: string;
   apiId?: string;
   starRatingAverage?: number;
   /** @format int64 */
@@ -474,6 +478,7 @@ export interface DetailTvResponseDto {
   type?: string;
   credits?: TmdbVideoCreditsDto;
   aggregateCredits?: TmdbVideoCreditsDto;
+  genreIds?: number[];
   link?: string;
   starRatingAverage?: number;
   wishlisted?: boolean;
@@ -574,6 +579,7 @@ export interface DetailMovieResponseDto {
   runtime?: number;
   title?: string;
   credits?: TmdbVideoCreditsDto;
+  genreIds?: number[];
   link?: string;
   starRatingAverage?: number;
   wishlisted?: boolean;
@@ -688,6 +694,7 @@ export interface DetailComicsResponseDto {
   status?: string;
   title?: string;
   comicsGenres?: string[];
+  genreIds?: number[];
   characters?: AniListCharactersDto;
   staff?: AniListStaffDto;
   /** @format int32 */

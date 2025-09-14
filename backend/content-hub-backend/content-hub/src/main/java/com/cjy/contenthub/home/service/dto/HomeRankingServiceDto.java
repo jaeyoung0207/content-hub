@@ -22,6 +22,9 @@ import lombok.Setter;
 
 	/** 원본 미디어 타입 */
 	private String originalMediaType;
+	
+	/** 미디어 타입(화면 표시용) */
+	private String mediaType;
 
 	/** API ID */
 	private String apiId;

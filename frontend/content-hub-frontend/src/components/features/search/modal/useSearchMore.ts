@@ -141,15 +141,16 @@ export const useSearchMore = (
     SearchCommonResultType[], // queryFn이 반환하는 원본 데이터
     AxiosError, // 에러 타입 (보통 AxiosError)
     UseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
-    [string, string, boolean, string], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
+    [string, string, boolean, string, number | undefined], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
     number | undefined // pageParam 타입 (보통 number | undefined)
   >({
     // useInfiniteQuery의 키 지정
     queryKey: searchQueryKeys.searchMore.searchMore(
       keyword,
       isAdult,
-      mediaType
-    ) as [string, string, boolean, string],
+      mediaType,
+      user?.userId
+    ) as [string, string, boolean, string, number | undefined],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 1 }) => {
       const responseDataResults = await judgeExecApi(pageParam);
@@ -170,8 +171,8 @@ export const useSearchMore = (
     }),
     initialPageParam: 1, // 초기 페이지 매개변수를 지정
     enabled: !!keyword && !!mediaType, // useInfiniteQuery가 실행되는 조건 지정
-    staleTime: ONE_MINUTE * 1, // 이미지 데이터가 쌓이므로, 짧게 설정
-    gcTime: ONE_MINUTE * 2, // 이미지 데이터가 쌓이므로, 짧게 설정
+    staleTime: 0, // 데이터를 바로 stale로 간주
+    gcTime: 0, // 캐시된 데이터를 바로 제거
   });
 
   // ================================================================================================== function

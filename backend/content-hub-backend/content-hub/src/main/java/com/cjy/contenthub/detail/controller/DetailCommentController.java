@@ -20,7 +20,7 @@ import com.cjy.contenthub.detail.controller.dto.DetailCommentGetDataDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentGetResponseDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentSaveRequestDto;
 import com.cjy.contenthub.detail.controller.dto.DetailCommentUpdateRequestDto;
-import com.cjy.contenthub.detail.mapper.DetailMapper;
+import com.cjy.contenthub.detail.mapper.DetailCommentMapper;
 import com.cjy.contenthub.detail.service.DetailCommentService;
 import com.cjy.contenthub.detail.service.dto.DetailCommentDataServiceDto;
 import com.cjy.contenthub.detail.service.dto.DetailCommentServiceDto;
@@ -41,7 +41,7 @@ public class DetailCommentController {
 	private final DetailCommentService commentService;
 
 	/** 상세 매퍼 */
-	private final DetailMapper mapper;
+	private final DetailCommentMapper mapper;
 
 	/** 리퀘스트 파라미터 키 : 코멘트 번호 */
 	private static final String PARAM_COMMENT_ID = "comment_id";

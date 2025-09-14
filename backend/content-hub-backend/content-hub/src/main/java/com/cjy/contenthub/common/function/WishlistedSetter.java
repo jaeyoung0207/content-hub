@@ -5,6 +5,7 @@ package com.cjy.contenthub.common.function;
  *
  * @param <T> DTO 객체 타입
  */
+@FunctionalInterface
 public interface WishlistedSetter<T> {
 
 	/**

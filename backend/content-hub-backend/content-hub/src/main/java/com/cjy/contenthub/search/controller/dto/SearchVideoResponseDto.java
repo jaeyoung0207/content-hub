@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class SearchVideoResponseDto {
 
 	/** TMDB API TV 프로그램 검색 결과 DTO 애니 리스트 */
@@ -33,12 +33,12 @@ public class SearchVideoResponseDto {
 	private int totalResults;
 	
 	/** 애니 전체보기 여부 */
-	private boolean isAniViewMore;
+	private Boolean isAniViewMore;
 	
 	/** 드라마 전체보기 여부 */
-	private boolean isDramaViewMore;
+	private Boolean isDramaViewMore;
 	
 	/** 영화 전체보기 여부 */
-	private boolean isMovieViewMore;
+	private Boolean isMovieViewMore;
 	
 }
