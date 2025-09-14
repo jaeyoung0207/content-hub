@@ -1,5 +1,7 @@
 package com.cjy.contenthub.common.api.dto.aniist;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,5 +25,8 @@ public class AniListRelationsNodeDto {
 	
 	/** 미디어 타입 */
 	private String type;
+	
+	/** 장르 리스트 */
+	private List<String> genres;
 
 }

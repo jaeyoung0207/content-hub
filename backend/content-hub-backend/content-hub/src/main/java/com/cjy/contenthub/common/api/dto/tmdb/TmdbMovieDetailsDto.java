@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class TmdbMovieDetailsDto extends TmdbVideoDetailsDto {
 	
 	/** 장르 목록 */
-	List<TmdbGenreDto> genres;
+	private List<TmdbGenreDto> genres;
 	
 	/** IMDB ID */
 	private String imdbId;

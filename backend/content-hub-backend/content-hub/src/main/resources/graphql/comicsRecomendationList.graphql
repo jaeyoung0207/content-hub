@@ -23,6 +23,7 @@ query Media($mediaId: Int, $page: Int, $perPage: Int) {
           medium
         }
         type
+        genres
       }
     }
     recommendations(page: $page, perPage: $perPage) {
@@ -42,6 +43,7 @@ query Media($mediaId: Int, $page: Int, $perPage: Int) {
             userPreferred
           }
           type
+          genres
         }
       }
     }

@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class TmdbTvDetailsDto extends TmdbVideoDetailsDto {
 	
 	/** 장르 목록 */
-	List<TmdbGenreDto> genres;
+	private List<TmdbGenreDto> genres;
 	
 	/** 방영 시간 */
 	private List<Integer> episodeRunTime;
