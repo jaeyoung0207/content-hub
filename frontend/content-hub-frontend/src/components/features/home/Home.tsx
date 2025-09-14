@@ -111,8 +111,8 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
               : 'h-[180px]';
           const heartStyle =
             items.originalMediaType === MEDIA_TYPE.COMICS
-              ? 'relative top-5/12 right-1/6'
-              : 'relative top-5/14 right-1/8';
+              ? 'z-1 relative top-28 left-16'
+              : 'z-1 relative top-15 left-30';
           return (
             <ul
               key={index}
@@ -132,13 +132,13 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
             >
               <li className="mb-1 flex justify-center text-lg font-bold">{`TOP ${items.rowNum}`}</li>
               <li
-                className={`flex justify-center items-center ${widthStyle} ${heightStyle}`}
+                className={`relative flex justify-center items-center ${widthStyle} ${heightStyle}`}
               >
                 <img
                   src={thumbnailImageUrl}
                   alt={items.title}
                   className={
-                    'max-w-full max-h-full object-scale-down rounded-2xl'
+                    'z-0 absolute max-w-full max-h-full object-scale-down rounded-2xl'
                   }
                   onError={(e) => {
                     e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;

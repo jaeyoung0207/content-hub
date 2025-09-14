@@ -87,7 +87,7 @@ export const DisplaySearchResults = ({
       )}
       {/* 검색 결과 */}
       <div
-        className={`'w-full flex flex-wrap items-start mt-6 ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
+        className={`w-full flex flex-wrap items-start mt-6 ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
       >
         {results.length !== 0 &&
           results.map((items, index) => {
@@ -99,21 +99,28 @@ export const DisplaySearchResults = ({
               : items.posterPath
                 ? thumbnailImagePath + items.posterPath
                 : COMMON_IMAGES.NO_IMAGE;
+            // 하트 아이콘 style
             const heartStyle =
               mediaType === MEDIA_TYPE.COMICS
-                ? 'z-0 relative top-1/3 right-1/6'
-                : 'z-0 relative top-10 right-1/8';
+                ? 'z-1 absolute bottom-2 right-3'
+                : 'z-1 absolute bottom-2 right-3';
+            // 제목
             const title =
               isSearchTvType(items, mediaType) ||
               isRecommendationsTvType(items, mediaType)
                 ? items.name
                 : items.title;
+            // 이전 요소의 id가 중복이면 렌더링 중지
+            if (index !== 0 && results[index -1].id === items.id) {
+              return null;
+            }
+
             return (
               <ul
                 key={'frame_' + index}
                 className={
-                  `${highlightHoverColor} ml-1 mr-1 block cursor-pointer ` +
-                  (mediaType === MEDIA_TYPE.COMICS ? 'w-[195px]' : 'w-[300px]')
+                  `${highlightHoverColor} ml-1 mr-3 cursor-pointer ` +
+                  (mediaType === MEDIA_TYPE.COMICS ? 'w-[195px] h-full' : 'w-[290px] h-full')
                 }
                 onClick={commonErrorHandler(() => {
                   // apiId 체크
@@ -131,7 +138,7 @@ export const DisplaySearchResults = ({
                 {/* 썸네일 */}
                 <li
                   key={'poster_path' + index}
-                  className="flex justify-center items-center"
+                  className="relative flex justify-center items-center"
                 >
                   <LazyImage
                     src={thumbnail}
@@ -140,7 +147,7 @@ export const DisplaySearchResults = ({
                       (mediaType === MEDIA_TYPE.COMICS
                         ? 'max-w-full h-[270px]'
                         : 'max-w-full h-[180px]') +
-                      ' object-scale-down rounded-2xl'
+                      ' object-cover rounded-2xl'
                     }
                   />
                   <div className={heartStyle}>
@@ -156,7 +163,7 @@ export const DisplaySearchResults = ({
                   </div>
                 </li>
                 {/* 제목 */}
-                <li key={'title' + index} className="ml-1 mr-1 mb-4 text-lg">
+                <li key={'title' + index} className="ml-1 mr-1 mt-1 mb-4 text-lg">
                   {title}
                 </li>
               </ul>

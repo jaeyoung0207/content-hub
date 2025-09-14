@@ -107,7 +107,7 @@ export const Header = () => {
   ];
 
   return (
-    <div className="flex justify-between z-50 shadow-md">
+    <div className="relative z-50 flex justify-between shadow-md">
       <div className="fixed bg-white">
         <div className="flex justify-between w-sm lg:w-7xl lg:mt-5 px-3 ">
           {/* 홈 아이콘 */}

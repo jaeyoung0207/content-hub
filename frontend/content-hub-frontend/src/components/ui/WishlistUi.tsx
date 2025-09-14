@@ -49,7 +49,7 @@ export const WishlistUi = ({
   // 아이콘 색상
   const iconStyle = 'text-red-500';
   // 아이콘 크기
-  const iconSize = 24;
+  const iconSize = 30;
   return (
     <div>
       {addToWishlist ? (
