@@ -77,7 +77,7 @@ public class CommonEnum {
 		/** 전쟁 */
 		GENRE_WAR(10752, "War", "전쟁");
 
-		/** 장르 */
+		/** 장르 ID */
 		private int genreId;
 		
 		/** 장르(영어) */
@@ -87,13 +87,74 @@ public class CommonEnum {
 		private String genreKorean;
 
 		/** 장르 맵 */
-		private static final Map<String, String> GENRE_MAP = Stream.of(values()).collect(
+		public static final Map<String, String> GENRE_EN_KO_MAP = Stream.of(values()).collect(
 				Collectors.toMap(TmdbGenreEnum::getGenreEnglish, TmdbGenreEnum::getGenreKorean, (oldKey,newKey) -> newKey));
 
 		/** 영어 장르명 -> 한글 장르명으로 변경 */
 		public static String getTranslatedGenre(String genre) {
-			return StringUtils.defaultString(GENRE_MAP.get(genre));
+			return StringUtils.defaultString(GENRE_EN_KO_MAP.get(genre));
 		}
+	}
+	
+	/**
+	 * AniList 장르 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum AniListGenreEnum {
+		
+		/** 액션 */
+        GENRE_ACTION(TmdbGenreEnum.GENRE_ACTION.getGenreId() , "Action", "액션"),
+        /** 어드벤처 */
+        GENRE_ADVENTURE(TmdbGenreEnum.GENRE_ADVENTURE.getGenreId(), "Adventure", "어드벤처"),
+        /** 코미디 */
+        GENRE_COMEDY(TmdbGenreEnum.GENRE_COMEDY.getGenreId(), "Comedy", "코미디"),
+        /** 드라마 */
+        GENRE_DRAMA(TmdbGenreEnum.GENRE_DRAMA.getGenreId(), "Drama", "드라마"),
+        /** 에로물 */
+        GENRE_ECCHI(0, "Ecchi", "에로물"),
+        /** 판타지 */
+        GENRE_FANTASY(TmdbGenreEnum.GENRE_FANTASY.getGenreId(), "Fantasy", "판타지"),
+        /** 성인물 */
+        GENRE_HENTAI(0, "Hentai", "성인물"),
+        /** 호러 */
+        GENRE_HORROR(TmdbGenreEnum.GENRE_HORROR.getGenreId(), "Horror", "호러"),
+        /** 마법소녀물 */
+        GENRE_MAGIC(0, "Mahou Shoujo", "마법소녀물"),
+        /** 메카물 */
+        GENRE_MECHA(0, "Mecha", "메카물"),
+        /** 음악 */
+        GENRE_MUSIC(TmdbGenreEnum.GENRE_MUSIC.getGenreId(), "Music", "음악"),
+        /** 미스테리 */
+        GENRE_MYSTERY(TmdbGenreEnum.GENRE_MYSTERY.getGenreId(), "Mystery", "미스테리"),
+        /** 심리극 */
+        GENRE_PSYCHOLOGICAL(0, "Psychological", "심리극"),
+        /** 로맨스 */
+        GENRE_ROMANCE(TmdbGenreEnum.GENRE_ROMANCE.getGenreId(), "Romance", "로맨스"),
+        /** 공상과학 */
+        GENRE_SCIENCE_FICTION(TmdbGenreEnum.GENRE_SCIENCE_FICTION.getGenreId(), "Sci-Fi", "공상과학"),
+        /** 일상물 */
+        GENRE_SLICE_OF_LIFE(0, "Slice of Life", "일상물"),
+        /** 스포츠 */
+        GENRE_SPORTS(0, "Sports", "스포츠"),
+        /** 초자연적 */
+        GENRE_SUPERNATURAL(0, "Supernatural", "초자연적"),
+        /** 스릴러 */
+        GENRE_THRILLER(TmdbGenreEnum.GENRE_THRILLER.getGenreId(), "Thriller", "스릴러");
+		
+		/** 장르 ID */
+		private int genreId;
+
+		/** 장르(영어) */
+        private String genreEnglish;
+        
+        /** 장르(한국어) */
+        private String genreKorean;
+        
+        /** 장르 맵 */
+        public static final Map<String, Integer> GENRE_EN_ID_MAP = Stream.of(values()).collect(
+        		Collectors.toMap(AniListGenreEnum::getGenreEnglish, AniListGenreEnum::getGenreId, (oldKey,newKey) -> newKey));
+        
 	}
 
 	/**
