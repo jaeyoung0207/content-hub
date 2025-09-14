@@ -11,7 +11,6 @@ import {
   ESC_KEY,
   INFINITE_SCROLL_THROTTLE_DELAY,
   MEDIA_TYPE,
-  ONE_MINUTE,
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
