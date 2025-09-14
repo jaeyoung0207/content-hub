@@ -48,7 +48,7 @@ public class RedisUtil {
 			refreshTokenExpiresIn = naverExpiresIn;
 		}
 		String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
-		redisTemplate.opsForValue().set(key, refreshToken, Duration.ofDays(refreshTokenExpiresIn));
+		setValue(key, refreshToken, Duration.ofDays(refreshTokenExpiresIn));
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class RedisUtil {
 	 */
 	public boolean validateRefreshToken(String provider, String providerId, String refreshToken) {
         String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
-        String redisRefreshToken = (String) redisTemplate.opsForValue().get(key);
+        String redisRefreshToken = (String) getValue(key);
 		return StringUtils.isNotEmpty(redisRefreshToken) && redisRefreshToken.equals(refreshToken);
 	}
 	
@@ -74,9 +74,40 @@ public class RedisUtil {
 	public void deleteRefreshToken(String provider, String providerId) {
 		String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
 		if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-			redisTemplate.delete(key);
+			deleteKey(key);
 		}
 	}
 	
+	/**
+	 * 일반 키-값 쌍 저장 메소드
+	 * 
+	 * @param key      키
+	 * @param value    값
+	 * @param duration 만료 시간 (분)
+	 */
+	public void setValue(String key, Object value, Duration duration) {
+		redisTemplate.opsForValue().set(key, value, duration);
+	}
+	
+	/**
+	 * 일반 키-값 쌍 조회 메소드
+	 * 
+	 * @param key 키
+	 * @return Object 값
+	 */
+	public Object getValue(String key) {
+		return redisTemplate.opsForValue().get(key);
+	}
+	
+	/**
+	 * 일반 키-값 쌍 삭제 메소드
+	 * 
+	 * @param key 키
+	 */
+	public void deleteKey(String key) {
+		if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+			redisTemplate.delete(key);
+		}
+	}
 
 }
