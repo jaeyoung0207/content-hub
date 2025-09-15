@@ -125,13 +125,13 @@ public class WishlistServiceImpl implements WishlistService {
 			wisilistList.forEach(wishlist -> wishlist.setUserId(userId));
 			
 			// 미디어 타입별로 필터링
-			List<WishlistServiceDto> aniWishlist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
+			List<WishlistServiceDto> aniWishlist = wisilistList.stream().filter(e -> e.getMediaType()
 					.equals(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> dramaWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
+			List<WishlistServiceDto> dramaWisilist = wisilistList.stream().filter(e -> e.getMediaType()
 					.equals(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> movieWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
+			List<WishlistServiceDto> movieWisilist = wisilistList.stream().filter(e -> e.getMediaType()
 					.equals(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> comicsWisilist = wisilistList.stream().filter(e -> e.getOriginalMediaType()
+			List<WishlistServiceDto> comicsWisilist = wisilistList.stream().filter(e -> e.getMediaType()
 					.equals(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())).toList();
 			
 			// 결과 반환

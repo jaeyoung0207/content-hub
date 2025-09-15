@@ -20,6 +20,7 @@ const Person = lazy(() => import('@/components/features/person/Person'));
 const Character = lazy(
   () => import('@/components/features/character/Character')
 );
+const Wishlist = lazy(() => import('@/components/features/wishlist/Wishlist'));
 const Login = lazy(() => import('@/components/features/login/Login'));
 const NaverLogin = lazy(() => import('@/components/features/login/NaverLogin'));
 const KakaoLogin = lazy(() => import('@/components/features/login/KakaoLogin'));
@@ -77,6 +78,7 @@ const AppRouter = () => {
                   path="/character/:comicsCreditsType/:creditsId"
                   element={<Character />}
                 />
+                <Route path="/wishlist/:userId" element={<Wishlist />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/naver" element={<NaverLogin />} />
                 <Route path="/login/kakao" element={<KakaoLogin />} />

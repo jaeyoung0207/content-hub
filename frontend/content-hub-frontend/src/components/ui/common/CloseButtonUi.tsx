@@ -1,8 +1,12 @@
+import { RiCloseLargeFill } from 'react-icons/ri';
+
 /**
  * 닫기 버튼 공통 컴포넌트 props 타입
  */
 type CloseButtonPropsType = {
   modalClose: () => void;
+  className?: string;
+  disabled?: boolean;
 };
 
 /**
@@ -10,15 +14,21 @@ type CloseButtonPropsType = {
  *
  * @param modalClose
  */
-export const CloseButtonUi = ({ modalClose }: CloseButtonPropsType) => {
+export const CloseButtonUi = ({
+  modalClose,
+  className,
+  disabled,
+}: CloseButtonPropsType) => {
   return (
-    <div className="flex justify-end mr-1 mt-1">
-      <button
-        className="w-10 h-10 border rounded-sm text-white bg-blue-600 cursor-pointer"
+    <button
+      className={className ? className : 'flex justify-end mr-1 mt-1'}
+      onClick={(e) => e.stopPropagation()}
+      disabled={disabled}
+    >
+      <RiCloseLargeFill
+        className="w-6 h-6 text-white cursor-pointer"
         onClick={modalClose}
-      >
-        X
-      </button>
-    </div>
+      />
+    </button>
   );
 };

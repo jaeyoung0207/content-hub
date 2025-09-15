@@ -111,7 +111,7 @@ export const DisplaySearchResults = ({
                 ? items.name
                 : items.title;
             // 이전 요소의 id가 중복이면 렌더링 중지
-            if (index !== 0 && results[index -1].id === items.id) {
+            if (index !== 0 && results[index - 1].id === items.id) {
               return null;
             }
 
@@ -120,7 +120,9 @@ export const DisplaySearchResults = ({
                 key={'frame_' + index}
                 className={
                   `${highlightHoverColor} ml-1 mr-3 cursor-pointer ` +
-                  (mediaType === MEDIA_TYPE.COMICS ? 'w-[195px] h-full' : 'w-[290px] h-full')
+                  (mediaType === MEDIA_TYPE.COMICS
+                    ? 'w-[195px] h-full'
+                    : 'w-[290px] h-full')
                 }
                 onClick={commonErrorHandler(() => {
                   // apiId 체크
@@ -146,8 +148,7 @@ export const DisplaySearchResults = ({
                     className={
                       (mediaType === MEDIA_TYPE.COMICS
                         ? 'max-w-full h-[270px]'
-                        : 'max-w-full h-[180px]') +
-                      ' object-cover rounded-2xl'
+                        : 'max-w-full h-[180px]') + ' object-cover rounded-2xl'
                     }
                   />
                   <div className={heartStyle}>
@@ -163,7 +164,10 @@ export const DisplaySearchResults = ({
                   </div>
                 </li>
                 {/* 제목 */}
-                <li key={'title' + index} className="ml-1 mr-1 mt-1 mb-4 text-lg">
+                <li
+                  key={'title_' + index}
+                  className="ml-1 mr-1 mt-1 mb-4 text-lg"
+                >
                   {title}
                 </li>
               </ul>

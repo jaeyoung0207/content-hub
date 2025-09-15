@@ -2,6 +2,7 @@ import { Control, useForm, useWatch } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  useConfirmDialogStore,
   useHeaderExecStore,
   useProviderStore,
   useSearchTypeStore,
@@ -31,8 +32,12 @@ import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useCookies } from 'react-cookie';
 import { settings } from '@/components/common/config/settings';
 import { headerQueryKeys } from './queryKeys/headerQueryKeys';
-import { searchUrlQuery } from '@/components/common/utils/urlUtil';
+import {
+  searchUrlQuery,
+  wishlistUrlQuery,
+} from '@/components/common/utils/urlUtil';
 import { LoginUserInfoDto } from '@/api/data-contracts';
+import { useTranslation } from 'react-i18next';
 
 /**
  * 헤더 컴포넌트의 폼 필드 타입 정의
@@ -81,6 +86,7 @@ type useHeaderReturnType = {
   handleDeleteKeyword: () => void; // 검색창 클리어 함수
   savedKeyword: string; // 저장된 검색어
   user: LoginUserInfoDto | null; // 유저 정보
+  handleWishlistOnClick: () => void; // 위시리스트 아이콘 클릭 처리 함수
 };
 
 /**
@@ -102,6 +108,9 @@ export const useHeader = (): useHeaderReturnType => {
 
   // navigate 훅
   const navigate = useNavigate();
+
+  // i18n 훅
+  const { t } = useTranslation();
 
   // 쿠키 훅: 리프레시 토큰
   const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
@@ -140,8 +149,9 @@ export const useHeader = (): useHeaderReturnType => {
   const { setProvider } = useProviderStore();
   // 검색 종류 전역 상태 저장용 훅
   const { setSearchTypeState } = useSearchTypeStore();
-  // 헤더 실행 상태 전역 상태 저장용 훅
-  const { setIsHeaderExec } = useHeaderExecStore();
+  // confirm dialog 상태 훅
+  const { setIsConfirmDialogOpen, setOnOk, setOnCancel, setConfirmMsg } =
+    useConfirmDialogStore();
 
   // ================================================================================================== react hook form
 
@@ -547,6 +557,37 @@ export const useHeader = (): useHeaderReturnType => {
     }
   };
 
+  /**
+   * 로그인 확인 다이얼로그에서 OK 버튼 클릭 시
+   */
+  const handleConfirmOk = () => {
+    setIsConfirmDialogOpen(false);
+    navigate('/login');
+  };
+
+  /**
+   * 로그인 확인 다이얼로그에서 Cancel 버튼 클릭 시
+   */
+  const handleConfirmCancel = () => {
+    setIsConfirmDialogOpen(false);
+  };
+
+  /**
+   * 위시리스트 아이콘 클릭시 처리
+   */
+  const handleWishlistOnClick = useCallback(() => {
+    if (!user) {
+      setIsConfirmDialogOpen(true);
+      setOnOk(handleConfirmOk);
+      setOnCancel(handleConfirmCancel);
+      setConfirmMsg(t('info.loginConfirmMsg2'));
+      return;
+    } else {
+      // 위시리스트 페이지로 이동
+      navigate(wishlistUrlQuery({ userId: user.userId }));
+    }
+  }, [navigate]);
+
   // ================================================================================================== useEffect
 
   /**
@@ -645,8 +686,6 @@ export const useHeader = (): useHeaderReturnType => {
     if (isAdultParam && isAdultParam === 'true') {
       setValue('adultFlg', true);
     }
-    // 헤더 실행 상태 전역 상태 저장소에 true 설정
-    setIsHeaderExec(true);
   }, []);
 
   /**
@@ -778,5 +817,6 @@ export const useHeader = (): useHeaderReturnType => {
     handleDeleteKeyword: handleDeleteKeyword,
     savedKeyword: savedKeyword.current,
     user: user,
+    handleWishlistOnClick: handleWishlistOnClick,
   };
 };

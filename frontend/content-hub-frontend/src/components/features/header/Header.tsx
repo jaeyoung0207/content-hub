@@ -11,6 +11,7 @@ import { CheckBoxUiM } from '@/components/ui/CheckBoxUiM';
 import { memo, RefObject } from 'react';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { settings } from '@/components/common/config/settings';
+import { FaHeart } from 'react-icons/fa';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
@@ -64,6 +65,7 @@ export const Header = () => {
     handleDeleteKeyword,
     savedKeyword,
     user,
+    handleWishlistOnClick,
   } = useHeader();
 
   // 체크박스용 인자 타입 정의
@@ -107,127 +109,138 @@ export const Header = () => {
   ];
 
   return (
-    <div className="relative z-50 flex justify-between shadow-md">
+    <div className="relative z-50 flex">
       <div className="fixed bg-white">
-        <div className="flex justify-between w-sm lg:w-7xl lg:mt-5 px-3 ">
-          {/* 홈 아이콘 */}
-          <img
-            src={homeIcon}
-            className="w-12 h-12 cursor-pointer"
-            alt="Home"
-            onClick={commonErrorHandler(() => {
-              handleHomeOnClick();
-            })}
-          />
-          <div className="flex items-center">
-            <div className="mr-5 flex items-center">
-              <div className="relative block" ref={autoCompleteRef}>
-                {/* 검색창 */}
-                <SearchTextUi
-                  control={control}
-                  name="keyword"
-                  onClick={commonErrorHandler(handleSearchOnClick)}
-                  onMouseDown={handleKeywordOnKeyDown}
-                  onKeyDown={handleKeywordOnKeyDownEvent}
-                  isFocusedRef={isFocusedRef}
-                  deleteValue={handleDeleteKeyword}
-                />
-                {/* 자동완성창 */}
-                <AutoCompleteBox
-                  autoCompleteList={autoCompleteList}
-                  handleKeywordListOnClick={commonErrorHandler(
-                    handleKeywordListOnClick
-                  )}
-                  currentIndex={currentIndex}
-                  selectRef={selectRef}
-                  handleRemoveSearchHistory={handleRemoveSearchHistory}
-                  searchHistoryisOpen={searchHistoryisOpen}
-                  handleSetCurrentIndex={handleSetCurrentIndex}
-                  savedKeyword={savedKeyword}
-                />
-              </div>
-              {/* 필터 아이콘 */}
-              <div className="ml-3">
-                <div className="relative" ref={filterRef}>
-                  {isFilterOpen ? (
-                    <>
-                      {/* 검은색 필터 아이콘 */}
-                      <BsFilterSquareFill
-                        className="w-9 h-9 mr-1 cursor-pointer"
-                        onClick={commonErrorHandler(handleFilterIconOnClick)}
-                      />
-                      {/* 필터 팝업 */}
-                      <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-2xl z-50 p-4 space-y-4">
-                        {/* 체크박스 */}
-                        <div className="text-xl font-bold mb-2">
-                          {t('info.mediaType')}
-                        </div>
-                        <div className="block mb-2">
-                          {
-                            // 검색 종류 체크박스
-                            // 체크박스 리스트를 map을 통해 순회하며 체크박스와 라벨 컴포넌트를 생성
-                            checkBoxList.map((items, index) => {
-                              return (
-                                <div key={index} className="mb-2">
-                                  <CheckBoxAndLabel<HeaderType>
-                                    label={items.label}
-                                    name={items.name}
-                                    control={control}
-                                    defaultChecked={items.state}
-                                  />
-                                </div>
-                              );
-                            })
-                          }
-                        </div>
-                        {/* 성인물 포함 체크박스 */}
-                        <div>
-                          <div className="text-xl font-bold mb-2">
-                            {t('info.searchAdultContent')}
-                          </div>
-                          <CheckBoxUi
-                            label={t('info.include')}
-                            name={'adultFlg'}
-                            control={control}
-                            defaultChecked={adultFlg}
-                            disabled={settings.isBlockingAdultContent}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    // 하얀색 필터 아이콘
-                    <BsFilterSquare
+        <div className="flex w-sm lg:w-7xl lg:mt-5 px-3 ">
+          <div className="w-[58%] flex items-center mr-5">
+            {/* 홈 아이콘 */}
+            <div className="mr-8">
+              <img
+                src={homeIcon}
+                className="w-12 h-12 cursor-pointer"
+                alt="Home"
+                onClick={commonErrorHandler(() => {
+                  handleHomeOnClick();
+                })}
+              />
+            </div>
+            {/* 위시리스트 아이콘 */}
+            <div className="mr-8">
+              <FaHeart
+                className="w-12 h-12 cursor-pointer"
+                onClick={commonErrorHandler(handleWishlistOnClick)}
+              />
+            </div>
+          </div>
+          <div className="w-[42%] flex items-center">
+            <div className="relative block" ref={autoCompleteRef}>
+              {/* 검색창 */}
+              <SearchTextUi
+                control={control}
+                name="keyword"
+                onClick={commonErrorHandler(handleSearchOnClick)}
+                onMouseDown={handleKeywordOnKeyDown}
+                onKeyDown={handleKeywordOnKeyDownEvent}
+                isFocusedRef={isFocusedRef}
+                deleteValue={handleDeleteKeyword}
+              />
+              {/* 자동완성창 */}
+              <AutoCompleteBox
+                autoCompleteList={autoCompleteList}
+                handleKeywordListOnClick={commonErrorHandler(
+                  handleKeywordListOnClick
+                )}
+                currentIndex={currentIndex}
+                selectRef={selectRef}
+                handleRemoveSearchHistory={handleRemoveSearchHistory}
+                searchHistoryisOpen={searchHistoryisOpen}
+                handleSetCurrentIndex={handleSetCurrentIndex}
+                savedKeyword={savedKeyword}
+              />
+            </div>
+            {/* 필터 아이콘 */}
+            <div className="ml-3">
+              <div className="relative" ref={filterRef}>
+                {isFilterOpen ? (
+                  <>
+                    {/* 검은색 필터 아이콘 */}
+                    <BsFilterSquareFill
                       className="w-9 h-9 mr-1 cursor-pointer"
                       onClick={commonErrorHandler(handleFilterIconOnClick)}
                     />
-                  )}
-                </div>
+                    {/* 필터 팝업 */}
+                    <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-2xl z-50 p-4 space-y-4">
+                      {/* 체크박스 */}
+                      <div className="text-xl font-bold mb-2">
+                        {t('info.mediaType')}
+                      </div>
+                      <div className="block mb-2">
+                        {
+                          // 검색 종류 체크박스
+                          // 체크박스 리스트를 map을 통해 순회하며 체크박스와 라벨 컴포넌트를 생성
+                          checkBoxList.map((items, index) => {
+                            return (
+                              <div key={index} className="mb-2">
+                                <CheckBoxAndLabel<HeaderType>
+                                  label={items.label}
+                                  name={items.name}
+                                  control={control}
+                                  defaultChecked={items.state}
+                                />
+                              </div>
+                            );
+                          })
+                        }
+                      </div>
+                      {/* 성인물 포함 체크박스 */}
+                      <div>
+                        <div className="text-xl font-bold mb-2">
+                          {t('info.searchAdultContent')}
+                        </div>
+                        <CheckBoxUi
+                          label={t('info.include')}
+                          name={'adultFlg'}
+                          control={control}
+                          defaultChecked={adultFlg}
+                          disabled={settings.isBlockingAdultContent}
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // 하얀색 필터 아이콘
+                  <BsFilterSquare
+                    className="w-9 h-9 mr-1 cursor-pointer"
+                    onClick={commonErrorHandler(handleFilterIconOnClick)}
+                  />
+                )}
               </div>
             </div>
-            {user ? (
-              <div className="block w-24">
-                {/* 유저 닉네임 */}
-                <div className="text-[16px] text-yellow-600">
-                  {user.nickname}
+            <div className="ml-3">
+              {user ? (
+                <div className="block w-24">
+                  {/* 유저 닉네임 */}
+                  <div className="text-[16px] text-yellow-600">
+                    {user.nickname}
+                  </div>
+                  {/* 로그아웃 버튼 */}
+                  <div
+                    className="text-[16px] cursor-pointer"
+                    onClick={commonErrorHandler(handleLogoutOnClick)}
+                  >
+                    {t('info.logout')}
+                  </div>
                 </div>
-                {/* 로그아웃 버튼 */}
+              ) : (
+                // 로그인 버튼
                 <div
-                  className="text-[16px] cursor-pointer"
-                  onClick={commonErrorHandler(handleLogoutOnClick)}
+                  className="right-full text-black text-2xl font-normal font-['Inter'] hover:text-shadow-md cursor-pointer"
+                  onClick={commonErrorHandler(() => handleLoginOnClick())}
                 >
-                  {t('info.logout')}
+                  {t('info.login')}
                 </div>
-              </div>
-            ) : (
-              // 로그인 버튼
-              <div
-                className="right-full text-black text-2xl font-normal font-['Inter'] cursor-pointer"
-                onClick={commonErrorHandler(() => handleLoginOnClick())}
-              >
-                {t('info.login')}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
         <div className="mt-4 border-b border-gray-300" />
@@ -301,7 +314,6 @@ const AutoCompleteBox = memo(
     return (
       <>
         {autoCompleteList && autoCompleteList.length !== 0 && (
-          // <div className={`absolute lg:w-sm w-xs max-h-64 overflow-auto right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}>
           <div
             className={`absolute lg:w-sm w-xs h-[${boxHeight}] right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}
           >

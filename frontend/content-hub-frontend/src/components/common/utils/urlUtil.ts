@@ -4,7 +4,6 @@
 type SearchUrlQueryPropsType = {
   keyword?: string; // 검색어
   isAdult?: string; // 성인물 포함 여부
-  // viewMore?: string, // 전체보기 여부
   mediaType?: string; // 미디어 타입
   originalMediaType?: string; // 원본 미디어 타입
   apiId?: string; // API ID
@@ -12,6 +11,7 @@ type SearchUrlQueryPropsType = {
   personId?: number; // 인물 ID
   creditsId?: number; // 캐릭터 ID
   comicsCreditsType?: string; // 만화 크레딧 타입
+  userId?: number; // 유저 ID
 };
 
 /**
@@ -77,4 +77,13 @@ export const characterUrlQuery = ({
   creditsId,
 }: SearchUrlQueryPropsType) => {
   return `/character/${comicsCreditsType}/${creditsId}`;
+};
+
+/**
+ * 위시리스트 화면 URL 쿼리 생성 함수
+ * @param userId 유저 ID
+ * @returns 위시리스트 화면 URL 쿼리 문자열
+ */
+export const wishlistUrlQuery = ({ userId }: SearchUrlQueryPropsType) => {
+  return `/wishlist/${userId}`;
 };

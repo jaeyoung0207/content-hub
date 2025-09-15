@@ -21,7 +21,7 @@ type UseWishlistReturnType = {
 /**
  * 위시리스트 훅
  */
-export const useWishlist = ({
+export const useWishlistUi = ({
   isWishlisted,
   userId,
   originalMediaType,

@@ -1,5 +1,5 @@
 import { RiHeartLine, RiHeartFill } from 'react-icons/ri';
-import { useWishlist } from './hooks/useWishlist';
+import { useWishlistUi } from './hooks/useWishlistUi';
 import { useState } from 'react';
 
 /**
@@ -30,7 +30,7 @@ export const WishlistUi = ({
   mediaType,
 }: WishlistUiPropsType) => {
   // 위시리스트 훅
-  const { addToWishlist, handleOnClickHeart, isExecuting } = useWishlist({
+  const { addToWishlist, handleOnClickHeart, isExecuting } = useWishlistUi({
     isWishlisted,
     userId,
     originalMediaType,

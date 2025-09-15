@@ -10,6 +10,6 @@ export const wishlistQueryKeys = {
     add: (userId: number) => [wishlistMainKey, 'addWishlist', userId] as const,
     delete: (userId: number) =>
       [wishlistMainKey, 'deleteWishlist', userId] as const,
-    // byUser: (userId: string) => [...wishlistQueryKeys.all, userId],
+    list: (userId: number) => ['wishlist', userId] as const,
   },
 };
