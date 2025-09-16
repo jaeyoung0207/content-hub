@@ -61,19 +61,25 @@ export const Wishlist = () => {
       {isLoading ? (
         <LoadingUi />
       ) : (
-        data &&
-        wishlistItems.map((items) => {
-          return (
-            items.resultList && (
-              <DisplayWishlist
-                mediaName={items.mediaName}
-                resultList={items.resultList}
-                handleWishlistDeleteOnClick={handleWishlistDeleteOnClick}
-                isExecuting={isExecuting}
-              />
-            )
-          );
-        })
+        data && (
+          <>
+            <div className="text-4xl font-bold ml-5 mb-10">
+              {t('info.wishlistTitle')}
+            </div>
+            {wishlistItems.map((items) => {
+              return (
+                items.resultList && (
+                  <DisplayWishlist
+                    mediaName={items.mediaName}
+                    resultList={items.resultList}
+                    handleWishlistDeleteOnClick={handleWishlistDeleteOnClick}
+                    isExecuting={isExecuting}
+                  />
+                )
+              );
+            })}
+          </>
+        )
       )}
     </div>
   );
@@ -96,7 +102,7 @@ const DisplayWishlist = ({
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
   return (
     <div className="mb-10">
-      <div className="ml-5 text-4xl font-bold">{mediaName}</div>
+      <div className="ml-5 text-3xl font-bold">{mediaName}</div>
       <div className="ml-5 w-full flex flex-wrap items-start mt-6">
         {resultList.map((items, index) => {
           return (
@@ -123,6 +129,7 @@ const DisplayWishlist = ({
             >
               {/* 썸네일 */}
               <li className="relative flex justify-center items-center">
+                {/* 닫기 버튼 */}
                 <CloseButtonUi
                   modalClose={() => {
                     handleWishlistDeleteOnClick(
@@ -134,6 +141,7 @@ const DisplayWishlist = ({
                   className="absolute top-2 right-2 z-10"
                   disabled={isExecuting}
                 />
+                {/* 썸네일 이미지 */}
                 <img
                   src={
                     items.originalMediaType === MEDIA_TYPE.COMICS

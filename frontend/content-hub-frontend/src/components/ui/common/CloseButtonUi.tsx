@@ -20,15 +20,14 @@ export const CloseButtonUi = ({
   disabled,
 }: CloseButtonPropsType) => {
   return (
-    <button
+    <div
       className={className ? className : 'flex justify-end mr-1 mt-1'}
       onClick={(e) => e.stopPropagation()}
-      disabled={disabled}
     >
       <RiCloseLargeFill
-        className="w-6 h-6 text-white cursor-pointer"
-        onClick={modalClose}
+        className="w-6 h-6 text-black cursor-pointer"
+        onClick={() => !disabled && modalClose()}
       />
-    </button>
+    </div>
   );
 };

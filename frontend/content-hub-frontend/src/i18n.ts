@@ -18,7 +18,7 @@ const resources = {
         comics: '만화',
         movie: '영화',
         drama: '드라마',
-        novel: '소설',
+        variety: '버라이어티',
         beforeSearchMessage: '애니/드라마/영화/만화 통합검색',
         searchPlease: '검색어를 입력하세요',
         viewMore: '전체보기',
@@ -29,6 +29,8 @@ const resources = {
         /* 홈 화면 */
         rankingTitle: '실시간 순위',
         top10: 'TOP 10',
+        /* 위시리스트 화면 */
+        wishlistTitle: '찜 목록',
         /* 전체보기 */
         searchResults: '검색 결과',
         /* 상세 화면 */

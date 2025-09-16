@@ -1,98 +1,71 @@
-import { Control, useForm, useWatch } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { HeaderType } from './useHeaderForm';
 import {
-  useConfirmDialogStore,
-  useHeaderExecStore,
-  useProviderStore,
-  useSearchTypeStore,
-  useUserStore,
-} from '@/components/common/store/globalStateStore';
-import {
-  KeyboardEvent,
   RefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
+  KeyboardEvent,
 } from 'react';
-import { Login } from '@/api/Login';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDebounce } from '@/components/common/hooks/useDebounce';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Common } from '@/api/Common';
 import { Search } from '@/api/Search';
-import { useDebounce } from '@/components/common/hooks/useDebounce';
 import {
   ARROW_DOWN_KEY,
   ARROW_UP_KEY,
   ENTER_KEY,
   ESC_KEY,
-  LOGIN_PROVIDER,
-  REDIRECT_URL,
 } from '@/components/common/constants/constants';
-import { clearUserData } from '@/components/common/utils/clearUtil';
-import { useCookies } from 'react-cookie';
-import { settings } from '@/components/common/config/settings';
-import { headerQueryKeys } from './queryKeys/headerQueryKeys';
-import {
-  searchUrlQuery,
-  wishlistUrlQuery,
-} from '@/components/common/utils/urlUtil';
-import { LoginUserInfoDto } from '@/api/data-contracts';
-import { useTranslation } from 'react-i18next';
+import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
+import { searchUrlQuery } from '@/components/common/utils/urlUtil';
+import { UseFormSetValue } from 'react-hook-form';
 
 /**
- * 헤더 컴포넌트의 폼 필드 타입 정의
+ * 헤더 컴포넌트의 검색 상태와 동작을 관리하는 훅 매개변수 타입
  */
-export type HeaderType = Partial<{
-  // Partial로 감싸서 객체를 각 필드로 풀어서 정의
-  keyword: string;
-  aniFlg?: boolean;
-  comicsFlg?: boolean;
-  movieFlg?: boolean;
-  dramaFlg?: boolean;
-  novelFlg?: boolean;
-  adultFlg?: boolean;
-}>;
-
-/**
- * 헤더 훅 반환 타입
- */
-type useHeaderReturnType = {
-  control: Control<HeaderType>; // react-hook-form의 control 객체
-  handleHomeOnClick: () => void; // 홈 버튼 클릭 처리 함수
-  handleSearchOnClick: () => void; // 검색 버튼 클릭 처리 함수
-  handleLoginOnClick: () => void; // 로그인 버튼 클릭 처리 함수
-  handleLogoutOnClick: () => void; // 로그아웃 버튼 클릭 처리 함수
-  isFilterOpen: boolean; // 필터 박스 오픈 여부
-  handleFilterIconOnClick: () => void; // 필터 아이콘 클릭 처리 함수
-  keyword?: string; // 현재 입력된 검색어
-  aniFlg?: boolean; // 애니메이션 검색 여부
-  comicsFlg?: boolean; // 만화 검색 여부
-  movieFlg?: boolean; // 영화 검색 여부
-  dramaFlg?: boolean; // 드라마 검색 여부
-  novelFlg?: boolean; // 소설 검색 여부
-  adultFlg?: boolean; // 성인물 검색 여부
-  isFocusedRef: RefObject<boolean | null>; // 검색창 포커스 상태 참조
-  filterRef: RefObject<HTMLDivElement | null>; // 필터 박스 참조
-  autoCompleteRef: RefObject<HTMLDivElement | null>; // 자동완성 박스 참조
-  selectRef: RefObject<HTMLLIElement | null>; // 자동완성 검색어 선택 참조
-  autoCompleteList?: string[]; // 자동완성 리스트
-  handleKeywordOnKeyDown: () => void; // 검색어 입력창에서 키다운 이벤트 처리 함수
-  handleKeywordListOnClick: (item: string) => void; // 자동완성 리스트 아이템 클릭 처리 함수
-  currentIndex: number; // 자동완성 박스 포커스 인덱스
-  handleKeywordOnKeyDownEvent: (e: KeyboardEvent) => void; // 자동완성 박스 키보드 이벤트 처리 함수
-  handleRemoveSearchHistory: (index: number) => void; // 검색 이력 삭제 처리 함수
-  searchHistoryisOpen: boolean; // 검색 이력 표시 여부
-  handleSetCurrentIndex: (index: number) => void; // 자동완성 박스 인덱스 설정 함수
-  handleDeleteKeyword: () => void; // 검색창 클리어 함수
-  savedKeyword: string; // 저장된 검색어
-  user: LoginUserInfoDto | null; // 유저 정보
-  handleWishlistOnClick: () => void; // 위시리스트 아이콘 클릭 처리 함수
+type UseHeaderSearchPropsType = HeaderType & {
+  setValue: UseFormSetValue<HeaderType>;
+  setFocus: (name: keyof HeaderType) => void;
 };
 
 /**
- * 헤더 컴포넌트의 상태와 동작을 관리하는 훅
+ * 헤더 컴포넌트의 검색 상태와 동작을 관리하는 훅 반환 타입
  */
-export const useHeader = (): useHeaderReturnType => {
+export type UseHeaderSearchReturnType = {
+  autoCompleteRef: RefObject<HTMLDivElement | null>; // 자동완성 박스 참조
+  selectRef: RefObject<HTMLLIElement | null>; // 자동완성 검색어 선택 참조
+  autoCompleteList?: string[]; // 자동완성 리스트
+  setAutoCompleteList: (list?: string[]) => void; // 자동완성 리스트 설정 함수
+  currentIndex: number; // 자동완성 박스 포커스 인덱스
+  setCurrentIndex: (index: number) => void; // 자동완성 박스 포커스 인덱스 설정 함수
+  savedKeyword: string; // 저장된 검색어
+  searchHistoryisOpen: boolean; // 검색 이력 표시 여부
+  isFocusedRef: RefObject<boolean | null>; // 검색창 포커스 상태 참조
+  isFilterOpen: boolean; // 필터 박스 오픈 여부
+  filterRef: RefObject<HTMLDivElement | null>; // 필터 박스 참조
+  firstLoadRef: RefObject<boolean | null>; // 처음 로드 참조
+  clearAdultFlg: () => void; // 성인물 검색 플래그 해제 함수
+  handleSearchOnClick: () => void; // 검색 버튼 클릭 처리 함수
+  handleKeywordOnKeyDown: () => void; // 검색어 입력창에서 키다운 이벤트 처리 함수
+  handleKeywordListOnClick: (item: string) => void; // 자동완성 리스트 아이템 클릭 처리 함수
+  handleKeywordOnKeyDownEvent: (e: KeyboardEvent) => void; // 자동완성 박스 키보드 이벤트 처리 함수
+  handleRemoveSearchHistory: (index: number) => void; // 검색 이력 삭제 처리 함수
+  handleSetCurrentIndex: (index: number) => void; // 자동완성 박스 인덱스 설정 함수
+  handleDeleteKeyword: () => void; // 검색창 클리어 함수
+  handleFilterIconOnClick: () => void; // 필터 아이콘 클릭 처리 함수
+};
+
+/**
+ * 헤더 컴포넌트의 검색 상태와 동작을 관리하는 훅
+ */
+export const useHeaderSearch = ({
+  keyword,
+  adultFlg,
+  setValue,
+  setFocus,
+}: UseHeaderSearchPropsType): UseHeaderSearchReturnType => {
   // ================================================================================================== react hook
 
   // URL query string 값을 가져오기 위한 useSearchParams 훅
@@ -108,14 +81,6 @@ export const useHeader = (): useHeaderReturnType => {
 
   // navigate 훅
   const navigate = useNavigate();
-
-  // i18n 훅
-  const { t } = useTranslation();
-
-  // 쿠키 훅: 리프레시 토큰
-  const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
-  // 쿠키 훅: provider 정보
-  const [providerCookie] = useCookies<string>(['provider']);
 
   // 필터 박스 오픈 판단
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -141,74 +106,12 @@ export const useHeader = (): useHeaderReturnType => {
   // 처음 로드 참조
   const firstLoadRef = useRef<boolean>(false);
 
-  // ================================================================================================== zustand
-
-  // 유저 정보 전역 상태 저장용 훅
-  const { user, setUser } = useUserStore();
-  // provider 정보 전역 상태 저장용 훅
-  const { setProvider } = useProviderStore();
-  // 검색 종류 전역 상태 저장용 훅
-  const { setSearchTypeState } = useSearchTypeStore();
-  // confirm dialog 상태 훅
-  const { setIsConfirmDialogOpen, setOnOk, setOnCancel, setConfirmMsg } =
-    useConfirmDialogStore();
-
-  // ================================================================================================== react hook form
-
-  // 초기값 설정
-  const defaultValue = {
-    keyword: '',
-    aniFlg: true,
-    comicsFlg: true,
-    movieFlg: true,
-    dramaFlg: true,
-    novelFlg: true,
-    adultFlg: false,
-  };
-
-  // react-hook-form 훅
-  const { control, setValue, setFocus, reset } = useForm<HeaderType>({
-    // } = useForm<HeaderSchema>({
-    // resolver: zodResolver(useHeaderSchema()),
-    defaultValues: defaultValue,
-  });
-
-  // react-hook-form의 useWatch 훅을 사용하여 폼 필드 값 감시
-  // 각 필드의 값을 감시하여 상태를 업데이트
-  const keyword = useWatch({
-    control,
-    name: 'keyword',
-  });
-  const aniFlg = useWatch({
-    control,
-    name: 'aniFlg',
-  });
-  const dramaFlg = useWatch({
-    control,
-    name: 'dramaFlg',
-  });
-  const movieFlg = useWatch({
-    control,
-    name: 'movieFlg',
-  });
-  const comicsFlg = useWatch({
-    control,
-    name: 'comicsFlg',
-  });
-  const novelFlg = useWatch({
-    control,
-    name: 'novelFlg',
-  });
-
-  const adultFlg = useWatch({
-    control,
-    name: 'adultFlg',
-  });
-
   // ================================================================================================== custom hook
 
   // 검색어 입력지연 디바운스
   const debouncedKeyword = useDebounce(keyword, 300);
+
+  // ================================================================================================== zustand
 
   // ================================================================================================== react query
 
@@ -218,8 +121,6 @@ export const useHeader = (): useHeaderReturnType => {
   const commonApi = new Common();
   // 검색 API 인스턴스 생성
   const searchApi = new Search();
-  // 로그인 API 인스턴스 생성
-  const loginApi = new Login();
 
   /**
    * 성인물 검색 플래그 설정 API 호출
@@ -239,36 +140,6 @@ export const useHeader = (): useHeaderReturnType => {
   });
 
   // ================================================================================================== function
-
-  /**
-   * 초기화 처리
-   */
-  const resetAll = () => {
-    // 성인물 검색 플래그 초기화
-    clearAdultFlg();
-    // 각 필드값 초기화
-    reset();
-    // 자동완성 리스트 초기화
-    setAutoCompleteList(undefined);
-    // 자동완성 박스 포커스 인덱스 초기화
-    setCurrentIndex(-1);
-    // 캐시에서 모든 쿼리 제거
-    queryClient.removeQueries();
-    // 처음 로드 참조를 true로 설정
-    firstLoadRef.current = true;
-  };
-
-  /**
-   * 홈 버튼 클릭시 처리
-   */
-  const handleHomeOnClick = useCallback(() => {
-    // 초기화 처리
-    resetAll();
-    // 홈으로 이동
-    navigate('/');
-    // 포커스 설정
-    setFocus('keyword');
-  }, [resetAll, navigate, setFocus]);
 
   /**
    * 성인물 검색 플래그 설정
@@ -346,7 +217,7 @@ export const useHeader = (): useHeaderReturnType => {
    * 검색 이력에 검색어 저장 처리
    * @param selectedKeyword 선택된 자동완성 검색어
    */
-  const saveSearchHistory = (selectedKeyword: string) => {
+  const saveSearchHistory = useCallback((selectedKeyword: string) => {
     // 검색 이력 로컬스토리지에서 취득
     const keywords = localStorage.getItem('keywordList') ?? '';
     // 검색어 리스트로 변환
@@ -362,7 +233,7 @@ export const useHeader = (): useHeaderReturnType => {
     keywordArray.unshift(selectedKeyword);
     // 검색 이력 로컬스토리지에 저장
     localStorage.setItem('keywordList', keywordArray.join('\t'));
-  };
+  }, []);
 
   /**
    * 자동완성 검색어 클릭시 처리
@@ -446,31 +317,6 @@ export const useHeader = (): useHeaderReturnType => {
     },
     [setAutoCompleteList, setFocus]
   );
-
-  /**
-   * 로그인 클릭시 처리
-   */
-  const handleLoginOnClick = useCallback(() => {
-    // URL 생성
-    const searchUrl = location.pathname + location.search;
-    // URL 저장
-    sessionStorage.setItem(REDIRECT_URL, searchUrl);
-    // 로그인 페이지로 이동
-    navigate('/login');
-  }, [location.pathname, location.search, navigate]);
-
-  /**
-   * 로그아웃 클릭시 처리
-   */
-  const handleLogoutOnClick = useCallback(() => {
-    // URL 생성
-    // const searchUrl = location.pathname + `?keyword=${keyword}&isAdult=${adultFlg}`;
-    const searchUrl = location.pathname + location.search;
-    // URL 저장
-    sessionStorage.setItem(REDIRECT_URL, searchUrl);
-    // 로그아웃 페이지로 이동
-    navigate('/logout');
-  }, [keyword, adultFlg, navigate]);
 
   /**
    * 필터 아이콘 클릭시 처리
@@ -557,37 +403,6 @@ export const useHeader = (): useHeaderReturnType => {
     }
   };
 
-  /**
-   * 로그인 확인 다이얼로그에서 OK 버튼 클릭 시
-   */
-  const handleConfirmOk = () => {
-    setIsConfirmDialogOpen(false);
-    navigate('/login');
-  };
-
-  /**
-   * 로그인 확인 다이얼로그에서 Cancel 버튼 클릭 시
-   */
-  const handleConfirmCancel = () => {
-    setIsConfirmDialogOpen(false);
-  };
-
-  /**
-   * 위시리스트 아이콘 클릭시 처리
-   */
-  const handleWishlistOnClick = useCallback(() => {
-    if (!user) {
-      setIsConfirmDialogOpen(true);
-      setOnOk(handleConfirmOk);
-      setOnCancel(handleConfirmCancel);
-      setConfirmMsg(t('info.loginConfirmMsg2'));
-      return;
-    } else {
-      // 위시리스트 페이지로 이동
-      navigate(wishlistUrlQuery({ userId: user.userId }));
-    }
-  }, [navigate]);
-
   // ================================================================================================== useEffect
 
   /**
@@ -596,82 +411,8 @@ export const useHeader = (): useHeaderReturnType => {
   /* eslint-disable react-hooks/exhaustive-deps */
   // 최초 한번만 실행돼야 하므로 의존성 배열 미지정
   useEffect(() => {
-    // 맨 처음 접속시에는 유저정보 초기화
-    clearUserData();
     // 처음 로드시 true
     firstLoadRef.current = true;
-    // csrf token 초기화 API 호출
-    queryClient.fetchQuery({
-      queryKey: headerQueryKeys.getCsrfToken(),
-      queryFn: async () => {
-        return await commonApi.getCsrfToken();
-      },
-    });
-    // 재로그인 처리
-    if (refreshTokenCookie.refreshToken) {
-      // 쿠키의 provider가 NAVER인 경우
-      if (providerCookie.provider === LOGIN_PROVIDER.NAVER) {
-        queryClient.fetchQuery({
-          queryKey: headerQueryKeys.login(LOGIN_PROVIDER.NAVER),
-          queryFn: async () => {
-            // 네이버 로그인 정보 업데이트 API 호출
-            const updateResponse = (await loginApi.updateNaverLoginInfo()).data;
-            if (updateResponse && updateResponse.userInfo) {
-              // 유저정보 저장
-              setUser(updateResponse.userInfo!);
-              // provider 저장
-              setProvider(LOGIN_PROVIDER.NAVER);
-              // 액세스 토큰을 sessionStorage에 저장
-              sessionStorage.setItem(
-                'accessToken',
-                updateResponse.accessToken!
-              );
-              // JWT를 localStorage에 저장
-              sessionStorage.setItem('jwt', updateResponse.jwt!);
-              // 만료시각을 sessionStorage에 저장
-              sessionStorage.setItem('expireDate', updateResponse.expireDate!);
-            } else {
-              clearUserData();
-            }
-            return updateResponse;
-          },
-        });
-      }
-      // 쿠키의 provider가 KAKAO인 경우
-      else if (providerCookie.provider === LOGIN_PROVIDER.KAKAO) {
-        queryClient.fetchQuery({
-          queryKey: headerQueryKeys.login(LOGIN_PROVIDER.KAKAO),
-          queryFn: async () => {
-            // 카카오 로그인 정보 업데이트 API 호출
-            const updateResponse = (
-              await loginApi.updateKakaoLoginInfo({
-                client_id: settings.kakaoClientId,
-              })
-            ).data;
-            if (updateResponse && updateResponse.userInfo) {
-              // 유저정보 저장
-              setUser(updateResponse.userInfo!);
-              // provider 저장
-              setProvider(LOGIN_PROVIDER.KAKAO);
-              // 액세스 토큰을 sessionStorage에 저장
-              sessionStorage.setItem(
-                'accessToken',
-                updateResponse.accessToken!
-              );
-              // JWT를 localStorage에 저장
-              sessionStorage.setItem('jwt', updateResponse.jwt!);
-              // 만료시각을 sessionStorage에 저장
-              sessionStorage.setItem('expireDate', updateResponse.expireDate!);
-            } else {
-              clearUserData();
-            }
-            return updateResponse;
-          },
-        });
-      }
-    }
-    // 초기화
-    // resetAll();
     // keyword 쿼리스트링이 있는 경우 설정(URL직접 입력 고려)
     if (keywordParam) {
       setValue('keyword', keywordParam);
@@ -724,13 +465,12 @@ export const useHeader = (): useHeaderReturnType => {
     }
   }, [debouncedKeyword]);
 
-  /**
-   * 검색 종류 제어
-   * 검색 종류의 체크 상태를 검색 종류 전역 상태에 설정(검색 훅에서 사용하기 위함)
-   */
+  // 자동완성 스크롤 조정
   useEffect(() => {
-    setSearchTypeState(aniFlg!, dramaFlg!, movieFlg!, comicsFlg!, novelFlg!);
-  }, [aniFlg, dramaFlg, movieFlg, comicsFlg, novelFlg]);
+    // 자동완성 검색어 li태그에 ref를 참조
+    // scrollIntoView() 메서드를 호출하여 해당 요소가 화면에 보이도록 스크롤(부드럽게 움직임, 대상 요소가 수직 스크롤 가운데 오도록)
+    selectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [currentIndex]);
 
   /**
    * 마우스 클릭/키보드 키다운 이벤트
@@ -778,45 +518,29 @@ export const useHeader = (): useHeaderReturnType => {
     };
   }, []);
 
-  // 자동완성 스크롤 조정
-  useEffect(() => {
-    // 자동완성 검색어 li태그에 ref를 참조
-    // scrollIntoView() 메서드를 호출하여 해당 요소가 화면에 보이도록 스크롤(부드럽게 움직임, 대상 요소가 수직 스크롤 가운데 오도록)
-    selectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, [currentIndex]);
-
   // ================================================================================================== return
 
   return {
-    control: control,
-    handleHomeOnClick: handleHomeOnClick,
-    handleSearchOnClick: handleSearchOnClick,
-    handleLoginOnClick: handleLoginOnClick,
-    handleLogoutOnClick: handleLogoutOnClick,
-    isFilterOpen: isFilterOpen,
-    handleFilterIconOnClick: handleFilterIconOnClick,
-    keyword: keyword,
-    aniFlg: aniFlg,
-    comicsFlg: comicsFlg,
-    movieFlg: movieFlg,
-    dramaFlg: dramaFlg,
-    novelFlg: novelFlg,
-    adultFlg: adultFlg,
-    isFocusedRef: isFocusedRef,
-    filterRef: filterRef,
     autoCompleteRef: autoCompleteRef,
     selectRef: selectRef,
     autoCompleteList: autoCompleteList,
+    setAutoCompleteList: setAutoCompleteList,
+    currentIndex: currentIndex,
+    setCurrentIndex: setCurrentIndex,
+    savedKeyword: savedKeyword.current,
+    searchHistoryisOpen: searchHistoryisOpen,
+    isFocusedRef: isFocusedRef,
+    isFilterOpen: isFilterOpen,
+    filterRef: filterRef,
+    firstLoadRef: firstLoadRef,
+    clearAdultFlg: clearAdultFlg,
+    handleSearchOnClick: handleSearchOnClick,
     handleKeywordOnKeyDown: handleKeywordOnKeyDown,
     handleKeywordListOnClick: handleKeywordListOnClick,
-    currentIndex: currentIndex,
     handleKeywordOnKeyDownEvent: handleKeywordOnKeyDownEvent,
     handleRemoveSearchHistory: handleRemoveSearchHistory,
-    searchHistoryisOpen: searchHistoryisOpen,
     handleSetCurrentIndex: handleSetCurrentIndex,
     handleDeleteKeyword: handleDeleteKeyword,
-    savedKeyword: savedKeyword.current,
-    user: user,
-    handleWishlistOnClick: handleWishlistOnClick,
+    handleFilterIconOnClick: handleFilterIconOnClick,
   };
 };

@@ -54,7 +54,7 @@ export const SearchMore = memo(
       } else if (mediaType === MEDIA_TYPE.COMICS) {
         return 'info.comics';
       } else {
-        return 'info.novel';
+        return 'info.variety';
       }
     };
 

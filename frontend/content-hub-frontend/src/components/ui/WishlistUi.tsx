@@ -7,7 +7,7 @@ import { useState } from 'react';
  */
 export type WishlistUiPropsType = {
   isWishlisted: boolean;
-  userId: number;
+  userId?: number;
   originalMediaType: string;
   apiId: number;
   title: string;

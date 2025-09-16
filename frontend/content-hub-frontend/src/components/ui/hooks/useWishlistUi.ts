@@ -63,11 +63,11 @@ export const useWishlistUi = ({
    * 위시리스트 추가 뮤테이션
    */
   const addWishlistMutation = useMutation({
-    mutationKey: wishlistQueryKeys.wishlist.add(userId),
+    mutationKey: wishlistQueryKeys.wishlist.add(userId!),
     mutationFn: async () =>
       (
         await wishlistApi.saveWishlist({
-          userId: userId,
+          userId: userId!,
           originalMediaType: originalMediaType,
           apiId: String(apiId),
           title: title,
@@ -108,11 +108,11 @@ export const useWishlistUi = ({
    * 위시리스트 삭제 뮤테이션
    */
   const deleteWishlistMutation = useMutation({
-    mutationKey: wishlistQueryKeys.wishlist.delete(userId),
+    mutationKey: wishlistQueryKeys.wishlist.delete(userId!),
     mutationFn: async () =>
       (
         await wishlistApi.deleteWishlist({
-          userId: userId,
+          userId: userId!,
           originalMediaType: originalMediaType,
           apiId: String(apiId),
         })
@@ -194,7 +194,7 @@ export const useWishlistUi = ({
     if (userId) {
       setAddToWishlist(isWishlisted);
     }
-  }, [isWishlisted]);
+  }, [isWishlisted, userId]);
 
   // ================================================================================================== return
 

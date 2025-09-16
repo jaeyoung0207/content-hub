@@ -60,11 +60,12 @@ export const Home = () => {
         ) : (
           data && (
             <>
-              <h2 className="text-3xl font-bold mb-10">
+              <div className="text-4xl font-bold mb-10">
                 {t('info.rankingTitle')}
-              </h2>
-              {contentRankings.map((ranking) => (
+              </div>
+              {contentRankings.map((ranking, index) => (
                 <DisplayRankings
+                  key={index}
                   title={ranking.title}
                   items={ranking.items}
                   user={user}
@@ -93,7 +94,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
   return (
     <div className="block mb-10">
       {/* 각 랭킹 타이틀 */}
-      <div className="flex items-start text-2xl font-bold mb-5">{title}</div>
+      <div className="flex items-start text-3xl font-bold mb-5">{title}</div>
       <div className="whitespace-nowrap flex overflow-x-auto not-hover:scrollbar-default">
         {items.map((items, index) => {
           // 썸네일 이미지
@@ -149,7 +150,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                     originalMediaType={items.originalMediaType!}
                     apiId={Number(items.apiId)}
                     title={items.title!}
-                    userId={user?.userId!}
+                    userId={user?.userId}
                     isWishlisted={items.wishlisted!}
                     thumbnailImageUrl={items.thumbnailImageUrl!}
                     mediaType={items.mediaType}

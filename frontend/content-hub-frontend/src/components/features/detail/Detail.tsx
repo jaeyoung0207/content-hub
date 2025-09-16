@@ -195,7 +195,7 @@ export const Detail = memo(() => {
                     originalMediaType={originalMediaType!}
                     apiId={Number(data.id)}
                     title={title!}
-                    userId={user?.userId!}
+                    userId={user?.userId}
                     isWishlisted={data.wishlisted!}
                     genreIds={data.genreIds}
                     thumbnailImageUrl={data.backdropPath!}

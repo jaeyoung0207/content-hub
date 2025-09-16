@@ -60,14 +60,14 @@ export type useSearchTypeStoreType = {
     movieFlg: boolean;
     dramaFlg: boolean;
     comicsFlg: boolean;
-    novelFlg: boolean;
+    varietyFlg: boolean;
   };
   setSearchTypeState: (
     aniFlg: boolean,
     movieFlg: boolean,
     dramaFlg: boolean,
     comicsFlg: boolean,
-    novelFlg: boolean
+    varietyFlg: boolean
   ) => void;
 };
 
@@ -135,16 +135,16 @@ export const useSearchTypeStore = create<useSearchTypeStoreType>((set) => ({
     movieFlg: true,
     dramaFlg: true,
     comicsFlg: true,
-    novelFlg: true,
+    varietyFlg: true,
   },
-  setSearchTypeState: (aniFlg, dramaFlg, movieFlg, comicsFlg, novelFlg) =>
+  setSearchTypeState: (aniFlg, dramaFlg, movieFlg, comicsFlg, varietyFlg) =>
     set(() => ({
       searchTypeState: {
         aniFlg: aniFlg,
         dramaFlg: dramaFlg,
         movieFlg: movieFlg,
         comicsFlg: comicsFlg,
-        novelFlg: novelFlg,
+        varietyFlg: varietyFlg,
       },
     })),
 }));

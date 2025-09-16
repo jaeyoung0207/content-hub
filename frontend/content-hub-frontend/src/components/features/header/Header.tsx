@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import homeIcon from '@assets/icons/home.png';
 import { SearchTextUi } from '@/components/ui/SearchTextUi';
-import { HeaderType, useHeader } from './useHeader';
+import { useHeader } from './hooks/useHeader';
 import { CheckBoxUi } from '@/components/ui/CheckBoxUi';
 import { BsFilterSquare, BsFilterSquareFill } from 'react-icons/bs';
 import { FieldValues, Path } from 'react-hook-form';
@@ -12,6 +12,7 @@ import { memo, RefObject } from 'react';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { settings } from '@/components/common/config/settings';
 import { FaHeart } from 'react-icons/fa';
+import { HeaderType } from './hooks/useHeaderForm';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
@@ -76,16 +77,16 @@ export const Header = () => {
   };
 
   // name의 타입이 Path<T>이기 때문에, T가 무엇인지 정의
-  type CheckboxType = {
+  type CheckBoxType = {
     aniFlg: boolean;
     dramaFlg: boolean;
     movieFlg: boolean;
     comicsFlg: boolean;
-    novelFlg: boolean;
+    varietyFlg: boolean;
   };
 
   // 검색 종류 체크박스용 인자값 리스트
-  const checkBoxList: CheckBoxProps<CheckboxType>[] = [
+  const checkBoxList: CheckBoxProps<CheckBoxType>[] = [
     {
       label: 'info.animation',
       name: 'aniFlg',
