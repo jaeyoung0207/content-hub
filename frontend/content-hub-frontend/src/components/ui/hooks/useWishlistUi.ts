@@ -5,9 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { wishlistQueryKeys } from '@/components/features/wishlist/queryKeys/wishlistQueryKeys';
 import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
-import { useConfirmDialogStore } from '@/components/common/store/globalStateStore';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
 
 /**
  * 위시리스트 훅 반환 타입
@@ -39,9 +39,6 @@ export const useWishlistUi = ({
   // navigate 훅
   const navigate = useNavigate();
 
-  // transition 훅
-  const { t } = useTranslation();
-
   // Wishlist API 인스턴스
   const wishlistApi = new Wishlist();
 
@@ -52,10 +49,6 @@ export const useWishlistUi = ({
   const [isExecuting, setIsExecuting] = useState(false);
 
   // ================================================================================================== zustand
-
-  // confirm dialog 상태 훅
-  const { setIsConfirmDialogOpen, setOnOk, setOnCancel, setConfirmMsg } =
-    useConfirmDialogStore();
 
   // ================================================================================================== mutation
 
@@ -148,30 +141,13 @@ export const useWishlistUi = ({
   // ================================================================================================== function
 
   /**
-   * 로그인 확인 다이얼로그에서 OK 버튼 클릭 시
-   */
-  const handleConfirmOk = () => {
-    setIsConfirmDialogOpen(false);
-    navigate('/login');
-  };
-
-  /**
-   * 로그인 확인 다이얼로그에서 Cancel 버튼 클릭 시
-   */
-  const handleConfirmCancel = () => {
-    setIsConfirmDialogOpen(false);
-  };
-
-  /**
    * 하트 아이콘 클릭 핸들러
    * 스로틀을 적용하여 중복 클릭 방지
    */
   const handleOnClickHeart = throttle(() => {
     if (!userId) {
-      setIsConfirmDialogOpen(true);
-      setOnOk(handleConfirmOk);
-      setOnCancel(handleConfirmCancel);
-      setConfirmMsg(t('info.loginConfirmMsg2'));
+      // 로그인 확인 다이얼로그 표시
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
       return;
     }
     if (isExecuting) {

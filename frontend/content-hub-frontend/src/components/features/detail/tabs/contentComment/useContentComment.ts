@@ -33,12 +33,10 @@ import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import {
-  INFINITE_SCROLL_THROTTLE_DELAY,
-  REDIRECT_URL,
-} from '@/components/common/constants/constants';
+import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/constants';
 import throttle from 'lodash/throttle';
 import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
+import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -55,9 +53,6 @@ type useContentCommentReturnType = {
   hasNextPage: boolean; // 다음 페이지가 있는지 여부
   isFetchingNextPage: boolean; // 다음 페이지를 가져오는 중인지 여부
   totalElements: number; // 코멘트 총 개수
-  isLoginConfirmOpen: boolean; // 로그인 확인 모달 열림 여부
-  handleLoginConfirmOk: () => void; // 로그인 확인 모달에서 확인 버튼 클릭 시 처리 함수
-  handleLoginConfirmCancel: () => void; // 로그인 확인 모달에서 취소 버튼 클릭 시 처리 함수
   isDeleteConfirmOpen: boolean; // 삭제 확인 모달 열림 여부
   handleDeleteConfirmOk: () => void; // 삭제 확인 모달에서 확인 버튼 클릭 시 처리 함수
   handleDeleteConfirmCancel: () => void; // 삭제 확인 모달에서 취소 버튼 클릭 시 처리 함수
@@ -106,8 +101,6 @@ export const useContentComment = (
   );
   // 코멘트 수정 가능 상태
   const [isCommentEditable, setIsCommentEditable] = useState(false);
-  // 로그인 확인 모달 상태
-  const [isLoginConfirmOpen, setIsLoginConfirmOpen] = useState(false);
   // 삭제 확인 모달 상태
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   // 로그인한 유저의 코멘트 여부 상태
@@ -163,7 +156,6 @@ export const useContentComment = (
   // API 인스턴스 생성
   const detailApi = new Detail();
 
-  // useInfiniteQuery의 query key
   // API ID
   const apiId = detailResult.id!.toString();
 
@@ -420,7 +412,7 @@ export const useContentComment = (
   };
 
   /**
-   * 코멘트 작성 버튼 클릭 시 로그인 확인 모달을 열도록 설정
+   * 코멘트 입력란 클릭 시 로그인 확인 모달을 열도록 설정
    */
   const handleCommentOnClick = () => {
     // 유저가 로그인하지 않은 경우
@@ -428,30 +420,8 @@ export const useContentComment = (
       // 코멘트 작성란의 포커스 해제
       textAreaRef.current?.blur();
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
-  };
-
-  /**
-   * 로그인 확인 모달에서 확인 버튼 클릭 시 로그인 페이지로 이동
-   */
-  const handleLoginConfirmOk = () => {
-    // 로그인 확인 모달 닫기
-    setIsLoginConfirmOpen(false);
-    // URL 생성
-    const searchUrl = location.pathname + location.search;
-    // URL 저장
-    sessionStorage.setItem(REDIRECT_URL, searchUrl);
-    // 로그인 페이지로 이동
-    navigate('/login');
-  };
-
-  /**
-   * 로그인 확인 모달에서 취소 버튼 클릭 시 모달 닫기
-   */
-  const handleLoginConfirmCancel = () => {
-    // 로그인 확인 모달 닫기
-    setIsLoginConfirmOpen(false);
   };
 
   /**
@@ -461,7 +431,7 @@ export const useContentComment = (
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     } else {
       // 코멘트 번호를 Ref에저장
       commentIdRef.current = commentId;
@@ -503,7 +473,7 @@ export const useContentComment = (
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     } else {
       // 코멘트 저장 API 호출
       handleSubmit(async (data) => {
@@ -523,7 +493,7 @@ export const useContentComment = (
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     } else {
       // 코멘트 수정 API 호출
       handleSubmit(async (data) => {
@@ -542,7 +512,7 @@ export const useContentComment = (
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     } else {
       // 아직 isCommentEditable가 안바뀌었으므로 false로 판정
       // 해당 코멘트관련 데이터 셋팅
@@ -575,7 +545,7 @@ export const useContentComment = (
     // 유저가 로그인하지 않은 경우
     if (!user) {
       // 로그인 확인 모달 열기
-      setIsLoginConfirmOpen(true);
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     } else {
       // 코멘트 삭제 API 호출
       await deleteComment(commentId);
@@ -700,9 +670,6 @@ export const useContentComment = (
     isFetchingNextPage: isFetchingNextPage,
     setObserveTarget: setObserveTarget,
     totalElements: totalElements,
-    isLoginConfirmOpen: isLoginConfirmOpen,
-    handleLoginConfirmOk: handleLoginConfirmOk,
-    handleLoginConfirmCancel: handleLoginConfirmCancel,
     textAreaRef: textAreaRef,
     isMyComment: isMyComment,
     comment: comment,

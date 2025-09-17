@@ -43,9 +43,6 @@ export const ContentComment = ({
     isFetchingNextPage,
     setObserveTarget,
     totalElements,
-    isLoginConfirmOpen,
-    handleLoginConfirmOk,
-    handleLoginConfirmCancel,
     textAreaRef,
     isMyComment,
     comment,
@@ -116,16 +113,6 @@ export const ContentComment = ({
             </div>
           )
       }
-
-      {/* 로그인 확인 다이얼로그 */}
-      {isLoginConfirmOpen && (
-        <ConfirmModalUi
-          isOpen={isLoginConfirmOpen}
-          onOk={handleLoginConfirmOk}
-          onCancel={handleLoginConfirmCancel}
-          confirmMsg={t('info.loginConfirmMsg2')}
-        />
-      )}
 
       {/* 삭제 확인 다이얼로그 */}
       {isDeleteConfirmOpen && (
