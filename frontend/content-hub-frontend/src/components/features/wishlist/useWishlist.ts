@@ -6,7 +6,9 @@ import {
 } from '@/api/data-contracts';
 import { wishlistQueryKeys } from './queryKeys/wishlistQueryKeys';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 
 /**
  * useWishlist 훅 반환 타입
@@ -29,8 +31,16 @@ type UseWishlistReturnType = {
 export const useWishlist = (userId: number): UseWishlistReturnType => {
   // ================================================================================================== react hook
 
+  // navigate 훅
+  const navigate = useNavigate();
+
   // 실행 중 상태
   const [isExecuting, setIsExecuting] = useState(false);
+
+  // ================================================================================================== zustand
+
+  // user 전역 상태 훅
+  const { user } = useUserStore();
 
   // ================================================================================================== react query
 
@@ -114,6 +124,18 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
       title: title,
     });
   };
+
+  // ================================================================================================== useEffect
+
+  /**
+   * user정보가 없으면 홈으로 이동
+   */
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
+  }, [user, navigate]);
 
   // ================================================================================================== return
 
