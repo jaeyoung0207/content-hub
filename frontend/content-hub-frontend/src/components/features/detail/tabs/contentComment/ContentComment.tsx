@@ -46,6 +46,7 @@ export const ContentComment = ({
     textAreaRef,
     isMyComment,
     comment,
+    starRating,
     isCommentEditable,
     isDeleteConfirmOpen,
     handleDeleteOnClick,
@@ -74,6 +75,8 @@ export const ContentComment = ({
               <StarRatingUi
                 name="starRating"
                 control={control}
+                isStarRatingEditable={true}
+                selectedStarRating={isCommentEditable ? starRating : undefined}
                 starRatingErrorMsg={starRatingErrorMsg}
               />
               {/* 코멘트 입력 UI */}
@@ -125,7 +128,7 @@ export const ContentComment = ({
       )}
       {/* 코멘트 수 */}
       <div className="ml-5 mr-5 mb-3 flex justify-items-start border-b border-gray-300 text-2xl font-bold">
-        평가 {totalElements} 개
+        {t('info.totalReviewCount', { count: totalElements })}
       </div>
       {/* 코멘트 목록 */}
       <div className="mt-3 ml-10 mr-10">
@@ -138,6 +141,7 @@ export const ContentComment = ({
                     <StarRatingUi
                       name="starRating"
                       control={control}
+                      isStarRatingEditable={false}
                       selectedStarRating={items.starRating}
                     />
                     {/* 별점 표시 */}

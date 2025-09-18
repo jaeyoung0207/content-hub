@@ -6,7 +6,6 @@ import { wishlistQueryKeys } from '@/components/features/wishlist/queryKeys/wish
 import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
 
 /**

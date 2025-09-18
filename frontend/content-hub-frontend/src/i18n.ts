@@ -45,9 +45,6 @@ const resources = {
         staff: '스태프',
         role: ' 역',
         loginConfirmMsg2: '로그인이 필요합니다. 로그인 하시겠습니까?',
-        /* 코멘트 관련 */
-        deleteConfirmMsg: '코멘트를 삭제하시겠습니까?',
-        requireComment: '코멘트를 입력해 주세요.',
         /* 버튼 */
         search: '검색',
         save: '등록',
@@ -87,6 +84,13 @@ const resources = {
         userStarRating: '유저 평점',
         ableToWatching: '볼 수 있는 곳',
         seeMore: '더보기',
+        /* 코멘트 정보 */
+        deleteConfirmMsg: '코멘트를 삭제하시겠습니까?',
+        requireComment: '코멘트를 입력해 주세요.',
+        saveCommentSuccess: '코멘트가 등록되었습니다.',
+        updateCommentSuccess: '코멘트가 수정되었습니다.',
+        deleteCommentSuccess: '코멘트가 삭제되었습니다.',
+        totalReviewCount: '평가 {{count}} 개',
         /* 인물 정보 */
         singleCast: '출연작',
         singleCrew: '제작 참여작',
@@ -122,6 +126,9 @@ const resources = {
         noCastInfo: '출연진 정보가 없습니다.',
         noCharacterInfo: '캐릭터 정보가 없습니다.',
         noStaffInfo: '제작진 정보가 없습니다.',
+      },
+      validation: {
+        starRatingError: '별점을 입력해 주세요.',
       },
       error: {
         problemsOccurred: '문제가 발생했습니다.',

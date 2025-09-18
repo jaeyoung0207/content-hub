@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues } from 'react-hook-form';
 import { BsStar, BsStarHalf, BsStarFill } from 'react-icons/bs';
 import { FormFieldProps } from './common/FormFieldProps';
@@ -9,7 +9,8 @@ import { ErrorMessageUi } from './common/ErrorMessageUi';
  * @template T - react-hook-form의 FieldValues 타입
  */
 type StarRatingUiProps<T extends FieldValues> = FormFieldProps<T> & {
-  selectedStarRating?: number; // 선택된 별점
+  isStarRatingEditable?: boolean; // 별점 수정 가능 여부
+  selectedStarRating?: number; // 선택된 별점 (코멘트 목록에서 기존 별점 표시용)
   starRatingErrorMsg?: string; // 별점 관련 에러 메시지
 };
 
@@ -22,26 +23,42 @@ type StarRatingUiProps<T extends FieldValues> = FormFieldProps<T> & {
 export const StarRatingUi = <T extends FieldValues>({
   name,
   control,
+  isStarRatingEditable,
   selectedStarRating,
   starRatingErrorMsg,
 }: StarRatingUiProps<T>) => {
   // 별점 클릭시 고정하기 위한 상태값
   const [isSelected, setIsSelected] = useState(false);
   // 이전 별점 저장용 참조값
-  const previousSelected = useRef(0);
+  const previousSelected = useRef<number>(0);
   // 별점 스타일 정의
-  // 에러 메시지가 있는 경우 빨간색, 없는 경우 노란색
   const starStyle = ` text-2xl ${starRatingErrorMsg ? 'text-red-500' : 'text-yellow-300'}`;
-  // const starStyle = "text-2xl text-yellow-300";
+  // 별점 단위
+  const starRatingUnit = 0.5;
   // 별점 상태를 0.5단위로 배열 생성
   const createStarState = () => {
     return Array.from({ length: 5 }, (_, index) => ({
-      starRating: 0.5 + index,
+      starRating: starRatingUnit + index,
     }));
   };
 
   // 외부 선택 값 판정
   const isSelectedStarRating = selectedStarRating || selectedStarRating === 0;
+
+  /**
+   * 이미 선택된 별점이 있는 경우 해당 별점을 고정하고 이전 별점으로 설정
+   *
+   * 의존성 배열에 selectedStarRating 을 넣으면
+   * 수정 모드에서 기존 별점을 불러올 때마다 useEffect 가 실행되어
+   * 사용자가 선택한 별점이 초기화되는 문제가 발생하여 의존성 배열을 빈 배열로 설정
+   */
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    if (isSelectedStarRating) {
+      setIsSelected(true);
+      previousSelected.current = selectedStarRating;
+    }
+  }, []);
 
   return (
     // react-hook-form 의 Controller 를 이용하여 컴포넌트와 연동
@@ -51,10 +68,6 @@ export const StarRatingUi = <T extends FieldValues>({
       render={({ field: { value, onChange } }) => {
         // 선택 된 값이 이미 있는 경우, 선택 된 값을 설정
         const realValue = isSelectedStarRating ? selectedStarRating : value;
-        // 선택 된 값이 이미 있는 경우, 값 고정
-        if (isSelectedStarRating) {
-          setIsSelected(true);
-        }
         return (
           <div className="block">
             <div
@@ -66,16 +79,17 @@ export const StarRatingUi = <T extends FieldValues>({
                 // 별점을 루프 돌아가며 표시
                 createStarState().map((items, index) => {
                   // 반 별의 별점
-                  const halfStarRate = items.starRating;
+                  const halfStarRating = items.starRating;
                   // 채워진 별의 별점
-                  const fillStarRate = items.starRating + 0.5;
+                  const fillStarRating = items.starRating + starRatingUnit;
                   // onMouseLeave 시의 처리
                   const handleOnMouseLeave = () => {
                     // 선택된 별점이 없는 경우에는 초기화, 있는 경우에는 이전 상태로 되돌림
-                    return () =>
-                      !isSelected
-                        ? onChange(0)
-                        : onChange(previousSelected.current);
+                    if (isSelected) {
+                      onChange(previousSelected.current);
+                    } else {
+                      onChange(0);
+                    }
                   };
                   // onClick 시의 처리
                   const handleOnClick = (starRating: number) => {
@@ -95,18 +109,18 @@ export const StarRatingUi = <T extends FieldValues>({
                       <div
                         className="absolute z-2 w-1/2 h-full overflow-hidden cursor-pointer"
                         onMouseEnter={() =>
-                          !isSelectedStarRating && onChange(halfStarRate)
+                          isStarRatingEditable && onChange(halfStarRating)
                         }
                         onMouseLeave={() =>
-                          !isSelectedStarRating && handleOnMouseLeave()
+                          isStarRatingEditable && handleOnMouseLeave()
                         }
                         onClick={() =>
-                          !isSelectedStarRating && handleOnClick(halfStarRate)
+                          isStarRatingEditable && handleOnClick(halfStarRating)
                         }
                       >
                         {
                           // 해당 반 별의 별점 <= 현재 설정된 value값의 경우, 반별 표시
-                          halfStarRate <= realValue && (
+                          halfStarRating <= realValue && (
                             <BsStarHalf className={starStyle} />
                           )
                         }
@@ -123,18 +137,18 @@ export const StarRatingUi = <T extends FieldValues>({
                       <div
                         className="absolute z-1 w-full h-full cursor-pointer"
                         onMouseEnter={() =>
-                          !isSelectedStarRating && onChange(fillStarRate)
+                          isStarRatingEditable && onChange(fillStarRating)
                         }
                         onMouseLeave={() =>
-                          !isSelectedStarRating && handleOnMouseLeave()
+                          isStarRatingEditable && handleOnMouseLeave()
                         }
                         onClick={() =>
-                          !isSelectedStarRating && handleOnClick(fillStarRate)
+                          isStarRatingEditable && handleOnClick(fillStarRating)
                         }
                       >
                         {
                           // 해당 채워진 별의 별점 <= 현재 설정된 value값의 경우, 채워진 별 표시
-                          fillStarRate <= realValue && (
+                          fillStarRating <= realValue && (
                             <BsStarFill className={starStyle} />
                           )
                         }
@@ -145,11 +159,13 @@ export const StarRatingUi = <T extends FieldValues>({
               }
             </div>
             {/* 에러 메세지 표시 */}
-            {starRatingErrorMsg && (
-              <div className="flex justify-center">
-                <ErrorMessageUi errorMsg={starRatingErrorMsg} />
-              </div>
-            )}
+            <div className="flex justify-center">
+              <ErrorMessageUi
+                errorMsg={starRatingErrorMsg}
+                toastId="starRatingError"
+                isOnlyToast={true}
+              />
+            </div>
           </div>
         );
       }}

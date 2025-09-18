@@ -37,6 +37,8 @@ import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/co
 import throttle from 'lodash/throttle';
 import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
 import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -60,6 +62,7 @@ type useContentCommentReturnType = {
   textAreaRef: RefObject<HTMLTextAreaElement | null>; // 코멘트 작성 시 포커스를 주기 위한 ref
   isMyComment: boolean | null; // 로그인한 유저의 코멘트 여부 상태
   comment: string; // 코멘트 작성 시 입력된 값
+  starRating: number; // 별점 선택 시 입력된 값
   isCommentEditable: boolean; // 코멘트 수정 가능 상태
   starRatingErrorMsg?: string; // 별점 선택 시 유효성 검사 에러 메시지
 };
@@ -89,6 +92,8 @@ export const useContentComment = (
 
   // 네비게이션 훅
   const navigate = useNavigate();
+  // i18n 번역 훅
+  const { t } = useTranslation();
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
   // 코멘트 번호 상태
@@ -149,6 +154,12 @@ export const useContentComment = (
     name: 'comment',
   });
 
+  // 별점 선택 시 입력된 값을 가져오기 위한 useWatch 훅
+  const starRating = useWatch({
+    control,
+    name: 'starRating',
+  });
+
   // ================================================================================================== react query
 
   // 쿼리 클라이언트 훅
@@ -158,6 +169,11 @@ export const useContentComment = (
 
   // API ID
   const apiId = detailResult.id!.toString();
+
+  // toast 메세지 아이디
+  const saveCommentToastId = 'saveCommentSuccess';
+  const updateCommentToastId = 'updateCommentSuccess';
+  const deleteCommentToastId = 'deleteCommentSuccess';
 
   // useInfiniteQuery를 사용하여 코멘트 목록을 가져옴
   // 페이지 매개변수는 페이지가 변경될 때마다 업데이트되며, 페이지가 변경될 때마다 새로운 데이터를 가져옴
@@ -266,6 +282,12 @@ export const useContentComment = (
     },
     // 성공 후 처리
     onSuccess: () => {
+      // 성공 메시지 표시
+      toast.dismiss(updateCommentToastId);
+      toast.dismiss(deleteCommentToastId);
+      toast.success(t('info.saveCommentSuccess'), {
+        toastId: saveCommentToastId,
+      });
       // 코멘트 저장 후 최신 데이터 조회
       mutationOnSuccess();
     },
@@ -305,6 +327,12 @@ export const useContentComment = (
     },
     // 성공 후 처리
     onSuccess: () => {
+      // 성공 메시지 표시
+      toast.dismiss(saveCommentToastId);
+      toast.dismiss(deleteCommentToastId);
+      toast.success(t('info.updateCommentSuccess'), {
+        toastId: updateCommentToastId,
+      });
       // 코멘트 수정 후 최신 데이터 조회
       mutationOnSuccess();
     },
@@ -334,6 +362,12 @@ export const useContentComment = (
     },
     // 성공 후 처리
     onSuccess: () => {
+      // 성공 메시지 표시
+      toast.dismiss(saveCommentToastId);
+      toast.dismiss(updateCommentToastId);
+      toast.success(t('info.deleteCommentSuccess'), {
+        toastId: deleteCommentToastId,
+      });
       // 코멘트 삭제 후 최신 데이터 조회
       mutationOnSuccess();
     },
@@ -673,6 +707,7 @@ export const useContentComment = (
     textAreaRef: textAreaRef,
     isMyComment: isMyComment,
     comment: comment,
+    starRating: starRating,
     isCommentEditable: isCommentEditable,
     isDeleteConfirmOpen: isDeleteConfirmOpen,
     handleDeleteOnClick: handleDeleteOnClick,
