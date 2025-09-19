@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
+import { useTranslation } from 'react-i18next';
 
 /**
  * 위시리스트 훅 반환 타입
@@ -37,6 +38,9 @@ export const useWishlistUi = ({
 
   // navigate 훅
   const navigate = useNavigate();
+
+  // i18n 훅
+  const { t } = useTranslation();
 
   // Wishlist API 인스턴스
   const wishlistApi = new Wishlist();
@@ -71,20 +75,19 @@ export const useWishlistUi = ({
     onSuccess: (res) => {
       setAddToWishlist(true);
       if (res) {
-        toast.success('위시리스트에 추가되었습니다 : \r\n' + title, {
+        toast.success(t('info.addedToWishlist', { title: title }), {
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
       } else {
-        toast.warning('이미 위시리스트에 존재합니다 : \r\n' + title, {
+        toast.warning(t('info.existsInWishlist', { title: title }), {
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
       }
     },
     onError: () => {
-      console.error('위시리스트 추가 실패 : ' + title);
-      toast.error('"' + title + '"의 위시리스트 추가에 실패했습니다.', {
+      toast.error(t('error.failedToAddWishlist', { title: title }), {
         toastId: 'wishlist_add_error_' + title,
       });
     },
@@ -112,20 +115,19 @@ export const useWishlistUi = ({
     onSuccess: (res) => {
       setAddToWishlist(false);
       if (res) {
-        toast.success('위시리스트에서 제거되었습니다 : \r\n' + title, {
+        toast.success(t('info.removedFromWishlist', { title: title }), {
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
       } else {
-        toast.warning('위시리스트에 존재하지 않습니다 : \r\n' + title, {
+        toast.warning(t('info.notExistsInWishlist', { title: title }), {
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
       }
     },
     onError: () => {
-      console.error('위시리스트 제거 실패 : ' + title);
-      toast.error('"' + title + '"의 위시리스트 제거에 실패했습니다.', {
+      toast.error(t('error.failedToRemoveWishlist', { title: title }), {
         toastId: 'wishlist_remove_error_' + title,
       });
     },

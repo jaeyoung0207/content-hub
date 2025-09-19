@@ -27,10 +27,20 @@ const resources = {
         description: '설명',
         colon: ' : ',
         /* 홈 화면 */
+        home: '홈',
         rankingTitle: '실시간 순위',
         top10: 'TOP 10',
         /* 위시리스트 화면 */
-        wishlistTitle: '찜 목록',
+        wishlistKorean: '찜 목록',
+        wishlist: '위시리스트',
+        addedToWishlist: '위시리스트에 추가되었습니다. \r\n : {{title}}',
+        removedFromWishlist: '위시리스트에서 제거되었습니다. \r\n : {{title}}',
+        existsInWishlist: '이미 위시리스트에 존재합니다. \r\n : {{title}}',
+        notExistsInWishlist: '위시리스트에 존재하지 않습니다. \r\n : {{title}}',
+        failedToAddWishlist: '위시리스트 추가에 실패했습니다. \r\n : {{title}}',
+        failedToRemoveWishlist:
+          '위시리스트 제거에 실패했습니다. \r\n : {{title}}',
+        noWishlist: '위시리스트가 없습니다.',
         /* 전체보기 */
         searchResults: '검색 결과',
         /* 상세 화면 */

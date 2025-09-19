@@ -23,7 +23,10 @@ export const afterLoginRedirect = (navigate: NavigateFunction) => {
 /**
  * 로그인 확인 다이얼로그 처리
  */
-export const loginConfirmDialog = (message: string, navigate: NavigateFunction) => {
+export const loginConfirmDialog = (
+  message: string,
+  navigate: NavigateFunction
+) => {
   // 로그인 확인 모달 열기
   useConfirmDialogStore.getState().setIsConfirmDialogOpen(true);
   // 로그인 확인 모달에서 OK 버튼 클릭 시
@@ -38,7 +41,11 @@ export const loginConfirmDialog = (message: string, navigate: NavigateFunction) 
     navigate('/login');
   });
   // 로그인 확인 모달에서 Cancel 버튼 클릭 시
-  useConfirmDialogStore.getState().setOnCancel(() => useConfirmDialogStore.getState().setIsConfirmDialogOpen(false));
+  useConfirmDialogStore
+    .getState()
+    .setOnCancel(() =>
+      useConfirmDialogStore.getState().setIsConfirmDialogOpen(false)
+    );
   // 메시지 설정
   useConfirmDialogStore.getState().setConfirmMsg(i18n.t(message));
 };

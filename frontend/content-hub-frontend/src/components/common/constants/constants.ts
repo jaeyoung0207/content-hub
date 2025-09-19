@@ -46,6 +46,9 @@ export const ARROW_UP_KEY = 'ArrowUp';
 // 구분자 슬래시
 export const SEPERATE_SLASH = ' / ';
 
+// 생략 텍스트
+export const OMMIT_TEXT = '...';
+
 // 리다이렉트 URL
 export const REDIRECT_URL = 'redirectUrl';
 
@@ -54,6 +57,9 @@ export const ONE_MINUTE = 1000 * 60;
 
 // 무한스크롤 스로틀 딜레이
 export const INFINITE_SCROLL_THROTTLE_DELAY = 1000;
+
+// 툴팁 닫힘 상태
+export const TOOLTIP_CLOSE_STATE = 0;
 
 // 미디어 타입
 export enum MEDIA_TYPE {

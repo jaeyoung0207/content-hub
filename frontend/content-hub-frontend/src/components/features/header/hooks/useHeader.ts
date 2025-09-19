@@ -38,7 +38,14 @@ export const useHeader = (): UseHeaderReturnType => {
   } = useHeaderForm();
 
   // 헤더 로그인 훅
-  const { user, handleLogoutOnClick, handleLoginOnClick } = useHeaderLogin();
+  const {
+    user,
+    handleLogoutOnClick,
+    handleLoginOnClick,
+    userOptionIsOpen,
+    handleUserOptionToggle,
+    userOptionRef,
+  } = useHeaderLogin();
 
   // 헤더 검색 훅
   const {
@@ -122,5 +129,8 @@ export const useHeader = (): UseHeaderReturnType => {
     handleFilterIconOnClick: handleFilterIconOnClick,
     handleHomeOnClick: handleHomeOnClick,
     handleWishlistOnClick: handleWishlistOnClick,
+    userOptionIsOpen: userOptionIsOpen,
+    handleUserOptionToggle: handleUserOptionToggle,
+    userOptionRef: userOptionRef,
   };
 };

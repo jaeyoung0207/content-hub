@@ -1,5 +1,6 @@
 import { Login } from '@/api/Login';
 import {
+  ESC_KEY,
   LOGIN_PROVIDER,
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
@@ -9,7 +10,7 @@ import {
 } from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
@@ -24,6 +25,9 @@ export type UseHeaderLoginReturnType = {
   handleLoginOnClick: () => void; // 로그인 버튼 클릭 처리 함수
   handleLogoutOnClick: () => void; // 로그아웃 버튼 클릭 처리 함수
   user: LoginUserInfoDto | null; // 유저 정보
+  userOptionIsOpen: boolean; // 유저 옵션 열림 상태
+  handleUserOptionToggle: () => void; // 유저 옵션 토글 함수
+  userOptionRef: RefObject<HTMLDivElement | null>; // 유저 옵션 참조
 };
 
 export const useHeaderLogin = (): UseHeaderLoginReturnType => {
@@ -36,6 +40,12 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
   // 쿠키 훅: provider 정보
   const [providerCookie] = useCookies<string>(['provider']);
+
+  // 유저 옵션 열림 상태
+  const [userOptionIsOpen, setUserOptionIsOpen] = useState<boolean>(false);
+
+  // 유저 옵션 참조
+  const userOptionRef = useRef<HTMLDivElement>(null);
 
   // ================================================================================================== zustand
 
@@ -79,6 +89,13 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     // 로그아웃 페이지로 이동
     navigate('/logout');
   }, [navigate]);
+
+  /**
+   * 유저 옵션 토글 함수
+   */
+  const handleUserOptionToggle = useCallback(() => {
+    setUserOptionIsOpen((prev) => !prev);
+  }, []);
 
   // ================================================================================================== useEffect
 
@@ -140,12 +157,48 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     }
   }, []);
 
+  /**
+   * 마우스 클릭/키보드 키다운 이벤트
+   */
+  useEffect(() => {
+    // 유저 옵션 바깥 영역 클릭 이벤트
+    const handleOnClickOutside = (e: MouseEvent) => {
+      // 유저 옵션 바깥영역 클릭시
+      if (
+        userOptionRef.current &&
+        !userOptionRef.current.contains(e.target as Node)
+      ) {
+        setUserOptionIsOpen(false);
+      }
+    };
+    // 필터 및 자동완성박스 esc 키다운 이벤트
+    const handleOnKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === ESC_KEY) {
+        // 유저 옵션 닫기
+        setUserOptionIsOpen(false);
+      }
+    };
+
+    // 각 이벤트 리스너 추가
+    document.addEventListener('mousedown', handleOnClickOutside);
+    document.addEventListener('keydown', handleOnKeyDown);
+
+    return () => {
+      // 각 이벤트 리스너 제거
+      document.removeEventListener('mousedown', handleOnClickOutside);
+      document.removeEventListener('keydown', handleOnKeyDown);
+    };
+  }, []);
+
   // ================================================================================================== return
 
   return {
     handleLoginOnClick: handleLoginOnClick,
     handleLogoutOnClick: handleLogoutOnClick,
     user: user,
+    userOptionIsOpen: userOptionIsOpen,
+    handleUserOptionToggle: handleUserOptionToggle,
+    userOptionRef: userOptionRef,
   };
 };
 

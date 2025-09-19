@@ -119,10 +119,10 @@ export const DisplaySearchResults = ({
               <ul
                 key={'frame_' + index}
                 className={
-                  `${highlightHoverColor} ml-1 mr-3 cursor-pointer ` +
+                  `${highlightHoverColor} ml-1 cursor-pointer ` +
                   (mediaType === MEDIA_TYPE.COMICS
-                    ? 'w-[195px] h-full'
-                    : 'w-[290px] h-full')
+                    ? ' mr-1 w-[195px] h-full'
+                    : ' mr-3 w-[290px] h-full')
                 }
                 onClick={commonErrorHandler(() => {
                   // apiId 체크

@@ -6,13 +6,19 @@ import { CheckBoxUi } from '@/components/ui/CheckBoxUi';
 import { BsFilterSquare, BsFilterSquareFill } from 'react-icons/bs';
 import { FieldValues, Path } from 'react-hook-form';
 import { FormFieldProps } from '@/components/ui/common/FormFieldProps';
-import { IS_MOBILE } from '@/components/common/constants/constants';
+import {
+  IS_MOBILE,
+  OMMIT_TEXT,
+  TOOLTIP_CLOSE_STATE,
+} from '@/components/common/constants/constants';
 import { CheckBoxUiM } from '@/components/ui/CheckBoxUiM';
 import { memo, RefObject } from 'react';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { settings } from '@/components/common/config/settings';
 import { FaHeart } from 'react-icons/fa';
 import { HeaderType } from './hooks/useHeaderForm';
+import { useTooltipStore } from '@/components/common/store/globalStateStore';
+import TooltipUi from '@/components/ui/common/TooltipUi';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
@@ -37,6 +43,9 @@ type autoCompletePropsType = {
 export const Header = () => {
   // i18n 번역 함수
   const { t } = useTranslation();
+
+  // 툴팁 상태 저장 훅
+  const { isTooltipOpen, setIsTooltipOpen } = useTooltipStore();
 
   const {
     control,
@@ -67,6 +76,9 @@ export const Header = () => {
     savedKeyword,
     user,
     handleWishlistOnClick,
+    userOptionIsOpen,
+    handleUserOptionToggle,
+    userOptionRef,
   } = useHeader();
 
   // 체크박스용 인자 타입 정의
@@ -109,6 +121,20 @@ export const Header = () => {
     },
   ];
 
+  // 유저 닉네임
+  const userNickname = user?.nickname ?? '';
+  // 닉네임 길이 제한
+  const DISPLAY_LENGTH = 9;
+  // 닉네임이 길이 제한을 초과하는지 여부
+  const isHideNickname =
+    userNickname && userNickname.length > DISPLAY_LENGTH ? true : false;
+  // 닉네임 툴팁 상태 상수
+  const NICKNAME_TOOLTIP_OPEN_STATE = 1;
+  // 홈 툴팁 상태 상수
+  const HOME_TOOLTIP_OPEN_STATE = 2;
+  // 위시리스트 툴팁 상태 상수
+  const WISHLIST_TOOLTIP_OPEN_STATE = 3;
+
   return (
     <div className="relative z-50 flex">
       <div className="fixed bg-white">
@@ -123,14 +149,31 @@ export const Header = () => {
                 onClick={commonErrorHandler(() => {
                   handleHomeOnClick();
                 })}
+                onMouseEnter={() => setIsTooltipOpen(HOME_TOOLTIP_OPEN_STATE)}
+                onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
               />
+              {/* 홈 툴팁 */}
+              {isTooltipOpen === HOME_TOOLTIP_OPEN_STATE && (
+                <TooltipUi text={t('info.home')} style={'left-4 mt-2 w-10'} />
+              )}
             </div>
             {/* 위시리스트 아이콘 */}
             <div className="mr-8">
               <FaHeart
                 className="w-12 h-12 cursor-pointer"
                 onClick={commonErrorHandler(handleWishlistOnClick)}
+                onMouseEnter={() =>
+                  setIsTooltipOpen(WISHLIST_TOOLTIP_OPEN_STATE)
+                }
+                onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
               />
+              {/* 위시리스트 툴팁 */}
+              {isTooltipOpen === WISHLIST_TOOLTIP_OPEN_STATE && (
+                <TooltipUi
+                  text={t('info.wishlist')}
+                  style={'left-18 mt-2 w-22'}
+                />
+              )}
             </div>
           </div>
           <div className="w-[42%] flex items-center">
@@ -219,18 +262,42 @@ export const Header = () => {
             </div>
             <div className="ml-3">
               {user ? (
-                <div className="block w-24">
+                <div className="block w-24" ref={userOptionRef}>
                   {/* 유저 닉네임 */}
-                  <div className="text-[16px] text-yellow-600">
-                    {user.nickname}
-                  </div>
-                  {/* 로그아웃 버튼 */}
                   <div
-                    className="text-[16px] cursor-pointer"
-                    onClick={commonErrorHandler(handleLogoutOnClick)}
+                    className="text-lg text-yellow-600 cursor-pointer"
+                    onClick={handleUserOptionToggle}
+                    onMouseEnter={() =>
+                      isHideNickname &&
+                      setIsTooltipOpen(NICKNAME_TOOLTIP_OPEN_STATE)
+                    }
+                    onMouseLeave={() =>
+                      isHideNickname && setIsTooltipOpen(TOOLTIP_CLOSE_STATE)
+                    }
                   >
-                    {t('info.logout')}
+                    {isHideNickname
+                      ? userNickname.slice(0, DISPLAY_LENGTH) + OMMIT_TEXT
+                      : userNickname}
                   </div>
+                  {/* 유저 닉네임 툴팁 */}
+                  {isTooltipOpen === NICKNAME_TOOLTIP_OPEN_STATE && (
+                    <TooltipUi
+                      text={userNickname}
+                      style={'right-0 mt-2 w-32'}
+                    />
+                  )}
+                  {/* 유저 옵션 팝업 */}
+                  {userOptionIsOpen && (
+                    <div className="absolute flex justify-center right-0 mt-2 w-30 bg-white border rounded shadow-2xl z-50 p-1">
+                      {/* 로그아웃 */}
+                      <div
+                        className="px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
+                        onClick={commonErrorHandler(handleLogoutOnClick)}
+                      >
+                        {t('info.logout')}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 // 로그인 버튼

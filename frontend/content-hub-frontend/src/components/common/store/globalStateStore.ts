@@ -6,7 +6,7 @@ import { create } from 'zustand';
 /**
  * 홈 버튼 클릭시 초기화 상태관리 타입
  */
-type useInitializeStoreType = {
+type UseInitializeStoreType = {
   isReadyForInitialization: boolean;
   setIsReadyForInitialization: () => void;
   setIsNotReadyForInitialization: () => void;
@@ -15,7 +15,7 @@ type useInitializeStoreType = {
 /**
  * 유저 정보 상태관리 타입
  */
-type useUserStoreType = {
+type UseUserStoreType = {
   user: LoginUserInfoDto | null;
   setUser: (user: LoginUserInfoDto) => void;
   clearUser: () => void;
@@ -24,7 +24,7 @@ type useUserStoreType = {
 /**
  * 코멘트 수정 상태관리 타입
  */
-type useCommentStoreType = {
+type UseCommentStoreType = {
   isCommentEditable: boolean;
   setIsCommentEditable: () => void;
 };
@@ -32,7 +32,7 @@ type useCommentStoreType = {
 /**
  * 검색 필터 상태관리 타입
  */
-type useStarRatingStoreType = {
+type UseStarRatingStoreType = {
   userStarRating?: number;
   setUserStarRating: (userStarRating: number) => void;
 };
@@ -40,7 +40,7 @@ type useStarRatingStoreType = {
 /**
  * 확인 다이얼로그 상태관리 타입
  */
-type useConfirmDialogStoreType = {
+type UseConfirmDialogStoreType = {
   isConfirmDialogOpen: boolean;
   setIsConfirmDialogOpen: (isConfirmDialogOpen: boolean) => void;
   onOk: () => void;
@@ -54,7 +54,7 @@ type useConfirmDialogStoreType = {
 /**
  * 검색 필터 상태관리 타입
  */
-export type useSearchTypeStoreType = {
+export type UseSearchTypeStoreType = {
   searchTypeState: {
     aniFlg: boolean;
     movieFlg: boolean;
@@ -74,7 +74,7 @@ export type useSearchTypeStoreType = {
 /**
  * 에러 상태관리 타입
  */
-type useErrorStoreType = {
+type UseErrorStoreType = {
   status?: number;
   message?: string;
   url?: string;
@@ -84,15 +84,18 @@ type useErrorStoreType = {
 /**
  * 유저 평점 상태관리 타입
  */
-type useProviderStoreType = {
+type UseProviderStoreType = {
   provider?: string;
   setProvider: (provider: string) => void;
   clearProvider: () => void;
 };
 
-type useHeaderExecStoreType = {
-  isHeaderExec: boolean;
-  setIsHeaderExec: (isHeaderExec: boolean) => void;
+/**
+ * 툴팁 상태관리 타입
+ */
+type UseTooltipStoreType = {
+  isTooltipOpen: number;
+  setIsTooltipOpen: (isOpen: number) => void;
 };
 
 // ================================================================================================== store
@@ -100,7 +103,7 @@ type useHeaderExecStoreType = {
 /**
  * 홈 버튼 클릭시 초기화 상태관리
  */
-export const useInitializeStore = create<useInitializeStoreType>((set) => ({
+export const useInitializeStore = create<UseInitializeStoreType>((set) => ({
   isReadyForInitialization: false,
   setIsReadyForInitialization: () =>
     set(() => ({ isReadyForInitialization: true })),
@@ -111,7 +114,7 @@ export const useInitializeStore = create<useInitializeStoreType>((set) => ({
 /**
  * 유저 정보 상태관리
  */
-export const useUserStore = create<useUserStoreType>((set) => ({
+export const useUserStore = create<UseUserStoreType>((set) => ({
   user: null,
   setUser: (user) => set(() => ({ user })),
   clearUser: () => set(() => ({ user: null })),
@@ -120,7 +123,7 @@ export const useUserStore = create<useUserStoreType>((set) => ({
 /**
  * 코멘트 수정 상태관리
  */
-export const useCommentStore = create<useCommentStoreType>((set) => ({
+export const useCommentStore = create<UseCommentStoreType>((set) => ({
   isCommentEditable: false,
   setIsCommentEditable: () =>
     set((state) => ({ isCommentEditable: !state.isCommentEditable })),
@@ -129,7 +132,7 @@ export const useCommentStore = create<useCommentStoreType>((set) => ({
 /**
  * 검색 필터 상태관리
  */
-export const useSearchTypeStore = create<useSearchTypeStoreType>((set) => ({
+export const useSearchTypeStore = create<UseSearchTypeStoreType>((set) => ({
   searchTypeState: {
     aniFlg: true,
     movieFlg: true,
@@ -152,7 +155,7 @@ export const useSearchTypeStore = create<useSearchTypeStoreType>((set) => ({
 /**
  * 유저 평점 상태관리
  */
-export const useStarRatingStore = create<useStarRatingStoreType>((set) => ({
+export const useStarRatingStore = create<UseStarRatingStoreType>((set) => ({
   userStarRating: undefined,
   setUserStarRating: (userStarRating) =>
     set(() => ({ userStarRating: userStarRating })),
@@ -161,7 +164,7 @@ export const useStarRatingStore = create<useStarRatingStoreType>((set) => ({
 /**
  * 확인 다이얼로그 상태관리
  */
-export const useConfirmDialogStore = create<useConfirmDialogStoreType>(
+export const useConfirmDialogStore = create<UseConfirmDialogStoreType>(
   (set) => ({
     isConfirmDialogOpen: false,
     setIsConfirmDialogOpen: (isConfirmDialogOpen) =>
@@ -178,7 +181,7 @@ export const useConfirmDialogStore = create<useConfirmDialogStoreType>(
 /**
  * 에러 상태관리
  */
-export const useErrorStore = create<useErrorStoreType>((set) => ({
+export const useErrorStore = create<UseErrorStoreType>((set) => ({
   status: undefined,
   message: '',
   url: '',
@@ -188,13 +191,16 @@ export const useErrorStore = create<useErrorStoreType>((set) => ({
 /**
  * 프로바이더 상태관리
  */
-export const useProviderStore = create<useProviderStoreType>((set) => ({
+export const useProviderStore = create<UseProviderStoreType>((set) => ({
   provider: undefined,
   setProvider: (provider) => set({ provider }),
   clearProvider: () => set({ provider: undefined }),
 }));
 
-export const useHeaderExecStore = create<useHeaderExecStoreType>((set) => ({
-  isHeaderExec: false,
-  setIsHeaderExec: (isHeaderExec: boolean) => set({ isHeaderExec }),
+/**
+ * 툴팁 상태관리
+ */
+export const useTooltipStore = create<UseTooltipStoreType>((set) => ({
+  isTooltipOpen: 0,
+  setIsTooltipOpen: (isOpen: number) => set({ isTooltipOpen: isOpen }),
 }));

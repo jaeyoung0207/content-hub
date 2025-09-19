@@ -50,7 +50,7 @@ export const StarRatingUi = <T extends FieldValues>({
    *
    * 의존성 배열에 selectedStarRating 을 넣으면
    * 수정 모드에서 기존 별점을 불러올 때마다 useEffect 가 실행되어
-   * 사용자가 선택한 별점이 초기화되는 문제가 발생하여 의존성 배열을 빈 배열로 설정
+   * 처음 사용자가 선택한 별점이 사라지는 문제가 발생하여 의존성 배열을 빈 배열로 설정
    */
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
