@@ -31,13 +31,13 @@ type DisplayVideoCreditsPropsType = VideoInformationPropsType & {
 /**
  * 크레딧 정보 표시 컴포넌트
  * @param detailResult 상세 정보
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  * @param creditsType 크레딧 타입
  * @param isOmit 생략 여부
  */
 export const DisplayVideoCredits = ({
   detailResult,
-  originalMediaType,
+  contentMediaType,
   creditsType,
   isOmit,
 }: DisplayVideoCreditsPropsType) => {
@@ -47,8 +47,8 @@ export const DisplayVideoCredits = ({
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_185;
   // 비디오(TV or Movie) 크레딧
   const videoCredits =
-    isDetailTvType(detailResult, originalMediaType) ||
-    isDetailMovieType(detailResult, originalMediaType)
+    isDetailTvType(detailResult, contentMediaType) ||
+    isDetailMovieType(detailResult, contentMediaType)
       ? detailResult.credits
       : undefined;
   // 크레딧(cast or crew) 전 데이터
@@ -86,7 +86,7 @@ export const DisplayVideoCredits = ({
               {isOmit && creditsAll.length > settings.detailVideoCount && (
                 <Link
                   to={detailUrlQuery({
-                    originalMediaType: originalMediaType,
+                    contentMediaType: contentMediaType,
                     apiId: String(detailResult.id),
                     tabNo: tabNo,
                   })}
@@ -100,10 +100,10 @@ export const DisplayVideoCredits = ({
           <div className="flex flex-wrap items-start mt-5">
             {creditsList.map((items, index) => {
               const role = isDetailCreditsCrewType(items)
-                ? isDetailTvType(detailResult, originalMediaType)
+                ? isDetailTvType(detailResult, contentMediaType)
                   ? items.jobs?.map((job) => job.job).join(SEPERATE_SLASH)
                   : items.job
-                : isDetailTvType(detailResult, originalMediaType)
+                : isDetailTvType(detailResult, contentMediaType)
                   ? items.roles
                       ?.map((role) => role.character)
                       .join(SEPERATE_SLASH)

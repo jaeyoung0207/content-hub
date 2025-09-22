@@ -24,6 +24,18 @@ public class HomeRankingListServiceDto {
 	/** 드라마 랭킹 리스트 */
 	List<HomeRankingServiceDto> dramaRankingList;
 	
+	/** 다큐 랭킹 리스트 */
+	List<HomeRankingServiceDto> documentaryRankingList;
+	
+	/** 키즈 랭킹 리스트 */
+	List<HomeRankingServiceDto> kidsRankingList;
+	
+	/** 뉴스 랭킹 리스트 */
+	List<HomeRankingServiceDto> newsRankingList;
+	
+	/** 예능 랭킹 리스트 */
+	List<HomeRankingServiceDto> varietyRankingList;
+	
 	/** 영화 랭킹 리스트 */
 	List<HomeRankingServiceDto> movieRankingList;
 	

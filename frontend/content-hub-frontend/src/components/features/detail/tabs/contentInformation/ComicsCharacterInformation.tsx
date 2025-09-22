@@ -10,25 +10,25 @@ import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
  */
 type ComicsCharacterInformationPropsType = {
   detailResult: DetailResponseType;
-  originalMediaType: string;
+  contentMediaType: string;
   creditsType: string;
 };
 
 /**
  * 만화 정보 컴포넌트
  * @param detailResult 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  */
 export const ComicsCharacterInformation = ({
   detailResult,
-  originalMediaType,
+  contentMediaType,
   creditsType,
 }: ComicsCharacterInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
 
   const { data, isFetchingNextPage, hasNextPage, setObserveTarget } =
-    useComicsCharacterInformation(detailResult, originalMediaType, creditsType);
+    useComicsCharacterInformation(detailResult, contentMediaType, creditsType);
 
   return (
     <div className="ml-5 mr-5">
@@ -36,7 +36,7 @@ export const ComicsCharacterInformation = ({
         <>
           <DisplayComicsCredits
             apiId={detailResult.id!}
-            originalMediaType={originalMediaType}
+            contentMediaType={contentMediaType}
             creditsAllList={data.pages.flat()}
             creditsType={creditsType}
             isOmit={false}

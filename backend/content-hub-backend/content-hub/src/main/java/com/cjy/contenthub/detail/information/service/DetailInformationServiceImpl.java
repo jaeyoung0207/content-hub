@@ -106,13 +106,13 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * TMDB TV 상세 조회
 	 * 
 	 * @param seriesId TV 시리즈 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param userId 유저 테이블 ID
 	 * @return TV 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tvDetailCache", key = "#seriesId + '-' + #originalMediaType", unless = "#result == null")
-	public DetailTvResponseDto getTvDetail(Integer seriesId, String originalMediaType) {
+	@Cacheable(value = "tvDetailCache", key = "#seriesId + '-' + #contentMediaType", unless = "#result == null")
+	public DetailTvResponseDto getTvDetail(Integer seriesId, String contentMediaType) {
 
 		// TMDB TV 상세 조회
 		Mono<TmdbTvDetailsDto> detailMono = tmdbWebClient.get()
@@ -160,12 +160,12 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * TMDB 영화 상세 조회
 	 * 
 	 * @param movieId 영화 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "movieDetailCache", key = "#movieId + '-' + #originalMediaType", unless = "#result == null")
-	public DetailMovieResponseDto getMovieDetail(Integer movieId, String originalMediaType) {
+	@Cacheable(value = "movieDetailCache", key = "#movieId + '-' + #contentMediaType", unless = "#result == null")
+	public DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType) {
 
 		// TMDB 영화 상세 조회
 		Mono<TmdbMovieDetailsDto> detailMono = tmdbWebClient.get()
@@ -213,13 +213,13 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * AniList Comics 상세 조회
 	 * 
 	 * @param comicsId 만화 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return Comics 상세 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsDetailCache", key = "#comicsId + '-' + #originalMediaType", unless = "#result == null")
-	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String originalMediaType) throws IOException {
+	@Cacheable(value = "comicsDetailCache", key = "#comicsId + '-' + #contentMediaType", unless = "#result == null")
+	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsDetail.graphql");

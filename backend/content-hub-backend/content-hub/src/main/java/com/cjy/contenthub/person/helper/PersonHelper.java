@@ -13,7 +13,7 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsCrewDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsCastDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsCrewDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonResponseDto;
@@ -54,7 +54,7 @@ public class PersonHelper {
 				cast.setTitle(tvCast.getName());
 				cast.setReleaseDate(tvCast.getFirstCreditAirDate());
 				cast.setEpisodeCount(tvCast.getEpisodeCount());
-				cast.setMediaType(CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getMediaTypeValue().toUpperCase());
+				cast.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
 			} 
 			// 영화 출연작인 경우
 			else {
@@ -64,7 +64,7 @@ public class PersonHelper {
 				cast.setOriginalTitle(movieCast.getOriginalTitle());
 				cast.setTitle(movieCast.getTitle());
 				cast.setReleaseDate(movieCast.getReleaseDate());
-				cast.setMediaType(CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getMediaTypeValue().toUpperCase());
+				cast.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue().toUpperCase());
 			}
 			// 첫 상영연도 설정
 			cast.setReleaseYear(setReleaseYear(cast.getReleaseDate()));
@@ -99,7 +99,7 @@ public class PersonHelper {
 				crew.setTitle(tvCrew.getName());
 				crew.setReleaseDate(tvCrew.getFirstCreditAirDate());
 				crew.setEpisodeCount(tvCrew.getEpisodeCount());
-				crew.setMediaType(CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getMediaTypeValue().toUpperCase());
+				crew.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
 			} 
 			// 영화 출연작인 경우
 			else {
@@ -109,7 +109,7 @@ public class PersonHelper {
 				crew.setOriginalTitle(movieCrew.getOriginalTitle());
 				crew.setTitle(movieCrew.getTitle());
 				crew.setReleaseDate(movieCrew.getReleaseDate());
-				crew.setMediaType(CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getMediaTypeValue().toUpperCase());
+				crew.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue().toUpperCase());
 			}
 			// 첫 상영연도 설정
 			crew.setReleaseYear(setReleaseYear(crew.getReleaseDate()));

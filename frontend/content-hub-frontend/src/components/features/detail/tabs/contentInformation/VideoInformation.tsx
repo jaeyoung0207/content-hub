@@ -12,17 +12,17 @@ import DisplayVideoCredits from '@/components/ui/DisplayVideoCreditsUi';
  */
 export type VideoInformationPropsType = {
   detailResult: DetailResponseType;
-  originalMediaType: string;
+  contentMediaType: string;
 };
 
 /**
  * 비디오(애니, 드라마, 영화) 정보 컴포넌트
  * @param detailResult 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  */
 export const VideoInformation = ({
   detailResult,
-  originalMediaType,
+  contentMediaType,
 }: VideoInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
@@ -38,8 +38,8 @@ export const VideoInformation = ({
 
       {
         // 상세 정보 결과의 타입이 TV 또는 MOVIE인 경우
-        (isDetailTvType(detailResult, originalMediaType) ||
-          isDetailMovieType(detailResult, originalMediaType)) && (
+        (isDetailTvType(detailResult, contentMediaType) ||
+          isDetailMovieType(detailResult, contentMediaType)) && (
           <>
             {detailResult.credits &&
               detailResult.credits.cast &&
@@ -48,7 +48,7 @@ export const VideoInformation = ({
                   {/* 출연진 */}
                   <DisplayVideoCredits
                     detailResult={detailResult}
-                    originalMediaType={originalMediaType}
+                    contentMediaType={contentMediaType}
                     creditsType={VIDEO_CREDITS_TYPE.CAST}
                     isOmit={true}
                   />
@@ -61,7 +61,7 @@ export const VideoInformation = ({
                   {/* 제작진 */}
                   <DisplayVideoCredits
                     detailResult={detailResult}
-                    originalMediaType={originalMediaType}
+                    contentMediaType={contentMediaType}
                     creditsType={VIDEO_CREDITS_TYPE.CREW}
                     isOmit={true}
                   />

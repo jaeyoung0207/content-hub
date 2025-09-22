@@ -22,9 +22,9 @@ public class DetailCommentUpdateRequestDto {
 	@NotNull
 	private Long commentId;
 	
-	/** 원본 미디어 타입 */
+	/** 컨텐츠 미디어 타입 */
 	@NotEmpty
-	private String originalMediaType;
+	private String contentMediaType;
 	
 	/** API ID */
 	@NotEmpty

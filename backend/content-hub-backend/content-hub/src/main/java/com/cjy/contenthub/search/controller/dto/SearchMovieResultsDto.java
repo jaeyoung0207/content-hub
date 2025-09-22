@@ -17,8 +17,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class SearchMovieResultsDto extends TmdbSearchMovieResultsDto {
 	
-	/** 원작품 미디어 타입 */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** 장르명 리스트 */
 	private List<String> genreNames;

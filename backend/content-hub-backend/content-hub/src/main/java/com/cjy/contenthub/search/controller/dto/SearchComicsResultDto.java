@@ -19,8 +19,8 @@ public class SearchComicsResultDto extends TmdbSearchCommonResultsDto {
 	/** 제목 */
 	private String title;
 	
-	/** 원작품 미디어 타입 */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** 장르명 리스트 */
 	private List<String> genreNames;

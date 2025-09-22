@@ -13,18 +13,18 @@ import { commonErrorHandler } from '@/components/common/utils/errorUtil';
  */
 type ContentCommentPropsType = {
   detailResult: DetailResponseType;
-  originalMediaType: string;
+  contentMediaType: string;
 };
 
 /**
  * 콘텐츠 코멘트 컴포넌트
  * 코멘트 작성, 수정, 삭제 기능을 제공하며, 코멘트 목록을 표시
  * @param detailResult 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  */
 export const ContentComment = ({
   detailResult,
-  originalMediaType,
+  contentMediaType,
 }: ContentCommentPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
@@ -53,7 +53,7 @@ export const ContentComment = ({
     handleDeleteConfirmOk,
     handleDeleteConfirmCancel,
     starRatingErrorMsg,
-  } = useContentComment(detailResult, originalMediaType);
+  } = useContentComment(detailResult, contentMediaType);
 
   // 코멘트 작성 버튼 스타일
   const commentButtonStyle =

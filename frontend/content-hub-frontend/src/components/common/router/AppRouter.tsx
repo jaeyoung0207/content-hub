@@ -70,7 +70,7 @@ const AppRouter = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route
-                  path="/detail/:originalMediaType/:apiId"
+                  path="/detail/:contentMediaType/:apiId"
                   element={<Detail />}
                 />
                 <Route path="/person/:personId" element={<Person />} />

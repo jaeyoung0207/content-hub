@@ -18,6 +18,9 @@ const resources = {
         comics: '만화',
         movie: '영화',
         drama: '드라마',
+        documentary: '다큐멘터리',
+        kids: '키즈',
+        news: '뉴스',
         variety: '버라이어티',
         beforeSearchMessage: '애니/드라마/영화/만화 통합검색',
         searchPlease: '검색어를 입력하세요',
@@ -129,6 +132,7 @@ const resources = {
       warn: {
         searchEmpty: '검색어를 입력해 주세요.',
         noData: '데이터가 없습니다.',
+        noRankingData: '실시간 순위 정보가 없습니다.',
         noSearchData: '검색 결과가 없습니다.',
         noRecommendationInfo: '비슷한 작품 정보가 없습니다.',
         noContentInfo: '작품 정보가 없습니다.',

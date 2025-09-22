@@ -1,15 +1,20 @@
 package com.cjy.contenthub.wishlist.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;
+import com.cjy.contenthub.wishlist.controller.dto.WishlistResponseDto;
 import com.cjy.contenthub.wishlist.mapper.WishlistMapper;
 import com.cjy.contenthub.wishlist.service.WishlistService;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
@@ -33,13 +38,22 @@ public class WishlistController {
 	/** 위시리스트 매퍼 */
 	private final WishlistMapper wishlistMapper;
 	
+	/** 리퀘스트 파라미터 키 : 유저 ID */
+	private static final String PARAM_USER_ID = "user_id";
+	
+	/** 리퀘스트 파라미터 키 : API ID */
+	private static final String PARAM_API_ID = "api_id";
+	
+	/** 리퀘스트 파라미터 키 : 컨텐츠 미디어 타입 */
+	private static final String PARAM_CONTENT_MEDIA_TYPE = "content_media_type";
+	
 	/**
 	 * 위시리스트 저장 API
 	 * 
 	 * @param requestDto
 	 * @return 위시리스트 저장 성공 여부
 	 */
-	@PostMapping("/save")
+	@PostMapping("/saveWishlist")
 	public ResponseEntity<Boolean> saveWishlist(@RequestBody @Validated WishlistRequestDto requestDto) {
 		
 		WishlistServiceDto serviceDto = wishlistMapper.requestToService(requestDto);
@@ -47,7 +61,6 @@ public class WishlistController {
 		boolean serviceResult = wishlistService.addToWishlist(serviceDto);
 
 		return ResponseEntity.ok(serviceResult);
-		
 	}
 	
 	/**
@@ -56,7 +69,7 @@ public class WishlistController {
 	 * @param requestDto
 	 * @return 위시리스트 삭제 성공 여부
 	 */
-	@DeleteMapping("/delete")
+	@DeleteMapping("/deleteWishlist")
 	public ResponseEntity<Boolean> deleteWishlist(@RequestBody @Validated WishlistRequestDto requestDto) {
 
 		WishlistServiceDto serviceDto = wishlistMapper.requestToService(requestDto);
@@ -64,7 +77,27 @@ public class WishlistController {
 		boolean serviceResult = wishlistService.removeFromWishlist(serviceDto);
 
 		return ResponseEntity.ok(serviceResult);
+	}
+	
+	/**
+	 * 위시리스트 존재 여부 확인 API
+	 * 
+	 * @param userId           유저 테이블 ID
+	 * @param apiId            API ID
+	 * @param contentMediaType 컨텐츠 미디어 타입
+	 * @return 위시리스트 항목 정보
+	 */
+	@GetMapping("/checkWishlist")
+	public ResponseEntity<List<WishlistResponseDto>> checkWishlist(
+			@RequestParam(PARAM_USER_ID) Long userId, 
+			@RequestParam(PARAM_API_ID) String apiId, 
+			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType) {
 
+		List<WishlistServiceDto> serviceList = wishlistService.checkWishlistExist(userId, apiId, contentMediaType);
+		
+		List<WishlistResponseDto> responseDto = wishlistMapper.serviceListToResponseList(serviceList);
+
+		return ResponseEntity.ok(responseDto);
 	}
 	
 	/**
@@ -81,7 +114,6 @@ public class WishlistController {
 		WishlistListResponseDto responseDto = wishlistMapper.listServiceToListResponse(serviceResult);
 
 		return ResponseEntity.ok(responseDto);
-
 	}
 
 }

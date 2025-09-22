@@ -46,6 +46,30 @@ export class Search<
    * No description
    *
    * @tags search-controller
+   * @name SearchTvExceptAni
+   * @request GET:/search/searchTvExceptAni
+   */
+  searchTvExceptAni = (
+    query: {
+      keyword: string;
+      content_media_type: string;
+      /** @format int32 */
+      page?: number;
+      /** @format int64 */
+      user_id?: number;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<SearchTvResponseDto, any>({
+      path: `/search/searchTvExceptAni`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags search-controller
    * @name SearchMovie
    * @request GET:/search/searchMovie
    */
@@ -80,29 +104,6 @@ export class Search<
   ) =>
     this.request<string[], any>({
       path: `/search/searchKeyword`,
-      method: 'GET',
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags search-controller
-   * @name SearchDrama
-   * @request GET:/search/searchDrama
-   */
-  searchDrama = (
-    query: {
-      keyword: string;
-      /** @format int32 */
-      page?: number;
-      /** @format int64 */
-      user_id?: number;
-    },
-    params: RequestParams = {}
-  ) =>
-    this.request<SearchTvResponseDto, any>({
-      path: `/search/searchDrama`,
       method: 'GET',
       query: query,
       ...params,

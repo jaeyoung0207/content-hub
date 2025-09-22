@@ -44,7 +44,7 @@ type UseComicsCharacterInformationReturnType = {
  */
 export const useComicsCharacterInformation = (
   detailResult: DetailResponseType,
-  originalMediaType: string,
+  contentMediaType: string,
   creditsType: string
 ): UseComicsCharacterInformationReturnType => {
   // ================================================================================================== react hook
@@ -73,11 +73,11 @@ export const useComicsCharacterInformation = (
       queryKey:
         creditsType === COMICS_CREDITS_TYPE.CHARACTER
           ? (detailQueryKeys.detail.contentInformation.characterList(
-              originalMediaType,
+              contentMediaType,
               detailResult.id!.toString()
             ) as [string, string, string, string])
           : (detailQueryKeys.detail.contentInformation.staffList(
-              originalMediaType,
+              contentMediaType,
               detailResult.id!.toString()
             ) as [string, string, string, string]),
       queryFn: async ({ pageParam = 1 }) => {

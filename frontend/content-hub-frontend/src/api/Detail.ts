@@ -13,12 +13,12 @@
 import {
   AniListCharactersDto,
   AniListStaffDto,
-  DetailComicsRecommendationsResponseDto,
   DetailComicsResponseDto,
   DetailCommentGetResponseDto,
   DetailCommentSaveRequestDto,
   DetailCommentUpdateRequestDto,
   DetailMovieResponseDto,
+  DetailRecommendationsComicsResponseDto,
   DetailRecommendationsMovieDto,
   DetailRecommendationsTvDto,
   DetailTvResponseDto,
@@ -130,7 +130,7 @@ export class Detail<
     },
     params: RequestParams = {}
   ) =>
-    this.request<DetailComicsRecommendationsResponseDto, any>({
+    this.request<DetailRecommendationsComicsResponseDto, any>({
       path: `/detail/recommendation/getComicsRecommendations`,
       method: 'GET',
       query: query,
@@ -147,7 +147,7 @@ export class Detail<
     query: {
       /** @format int32 */
       series_id: number;
-      original_media_type: string;
+      content_media_type: string;
       /** @format int64 */
       user_id?: number;
     },
@@ -170,7 +170,7 @@ export class Detail<
     query: {
       /** @format int32 */
       movie_id: number;
-      original_media_type: string;
+      content_media_type: string;
       /** @format int64 */
       user_id?: number;
     },
@@ -215,7 +215,7 @@ export class Detail<
     query: {
       /** @format int32 */
       comics_id: number;
-      original_media_type: string;
+      content_media_type: string;
       /** @format int64 */
       user_id?: number;
     },
@@ -258,7 +258,7 @@ export class Detail<
    */
   getStarRatingAverage = (
     query: {
-      original_media_type: string;
+      content_media_type: string;
       api_id: string;
     },
     params: RequestParams = {}
@@ -278,7 +278,7 @@ export class Detail<
    */
   getCommentList = (
     query: {
-      original_media_type: string;
+      content_media_type: string;
       api_id: string;
       /** @format int32 */
       page?: number;

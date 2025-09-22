@@ -21,8 +21,8 @@ public class WishlistServiceDto {
 	/** user 테이블 ID */
 	private Long userId;
 	
-	/** originalMediaType */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** apiId */
 	private String apiId;
@@ -31,7 +31,7 @@ public class WishlistServiceDto {
 	private List<Integer> genreIds;
 	
 	/** 미디어 타입(화면 표시용) */
-	private String mediaType;
+	private String displayMediaType;
 	
 	/** 제목 */
 	private String title;

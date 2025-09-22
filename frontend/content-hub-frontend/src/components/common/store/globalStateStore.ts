@@ -1,4 +1,8 @@
-import { LoginUserInfoDto } from '@/api/data-contracts';
+import {
+  CommonContentMediaTypeDto,
+  CommonDisplayMediaTypeDto,
+  LoginUserInfoDto,
+} from '@/api/data-contracts';
 import { create } from 'zustand';
 
 // ================================================================================================== type
@@ -59,15 +63,21 @@ export type UseSearchTypeStoreType = {
     aniFlg: boolean;
     movieFlg: boolean;
     dramaFlg: boolean;
-    comicsFlg: boolean;
+    documentaryFlg: boolean;
+    kidsFlg: boolean;
+    newsFlg: boolean;
     varietyFlg: boolean;
+    comicsFlg: boolean;
   };
   setSearchTypeState: (
     aniFlg: boolean,
     movieFlg: boolean,
     dramaFlg: boolean,
-    comicsFlg: boolean,
-    varietyFlg: boolean
+    documentaryFlg: boolean,
+    kidsFlg: boolean,
+    newsFlg: boolean,
+    varietyFlg: boolean,
+    comicsFlg: boolean
   ) => void;
 };
 
@@ -96,6 +106,24 @@ type UseProviderStoreType = {
 type UseTooltipStoreType = {
   isTooltipOpen: number;
   setIsTooltipOpen: (isOpen: number) => void;
+};
+
+/**
+ * 컨텐츠 미디어 타입 맵 상태관리 타입
+ */
+type UseContentMediaTypeMapStoreType = {
+  contentMediaType: CommonContentMediaTypeDto | undefined;
+  setContentMediaType: (contentMediaType: CommonContentMediaTypeDto) => void;
+  clearContentMediaType: () => void;
+};
+
+/**
+ * 화면 표시용 미디어 타입 맵 상태관리 타입
+ */
+type UseDisplayMediaTypeMapStoreType = {
+  displayMediaType: CommonDisplayMediaTypeDto | undefined;
+  setDisplayMediaType: (displayMediaType: CommonDisplayMediaTypeDto) => void;
+  clearDisplayMediaType: () => void;
 };
 
 // ================================================================================================== store
@@ -135,19 +163,34 @@ export const useCommentStore = create<UseCommentStoreType>((set) => ({
 export const useSearchTypeStore = create<UseSearchTypeStoreType>((set) => ({
   searchTypeState: {
     aniFlg: true,
-    movieFlg: true,
     dramaFlg: true,
-    comicsFlg: true,
+    movieFlg: true,
+    documentaryFlg: true,
+    kidsFlg: true,
+    newsFlg: true,
     varietyFlg: true,
+    comicsFlg: true,
   },
-  setSearchTypeState: (aniFlg, dramaFlg, movieFlg, comicsFlg, varietyFlg) =>
+  setSearchTypeState: (
+    aniFlg,
+    dramaFlg,
+    movieFlg,
+    documentaryFlg,
+    kidsFlg,
+    newsFlg,
+    varietyFlg,
+    comicsFlg
+  ) =>
     set(() => ({
       searchTypeState: {
         aniFlg: aniFlg,
         dramaFlg: dramaFlg,
         movieFlg: movieFlg,
-        comicsFlg: comicsFlg,
+        documentaryFlg: documentaryFlg,
+        kidsFlg: kidsFlg,
+        newsFlg: newsFlg,
         varietyFlg: varietyFlg,
+        comicsFlg: comicsFlg,
       },
     })),
 }));
@@ -204,3 +247,23 @@ export const useTooltipStore = create<UseTooltipStoreType>((set) => ({
   isTooltipOpen: 0,
   setIsTooltipOpen: (isOpen: number) => set({ isTooltipOpen: isOpen }),
 }));
+
+/**
+ * 컨텐츠 미디어 타입 맵 상태관리
+ */
+export const useContentMediaTypeMapStore =
+  create<UseContentMediaTypeMapStoreType>((set) => ({
+    contentMediaType: undefined,
+    setContentMediaType: (contentMediaType) => set({ contentMediaType }),
+    clearContentMediaType: () => set({ contentMediaType: undefined }),
+  }));
+
+/**
+ * 화면 표시용 미디어 타입 맵 상태관리
+ */
+export const useDisplayMediaTypeMapStore =
+  create<UseDisplayMediaTypeMapStoreType>((set) => ({
+    displayMediaType: undefined,
+    setDisplayMediaType: (displayMediaType) => set({ displayMediaType }),
+    clearDisplayMediaType: () => set({ displayMediaType: undefined }),
+  }));

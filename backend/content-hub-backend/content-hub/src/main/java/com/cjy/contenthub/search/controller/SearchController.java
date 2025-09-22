@@ -83,7 +83,10 @@ public class SearchController {
 
 	/** 리퀘스트 파라미터 키 : 검색어 */
 	private static final String PARAM_KEYWORD = "keyword";
-
+	
+	/** 리퀘스트 파라미터 키 : 컨텐츠 미디어 타입 */
+	private static final String PARAM_CONTENT_MEDIA_TYPE = "content_media_type";
+	
 	/** 리퀘스트 파라미터 키 : 페이지 */
 	private static final String PARAM_PAGE = "page";
 	
@@ -158,28 +161,30 @@ public class SearchController {
 	}
 
 	/**
-	 * 드라마 정보 검색 API
+	 * 애니 제외한 TV 시리즈 검색 API
 	 * 
 	 * @param keyword 검색어
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param page 페이지
 	 * @param userId 유저 테이블 ID
-	 * @return ResponseEntity<TmdbSearchTvDto> 드라마 정보 응답 오브젝트
+	 * @return ResponseEntity<TmdbSearchTvDto> 애니 제외한 TV 시리즈 정보 응답 오브젝트
 	 */
-	@GetMapping(value = "/searchDrama")
-	public ResponseEntity<SearchTvResponseDto> searchDrama(
-			@RequestParam(PARAM_KEYWORD) String keyword, 
+	@GetMapping(value = "/searchTvExceptAni")
+	public ResponseEntity<SearchTvResponseDto> searchTvExceptAni(
+			@RequestParam(PARAM_KEYWORD) String keyword,
+			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
-		SearchTvResponseDto cachedResponse = searchService.searchDrama(keyword, isAdult, page, userId);
+		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
 		
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			searchNoCacheService.setWishlistFromDramaResponse(newResponse, userId);
+			searchNoCacheService.setWishlistFromTvExceptAniResponse(newResponse, userId, contentMediaType);
 		}
 		return ResponseEntity.ok(newResponse);
 	}

@@ -27,12 +27,13 @@ public interface SearchNoCacheService {
 	void setWishlistFromAniResponse(SearchTvResponseDto searchTvResponse, Long userId);
 	
 	/**
-	 * 드라마 검색 결과에 위시리스트 여부 설정
+	 * TV 검색 결과에 위시리스트 여부 설정 (애니 제외)
 	 * 
 	 * @param searchTvResponse 검색 결과 DTO
 	 * @param userId           유저 ID
+	 * @param contentMediaType 콘텐츠 미디어 타입
 	 */
-	void setWishlistFromDramaResponse(SearchTvResponseDto searchTvResponse, Long userId);
+	void setWishlistFromTvExceptAniResponse(SearchTvResponseDto searchTvResponse, Long userId, String contentMediaType);
 	
 	/**
 	 * 영화 검색 결과에 위시리스트 여부 설정

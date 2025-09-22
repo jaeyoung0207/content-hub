@@ -7,44 +7,39 @@ export const detailMainKey = 'detail';
  */
 export const detailQueryKeys = {
   detail: {
-    getDetail: (originalMediaType: string, apiId: string, userId?: number) =>
-      [detailMainKey, originalMediaType, apiId, userId] as const,
-    getStarRatingAverage: (originalMediaType: string, apiId: string) =>
-      [
-        detailMainKey,
-        'getStarRatingAverage',
-        originalMediaType,
-        apiId,
-      ] as const,
+    getDetail: (contentMediaType: string, apiId: string, userId?: number) =>
+      [detailMainKey, contentMediaType, apiId, userId] as const,
+    getStarRatingAverage: (contentMediaType: string, apiId: string) =>
+      [detailMainKey, 'getStarRatingAverage', contentMediaType, apiId] as const,
     contentInformation: {
-      characterList: (originalMediaType: string, apiId: string) =>
+      characterList: (contentMediaType: string, apiId: string) =>
         [
           detailMainKey,
           'getCharacterInformation',
-          originalMediaType,
+          contentMediaType,
           apiId,
         ] as const,
-      staffList: (originalMediaType: string, apiId: string) =>
+      staffList: (contentMediaType: string, apiId: string) =>
         [
           detailMainKey,
           'getStaffInformation',
-          originalMediaType,
+          contentMediaType,
           apiId,
         ] as const,
     },
     contentComment: {
-      list: (originalMediaType: string, apiId: string) =>
-        [detailMainKey, 'getCommentList', originalMediaType, apiId] as const,
-      save: (originalMediaType: string, apiId: string) =>
-        [detailMainKey, 'saveComment', originalMediaType, apiId] as const,
-      update: (originalMediaType: string, apiId: string) =>
-        [detailMainKey, 'updateComment', originalMediaType, apiId] as const,
-      delete: (originalMediaType: string, apiId: string) =>
-        [detailMainKey, 'deleteComment', originalMediaType, apiId] as const,
+      list: (contentMediaType: string, apiId: string) =>
+        [detailMainKey, 'getCommentList', contentMediaType, apiId] as const,
+      save: (contentMediaType: string, apiId: string) =>
+        [detailMainKey, 'saveComment', contentMediaType, apiId] as const,
+      update: (contentMediaType: string, apiId: string) =>
+        [detailMainKey, 'updateComment', contentMediaType, apiId] as const,
+      delete: (contentMediaType: string, apiId: string) =>
+        [detailMainKey, 'deleteComment', contentMediaType, apiId] as const,
     },
     recommendationContent: {
-      list: (originalMediaType: string, apiId: string) =>
-        [detailMainKey, 'getRecommendation', originalMediaType, apiId] as const,
+      list: (contentMediaType: string, apiId: string) =>
+        [detailMainKey, 'getRecommendation', contentMediaType, apiId] as const,
     },
   },
 };

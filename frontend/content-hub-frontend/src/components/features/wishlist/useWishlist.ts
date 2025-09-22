@@ -20,20 +20,24 @@ type UseWishlistReturnType = {
   isLoading: boolean;
   handleWishlistDeleteOnClick: (
     apiId: number,
-    originalMediaType: string,
+    contentMediaType: string,
     title: string
   ) => void;
   isExecuting: boolean;
   wishlistOptionIsOpen: boolean;
   handleWishlistOptionOnClick: (
-    originalMediaType: string,
+    contentMediaType: string,
     index: number
   ) => void;
   aniWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
   dramaWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
+  documentaryWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
+  kidsWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
+  newsWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
+  varietyWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
   movieWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
   comicsWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
-  wishlistOriginalMediaType: string;
+  wishlistContentMediaType: string;
   wishlistOptionIndex: number;
 };
 
@@ -55,8 +59,8 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
   // 옵션 열림 상태
   const [wishlistOptionIsOpen, setWishlistOptionIsOpen] =
     useState<boolean>(false);
-  // 타겟 originalMediaType
-  const [wishlistOriginalMediaType, setWishlistOriginalMediaType] =
+  // 타겟 contentMediaType
+  const [wishlistContentMediaType, setWishlistContentMediaType] =
     useState<string>('');
   // 옵션 인덱스
   const [wishlistOptionIndex, setWishlistOptionIndex] = useState<number>(-1);
@@ -64,6 +68,10 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
   // 옵션 참조
   const aniWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
   const dramaWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
+  const documentaryWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
+  const kidsWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
+  const newsWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
+  const varietyWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
   const movieWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
   const comicsWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
 
@@ -96,13 +104,13 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     mutationKey: wishlistQueryKeys.wishlist.delete(userId),
     mutationFn: async ({
       apiId,
-      originalMediaType,
+      contentMediaType,
       userId,
     }: WishlistRequestDto & { title: string }) =>
       (
         await wishlistApi.deleteWishlist({
           userId: userId,
-          originalMediaType: originalMediaType,
+          contentMediaType: contentMediaType,
           apiId: apiId,
         })
       ).data,
@@ -137,18 +145,18 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
   /**
    * 위시리스트 삭제 버튼 클릭시 처리
    * @param apiId Api ID
-   * @param originalMediaType 원본 미디어 타입
+   * @param contentMediaType 컨텐츠 미디어 타입
    * @param title 제목
    */
   const handleWishlistDeleteOnClick = (
     apiId: number,
-    originalMediaType: string,
+    contentMediaType: string,
     title: string
   ) => {
     setIsExecuting(true);
     deleteWishlistMutation.mutate({
       apiId: String(apiId),
-      originalMediaType: originalMediaType,
+      contentMediaType: contentMediaType,
       userId: userId,
       title: title,
     });
@@ -160,10 +168,10 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
    * 옵션 버튼 클릭시 처리
    */
   const handleWishlistOptionOnClick = (
-    originalMediaType: string,
+    contentMediaType: string,
     index: number
   ) => {
-    setWishlistOriginalMediaType(originalMediaType);
+    setWishlistContentMediaType(contentMediaType);
     setWishlistOptionIndex(index);
     setWishlistOptionIsOpen((prev) => !prev);
   };
@@ -202,6 +210,26 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
         dramaWishlistOptionRef.current[wishlistOptionIndex]?.contains(
           e.target as Node
         );
+      const isDocumentaryWishlistOptionRef =
+        documentaryWishlistOptionRef.current &&
+        documentaryWishlistOptionRef.current[wishlistOptionIndex]?.contains(
+          e.target as Node
+        );
+      const isKidsWishlistOptionRef =
+        kidsWishlistOptionRef.current &&
+        kidsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
+          e.target as Node
+        );
+      const isNewsWishlistOptionRef =
+        newsWishlistOptionRef.current &&
+        newsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
+          e.target as Node
+        );
+      const isVarietyWishlistOptionRef =
+        varietyWishlistOptionRef.current &&
+        varietyWishlistOptionRef.current[wishlistOptionIndex]?.contains(
+          e.target as Node
+        );
       const isMovieWishlistOptionRef =
         movieWishlistOptionRef.current &&
         movieWishlistOptionRef.current[wishlistOptionIndex]?.contains(
@@ -217,6 +245,10 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
       if (
         !isAniWishlistOptionRef &&
         !isDramaWishlistOptionRef &&
+        !isDocumentaryWishlistOptionRef &&
+        !isKidsWishlistOptionRef &&
+        !isNewsWishlistOptionRef &&
+        !isVarietyWishlistOptionRef &&
         !isMovieWishlistOptionRef &&
         !isComicsWishlistOptionRef
       ) {
@@ -245,6 +277,10 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     wishlistOptionIndex,
     aniWishlistOptionRef,
     dramaWishlistOptionRef,
+    documentaryWishlistOptionRef,
+    kidsWishlistOptionRef,
+    newsWishlistOptionRef,
+    varietyWishlistOptionRef,
     movieWishlistOptionRef,
     comicsWishlistOptionRef,
   ]);
@@ -269,9 +305,13 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     handleWishlistOptionOnClick: handleWishlistOptionOnClick,
     aniWishlistOptionRef: aniWishlistOptionRef,
     dramaWishlistOptionRef: dramaWishlistOptionRef,
+    documentaryWishlistOptionRef: documentaryWishlistOptionRef,
+    kidsWishlistOptionRef: kidsWishlistOptionRef,
+    newsWishlistOptionRef: newsWishlistOptionRef,
+    varietyWishlistOptionRef: varietyWishlistOptionRef,
     movieWishlistOptionRef: movieWishlistOptionRef,
     comicsWishlistOptionRef: comicsWishlistOptionRef,
-    wishlistOriginalMediaType: wishlistOriginalMediaType,
+    wishlistContentMediaType: wishlistContentMediaType,
     wishlistOptionIndex: wishlistOptionIndex,
   };
 };

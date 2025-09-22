@@ -50,8 +50,8 @@ public class DetailInformationController {
 	/** 리퀘스트 파라미터 키 : 페이지 번호 */
 	private static final String PARAM_PAGE = "page";
 	
-	/** 리퀘스트 파라미터 키 : 원본 미디어 타입 */
-	private static final String PARAM_ORIGINAL_MEDIA_TYPE = "original_media_type";
+	/** 리퀘스트 파라미터 키 : 컨텐츠 미디어 타입 */
+	private static final String PARAM_CONTENT_MEDIA_TYPE = "content_media_type";
 	
 	/** 리퀘스트 파라미터 키 : 유저 ID */
 	private static final String PARAM_USER_ID = "user_id";
@@ -60,26 +60,26 @@ public class DetailInformationController {
 	 * TMDB TV 상세 조회 API
 	 * 
 	 * @param seriesId TV 시리즈 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param userId 유저 테이블 ID
 	 * @return TV 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getTvDetail")
 	public ResponseEntity<DetailTvResponseDto> getTvDetail(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
-			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		
 		// TV 상세 정보 조회
-		DetailTvResponseDto cachedResponse = informationService.getTvDetail(seriesId, originalMediaType);
+		DetailTvResponseDto cachedResponse = informationService.getTvDetail(seriesId, contentMediaType);
 		
 		// 깊은 복사 수행
 		DetailTvResponseDto newResponse = detailInformationMapper.deepCopyForTvResponse(cachedResponse);
 		
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailTvResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+			detailInformationNoCacheService.setWishlistFromResponse(DetailTvResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
 		}
 		// 응답 반환
 		return ResponseEntity.ok(newResponse);
@@ -89,26 +89,26 @@ public class DetailInformationController {
 	 * TMDB 영화 상세 조회 API
 	 * 
 	 * @param movieId 영화 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param userId 유저 테이블 ID
 	 * @return 영화 상세 응답 DTO
 	 */
 	@GetMapping(value = "/getMovieDetail")
 	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
-			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		
 		// 영화 상세 정보 조회
-		DetailMovieResponseDto cachedResponse = informationService.getMovieDetail(movieId, originalMediaType);
+		DetailMovieResponseDto cachedResponse = informationService.getMovieDetail(movieId, contentMediaType);
 		
 		// 깊은 복사 수행
 		DetailMovieResponseDto newResponse = detailInformationMapper.deepCopyForMovieResponse(cachedResponse);
 		
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailMovieResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+			detailInformationNoCacheService.setWishlistFromResponse(DetailMovieResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
 		}
 		// 응답 반환
 		return ResponseEntity.ok(newResponse);
@@ -118,7 +118,7 @@ public class DetailInformationController {
 	 * AniList Comics 상세 조회 API
 	 * 
 	 * @param comicsId Comics ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param userId 유저 테이블 ID
 	 * @return Comics 상세 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
@@ -126,19 +126,19 @@ public class DetailInformationController {
 	@GetMapping(value = "/getComicsDetail")
 	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
-			@RequestParam(PARAM_ORIGINAL_MEDIA_TYPE) String originalMediaType,
+			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) throws IOException {
 		
 		// 만화 상세 정보 조회
-		DetailComicsResponseDto cachedResponse = informationService.getComicsDetail(comicsId, originalMediaType);
+		DetailComicsResponseDto cachedResponse = informationService.getComicsDetail(comicsId, contentMediaType);
 		
 		// 깊은 복사 수행
 		DetailComicsResponseDto newResponse = detailInformationMapper.deepCopyForComicsResponse(cachedResponse);
 		
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailComicsResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), originalMediaType, userId);
+			detailInformationNoCacheService.setWishlistFromResponse(DetailComicsResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
 		}
 		// 응답 반환
 		return ResponseEntity.ok(newResponse);

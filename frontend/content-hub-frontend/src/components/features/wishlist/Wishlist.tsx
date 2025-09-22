@@ -4,7 +4,6 @@ import { WishlistResponseDto } from '@/api/data-contracts';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import {
   COMMON_IMAGES,
-  MEDIA_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
 } from '@/components/common/constants/constants';
@@ -15,6 +14,7 @@ import { checkApiId } from '@/components/common/utils/checkUtil';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { RefObject } from 'react';
+import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * DisplayWishlist 컴포넌트 props 타입
@@ -24,17 +24,17 @@ type DisplayWishlistPropsType = {
   resultList: WishlistResponseDto[];
   handleWishlistDeleteOnClick: (
     apiId: number,
-    originalMediaType: string,
+    contentMediaType: string,
     title: string
   ) => void;
   isExecuting: boolean;
   wishlistOptionIsOpen: boolean;
   handleWishlistOptionOnClick: (
-    originalMediaType: string,
+    contentMediaType: string,
     index: number
   ) => void;
   wishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
-  wishlistOriginalMediaType: string;
+  wishlistContentMediaType: string;
   wishlistOptionIndex: number;
 };
 
@@ -57,15 +57,23 @@ export const Wishlist = () => {
     handleWishlistOptionOnClick,
     aniWishlistOptionRef,
     dramaWishlistOptionRef,
+    documentaryWishlistOptionRef,
+    kidsWishlistOptionRef,
+    newsWishlistOptionRef,
+    varietyWishlistOptionRef,
     movieWishlistOptionRef,
     comicsWishlistOptionRef,
-    wishlistOriginalMediaType,
+    wishlistContentMediaType,
     wishlistOptionIndex,
   } = useWishlist(Number(userId));
 
   // 각 미디어 타입별 위시리스트 결과
   const aniResultList = data?.aniWishlist;
   const dramaResultList = data?.dramaWishlist;
+  const documentaryResultList = data?.documentaryWishlist;
+  const kidsResultList = data?.kidsWishlist;
+  const newsResultList = data?.newsWishlist;
+  const varietyResultList = data?.varietyWishlist;
   const movieResultList = data?.movieWishlist;
   const comicsResultList = data?.comicsWishlist;
 
@@ -90,6 +98,26 @@ export const Wishlist = () => {
       mediaName: t('info.movie'),
       resultList: movieResultList,
       ref: movieWishlistOptionRef,
+    },
+    {
+      mediaName: t('info.documentary'),
+      resultList: documentaryResultList,
+      ref: documentaryWishlistOptionRef,
+    },
+    {
+      mediaName: t('info.kids'),
+      resultList: kidsResultList,
+      ref: kidsWishlistOptionRef,
+    },
+    {
+      mediaName: t('info.news'),
+      resultList: newsResultList,
+      ref: newsWishlistOptionRef,
+    },
+    {
+      mediaName: t('info.variety'),
+      resultList: varietyResultList,
+      ref: varietyWishlistOptionRef,
     },
     {
       mediaName: t('info.comics'),
@@ -120,7 +148,7 @@ export const Wishlist = () => {
                     wishlistOptionIsOpen={wishlistOptionIsOpen}
                     handleWishlistOptionOnClick={handleWishlistOptionOnClick}
                     wishlistOptionRef={items.ref}
-                    wishlistOriginalMediaType={wishlistOriginalMediaType}
+                    wishlistContentMediaType={wishlistContentMediaType}
                     wishlistOptionIndex={wishlistOptionIndex}
                   />
                 </>
@@ -150,7 +178,7 @@ const DisplayWishlist = ({
   wishlistOptionIsOpen,
   handleWishlistOptionOnClick,
   wishlistOptionRef,
-  wishlistOriginalMediaType,
+  wishlistContentMediaType,
   wishlistOptionIndex,
 }: DisplayWishlistPropsType) => {
   // navigate 훅
@@ -169,7 +197,7 @@ const DisplayWishlist = ({
               key={items.apiId}
               className={
                 `${highlightHoverColor} ml-1 mr-3 cursor-pointer ` +
-                (items.originalMediaType === MEDIA_TYPE.COMICS
+                (items.contentMediaType === getContentMediaType().comicsCode
                   ? 'w-[195px] h-full'
                   : 'w-[290px] h-full')
               }
@@ -178,7 +206,7 @@ const DisplayWishlist = ({
                 checkApiId(Number(items.apiId));
                 // 상세화면 URL 생성
                 const detailUrl = detailUrlQuery({
-                  originalMediaType: items.originalMediaType!,
+                  contentMediaType: items.contentMediaType!,
                   apiId: String(items.apiId),
                   tabNo: 0,
                 });
@@ -201,7 +229,7 @@ const DisplayWishlist = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       handleWishlistOptionOnClick(
-                        items.originalMediaType!,
+                        items.contentMediaType!,
                         index
                       );
                     }}
@@ -209,7 +237,7 @@ const DisplayWishlist = ({
                   >
                     <BiDotsVerticalRounded className="absolute top-2 right-2 z-10 bg-white text-black text-2xl rounded-sm" />
                   </div>
-                  {wishlistOriginalMediaType === items.originalMediaType &&
+                  {wishlistContentMediaType === items.contentMediaType &&
                     wishlistOptionIndex === index &&
                     wishlistOptionIsOpen && (
                       <div className="absolute flex justify-center mt-1 top-8 right-2 z-10 w-20 bg-white border border-gray-300 rounded-md shadow-md p-2">
@@ -221,7 +249,7 @@ const DisplayWishlist = ({
                             if (!isExecuting) {
                               handleWishlistDeleteOnClick(
                                 Number(items.apiId),
-                                items.originalMediaType!,
+                                items.contentMediaType!,
                                 items.title!
                               );
                             }
@@ -234,13 +262,15 @@ const DisplayWishlist = ({
                   {/* 썸네일 이미지 */}
                   <img
                     src={
-                      items.originalMediaType === MEDIA_TYPE.COMICS
+                      items.contentMediaType ===
+                      getContentMediaType().comicsCode
                         ? items.thumbnailImageUrl
                         : thumbnailImagePath + items.thumbnailImageUrl
                     }
                     alt={items.title}
                     className={
-                      (items.originalMediaType === MEDIA_TYPE.COMICS
+                      (items.contentMediaType ===
+                      getContentMediaType().comicsCode
                         ? 'max-w-full h-[270px]'
                         : 'max-w-full h-[180px]') + ' object-cover rounded-2xl'
                     }

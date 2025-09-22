@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
+import com.cjy.contenthub.common.controller.dto.CommonContentMediaTypeDto;
+import com.cjy.contenthub.common.controller.dto.CommonDisplayMediaTypeDto;
+import com.cjy.contenthub.common.controller.dto.CommonMediaTypeResponseDto;
 import com.cjy.contenthub.common.util.SessionUtil;
 
 import jakarta.annotation.Nullable;
@@ -36,6 +41,47 @@ public class CommonController {
     @GetMapping("/getCsrfToken")
     public CsrfToken getCsrfToken(@Nullable CsrfToken token) {
         return token;
+    }
+    
+	/**
+	 * 공통 미디어 타입 조회
+	 * 
+	 * @return Map<String, String> 미디어 타입 맵
+	 */
+    @GetMapping("/getMediaTypes")
+    public CommonMediaTypeResponseDto getMediaTypes() {
+//    	return Stream.of(CommonMediaTypeEnum.values()).collect(
+//    			Collectors.toMap(mt -> mt.getContentMediaTypeValue().toUpperCase(), CommonMediaTypeEnum::getMediaTypeCode, (oldValue, newValue) -> oldValue)
+//    			);
+    	// 컨텐츠 미디어 타입 DTO 생성
+    	CommonContentMediaTypeDto contentMediaTypeDto = CommonContentMediaTypeDto.builder()
+    			.aniCode(ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode())
+    			.dramaCode(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())
+    			.documentaryCode(ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())
+    			.kidsCode(ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())
+    			.newsCode(ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())
+    			.varietyCode(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())
+    			.movieCode(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode())
+    			.personCode(ContentMediaTypeEnum.MEDIA_TYPE_PERSON.getContentMediaTypeCode())
+    			.comicsCode(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
+    			.build();
+    	// 화면표시용 미디어 타입 DTO 생성
+    	CommonDisplayMediaTypeDto displayMediaTypeDto = CommonDisplayMediaTypeDto.builder()
+    			.aniCode(DisplayMediaTypeEnum.MEDIA_TYPE_ANI.getDisplayMediaTypeCode())
+    			.dramaCode(DisplayMediaTypeEnum.MEDIA_TYPE_DRAMA.getDisplayMediaTypeCode())
+    			.documentaryCode(DisplayMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getDisplayMediaTypeCode())
+    			.kidsCode(DisplayMediaTypeEnum.MEDIA_TYPE_KIDS.getDisplayMediaTypeCode())
+    			.newsCode(DisplayMediaTypeEnum.MEDIA_TYPE_NEWS.getDisplayMediaTypeCode())
+    			.varietyCode(DisplayMediaTypeEnum.MEDIA_TYPE_VARIETY.getDisplayMediaTypeCode())
+    			.movieCode(DisplayMediaTypeEnum.MEDIA_TYPE_MOVIE.getDisplayMediaTypeCode())
+    			.personCode(DisplayMediaTypeEnum.MEDIA_TYPE_PERSON.getDisplayMediaTypeCode())
+    			.comicsCode(DisplayMediaTypeEnum.MEDIA_TYPE_COMICS.getDisplayMediaTypeCode())
+    			.build();
+    	// 미디어 타입 응답 DTO 생성 및 반환
+		return CommonMediaTypeResponseDto.builder()
+				.contentMediaTypeDto(contentMediaTypeDto)
+				.displayMediaTypeDto(displayMediaTypeDto)
+				.build();
     }
 	
 	/**

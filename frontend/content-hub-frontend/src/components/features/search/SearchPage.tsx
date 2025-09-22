@@ -11,9 +11,9 @@ const SearchMore = lazy(() => import('./modal/SearchMore'));
 export type SearchPropsType = {
   keyword: string; // 검색어
   isAdult?: string; // 성인물 포함 여부
-  mediaType?: string; // 미디어 타입
+  displayMediaType?: string; // 미디어 타입(화면 표시용)
   viewMore?: string; // 전체보기 여부
-  originalMediaType?: string; // 원본 미디어 타입
+  contentMediaType?: string; // 컨텐츠 미디어 타입
   apiId?: string; // API ID
   tabNo?: number; // 탭 번호
 };
@@ -27,7 +27,7 @@ export const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword')!; // 검색어
   const isAdult = searchParams.get('isAdult')!; // 성인물 포함 여부
-  const viewMore = searchParams.get('viewMore'); // 전체보기 여부
+  const displayMediaType = searchParams.get('viewMore'); // 전체보기 여부(화면 표시용 미디어 타입)
 
   return (
     <>
@@ -36,14 +36,14 @@ export const SearchPage = () => {
         <Search keyword={keyword} isAdult={isAdult} />
       </Suspense>
       {
-        // 검색어, 성인물 포함 여부, 미디어 타입, 전체보기 여부가 존재하는 경우
+        // 검색어, 성인물 포함 여부, 미디어 타입이 존재하는 경우
         // 전체보기 모달화면 컴포넌트를 렌더링
-        keyword && isAdult && viewMore && (
+        keyword && isAdult && displayMediaType && (
           <Suspense fallback={<LoadingUi />}>
             <SearchMore
               keyword={keyword}
               isAdult={isAdult}
-              mediaType={viewMore}
+              displayMediaType={displayMediaType}
             />
           </Suspense>
         )

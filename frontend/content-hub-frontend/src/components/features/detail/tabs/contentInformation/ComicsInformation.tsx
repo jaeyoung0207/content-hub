@@ -10,26 +10,26 @@ import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
  */
 type ComicsInformationPropsType = {
   detailResult: DetailResponseType;
-  originalMediaType: string;
+  contentMediaType: string;
 };
 
 /**
  * 만화 정보 컴포넌트
  * @param detailResult 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  */
 export const ComicsInformation = ({
   detailResult,
-  originalMediaType,
+  contentMediaType,
 }: ComicsInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
 
-  const characterList = isDetailComicsType(detailResult, originalMediaType)
+  const characterList = isDetailComicsType(detailResult, contentMediaType)
     ? (detailResult.characters?.edges ?? [])
     : [];
 
-  const staffList = isDetailComicsType(detailResult, originalMediaType)
+  const staffList = isDetailComicsType(detailResult, contentMediaType)
     ? (detailResult.staff?.edges ?? [])
     : [];
 
@@ -51,7 +51,7 @@ export const ComicsInformation = ({
       )}
 
       {detailResult &&
-        isDetailComicsType(detailResult, originalMediaType) &&
+        isDetailComicsType(detailResult, contentMediaType) &&
         detailResult.characters &&
         detailResult.characters.edges &&
         detailResult.characters.edges.length > 0 && (
@@ -60,7 +60,7 @@ export const ComicsInformation = ({
             <DisplayComicsCredits
               apiId={detailResult.id!}
               creditsAllList={characterList}
-              originalMediaType={originalMediaType}
+              contentMediaType={contentMediaType}
               creditsType={COMICS_CREDITS_TYPE.CHARACTER}
               isOmit={true}
             />
@@ -68,7 +68,7 @@ export const ComicsInformation = ({
         )}
 
       {detailResult &&
-        isDetailComicsType(detailResult, originalMediaType) &&
+        isDetailComicsType(detailResult, contentMediaType) &&
         detailResult.staff &&
         detailResult.staff.edges &&
         detailResult.staff.edges.length > 0 && (
@@ -77,7 +77,7 @@ export const ComicsInformation = ({
             <DisplayComicsCredits
               apiId={detailResult.id!}
               creditsAllList={staffList}
-              originalMediaType={originalMediaType}
+              contentMediaType={contentMediaType}
               creditsType={COMICS_CREDITS_TYPE.STAFF}
               isOmit={true}
             />

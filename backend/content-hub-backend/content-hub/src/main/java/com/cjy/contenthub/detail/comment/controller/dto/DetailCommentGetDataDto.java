@@ -18,8 +18,8 @@ public class DetailCommentGetDataDto {
 	/** 코멘트 ID */
 	private Long commentId;
 	
-	/** 원본 미디어 타입 */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** API ID */
 	private String apiId;

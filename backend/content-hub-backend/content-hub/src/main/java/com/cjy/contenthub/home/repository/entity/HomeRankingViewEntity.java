@@ -28,15 +28,15 @@ import lombok.NoArgsConstructor;
 @Immutable
 @Subselect(
 		"SELECT * FROM ("
-				+ "SELECT ROW_NUMBER() OVER (PARTITION BY con.media_type ORDER BY AVG(com.star_rating) DESC, COUNT(com.star_rating) DESC) as row_num, "
-				+ "con.content_id, con.original_media_type, con.media_type, con.api_id , AVG(com.star_rating) AS star_rating_average, "
+				+ "SELECT ROW_NUMBER() OVER (PARTITION BY con.display_media_type ORDER BY AVG(com.star_rating) DESC, COUNT(com.star_rating) DESC) as row_num, "
+				+ "con.content_id, con.content_media_type, con.display_media_type, con.api_id , AVG(com.star_rating) AS star_rating_average, "
 				+ "COUNT(com.star_rating) AS star_rating_count, con.title , con.thumbnail_image_url "
 				+ "FROM content.comment com "
 				+ "INNER JOIN content.content con ON com.content_id = con.content_id "
-				+ "GROUP BY con.content_id, con.original_media_type, con.media_type, con.api_id, con.title, con.thumbnail_image_url"
+				+ "GROUP BY con.content_id, con.content_media_type, con.display_media_type, con.api_id, con.title, con.thumbnail_image_url"
 				+ ") top "
 				+ "WHERE top.row_num <= 10 "
-				+ "ORDER BY top.media_type, top.star_rating_average DESC, top.star_rating_count DESC"
+				+ "ORDER BY top.display_media_type, top.star_rating_average DESC, top.star_rating_count DESC"
 		)
 public class HomeRankingViewEntity implements Serializable {
 
@@ -53,13 +53,13 @@ public class HomeRankingViewEntity implements Serializable {
 	@Column(name = "row_num")
 	private Long rowNum;
 	
-	/** 원본 미디어 타입 */
-	@Column(name = "original_media_type")
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	@Column(name = "content_media_type")
+	private String contentMediaType;
 	
 	/** 미디어 타입(화면 표시용) */
-	@Column(name = "media_type")
-	private String mediaType;
+	@Column(name = "display_media_type")
+	private String displayMediaType;
 
 	/** API ID */
 	@Column(name = "api_id")

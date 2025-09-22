@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
 import { WishlistUi } from '@/components/ui/WishlistUi';
+import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 
 type DisplayRankingsProps = {
   title: string;
@@ -47,10 +48,32 @@ export const Home = () => {
       items: data && data.movieRankingList ? data.movieRankingList : [],
     },
     {
+      title: `${t('info.documentary')} - ${t('info.top10')}`,
+      items:
+        data && data.documentaryRankingList ? data.documentaryRankingList : [],
+    },
+    {
+      title: `${t('info.kids')} - ${t('info.top10')}`,
+      items: data && data.kidsRankingList ? data.kidsRankingList : [],
+    },
+    {
+      title: `${t('info.news')} - ${t('info.top10')}`,
+      items: data && data.newsRankingList ? data.newsRankingList : [],
+    },
+    {
+      title: `${t('info.variety')} - ${t('info.top10')}`,
+      items: data && data.varietyRankingList ? data.varietyRankingList : [],
+    },
+    {
       title: `${t('info.comics')} - ${t('info.top10')}`,
       items: data && data.comicsRankingList ? data.comicsRankingList : [],
     },
   ];
+
+  // 모든 랭킹 데이터가 비어있는지 여부
+  const isDataEmpty = contentRankings.every(
+    (ranking) => ranking.items.length === 0
+  );
 
   return (
     <div className="w-sm lg:w-7xl">
@@ -63,16 +86,24 @@ export const Home = () => {
               <div className="text-4xl font-bold mb-10">
                 {t('info.rankingTitle')}
               </div>
-              {contentRankings.map((ranking, index) => (
-                <DisplayRankings
-                  key={index}
-                  title={ranking.title}
-                  items={ranking.items}
-                  user={user}
-                />
-              ))}
+              {contentRankings.map(
+                (ranking, index) =>
+                  ranking.items.length > 0 && (
+                    <DisplayRankings
+                      key={index}
+                      title={ranking.title}
+                      items={ranking.items}
+                      user={user}
+                    />
+                  )
+              )}
             </>
           )
+        )}
+        {!isLoading && isDataEmpty && (
+          <div className="text-2xl">
+            <NodataMessageUi message={t('warn.noRankingData')} />
+          </div>
         )}
       </div>
     </div>
@@ -99,19 +130,19 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
         {items.map((items, index) => {
           // 썸네일 이미지
           const thumbnailImageUrl =
-            items.originalMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === MEDIA_TYPE.COMICS
               ? items.thumbnailImageUrl
               : thumbnailImagePath + items.thumbnailImageUrl;
           const widthStyle =
-            items.originalMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === MEDIA_TYPE.COMICS
               ? 'w-[195px]'
               : 'w-[300px]';
           const heightStyle =
-            items.originalMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === MEDIA_TYPE.COMICS
               ? 'h-[270px]'
               : 'h-[180px]';
           const heartStyle =
-            items.originalMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === MEDIA_TYPE.COMICS
               ? 'z-1 relative top-28 left-16'
               : 'z-1 relative top-15 left-30';
           return (
@@ -123,7 +154,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                 checkApiId(Number(items.apiId));
                 // 상세화면 URL 생성
                 const detailUrl = detailUrlQuery({
-                  originalMediaType: items.originalMediaType!,
+                  contentMediaType: items.contentMediaType!,
                   apiId: items.apiId,
                   tabNo: 0,
                 });
@@ -147,13 +178,13 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                 />
                 <div className={heartStyle}>
                   <WishlistUi
-                    originalMediaType={items.originalMediaType!}
+                    contentMediaType={items.contentMediaType!}
                     apiId={Number(items.apiId)}
                     title={items.title!}
                     userId={user?.userId}
                     isWishlisted={items.wishlisted!}
                     thumbnailImageUrl={items.thumbnailImageUrl!}
-                    mediaType={items.mediaType}
+                    displayMediaType={items.displayMediaType}
                   />
                 </div>
               </li>

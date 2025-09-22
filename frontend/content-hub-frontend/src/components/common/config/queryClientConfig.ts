@@ -67,21 +67,26 @@ const outputError = (error: Error) => {
     const axiosError: AxiosError<AxiosErrorType> = error;
     // AxiosErrorType의 response가 없는 경우
     if (!axiosError.response) {
-      changeConsoleColor(
-        formattingErrorMsg(
-          ERROR_MESSAGE.NETWORK_ERROR.name,
-          ERROR_MESSAGE.NETWORK_ERROR.message
-        )
-      );
-      toast.error(
-        formattingErrorMsg(
-          ERROR_MESSAGE.NETWORK_ERROR.name,
-          ERROR_MESSAGE.NETWORK_ERROR.message
-        ),
-        {
-          toastId: 'networkError', // 중복 토스트 방지
-        }
-      );
+      // 네트워크 에러 코드
+      const NETWORK_ERROR = 'ERR_NETWORK';
+      // 에러 이름
+      const errorName =
+        axiosError.code === NETWORK_ERROR
+          ? ERROR_MESSAGE.NETWORK_ERROR.name
+          : axiosError.code
+            ? axiosError.code
+            : ERROR_MESSAGE.UNEXPECTED_ERROR.name;
+      // 에러 메시지
+      const errorMsg =
+        axiosError.code === NETWORK_ERROR
+          ? ERROR_MESSAGE.NETWORK_ERROR.message
+          : axiosError.message
+            ? axiosError.message
+            : ERROR_MESSAGE.UNEXPECTED_ERROR.message;
+      changeConsoleColor(formattingErrorMsg(errorName, errorMsg));
+      toast.error(formattingErrorMsg(errorName, errorMsg), {
+        toastId: 'unexpectedError', // 중복 토스트 방지
+      });
       return;
     }
     // AxiosErrorType의 response가 있지만 data가 없는 경우

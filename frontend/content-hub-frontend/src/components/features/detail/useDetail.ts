@@ -11,6 +11,7 @@ import { MEDIA_TYPE } from '@/components/common/constants/constants';
 import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 import { useUserStore } from '@/components/common/store/globalStateStore';
+import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 상세 정보 결과 타입
@@ -35,13 +36,13 @@ type useDetailReturnType = {
 
 /**
  * 상세 화면 커스텀 훅
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  * @param apiId API ID
  * @param tabNo 탭 번호
  * @returns
  */
 export const useDetail = (
-  originalMediaType: string,
+  contentMediaType: string,
   apiId: string,
   tabNo: number
 ): useDetailReturnType => {
@@ -73,38 +74,42 @@ export const useDetail = (
    * @returns 상세 정보 데이터
    */
   const getDetailApi = async () => {
-    // 원본 미디어 타입이 ANI 또는 DRAMA인 경우
+    // 컨텐츠 미디어 타입이 ANI 또는 DRAMA인 경우
     if (
-      originalMediaType === MEDIA_TYPE.ANI ||
-      originalMediaType === MEDIA_TYPE.DRAMA
+      contentMediaType === getContentMediaType().aniCode ||
+      contentMediaType === getContentMediaType().dramaCode ||
+      contentMediaType === getContentMediaType().documentaryCode ||
+      contentMediaType === getContentMediaType().kidsCode ||
+      contentMediaType === getContentMediaType().newsCode ||
+      contentMediaType === getContentMediaType().varietyCode
     ) {
       // TV 상세 정보를 가져오는 API 호출
       return (
         await detailApi.getTvDetail({
           series_id: apiIdParam,
-          original_media_type: originalMediaType,
+          content_media_type: contentMediaType,
           user_id: user?.userId,
         })
       ).data;
     }
-    // 원본 미디어 타입이 MOVIE인 경우
-    else if (originalMediaType === MEDIA_TYPE.MOVIE) {
+    // 컨텐츠 미디어 타입이 MOVIE인 경우
+    else if (contentMediaType === getContentMediaType().movieCode) {
       // MOVIE 상세 정보를 가져오는 API 호출
       return (
         await detailApi.getMovieDetail({
           movie_id: apiIdParam,
-          original_media_type: originalMediaType,
+          content_media_type: contentMediaType,
           user_id: user?.userId,
         })
       ).data;
     }
-    // 원본 미디어 타입이 COMICS인 경우
-    else if (originalMediaType === MEDIA_TYPE.COMICS) {
+    // 컨텐츠 미디어 타입이 COMICS인 경우
+    else if (contentMediaType === getContentMediaType().comicsCode) {
       // COMICS 상세 정보를 가져오는 API 호출
       return (
         await detailApi.getComicsDetail({
           comics_id: apiIdParam,
-          original_media_type: originalMediaType,
+          content_media_type: contentMediaType,
           user_id: user?.userId,
         })
       ).data;
@@ -116,7 +121,7 @@ export const useDetail = (
    */
   const { data, isLoading, isError } = useQuery({
     queryKey: detailQueryKeys.detail.getDetail(
-      originalMediaType,
+      contentMediaType,
       apiId,
       user?.userId
     ),
@@ -126,7 +131,7 @@ export const useDetail = (
     },
     staleTime: 0, // 데이터를 바로 stale로 간주
     gcTime: 0, // 캐시된 데이터를 바로 제거
-    enabled: !!originalMediaType, // originalMediaType이 존재할 때만 쿼리 실행
+    enabled: !!contentMediaType, // contentMediaType이 존재할 때만 쿼리 실행
   });
 
   // ================================================================================================== function
@@ -139,14 +144,14 @@ export const useDetail = (
   useEffect(() => {
     queryClient.fetchQuery({
       queryKey: detailQueryKeys.detail.getStarRatingAverage(
-        originalMediaType,
+        contentMediaType,
         apiId
       ),
       queryFn: async () => {
         // 유저 평균 평점 취득
         const response = (
           await detailApi.getStarRatingAverage({
-            original_media_type: originalMediaType,
+            content_media_type: contentMediaType,
             api_id: apiId,
           })
         ).data;
@@ -158,7 +163,7 @@ export const useDetail = (
         return convertResponse;
       },
     });
-  }, [tabIndex, apiId, detailApi, originalMediaType, queryClient, t]);
+  }, [tabIndex, apiId, detailApi, contentMediaType, queryClient, t]);
 
   /**
    * 탭 번호가 변경될 때마다 실행되는 useEffect

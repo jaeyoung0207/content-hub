@@ -1,5 +1,6 @@
 import { useHeaderForm, UseHeaderFormReturnType } from './useHeaderForm';
 import { useHeaderHome, UseHeaderHomeReturnType } from './useHeaderHome';
+import { useHeaderInitialize } from './useHeaderInitialize';
 import { useHeaderLogin, UseHeaderLoginReturnType } from './useHeaderLogin';
 import { useHeaderSearch, UseHeaderSearchReturnType } from './useHeaderSearch';
 import {
@@ -22,6 +23,9 @@ export type UseHeaderReturnType = UseHeaderFormReturnType &
 export const useHeader = (): UseHeaderReturnType => {
   // ================================================================================================== custom hook
 
+  // 헤더 초기화 훅
+  useHeaderInitialize();
+
   // 헤더 form 훅
   const {
     control,
@@ -32,8 +36,11 @@ export const useHeader = (): UseHeaderReturnType => {
     aniFlg,
     dramaFlg,
     movieFlg,
-    comicsFlg,
+    documentaryFlg,
+    kidsFlg,
+    newsFlg,
     varietyFlg,
+    comicsFlg,
     adultFlg,
   } = useHeaderForm();
 
@@ -100,8 +107,11 @@ export const useHeader = (): UseHeaderReturnType => {
     aniFlg: aniFlg,
     dramaFlg: dramaFlg,
     movieFlg: movieFlg,
-    comicsFlg: comicsFlg,
+    documentaryFlg: documentaryFlg,
+    kidsFlg: kidsFlg,
+    newsFlg: newsFlg,
     varietyFlg: varietyFlg,
+    comicsFlg: comicsFlg,
     adultFlg: adultFlg,
     user: user,
     handleLogoutOnClick: handleLogoutOnClick,

@@ -59,6 +59,10 @@ export const Header = () => {
     comicsFlg,
     dramaFlg,
     movieFlg,
+    documentaryFlg,
+    kidsFlg,
+    newsFlg,
+    varietyFlg,
     adultFlg,
     isFocusedRef,
     filterRef,
@@ -88,17 +92,20 @@ export const Header = () => {
     state: boolean;
   };
 
-  // name의 타입이 Path<T>이기 때문에, T가 무엇인지 정의
-  type CheckBoxType = {
-    aniFlg: boolean;
-    dramaFlg: boolean;
-    movieFlg: boolean;
-    comicsFlg: boolean;
-    varietyFlg: boolean;
-  };
+  // // name의 타입이 Path<T>이기 때문에, T가 무엇인지 정의
+  // type CheckBoxType = {
+  //   aniFlg: boolean;
+  //   dramaFlg: boolean;
+  //   movieFlg: boolean;
+  //   documentaryFlg: boolean;
+  //   kidsFlg: boolean;
+  //   newsFlg: boolean;
+  //   varietyFlg: boolean;
+  //   comicsFlg: boolean;
+  // };
 
   // 검색 종류 체크박스용 인자값 리스트
-  const checkBoxList: CheckBoxProps<CheckBoxType>[] = [
+  const checkBoxList: CheckBoxProps<HeaderType>[] = [
     {
       label: 'info.animation',
       name: 'aniFlg',
@@ -113,6 +120,26 @@ export const Header = () => {
       label: 'info.movie',
       name: 'movieFlg',
       state: movieFlg!,
+    },
+    {
+      label: 'info.documentary',
+      name: 'documentaryFlg',
+      state: documentaryFlg!,
+    },
+    {
+      label: 'info.kids',
+      name: 'kidsFlg',
+      state: kidsFlg!,
+    },
+    {
+      label: 'info.news',
+      name: 'newsFlg',
+      state: newsFlg!,
+    },
+    {
+      label: 'info.variety',
+      name: 'varietyFlg',
+      state: varietyFlg!,
     },
     {
       label: 'info.comics',

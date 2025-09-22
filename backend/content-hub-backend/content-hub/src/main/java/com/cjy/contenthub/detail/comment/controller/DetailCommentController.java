@@ -47,7 +47,7 @@ public class DetailCommentController {
 	private static final String PARAM_COMMENT_ID = "comment_id";
 
 	/** 리퀘스트 파라미터 키 : Original Media Type */
-	private static final String PARAM_ORIGINAL_MEDIATYPE = "original_media_type";
+	private static final String PARAM_ORIGINAL_MEDIATYPE = "content_media_type";
 
 	/** 리퀘스트 파라미터 키 : API ID */
 	private static final String PARAM_API_ID = "api_id";
@@ -118,7 +118,7 @@ public class DetailCommentController {
 	/**
 	 * 코멘트 목록 조회 API
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
 	 * @param providerId 프로바이더 ID
@@ -126,7 +126,7 @@ public class DetailCommentController {
 	 */
 	@GetMapping(value = "/getCommentList")
 	public ResponseEntity<DetailCommentGetResponseDto> getCommentList(
-			@RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String originalMediaType,
+			@RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String contentMediaType,
 			@RequestParam(PARAM_API_ID)  String apiId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_PROVIDER_ID, required = false)  String providerId
@@ -136,7 +136,7 @@ public class DetailCommentController {
 		DetailCommentGetResponseDto response = new DetailCommentGetResponseDto();
 
 		// 코멘트 조회 서비스 호출
-		DetailCommentServiceDto serviceResult = commentService.getCommentList(originalMediaType, apiId, page, providerId);
+		DetailCommentServiceDto serviceResult = commentService.getCommentList(contentMediaType, apiId, page, providerId);
 
 		// 서비스 DTO를 응답 DTO로 변환
 		List<DetailCommentGetDataDto> responseDtoList = mapper.commentServiceDtoListToCommentGetResponseDtoList(serviceResult.getDataList());
@@ -153,19 +153,19 @@ public class DetailCommentController {
 	/**
 	 * 별점 평균 조회 API
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @return ResponseEntity<BigDecimal> 별점 평균
 	 */
 	@GetMapping(value = "/getStarRatingAverage")
 	public ResponseEntity<BigDecimal> getStarRatingAverage(
-			@RequestParam(PARAM_ORIGINAL_MEDIATYPE) String originalMediaType,
+			@RequestParam(PARAM_ORIGINAL_MEDIATYPE) String contentMediaType,
 			@RequestParam(PARAM_API_ID) String apiId
 			) {
 
 		// 별점 평균 조회 서비스 호출
 		BigDecimal starRating = 
-				Optional.ofNullable(commentService.getStarRatingAverage(originalMediaType, apiId))
+				Optional.ofNullable(commentService.getStarRatingAverage(contentMediaType, apiId))
 				.orElse(BigDecimal.ZERO);
 
 		// 별점 평균 반환

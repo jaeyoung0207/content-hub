@@ -61,14 +61,36 @@ export const INFINITE_SCROLL_THROTTLE_DELAY = 1000;
 // 툴팁 닫힘 상태
 export const TOOLTIP_CLOSE_STATE = 0;
 
-// 미디어 타입
-export enum MEDIA_TYPE {
-  'ANI' = '1',
-  'DRAMA' = '2',
-  'MOVIE' = '3',
-  'COMICS' = '4',
-  'NOVEL' = '5',
-}
+// 미디어 타입(화면 표시용)
+export const MEDIA_TYPE = {
+  ANI: '1',
+  DRAMA: '2',
+  MOVIE: '3',
+  DOCUMENTARY: '4',
+  KIDS: '5',
+  NEWS: '6',
+  VARIETY: '7',
+  COMICS: '21',
+  PERSON: '31',
+};
+
+// 미디어 타입 이름(화면 표시용)
+export const MEDIA_TYPE_NAME = {
+  ANI: 'info.animation',
+  DRAMA: 'info.drama',
+  MOVIE: 'info.movie',
+  DOCUMENTARY: 'info.documentary',
+  KIDS: 'info.kids',
+  NEWS: 'info.news',
+  VARIETY: 'info.variety',
+  COMICS: 'info.comics',
+  PERSON: 'info.person',
+};
+
+export const MEDIA_TYPE_KIND = {
+  CONTENT_MEDIA_TYPE: '1',
+  DISPLAY_MEDIA_TYPE: '2',
+};
 
 // 탭 ID 매핑
 export const DETAIL_TAB_ID = {

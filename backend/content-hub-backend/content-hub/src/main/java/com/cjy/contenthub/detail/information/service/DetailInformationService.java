@@ -17,28 +17,28 @@ public interface DetailInformationService {
 	 * TV 시리즈 상세 정보 조회
 	 *
 	 * @param seriesId TV 시리즈 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return TV 상세 응답 DTO
 	 */
-	DetailTvResponseDto	getTvDetail(Integer seriesId, String originalMediaType);
+	DetailTvResponseDto	getTvDetail(Integer seriesId, String contentMediaType);
 	
 	/**
 	 * 영화 상세 정보 조회
 	 *
 	 * @param movieId 영화 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return 영화 상세 응답 DTO
 	 */
-	DetailMovieResponseDto getMovieDetail(Integer movieId, String originalMediaType);
+	DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType);
 	
 	/**
 	 * 만화 상세 정보 조회
 	 *
 	 * @param comicsId Comics ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return Comics 상세 응답 DTO
 	 */
-	DetailComicsResponseDto getComicsDetail(Integer comicsId, String originalMediaType) throws IOException;
+	DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException;
 	
 	/**
 	 * 만화 등장인물 목록 조회

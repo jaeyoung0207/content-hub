@@ -1,5 +1,5 @@
 import {
-  DetailComicsRecommendationsResultDto,
+  DetailRecommendationsComicsResultDto,
   DetailRecommendationsMovieResultsDto,
   DetailRecommendationsTvResultsDto,
 } from '@/api/data-contracts';
@@ -44,17 +44,17 @@ type useRecommendationContentReturnType = {
 export type RecommendationContentResultType =
   | DetailRecommendationsTvResultsDto
   | DetailRecommendationsMovieResultsDto
-  | DetailComicsRecommendationsResultDto;
+  | DetailRecommendationsComicsResultDto;
 
 /**
  * 추천 콘텐츠 정보를 가져오기 위한 훅
  * @param detailResult 추천 콘텐츠를 가져오기 위한 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param displayMediaType 화면 표시용 미디어 타입
  * @returns useRecommendationContent 훅 반환값
  */
 export const useRecommendationContent = (
   detailResult: DetailResponseType,
-  originalMediaType: string
+  displayMediaType: string
 ): useRecommendationContentReturnType => {
   // ================================================================================================== useState
 
@@ -79,10 +79,14 @@ export const useRecommendationContent = (
    * @returns 추천 콘텐츠 결과 배열
    */
   const judgeExecApi = async (pageParam: number) => {
-    // 원본 미디어 타입이 ANI 또는 DRAMA인 경우
+    // 화면 표시용 미디어 타입이 ANI 또는 DRAMA인 경우
     if (
-      originalMediaType == MEDIA_TYPE.ANI ||
-      originalMediaType == MEDIA_TYPE.DRAMA
+      displayMediaType == MEDIA_TYPE.ANI ||
+      displayMediaType == MEDIA_TYPE.DRAMA ||
+      displayMediaType == MEDIA_TYPE.DOCUMENTARY ||
+      displayMediaType == MEDIA_TYPE.KIDS ||
+      displayMediaType == MEDIA_TYPE.NEWS ||
+      displayMediaType == MEDIA_TYPE.VARIETY
     ) {
       return (
         await detailApi.getTvRecommendations({
@@ -92,8 +96,8 @@ export const useRecommendationContent = (
         })
       ).data.results;
     }
-    // 원본 미디어 타입이 MOVIE인 경우
-    else if (originalMediaType == MEDIA_TYPE.MOVIE) {
+    // 화면 표시용 미디어 타입이 MOVIE인 경우
+    else if (displayMediaType == MEDIA_TYPE.MOVIE) {
       return (
         await detailApi.getMovieRecommendations({
           movie_id: detailResult.id!,
@@ -102,8 +106,8 @@ export const useRecommendationContent = (
         })
       ).data.results;
     }
-    // 원본 미디어 타입이 COMICS인 경우
-    else if (originalMediaType == MEDIA_TYPE.COMICS) {
+    // 화면 표시용 미디어 타입이 COMICS인 경우
+    else if (displayMediaType == MEDIA_TYPE.COMICS) {
       return (
         await detailApi.getComicsRecommendations({
           media_id: detailResult.id!,
@@ -135,7 +139,7 @@ export const useRecommendationContent = (
   >({
     // useInfiniteQuery의 키 지정
     queryKey: detailQueryKeys.detail.recommendationContent.list(
-      originalMediaType,
+      displayMediaType,
       detailResult.id!.toString()
     ) as [string, string, string, string],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정

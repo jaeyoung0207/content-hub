@@ -81,12 +81,12 @@ export type CommentUseInfiniteQueryResultType = {
  * 코멘트 작성, 수정, 삭제 기능을 제공하며, 코멘트 목록을 무한 스크롤로 가져옴
  * 로그인 상태 확인 및 로그인 확인 모달 처리
  * @param detailResult 콘텐츠 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  * @returns CommentUseInfiniteQueryResultType
  */
 export const useContentComment = (
   detailResult: DetailResponseType,
-  originalMediaType: string
+  contentMediaType: string
 ): useContentCommentReturnType => {
   // ================================================================================================== react hook
 
@@ -192,7 +192,7 @@ export const useContentComment = (
   >({
     // useInfiniteQuery의 키 지정
     queryKey: detailQueryKeys.detail.contentComment.list(
-      originalMediaType,
+      contentMediaType,
       apiId
     ) as [string, string, string, string],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
@@ -200,7 +200,7 @@ export const useContentComment = (
       const response = (
         await detailApi.getCommentList({
           api_id: apiId,
-          original_media_type: originalMediaType,
+          content_media_type: contentMediaType,
           page: pageParam,
           provider_id: user?.id,
         })
@@ -235,14 +235,14 @@ export const useContentComment = (
     // 최신 코멘트 목록 조회
     queryClient.refetchQueries({
       queryKey: detailQueryKeys.detail.contentComment.list(
-        originalMediaType,
+        contentMediaType,
         apiId
       ),
     });
     // 최신 별점 평균 조회
     queryClient.refetchQueries({
       queryKey: detailQueryKeys.detail.getStarRatingAverage(
-        originalMediaType,
+        contentMediaType,
         apiId
       ),
     });
@@ -256,7 +256,7 @@ export const useContentComment = (
    */
   const saveComentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.save(
-      originalMediaType,
+      contentMediaType,
       apiId
     ),
     mutationFn: async (data: ContentCommentSchema) => {
@@ -264,10 +264,10 @@ export const useContentComment = (
       setIsSaving(true);
       // 코멘트 저장 요청 데이터 생성
       const requestData = {
-        originalMediaType: originalMediaType,
+        contentMediaType: contentMediaType,
         apiId: apiId,
         genreIds: detailResult.genreIds,
-        title: isDetailTvType(detailResult, originalMediaType)
+        title: isDetailTvType(detailResult, contentMediaType)
           ? detailResult.name
           : detailResult.title,
         thumbnailImageUrl: detailResult.backdropPath ?? detailResult.posterPath,
@@ -306,7 +306,7 @@ export const useContentComment = (
    */
   const updateCommentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.update(
-      originalMediaType,
+      contentMediaType,
       apiId
     ),
     mutationFn: async (data: ContentCommentSchema) => {
@@ -315,7 +315,7 @@ export const useContentComment = (
       // 코멘트 갱신 요청 데이터 생성
       const requestData = {
         commentId: commentId,
-        originalMediaType: originalMediaType,
+        contentMediaType: contentMediaType,
         apiId: apiId,
         providerId: user?.id,
         nickname: user?.nickname,
@@ -351,7 +351,7 @@ export const useContentComment = (
    */
   const deleteCommentMutation = useMutation({
     mutationKey: detailQueryKeys.detail.contentComment.delete(
-      originalMediaType,
+      contentMediaType,
       apiId
     ),
     mutationFn: async (commentId: number) => {

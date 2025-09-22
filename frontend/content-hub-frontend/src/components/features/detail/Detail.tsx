@@ -20,6 +20,7 @@ import {
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
 import { WishlistUi } from '@/components/ui/WishlistUi';
+import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 // lazy loading
 const VideoInformation = lazy(
@@ -43,13 +44,13 @@ const RecommendationContent = lazy(
 
 /**
  * 상세 화면 컴포넌트
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  * @param apiId API ID
  * @param tabNo 탭 번호
  */
 export const Detail = memo(() => {
   // URL 파라미터에서 값을 가져오는 useParams 훅
-  const { originalMediaType } = useParams();
+  const { contentMediaType } = useParams();
   const { apiId } = useParams();
 
   // URL query string 값을 가져오는 useSearchParams 훅
@@ -67,7 +68,7 @@ export const Detail = memo(() => {
     isError,
     userStarRating,
     user,
-  } = useDetail(originalMediaType!, apiId!, tabNo);
+  } = useDetail(contentMediaType!, apiId!, tabNo);
 
   // i18n 훅
   const { t } = useTranslation();
@@ -81,7 +82,7 @@ export const Detail = memo(() => {
     {
       id: DETAIL_TAB_ID.cast,
       tabTitle:
-        originalMediaType === MEDIA_TYPE.COMICS
+        contentMediaType === getContentMediaType().comicsCode
           ? t('info.characters')
           : t('info.cast'),
     },
@@ -101,11 +102,11 @@ export const Detail = memo(() => {
 
   // 작품 타입에 따라 조건부 렌더링을 위한 변수 설정
   const isTvType =
-    data && originalMediaType && isDetailTvType(data, originalMediaType);
+    data && contentMediaType && isDetailTvType(data, contentMediaType);
   const isMovieType =
-    data && originalMediaType && isDetailMovieType(data, originalMediaType);
+    data && contentMediaType && isDetailMovieType(data, contentMediaType);
   const isComicsType =
-    data && originalMediaType && isDetailComicsType(data, originalMediaType);
+    data && contentMediaType && isDetailComicsType(data, contentMediaType);
   const title = isTvType
     ? data.name
     : isMovieType || isComicsType
@@ -162,14 +163,14 @@ export const Detail = memo(() => {
           )
         }
         <div className="flex justify-center m-5">
-          {data && originalMediaType && (
+          {data && contentMediaType && (
             <>
               {/* 작품 이미지 */}
               <div className="flex justify-center items-center mb-4 w-[30%]">
                 <LazyImage
                   src={
                     data.posterPath
-                      ? originalMediaType === MEDIA_TYPE.COMICS
+                      ? contentMediaType === getContentMediaType().comicsCode
                         ? data.posterPath
                         : TMDB_API_IMAGE_DOMAIN +
                           (IS_MOBILE ? WIDTH_185 : WIDTH_300) +
@@ -192,13 +193,15 @@ export const Detail = memo(() => {
                 />
                 <div className={'relative top-7/16 right-1/8'}>
                   <WishlistUi
-                    originalMediaType={originalMediaType!}
+                    contentMediaType={contentMediaType!}
                     apiId={Number(data.id)}
                     title={title!}
                     userId={user?.userId}
                     isWishlisted={data.wishlisted!}
                     genreIds={data.genreIds}
-                    thumbnailImageUrl={data.backdropPath!}
+                    thumbnailImageUrl={
+                      data.backdropPath! ?? data.posterPath ?? ''
+                    }
                   />
                 </div>
               </div>
@@ -356,25 +359,31 @@ export const Detail = memo(() => {
 
         {/* 탭 내용 */}
         <div className="mt-5 p-4">
-          {data && originalMediaType && (
+          {data && contentMediaType && (
             <>
               {tabIndex === DETAIL_TAB_ID.mediaInfo && (
                 <Suspense fallback={<LoadingUi />}>
                   <div>
                     {/* 만화 정보 */}
-                    {originalMediaType === MEDIA_TYPE.COMICS && (
+                    {contentMediaType === getContentMediaType().comicsCode && (
                       <ComicsInformation
                         detailResult={data}
-                        originalMediaType={originalMediaType}
+                        contentMediaType={contentMediaType}
                       />
                     )}
                     {/* 애니, 드라마, 영화 정보 */}
-                    {(originalMediaType === MEDIA_TYPE.ANI ||
-                      originalMediaType === MEDIA_TYPE.DRAMA ||
-                      originalMediaType === MEDIA_TYPE.MOVIE) && (
+                    {(contentMediaType === getContentMediaType().aniCode ||
+                      contentMediaType === getContentMediaType().dramaCode ||
+                      contentMediaType === getContentMediaType().movieCode ||
+                      contentMediaType ===
+                        getContentMediaType().documentaryCode ||
+                      contentMediaType === getContentMediaType().kidsCode ||
+                      contentMediaType === getContentMediaType().newsCode ||
+                      contentMediaType ===
+                        getContentMediaType().varietyCode) && (
                       <VideoInformation
                         detailResult={data}
-                        originalMediaType={originalMediaType}
+                        contentMediaType={contentMediaType}
                       />
                     )}
                   </div>
@@ -386,7 +395,7 @@ export const Detail = memo(() => {
                     {/* 출연진 */}
                     <CastInformation
                       detailResult={data}
-                      originalMediaType={originalMediaType}
+                      contentMediaType={contentMediaType}
                     />
                   </div>
                 </Suspense>
@@ -397,7 +406,7 @@ export const Detail = memo(() => {
                     {/* 제작진 */}
                     <CrewInformation
                       detailResult={data}
-                      originalMediaType={originalMediaType}
+                      contentMediaType={contentMediaType}
                     />
                   </div>
                 </Suspense>
@@ -408,7 +417,7 @@ export const Detail = memo(() => {
                     {/* 평가&리뷰 */}
                     <ContentComment
                       detailResult={data}
-                      originalMediaType={originalMediaType}
+                      contentMediaType={contentMediaType}
                     />
                   </div>
                 </Suspense>
@@ -419,7 +428,7 @@ export const Detail = memo(() => {
                     {/* 비슷한 작품 */}
                     <RecommendationContent
                       detailResult={data}
-                      originalMediaType={originalMediaType}
+                      contentMediaType={contentMediaType}
                     />
                   </div>
                 </Suspense>

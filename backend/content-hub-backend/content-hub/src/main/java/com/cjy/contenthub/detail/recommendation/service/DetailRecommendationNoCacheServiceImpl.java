@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResponseDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
@@ -40,16 +40,16 @@ public class DetailRecommendationNoCacheServiceImpl implements DetailRecommendat
 	@Override
 	public void setWishlistFromTvResponse(DetailRecommendationsTvDto tvResponse, Long userId) {
 
-		// 원본 미디어 타입 리스트 생성
-		List<String> originalMediaTypeList = List.of(
-				CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode(),
-				CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode()
+		// 컨텐츠 미디어 타입 리스트 생성
+		List<String> contentMediaTypeList = List.of(
+				ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode(),
+				ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode()
 				);
 
 		// 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				tvResponse.getResults(), 
-				originalMediaTypeList, 
+				contentMediaTypeList, 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				DetailRecommendationsTvResultsDto::setWishlisted,
@@ -68,7 +68,7 @@ public class DetailRecommendationNoCacheServiceImpl implements DetailRecommendat
 		// 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				movieResponse.getResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				DetailRecommendationsMovieResultsDto::setWishlisted,
@@ -87,7 +87,7 @@ public class DetailRecommendationNoCacheServiceImpl implements DetailRecommendat
 		// 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				comicsResponse.getResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				DetailRecommendationsComicsResultDto::setWishlisted,

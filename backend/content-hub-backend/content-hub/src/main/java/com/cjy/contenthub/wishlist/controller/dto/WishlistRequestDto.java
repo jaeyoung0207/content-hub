@@ -24,9 +24,9 @@ public class WishlistRequestDto {
 	@NotNull
 	private Long userId;
 	
-	/** 원작품 미디어 타입 */
+	/** 컨텐츠 미디어 타입 */
 	@NotEmpty
-	private String originalMediaType;
+	private String contentMediaType;
 	
 	/** apiId */
 	@NotEmpty
@@ -36,7 +36,7 @@ public class WishlistRequestDto {
 	private List<Integer> genreIds;
 	
 	/** 미디어 타입(화면 표시용) */
-	private String mediaType;
+	private String displayMediaType;
 	
 	/** 제목 */
 	private String title;

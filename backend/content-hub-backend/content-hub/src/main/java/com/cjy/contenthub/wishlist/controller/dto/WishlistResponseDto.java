@@ -19,8 +19,11 @@ public class WishlistResponseDto {
 	/** user 테이블 ID */
 	private Long userId;
 	
-	/** originalMediaType */
-	private String originalMediaType;
+	/** contentMediaType */
+	private String contentMediaType;
+	
+	/** 미디어 타입(화면 표시용) */
+	private String displayMediaType;
 	
 	/** apiId */
 	private String apiId;

@@ -86,7 +86,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		
 		// 콘텐츠 엔티티 조회
 		ContentEntity content = businessUtil.getContentEntity(
-				commentParam.getOriginalMediaType(), commentParam.getApiId(),
+				commentParam.getContentMediaType(), commentParam.getApiId(),
 				commentParam.getTitle(), commentParam.getThumbnailImageUrl(), commentParam.getGenreIds(), null);
 		// 콘텐츠 ID 설정
 		comment.setContentEntity(content);
@@ -147,21 +147,21 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	/**
 	 * 코멘트 목록 조회
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
 	 * @param providerId 유저 ID
 	 * @return 상세 코멘트 서비스 DTO
 	 */
 	@Override
-	public DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String providerId) {
+	public DetailCommentServiceDto getCommentList(String contentMediaType, String apiId, Integer page, String providerId) {
 
 		// 페이지 번호 설정
 		Integer commentPage = Optional.ofNullable(page).orElse(0);
 		// 페이지 요청을 위한 Pageable 객체 생성
 		Pageable pageble = PageRequest.of(commentPage, commentPerPage, Sort.by("createTime").descending());
 		// 코멘트 엔티티 조회
-		Page<DetailCommentViewEntity> commentEntityPage = commentViewRepository.findByOriginalMediaTypeAndApiId(originalMediaType, apiId, pageble);
+		Page<DetailCommentViewEntity> commentEntityPage = commentViewRepository.findByContentMediaTypeAndApiId(contentMediaType, apiId, pageble);
 		
 		// 조회된 코멘트 엔티티 리스트 생성
 		List<DetailCommentViewEntity> commentList = new ArrayList<>(commentEntityPage.getContent());
@@ -169,7 +169,7 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 		// 코멘트 & 유저ID가 존재하는 경우
 		if (!commentList.isEmpty() && StringUtils.isNotEmpty(providerId)) {
 			// 각 페이지당 코멘트 리스트 처리
-			helper.getCommentListPerPage(commentList, originalMediaType, apiId, commentPage, providerId);
+			helper.getCommentListPerPage(commentList, contentMediaType, apiId, commentPage, providerId);
 		}
 		
 		// 서비스 DTO 리스트 생성
@@ -185,17 +185,17 @@ public class DetailCommentServiceImpl implements DetailCommentService {
 	}
 
 	/**
-	 * 특정 원본 미디어 타입과 API ID에 대한 별점 평균 조회
+	 * 특정 컨텐츠 미디어 타입과 API ID에 대한 별점 평균 조회
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @return 별점 평균
 	 */
 	@Override
-	public BigDecimal getStarRatingAverage(String originalMediaType, String apiId) {
+	public BigDecimal getStarRatingAverage(String contentMediaType, String apiId) {
 		
 		// 별점 평균 조회
-		return commentViewRepository.getStarRatingAverage(originalMediaType, apiId);
+		return commentViewRepository.getStarRatingAverage(contentMediaType, apiId);
 		
 	}
 

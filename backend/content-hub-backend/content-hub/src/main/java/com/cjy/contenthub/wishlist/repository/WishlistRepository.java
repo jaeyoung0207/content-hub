@@ -24,54 +24,73 @@ public interface WishlistRepository extends JpaRepository<WishlistEntity, Long> 
 	 * @return WishlistEntity 목록
 	 */
 	List<WishlistEntity> findByUser_UserIdAndContent_ContentId(Long userId, Long contentId);
-
+	
+	/**
+	 * 위시리스트에 등록된 userId와 apiId, contentMediaTypeList에 해당하는 ContentEntity 목록을 조회
+	 * 
+	 * @param userId 유저 테이블 ID
+	 * @param apiId  API ID
+	 * @return ContentEntity 목록
+	 */
+	@Query(value = "SELECT con.* "
+			+ "FROM \"content\".\"content\" con "
+			+ "INNER JOIN \"content\".\"wishlist\" wish ON con.content_id = wish.content_id "
+			+ "WHERE wish.user_id = :userId "
+			+ "AND con.api_id = :apiId "
+			+ "AND con.content_media_type IN ( :contentMediaTypeList ) "
+			+ "ORDER BY con.content_media_type"
+			, nativeQuery = true)
+	List<ContentEntity> getContentListByUserIdAndApiIdAndContentMediaTypeIn(@Param("userId") Long userId, @Param("apiId") String apiId, 
+			@Param("contentMediaTypeList") List<String> contentMediaTypeList); 
+	
 	/**
 	 * 위시리스트에 등록된 userId에 해당하는 ContentEntity 목록을 조회
 	 * 
 	 * @param userId 유저 테이블 ID
 	 * @return WishlistEntity 목록
 	 */
-	@Query(value = "SELECT con.* " + "FROM \"content\".\"wishlist\" wish "
-			+ "INNER JOIN content.content con ON wish.content_id = con.content_id "
+	@Query(value = "SELECT con.* " 
+			+ "FROM \"content\".\"content\" con "
+			+ "INNER JOIN \"content\".\"wishlist\" wish ON con.content_id = wish.content_id "
 			+ "WHERE wish.user_id = :userId "
-			+ "ORDER BY con.original_media_type, wish.create_time DESC",
+			+ "ORDER BY con.content_media_type, wish.create_time DESC",
 			nativeQuery = true)
-	List<ContentEntity> getWishlistByUserId(Long userId);
+	List<ContentEntity> getContentListByUserId(Long userId);
 
 	/**
 	 * 특정 유저가 위시리스트에 등록한 ContentEntity 목록을 조회
 	 * 
 	 * @param userId       유저 테이블 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiIdList         API ID 목록
 	 * @return ContentEntity 목록
 	 */
 	@Query(value = "SELECT con.* " 
-			+ "FROM \"content\".\"wishlist\" wish "
-			+ "INNER JOIN content.content con ON wish.content_id = con.content_id "
+			+ "FROM \"content\".\"content\" con "
+			+ "INNER JOIN \"content\".\"wishlist\" wish ON con.content_id = wish.content_id "
 			+ "WHERE wish.user_id = :userId "
-			+ "AND con.original_media_type IN ( :originalMediaTypeList )"
+			+ "AND con.content_media_type IN ( :contentMediaTypeList )"
 			+ "AND con.api_id IN ( :apiIdList )",
 			nativeQuery = true
 			)
-	List<ContentEntity> getWishlistedContent(@Param("userId") Long userId, 
-			@Param("originalMediaTypeList") List<String> originalMediaTypeList, @Param("apiIdList") List<String> apiIdList);
+	List<ContentEntity> getContentListByUserIdAndContentMediaTypeInAndApiIdIn(@Param("userId") Long userId, 
+			@Param("contentMediaTypeList") List<String> contentMediaTypeList, @Param("apiIdList") List<String> apiIdList);
 
 	/**
 	 * 특정 유저가 특정 콘텐츠를 위시리스트에 등록했는지 여부를 조회
 	 * 
 	 * @param userId            사용자 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId             API ID
 	 * @return WishlistEntity 목록
 	 */
 	@Query(value = "SELECT wish.*"
 			+ " FROM \"content\".\"wishlist\" wish "
-			+ " INNER JOIN content.content con ON wish.content_id = con.content_id "
+			+ " INNER JOIN \"content\".\"content\" con ON wish.content_id = con.content_id "
 			+ " WHERE wish.user_id = :userId "
-			+ " AND con.original_media_type = :originalMediaType "
+			+ " AND con.content_media_type = :contentMediaType "
 			+ " AND con.api_id = :apiId ",
 			nativeQuery = true)
-	List<WishlistEntity> getRegisteredWishlist(@Param("userId") Long userId, @Param("originalMediaType") String originalMediaType, @Param("apiId") String apiId);
+	List<WishlistEntity> getWishlistListByUserIdAndContentMediaTypeAndApiId(@Param("userId") Long userId, @Param("contentMediaType") String contentMediaType, @Param("apiId") String apiId);
 
 }

@@ -16,7 +16,7 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListCoverImageDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
 import com.cjy.contenthub.common.constants.CommonEnum.AniListMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.BusinessUtil;
@@ -89,7 +89,7 @@ public class DetailRecoommendationHelper {
 			// 장르 정보에 따라 미디어 타입 설정 및 필터링
 			if (!CollectionUtils.isEmpty(result.getGenreIds())) {
 				if (result.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))) {
-					result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode());
+					result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode());
 					filterdResultList.add(result);
 				} else if (!result.getGenreIds()
 						.contains(genreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()))
@@ -97,14 +97,14 @@ public class DetailRecoommendationHelper {
 						&& !result.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()))
 						&& !result.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()))
 						&& !result.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()))) {
-					result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode());
+					result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
 					filterdResultList.add(result);
 				} else {
-					result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_VARIETY.getMediaTypeCode());
+					result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
 					filterdResultList.add(result);
 				}
 			} else {
-				result.setOriginalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_VARIETY.getMediaTypeCode());
+				result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
 				filterdResultList.add(result);
 			}
 		}
@@ -122,13 +122,13 @@ public class DetailRecoommendationHelper {
 		if (ObjectUtils.isNotEmpty(media.getRelations()) && ObjectUtils.isNotEmpty(media.getRelations().getNodes())) {
 			media.getRelations().getNodes().stream()
 			.filter(e -> StringUtils.equals(e.getType(),
-					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
+					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getAnilistMediaType()))
 			.forEach(node -> results.add(DetailRecommendationsComicsResultDto.builder()
 					.id(node.getId())
 					.title(node.getTitle().getUserPreferred())
 					.backdropPath(node.getCoverImage().getLarge())
 					.posterPath(node.getCoverImage().getExtraLarge())
-					.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+					.contentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
 					.genreIds(businessUtil.genreMappingFromAniListToTmdb(node.getGenres()))
 					.build()));
 		}
@@ -146,7 +146,7 @@ public class DetailRecoommendationHelper {
 				&& ObjectUtils.isNotEmpty(media.getRecommendations().getNodes())) {
 			media.getRecommendations().getNodes().stream()
 			.filter(e -> StringUtils.equals(e.getMediaRecommendation().getType(),
-					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getMediaType()))
+					AniListMediaTypeEnum.MEDIA_TYPE_MANGA.getAnilistMediaType()))
 			.forEach(node -> {
 				AniListMediaRecommendationDetailDto recommendationDetail = node.getMediaRecommendation();
 				String title = Optional.ofNullable(recommendationDetail.getTitle())
@@ -163,7 +163,7 @@ public class DetailRecoommendationHelper {
 						.title(title)
 						.backdropPath(backdropPath)
 						.posterPath(posterPath)
-						.originalMediaType(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())
+						.contentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
 						.genreIds(businessUtil.genreMappingFromAniListToTmdb(recommendationDetail.getGenres()))
 						.build());
 			});

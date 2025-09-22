@@ -34,9 +34,11 @@ import lombok.NoArgsConstructor;
 @Table(
 		schema = CommonConstants.SCHEMA_NAME_CONTENT, 
 		name = "content",
-		uniqueConstraints = @UniqueConstraint(name = "content_unique", columnNames = {"original_media_type", "api_id"}),
-		indexes = {@Index(name = "idx_original_media_type_api_id", columnList = "original_media_type, api_id")}
-		)
+		uniqueConstraints = @UniqueConstraint(name = "content_unique", columnNames = {"content_media_type", "api_id"}),
+		indexes = {
+				@Index(name = "idx_content_media_type_api_id", columnList = "content_media_type, api_id"), 
+				@Index(name = "idx_api_id", columnList = "api_id")
+		})
 public class ContentEntity implements Serializable {
 
 	/** 직렬화 ID */
@@ -48,15 +50,15 @@ public class ContentEntity implements Serializable {
 	@Column(name = "content_id")
 	private Long contentId;
 
-	/** 원본 미디어 타입 */
+	/** 컨텐츠 미디어 타입 */
 	@NotNull
-	@Column(name = "original_media_type", length = 1)
-	private String originalMediaType;
-	
+	@Column(name = "content_media_type")
+	private String contentMediaType;
+
 	/** 미디어 타입(화면 표시용) */
 	@NotNull
-	@Column(name = "media_type")
-	private String mediaType;
+	@Column(name = "display_media_type")
+	private String displayMediaType;
 
 	/** API ID */
 	@NotNull
@@ -67,7 +69,7 @@ public class ContentEntity implements Serializable {
 	@NotNull
 	@Column(name = "title", length = 500)
 	private String title;
-	
+
 	/** 썸네일 이미지 URL */
 	@Column(name = "thumbnail_image_url")
 	private String thumbnailImageUrl;

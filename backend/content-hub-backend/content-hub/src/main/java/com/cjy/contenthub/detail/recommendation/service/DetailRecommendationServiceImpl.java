@@ -24,7 +24,7 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
 import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
@@ -221,12 +221,12 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 							detailRecommendationMapper.tmdbRecommendationsMovieListToDetailRecommendationsMovieList(response.getResults());
 
 					// 미디어 타입
-					String originalMediaType = CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode();
+					String contentMediaType = ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode();
 
 					// 응답 정보 필터링
 					movieResultList.stream()
 					.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds()))
-					.forEach(result -> result.setOriginalMediaType(originalMediaType));
+					.forEach(result -> result.setContentMediaType(contentMediaType));
 
 					// 필터링된 응답 반환
 					return DetailRecommendationsMovieDto.builder()

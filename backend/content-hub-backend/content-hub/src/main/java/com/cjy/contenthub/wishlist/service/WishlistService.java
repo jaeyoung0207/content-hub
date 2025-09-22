@@ -1,5 +1,7 @@
 package com.cjy.contenthub.wishlist.service;
 
+import java.util.List;
+
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
@@ -21,6 +23,14 @@ public interface WishlistService {
 	 * @param saveServiceDto
 	 */
 	boolean removeFromWishlist(WishlistServiceDto saveServiceDto);
+	
+	/**
+	 * 위시리스트에 이미 존재하는지 확인
+	 * 
+	 * @param serviceDto
+	 * @return 존재 여부
+	 */
+	List<WishlistServiceDto> checkWishlistExist(Long userId, String apiId, String contentMediaType);
 	
 	/**
 	 * 유저가 등록한 위시리스트 조회

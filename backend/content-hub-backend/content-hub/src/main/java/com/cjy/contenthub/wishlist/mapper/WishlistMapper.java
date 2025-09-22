@@ -9,6 +9,7 @@ import org.mapstruct.Named;
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;
+import com.cjy.contenthub.wishlist.controller.dto.WishlistResponseDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
@@ -44,6 +45,24 @@ public interface WishlistMapper {
 	 */
 	@IterableMapping(qualifiedByName = "contentToService")
 	List<WishlistServiceDto> contentListToServiceList(List<ContentEntity> contentEntityList);
+	
+	/**
+	 * WishlistServiceDto를 WishlistResponseDto로 변환
+	 * 
+	 * @param serviceDto
+	 * @return WishlistResponseDto
+	 */
+	@Named("serviceToResponse")
+	WishlistResponseDto serviceToResponse(WishlistServiceDto serviceDto);
+	
+	/**
+	 * WishlistServiceDto 리스트를 WishlistResponseDto 리스트로 변환
+	 * 
+	 * @param serviceDtoList
+	 * @return WishlistResponseDto 리스트
+	 */
+	@IterableMapping(qualifiedByName = "serviceToResponse")
+	List<WishlistResponseDto> serviceListToResponseList(List<WishlistServiceDto> serviceDtoList);
 	
 	/**
 	 * WishlistListServiceDto를 WishlistListResponseDto로 변환

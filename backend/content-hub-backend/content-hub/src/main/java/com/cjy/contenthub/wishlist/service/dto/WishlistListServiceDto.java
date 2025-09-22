@@ -24,6 +24,18 @@ public class WishlistListServiceDto {
 	/** 드라마 위시리스트 */
 	private List<WishlistServiceDto> dramaWishlist;
 	
+	/** 다큐멘터리 위시리스트 */
+	private List<WishlistServiceDto> documentaryWishlist;
+	
+	/** 키즈 위시리스트 */
+	private List<WishlistServiceDto> kidsWishlist;
+	
+	/** 뉴스 위시리스트 */
+	private List<WishlistServiceDto> newsWishlist;
+	
+	/** 예능 위시리스트 */
+	private List<WishlistServiceDto> varietyWishlist;
+	
 	/** 영화 위시리스트 */
 	private List<WishlistServiceDto> movieWishlist;
 	

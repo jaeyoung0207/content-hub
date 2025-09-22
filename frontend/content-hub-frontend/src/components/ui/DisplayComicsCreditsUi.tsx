@@ -19,7 +19,7 @@ import { highlightHoverColor } from '../common/constants/tailwindStyles';
  * 만화 크레딧 표시 컴포넌트 props 타입
  */
 type DisplayComicsCreditsPropsType = {
-  originalMediaType: string;
+  contentMediaType: string;
   apiId: number;
   creditsAllList: (
     | AniListCharactersEdgesDto
@@ -35,7 +35,7 @@ type DisplayComicsCreditsPropsType = {
  */
 export const DisplayComicsCredits = ({
   apiId,
-  originalMediaType,
+  contentMediaType,
   creditsAllList,
   creditsType,
   isOmit,
@@ -65,7 +65,7 @@ export const DisplayComicsCredits = ({
           {isOmit && creditsAllList!.length > settings.detailComicsCount && (
             <Link
               to={detailUrlQuery({
-                originalMediaType: originalMediaType,
+                contentMediaType: contentMediaType,
                 apiId: String(apiId),
                 tabNo: tabNo,
               })}

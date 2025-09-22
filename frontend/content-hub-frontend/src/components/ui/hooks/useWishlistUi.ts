@@ -8,6 +8,12 @@ import { throttle } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
 import { useTranslation } from 'react-i18next';
+import {
+  getDisplayMediaTypeName,
+  mappingToMediaType,
+} from '@/components/common/utils/convertUtil';
+import { MEDIA_TYPE_KIND } from '@/components/common/constants/constants';
+import { useConfirmDialogStore } from '@/components/common/store/globalStateStore';
 
 /**
  * 위시리스트 훅 반환 타입
@@ -24,12 +30,12 @@ type UseWishlistReturnType = {
 export const useWishlistUi = ({
   isWishlisted,
   userId,
-  originalMediaType,
+  contentMediaType,
   apiId,
   title,
   thumbnailImageUrl,
   genreIds,
-  mediaType,
+  displayMediaType,
 }: WishlistUiPropsType): UseWishlistReturnType => {
   // ================================================================================================== react hook
 
@@ -53,6 +59,10 @@ export const useWishlistUi = ({
 
   // ================================================================================================== zustand
 
+  // 확인 다이얼로그 상태 관리 훅
+  const { setIsConfirmDialogOpen, setConfirmMsg, setOnOk, setOnCancel } =
+    useConfirmDialogStore();
+
   // ================================================================================================== mutation
 
   /**
@@ -64,12 +74,12 @@ export const useWishlistUi = ({
       (
         await wishlistApi.saveWishlist({
           userId: userId!,
-          originalMediaType: originalMediaType,
+          contentMediaType: contentMediaType,
           apiId: String(apiId),
           title: title,
           thumbnailImageUrl: thumbnailImageUrl,
           genreIds: genreIds ?? [],
-          mediaType: mediaType,
+          displayMediaType: displayMediaType,
         })
       ).data,
     onSuccess: (res) => {
@@ -108,7 +118,7 @@ export const useWishlistUi = ({
       (
         await wishlistApi.deleteWishlist({
           userId: userId!,
-          originalMediaType: originalMediaType,
+          contentMediaType: contentMediaType,
           apiId: String(apiId),
         })
       ).data,
@@ -139,6 +149,25 @@ export const useWishlistUi = ({
     },
   });
 
+  const checkWishlistExists = async () => {
+    return await queryClient.fetchQuery({
+      queryKey: wishlistQueryKeys.wishlist.exists(
+        userId!,
+        contentMediaType,
+        apiId
+      ),
+      queryFn: async () => {
+        return (
+          await wishlistApi.checkWishlist({
+            user_id: userId!,
+            api_id: String(apiId),
+            content_media_type: contentMediaType,
+          })
+        ).data;
+      },
+    });
+  };
+
   // ================================================================================================== function
 
   /**
@@ -158,7 +187,48 @@ export const useWishlistUi = ({
     if (addToWishlist) {
       deleteWishlistMutation.mutate();
     } else {
-      addWishlistMutation.mutate();
+      checkWishlistExists().then((res) => {
+        if (res && res.length > 0) {
+          let displayMediaTypeNames: string[] = [];
+          res.forEach((items) => {
+            if (items.displayMediaType) {
+              displayMediaTypeNames.push(
+                t(getDisplayMediaTypeName(items.displayMediaType)!) ?? ''
+              );
+            }
+          });
+          // 이미 등록된 화면 표시용 미디어 타입이 존재하는 경우 확인 다이얼로그 표시
+          const dialogMessage =
+            displayMediaTypeNames.join(', ') +
+            '에 등록되어 있는 작품입니다. \r\n' +
+            t(
+              getDisplayMediaTypeName(
+                mappingToMediaType(
+                  contentMediaType,
+                  MEDIA_TYPE_KIND.DISPLAY_MEDIA_TYPE
+                )!
+              )!
+            ) +
+            '에도 등록하시겠습니까?';
+          // 확인 다이얼로그 표시
+          setIsConfirmDialogOpen(true);
+          // 확인 다이얼로그 메시지 설정
+          setConfirmMsg(dialogMessage);
+          // 확인 다이얼로그 확인 버튼 핸들러 설정
+          setOnOk(() => {
+            setIsConfirmDialogOpen(false);
+            addWishlistMutation.mutate();
+          });
+          // 확인 다이얼로그 취소 버튼 핸들러 설정
+          setOnCancel(() => {
+            setIsConfirmDialogOpen(false);
+            setIsExecuting(false);
+          });
+        } else {
+          // 위시리스트에 없는 경우 바로 추가
+          addWishlistMutation.mutate();
+        }
+      });
     }
   }, 500);
 

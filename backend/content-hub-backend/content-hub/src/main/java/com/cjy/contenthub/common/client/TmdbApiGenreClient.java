@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbGenreDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbGenreListDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,7 +61,7 @@ public class TmdbApiGenreClient {
 				.bodyToMono(TmdbGenreListDto.class)
 				.map(response -> response.getGenres().stream()
 						.collect(Collectors.toMap(
-								TmdbGenreDto::getName, // 키
+								genre -> TmdbGenreEnum.GENRE_ID_EN_MAP.get(genre.getId()), // 키 : Enum 맵핑
 								TmdbGenreDto::getId, // 값
 								(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
 								HashMap::new // 반환형 지정
@@ -89,7 +90,7 @@ public class TmdbApiGenreClient {
 				.bodyToMono(TmdbGenreListDto.class)
 				.map(response -> response.getGenres().stream()
 						.collect(Collectors.toMap(
-								TmdbGenreDto::getName, // 키
+								genre -> TmdbGenreEnum.GENRE_ID_EN_MAP.get(genre.getId()), // 키 : Enum 맵핑
 								TmdbGenreDto::getId, // 값
 								(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
 								HashMap::new // 반환형 지정

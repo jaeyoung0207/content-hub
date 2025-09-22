@@ -45,5 +45,4 @@ public class HomeController {
 		// 응답 DTO 리스트 반환
 		return ResponseEntity.ok(response);
 	}
-
 }

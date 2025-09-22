@@ -22,7 +22,7 @@ public interface SearchService {
 	List<String> searchKeyword(String keyword, boolean isAdult);
 	
 	/**
-	 * 애니/드라마/영화 검색 데이터 조회
+	 * TV 시리즈/영화 검색 데이터 조회
 	 * 
 	 * @param keyword 검색어
 	 * @param isAdult 성인물 포함 여부
@@ -41,14 +41,15 @@ public interface SearchService {
 	SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page, Long userId);
 	
 	/**
-	 * 드라마 검색 데이터 조회
+	 * TV 시리즈 검색 데이터 조회(애니 제외)
 	 * 
 	 * @param keyword 검색어
 	 * @param isAdult 성인물 포함 여부
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param page    페이지 번호
 	 * @return 드라마 검색 결과 DTO
 	 */
-	SearchTvResponseDto searchDrama(String keyword, boolean isAdult, Integer page, Long userId);
+	SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page, Long userId);
 	
 	/**
 	 * 영화 검색 데이터 조회

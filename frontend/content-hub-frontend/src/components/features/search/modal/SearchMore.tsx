@@ -5,30 +5,19 @@ import {
 import { CloseButtonUi } from '@/components/ui/common/CloseButtonUi';
 import { useSearchMore } from './useSearchMore';
 import { useTranslation } from 'react-i18next';
-import { SearchCommonResultType } from '../useSearch';
 import { memo } from 'react';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from '../SearchPage';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
 
 /**
- * 전체보기 모달화면 컴포넌트 props 타입
- */
-export type SearchModalPropsType = {
-  keyword: string | null | undefined;
-  mediaType: string;
-  getDatailData: (params: SearchCommonResultType, mediaType: string) => void;
-  detailResult?: SearchCommonResultType | undefined;
-};
-
-/**
  * 전체보기 모달화면 컴포넌트
  * @param keyword 검색어
  * @param isAdult 성인 콘텐츠 포함 여부
- * @param mediaType 미디어 타입
+ * @param displayMediaType 미디어 타입
  */
 export const SearchMore = memo(
-  ({ keyword, isAdult, mediaType }: SearchPropsType) => {
+  ({ keyword, isAdult, displayMediaType }: SearchPropsType) => {
     // i18n 번역 함수
     const { t } = useTranslation();
     // 성인 콘텐츠 포함 여부
@@ -41,17 +30,25 @@ export const SearchMore = memo(
       hasNextPage,
       isFetchingNextPage,
       handleModalClose,
-    } = useSearchMore(keyword, adultFlag, mediaType!);
+    } = useSearchMore(keyword, adultFlag, displayMediaType!);
 
     // 각 미디어 이름을 가져오는 함수
     const getMediaName = () => {
-      if (mediaType === MEDIA_TYPE.ANI) {
+      if (displayMediaType === MEDIA_TYPE.ANI) {
         return 'info.animation';
-      } else if (mediaType === MEDIA_TYPE.DRAMA) {
+      } else if (displayMediaType === MEDIA_TYPE.DRAMA) {
         return 'info.drama';
-      } else if (mediaType === MEDIA_TYPE.MOVIE) {
+      } else if (displayMediaType === MEDIA_TYPE.MOVIE) {
         return 'info.movie';
-      } else if (mediaType === MEDIA_TYPE.COMICS) {
+      } else if (displayMediaType === MEDIA_TYPE.DOCUMENTARY) {
+        return 'info.documentary';
+      } else if (displayMediaType === MEDIA_TYPE.KIDS) {
+        return 'info.kids';
+      } else if (displayMediaType === MEDIA_TYPE.NEWS) {
+        return 'info.news';
+      } else if (displayMediaType === MEDIA_TYPE.VARIETY) {
+        return 'info.variety';
+      } else if (displayMediaType === MEDIA_TYPE.COMICS) {
         return 'info.comics';
       } else {
         return 'info.variety';
@@ -72,7 +69,7 @@ export const SearchMore = memo(
                     <DisplaySearchResults
                       mediaName={t(getMediaName())}
                       results={data.pages.flat()}
-                      mediaType={mediaType!}
+                      displayMediaType={displayMediaType!}
                       keyword={keyword!}
                       isAdult={String(false)}
                       searchScreenType={SEARCH_SCREEN_TYPE.VIEW_MORE}

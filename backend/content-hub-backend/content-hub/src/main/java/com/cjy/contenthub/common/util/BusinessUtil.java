@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonEnum.AniListGenreEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MediaTypeMappingEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.function.WishlistedSetter;
 import com.cjy.contenthub.common.repository.ContentRepository;
@@ -32,7 +34,7 @@ public class BusinessUtil {
 	 * 검색 결과 리스트에 위시리스트 여부를 설정하는 유틸리티 메서드
 	 *
 	 * @param resultsList        검색 결과 리스트
-	 * @param originalMediaTypeList  원본 미디어 타입
+	 * @param contentMediaTypeList  컨텐츠 미디어 타입
 	 * @param userId             유저 테이블 ID
 	 * @param idExtractor        검색 결과에서 API ID를 추출하는 함수
 	 * @param wishlistedSetter   검색 결과에 찜 여부를 설정하는 함수
@@ -41,7 +43,7 @@ public class BusinessUtil {
 	 */
 	public <T> void setWishlisted(
 			List<T> resultsList,
-			List<String> originalMediaTypeList,
+			List<String> contentMediaTypeList,
 			Long userId,
 			Function<T, String> idExtractor,
 			WishlistedSetter<T> wishlistedSetter,
@@ -61,7 +63,7 @@ public class BusinessUtil {
 		List<String> apiIdList = resultsList.stream().map(idExtractor).toList();
 		
 		// 유저의 위시리스트 목록에서 해당 미디어 타입과 API ID에 해당하는 콘텐츠 조회
-		List<ContentEntity> contentList = wishlistRepository.getWishlistedContent(userId, originalMediaTypeList, apiIdList);
+		List<ContentEntity> contentList = wishlistRepository.getContentListByUserIdAndContentMediaTypeInAndApiIdIn(userId, contentMediaTypeList, apiIdList);
 
 		// 위시리스트에 등록된 콘텐츠가 없으면 처리 종료
 		if (contentList == null || contentList.isEmpty()) {
@@ -71,7 +73,7 @@ public class BusinessUtil {
 		// 검색 결과와 위시리스트 콘텐츠를 비교하여 위시리스트 여부 설정
 		for (T results : resultsList) {
 			for (ContentEntity content : contentList) {
-				if (originalMediaTypeList.contains(content.getOriginalMediaType())
+				if (contentMediaTypeList.contains(content.getContentMediaType())
 						&& StringUtils.equals(content.getApiId(), idExtractor.apply(results))) {
 					wishlistedSetter.setWishlisted(results, true);
 					break;
@@ -83,43 +85,43 @@ public class BusinessUtil {
 	/**
 	 * 콘텐츠 엔티티 조회 또는 등록
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId             API ID
 	 * @param title             제목
 	 * @param thumbnailImageUrl 썸네일 이미지 URL
 	 * @param genreIdList       장르 ID 리스트
-	 * @param mediaType        미디어 타입
+	 * @param displaymediaType        미디어 타입
 	 * @return 콘텐츠 엔티티
 	 */
-	public ContentEntity getContentEntity(String originalMediaType, String apiId, String title, String thumbnailImageUrl, List<Integer> genreIdList, String mediaType) {
+	public ContentEntity getContentEntity(String contentMediaType, String apiId, String title, String thumbnailImageUrl, List<Integer> genreIdList, String displaymediaType) {
 		
 		// 콘텐츠 엔티티 조회
-		ContentEntity content = contentRepository.findByOriginalMediaTypeAndApiId(originalMediaType, apiId);
+		ContentEntity content = contentRepository.findByContentMediaTypeAndApiId(contentMediaType, apiId);
 		
 		// 콘텐츠 엔티티가 존재하지 않는 경우 콘텐츠 테이블 등록
 		if (ObjectUtils.isEmpty(content)) {
 			// 미디어 타입 설정
-			String convertedMediaType = "";
+			String convertedDisplayMediaType = "";
 			// 명시된 미디어 타입이 있는 경우 해당 값 사용
-			if (StringUtils.isNotEmpty(mediaType)) {
-				convertedMediaType = mediaType;
+			if (StringUtils.isNotEmpty(displaymediaType)) {
+				convertedDisplayMediaType = displaymediaType;
 			} 
 			// 명시된 미디어 타입이 없는 경우 장르 정보를 기반으로 미디어 타입 결정
 			else {
 				// 애니메이션 장르가 포함된 영화는 미디어 타입을 애니메이션으로 설정
-				if (StringUtils.equals(originalMediaType, CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode())
+				if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode())
 						&& genreIdList.stream().anyMatch(id -> id.equals(TmdbGenreEnum.GENRE_ANI.getGenreId()))) {
-					convertedMediaType = CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode();
+					convertedDisplayMediaType = DisplayMediaTypeEnum.MEDIA_TYPE_ANI.getDisplayMediaTypeCode();
 				}
-				// 그 외에는 원본 미디어 타입 사용
+				// 그 외에는 컨텐츠 미디어 타입에 해당하는 화면 표시용 미디어 타입 사용
 				else {
-					convertedMediaType = originalMediaType;
+					convertedDisplayMediaType = MediaTypeMappingEnum.CONTENT_DISPLAY_MEDIA_TYPE_MAP.get(contentMediaType);
 				}
 			}
             // 콘텐츠 엔티티 생성 및 저장
 			ContentEntity newContent = ContentEntity.builder()
-					.originalMediaType(originalMediaType)
-					.mediaType(convertedMediaType)
+					.contentMediaType(contentMediaType)
+					.displayMediaType(convertedDisplayMediaType)
 					.apiId(apiId)
 					.title(title)
 					.thumbnailImageUrl(thumbnailImageUrl)

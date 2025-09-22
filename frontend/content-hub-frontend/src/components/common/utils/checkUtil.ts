@@ -2,6 +2,10 @@ import { toast } from 'react-toastify';
 import i18n from 'i18next';
 
 /**
+ * 체크 함수를 정의 하는 유틸 파일
+ */
+
+/**
  * apiId 체크 함수
  * @param apiId API ID
  */

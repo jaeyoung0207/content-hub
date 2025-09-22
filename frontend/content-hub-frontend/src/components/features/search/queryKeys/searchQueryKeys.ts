@@ -13,8 +13,8 @@ export const searchQueryKeys = {
     searchMore: (
       keyword: string,
       isAdult: boolean,
-      mediaType: string,
+      displayMediaType: string,
       userId?: number
-    ) => ['searchMore', keyword, isAdult, mediaType, userId] as const,
+    ) => ['searchMore', keyword, isAdult, displayMediaType, userId] as const,
   },
 };

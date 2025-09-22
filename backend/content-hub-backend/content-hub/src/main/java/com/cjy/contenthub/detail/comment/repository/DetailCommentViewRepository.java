@@ -22,37 +22,37 @@ public interface DetailCommentViewRepository extends JpaRepository<DetailComment
 	/**
 	 * 코멘트 뷰 엔티티 타입 Page 조회
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param pageable 페이지 정보
 	 * @return 상세 코멘트 페이지
 	 */
-	Page<DetailCommentViewEntity> findByOriginalMediaTypeAndApiId(String originalMediaType, String apiId, Pageable pageable);
+	Page<DetailCommentViewEntity> findByContentMediaTypeAndApiId(String contentMediaType, String apiId, Pageable pageable);
 
 	/**
 	 * 코멘트 뷰 엔티티 조회
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param providerId 프로바이더 ID
 	 * @return 상세 코멘트 뷰 엔티티
 	 */
-	DetailCommentViewEntity findByOriginalMediaTypeAndApiIdAndProviderId(String originalMediaType, String apiId, String providerId);
+	DetailCommentViewEntity findByContentMediaTypeAndApiIdAndProviderId(String contentMediaType, String apiId, String providerId);
 
 	/**
 	 * 별점 평균 조회
 	 * native SQL 쿼리를 사용하여 데이터베이스에서 직접 계산
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @return 별점 평균
 	 */
 	@Query(value = "SELECT ROUND(AVG(comment.star_rating),1) AS star_rating_average "
 			+ "FROM \"content\".\"comment\" comment "
 			+ "INNER JOIN \"content\".\"content\" content ON comment.content_id = content.content_id "
-			+ "WHERE content.original_media_type = :originalMediaType AND content.api_id = :apiId",
+			+ "WHERE content.content_media_type = :contentMediaType AND content.api_id = :apiId",
 			nativeQuery = true
 			)
-	BigDecimal getStarRatingAverage(@Param("originalMediaType") String originalMediaType, @Param("apiId") String apiId);
+	BigDecimal getStarRatingAverage(@Param("contentMediaType") String contentMediaType, @Param("apiId") String apiId);
 
 }

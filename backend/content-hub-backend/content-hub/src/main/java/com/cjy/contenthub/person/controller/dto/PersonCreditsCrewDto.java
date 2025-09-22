@@ -31,7 +31,7 @@ public class PersonCreditsCrewDto extends TmdbPersonCreditsCrewDto {
 	/** 에피소드 수 (TV Only) */
 	private int episodeCount;
 	
-	/** 미디어 타입 */
-	private String mediaType;
+	/** 컨텐츠 미디어 타입(이름) */
+	private String contentMediaTypeName;
 
 }

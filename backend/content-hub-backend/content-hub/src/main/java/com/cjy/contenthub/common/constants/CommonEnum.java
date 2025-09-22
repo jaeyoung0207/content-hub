@@ -1,6 +1,8 @@
 package com.cjy.contenthub.common.constants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +16,33 @@ import lombok.Getter;
  * 공통 enum 정의 클래스
  */
 public class CommonEnum {
+	
+	/** 장르명 : 애니메이션 */
+	private static final String ANI = "ani";
+	
+	/** 장르명 : 드라마 */
+	private static final String DRAMA = "drama";
+	
+	/** 장르명 : 다큐멘터리 */
+	private static final String DOCUMENTARY = "documentary";
+	
+	/** 장르명 : 키즈 */
+	private static final String KIDS = "kids";
+	
+	/** 장르명 : 뉴스 */
+	private static final String NEWS = "news";
+	
+	/** 장르명 : 예능 */
+	private static final String VARIETY = "variety";
+	
+	/** 장르명 : 영화 */
+	private static final String MOVIE = "movie";
+	
+	/** 장르명 : 코믹스 */
+	private static final String COMICS = "comics";
+	
+	/** 장르명 : 인물 */
+	private static final String PERSON = "person";
 
 	/**
 	 * TMDB API 장르 정의 enum
@@ -86,9 +115,13 @@ public class CommonEnum {
 		/** 장르(한국어) */
 		private String genreKorean;
 
-		/** 장르 맵 */
+		/** 장르 맵(영어 -> 한국어) */
 		public static final Map<String, String> GENRE_EN_KO_MAP = Stream.of(values()).collect(
 				Collectors.toMap(TmdbGenreEnum::getGenreEnglish, TmdbGenreEnum::getGenreKorean, (oldKey,newKey) -> newKey));
+		
+		/** 장르 맵(ID -> 영어) */
+		public static final Map<Integer, String> GENRE_ID_EN_MAP = Stream.of(values()).collect(
+				Collectors.toMap(TmdbGenreEnum::getGenreId, TmdbGenreEnum::getGenreEnglish, (oldKey,newKey) -> newKey));
 
 		/** 영어 장르명 -> 한글 장르명으로 변경 */
 		public static String getTranslatedGenre(String genre) {
@@ -98,6 +131,7 @@ public class CommonEnum {
 	
 	/**
 	 * AniList 장르 정의 enum
+	 * TMDB 장르와 매핑되는 AniList 장르의 경우 TMDB 장르 ID를 함께 정의
 	 */
 	@AllArgsConstructor
 	@Getter
@@ -158,34 +192,144 @@ public class CommonEnum {
 	}
 
 	/**
-	 * 공통 미디어 타입 정의 enum
+	 * 컨텐츠 미디어 타입 정의 enum
 	 */
 	@AllArgsConstructor
 	@Getter
-	public enum CommonMediaTypeEnum {
+	public enum ContentMediaTypeEnum {
 
 		/** Ani */
-		MEDIA_TYPE_ANI("1", "ani"),
+		MEDIA_TYPE_ANI("1101", ANI),
 		/** Drama */
-		MEDIA_TYPE_DRAMA("2", "drama"),
+		MEDIA_TYPE_DRAMA("1102", DRAMA),
+        /** Documentary */		
+		MEDIA_TYPE_DOCUMENTARY("1103", DOCUMENTARY),
+		/** Kids */
+		MEDIA_TYPE_KIDS("1104", KIDS),
+		/** News */
+		MEDIA_TYPE_NEWS("1105", NEWS),
+		/** Variety(Reality, Talk Etc) */
+		MEDIA_TYPE_VARIETY("1106", VARIETY),
 		/** Movie */
-		MEDIA_TYPE_MOVIE("3", "movie"),
+		MEDIA_TYPE_MOVIE("1201", MOVIE),
+		/** Person */
+		MEDIA_TYPE_PERSON("1301", PERSON),
 		/** Comics */
-		MEDIA_TYPE_COMICS("4", "comics"),
-		/** Variety */
-		MEDIA_TYPE_VARIETY("5", "variety"),
+		MEDIA_TYPE_COMICS("2101", COMICS),
 		/** TV(TMDB API) */
-		TMDB_MEDIA_TYPE_TV("11", "tv"),
+		TMDB_MEDIA_TYPE_TV("1100", "tv"),
 		/** Movie(TMDB API) */
-		TMDB_MEDIA_TYPE_MOVIE("12", "movie"),
+		TMDB_MEDIA_TYPE_MOVIE("1200", MOVIE),
 		/** Person(TMDB API) */
-		TMDB_MEDIA_TYPE_PERSON("13", "person");
+		TMDB_MEDIA_TYPE_PERSON("1300", PERSON),
+		/** Manga(AniList API) */
+		ANILIST_MEDIA_TYPE_MANGA("2100", "manga"),
+		/** Anime(AniList API) */
+		ANILIST_MEDIA_TYPE_ANIME("2200", "anime");
 
 		/** 미디어 타입 코드 */
-		private String mediaTypeCode;
+		private String contentMediaTypeCode;
 		
 		/** 미디어 타입 문자열 */
-		private String mediaTypeValue;
+		private String contentMediaTypeValue;
+		
+		/** 
+		 * TV 미디어 타입 리스트 반환 
+		 */
+		public static List<String> getBelongToTvList() {
+			List<String> tvList = new ArrayList<>();
+			for (ContentMediaTypeEnum value : values()) {
+                if (value.getContentMediaTypeCode().startsWith("11")) {
+                    tvList.add(value.getContentMediaTypeCode());
+                }
+			}
+			return tvList;
+		}
+	}
+	
+	/**
+	 * 화면 표시용 미디어 타입 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum DisplayMediaTypeEnum {
+
+		/** Ani */
+		MEDIA_TYPE_ANI("1", ANI),
+		/** Drama */
+		MEDIA_TYPE_DRAMA("2", DRAMA),
+		/** Movie */
+		MEDIA_TYPE_MOVIE("3", MOVIE),
+        /** Documentary */		
+		MEDIA_TYPE_DOCUMENTARY("4", DOCUMENTARY),
+		/** Kids */
+		MEDIA_TYPE_KIDS("5", KIDS),
+		/** News */
+		MEDIA_TYPE_NEWS("6", NEWS),
+		/** Variety(Reality, Talk Etc) */
+		MEDIA_TYPE_VARIETY("7", VARIETY),
+		/** Comics */
+		MEDIA_TYPE_COMICS("21", COMICS),
+		/** Person */
+		MEDIA_TYPE_PERSON("31", PERSON);
+
+		/** 미디어 타입 코드 */
+		private String displayMediaTypeCode;
+		
+		/** 미디어 타입 문자열 */
+		private String displayMediaTypeValue;
+	}
+	
+	/**
+	 * 컨텐츠 미디어 타입 <-> 화면 표시용 미디어 타입 매핑 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum MediaTypeMappingEnum {
+		
+		/** Ani */
+		MEDIA_TYPE_ANI(ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_ANI.getDisplayMediaTypeCode()),
+		/** Drama */
+		MEDIA_TYPE_DRAMA(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_DRAMA.getDisplayMediaTypeCode()),
+		/** Documentary */
+		MEDIA_TYPE_DOCUMENTARY(ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getDisplayMediaTypeCode()),
+		/** Kids */
+		MEDIA_TYPE_KIDS(ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_KIDS.getDisplayMediaTypeCode()),
+		/** News */
+		MEDIA_TYPE_NEWS(ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_NEWS.getDisplayMediaTypeCode()),
+		/** Variety(Reality, Talk Etc) */
+		MEDIA_TYPE_VARIETY(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_VARIETY.getDisplayMediaTypeCode()),
+		/** Movie */
+		MEDIA_TYPE_MOVIE(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_MOVIE.getDisplayMediaTypeCode()),
+		/** Comics */
+		MEDIA_TYPE_COMICS(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_COMICS.getDisplayMediaTypeCode()),
+		/** Person */
+		MEDIA_TYPE_PERSON(ContentMediaTypeEnum.MEDIA_TYPE_PERSON.getContentMediaTypeCode(),
+				DisplayMediaTypeEnum.MEDIA_TYPE_PERSON.getDisplayMediaTypeCode());
+
+		/** 컨텐츠 미디어 타입 코드 */
+		private String contentMediaTypeCode;
+
+		/** 화면 표시용 미디어 타입 코드 */
+		private String displayMediaTypeCode;
+		
+		/** 컨텐츠 미디어 타입 -> 화면 표시용 미디어 타입 맵 */
+		public static final Map<String, String> CONTENT_DISPLAY_MEDIA_TYPE_MAP = Stream.of(values())
+				.collect(Collectors.toMap(MediaTypeMappingEnum::getContentMediaTypeCode,
+						MediaTypeMappingEnum::getDisplayMediaTypeCode, (oldKey, newKey) -> newKey));
+		
+		/** 화면 표시용 미디어 타입 -> 컨텐츠 미디어 타입 맵 */
+		public static final Map<String, String> DISPLAY_CONTENT_MEDIA_TYPE_MAP = Stream.of(values())
+				.collect(Collectors.toMap(MediaTypeMappingEnum::getDisplayMediaTypeCode,
+						MediaTypeMappingEnum::getContentMediaTypeCode, (oldKey, newKey) -> newKey));
 	}
 	
 	/**
@@ -237,7 +381,7 @@ public class CommonEnum {
 		MEDIA_TYPE_MANGA("MANGA");
 		
 		/** 미디어 타입 */
-		private String mediaType;
+		private String anilistMediaType;
 	}
 
 	/**

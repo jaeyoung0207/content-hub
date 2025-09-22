@@ -37,21 +37,21 @@ public interface DetailCommentService {
 	/**
 	 * 코멘트 목록 조회 메소드
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
 	 * @param providerId 프로바이더 ID
 	 * @return 상세 코멘트 서비스 DTO
 	 */
-	DetailCommentServiceDto getCommentList(String originalMediaType, String apiId, Integer page, String providerId);
+	DetailCommentServiceDto getCommentList(String contentMediaType, String apiId, Integer page, String providerId);
 	
 	/**
 	 * 별점 평균 조회 메소드
 	 * 
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @return 별점 평균
 	 */
-	BigDecimal getStarRatingAverage(String originalMediaType, String apiId);
+	BigDecimal getStarRatingAverage(String contentMediaType, String apiId);
 
 }

@@ -10,7 +10,11 @@
  * ---------------------------------------------------------------
  */
 
-import { WishlistListResponseDto, WishlistRequestDto } from './data-contracts';
+import {
+  WishlistListResponseDto,
+  WishlistRequestDto,
+  WishlistResponseDto,
+} from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Wishlist<
@@ -21,11 +25,11 @@ export class Wishlist<
    *
    * @tags wishlist-controller
    * @name SaveWishlist
-   * @request POST:/wishlist/save
+   * @request POST:/wishlist/saveWishlist
    */
   saveWishlist = (data: WishlistRequestDto, params: RequestParams = {}) =>
     this.request<boolean, any>({
-      path: `/wishlist/save`,
+      path: `/wishlist/saveWishlist`,
       method: 'POST',
       body: data,
       type: ContentType.Json,
@@ -55,12 +59,34 @@ export class Wishlist<
    * No description
    *
    * @tags wishlist-controller
+   * @name CheckWishlist
+   * @request GET:/wishlist/checkWishlist
+   */
+  checkWishlist = (
+    query: {
+      /** @format int64 */
+      user_id: number;
+      api_id: string;
+      content_media_type: string;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<WishlistResponseDto[], any>({
+      path: `/wishlist/checkWishlist`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags wishlist-controller
    * @name DeleteWishlist
-   * @request DELETE:/wishlist/delete
+   * @request DELETE:/wishlist/deleteWishlist
    */
   deleteWishlist = (data: WishlistRequestDto, params: RequestParams = {}) =>
     this.request<boolean, any>({
-      path: `/wishlist/delete`,
+      path: `/wishlist/deleteWishlist`,
       method: 'DELETE',
       body: data,
       type: ContentType.Json,

@@ -1,12 +1,14 @@
 package com.cjy.contenthub.wishlist.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.ContentRepository;
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
@@ -53,9 +55,9 @@ public class WishlistServiceImpl implements WishlistService {
 		
 		// Content 조회 또는 생성
 		ContentEntity content = businessUtil.getContentEntity(
-				saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId(),
+				saveServiceDto.getContentMediaType(), saveServiceDto.getApiId(),
 				saveServiceDto.getTitle(), saveServiceDto.getThumbnailImageUrl(),
-				saveServiceDto.getGenreIds(), saveServiceDto.getMediaType());
+				saveServiceDto.getGenreIds(), saveServiceDto.getDisplayMediaType());
 
 		// 위시리스트에서 해당 항목 조회
 		List<WishlistEntity> wishlistList = wishlistRepository.findByUser_UserIdAndContent_ContentId(saveServiceDto.getUserId(), content.getContentId());
@@ -68,8 +70,8 @@ public class WishlistServiceImpl implements WishlistService {
 					.build();
 			return ObjectUtils.isNotEmpty(wishlistRepository.save(wishlist));
 		} else {
-			log.warn("Wishlist entry already exists for userId: {}, originalMediaType: {}, apiId: {}", 
-					saveServiceDto.getUserId(), saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId());
+			log.warn("Wishlist entry already exists for userId: {}, contentMediaType: {}, apiId: {}", 
+					saveServiceDto.getUserId(), saveServiceDto.getContentMediaType(), saveServiceDto.getApiId());
 			return false;
 		}
 	}
@@ -84,12 +86,12 @@ public class WishlistServiceImpl implements WishlistService {
 	public boolean removeFromWishlist(WishlistServiceDto saveServiceDto) {
 		
 		// Content 조회
-		ContentEntity content = contentRepository.findByOriginalMediaTypeAndApiId(saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId());
+		ContentEntity content = contentRepository.findByContentMediaTypeAndApiId(saveServiceDto.getContentMediaType(), saveServiceDto.getApiId());
 		
 		// Content가 존재하지 않는 경우 예외 처리
 		if (content == null) {
 			throw new CommonBusinessException(
-					"Content not found for originalMediaType: " + saveServiceDto.getOriginalMediaType() + ", apiId: " + saveServiceDto.getApiId());
+					"Content not found for contentMediaType: " + saveServiceDto.getContentMediaType() + ", apiId: " + saveServiceDto.getApiId());
 		}
 		// 위시리스트에서 해당 항목 조회
 		List<WishlistEntity> wishlistList = wishlistRepository.findByUser_UserIdAndContent_ContentId(saveServiceDto.getUserId(), content.getContentId());
@@ -99,10 +101,52 @@ public class WishlistServiceImpl implements WishlistService {
 			wishlistRepository.deleteAll(wishlistList);
 			return true;
 		} else {
-			log.warn("No wishlist entry found for userId: {}, originalMediaType: {}, apiId: {}", 
-					saveServiceDto.getUserId(), saveServiceDto.getOriginalMediaType(), saveServiceDto.getApiId());
+			log.warn("No wishlist entry found for userId: {}, contentMediaType: {}, apiId: {}", 
+					saveServiceDto.getUserId(), saveServiceDto.getContentMediaType(), saveServiceDto.getApiId());
 			return false;
 		}
+	}
+	
+	/**
+	 * 위시리스트에 이미 존재하는지 확인
+	 * 
+	 * @param serviceDto
+	 * @return 중복 작품 리스트
+	 */
+	@Override
+	public List<WishlistServiceDto> checkWishlistExist(Long userId, String apiId, String contentMediaType) {
+		
+		List<WishlistServiceDto> resultList = new ArrayList<>();
+		
+		List<String> contentMediaTypeList = new ArrayList<>();
+		
+		List<String> tvContentMediaTypeList = ContentMediaTypeEnum.getBelongToTvList();
+		
+		// TV 콘텐츠인 경우
+		if (tvContentMediaTypeList.contains(contentMediaType)) {
+			contentMediaTypeList = tvContentMediaTypeList;
+		} else {
+			contentMediaTypeList.add(contentMediaType);
+		}
+		
+		// 위시리스트에서 해당 작품 중복 리스트 조회
+		List<ContentEntity> contentList = wishlistRepository.getContentListByUserIdAndApiIdAndContentMediaTypeIn(userId, apiId, contentMediaTypeList);
+		
+		// 존재하는 경우 결과 리스트에 추가
+		if (!contentList.isEmpty()) {
+			for (ContentEntity content : contentList) {
+				WishlistServiceDto wishlistService = WishlistServiceDto.builder()
+				.userId(userId)
+				.contentMediaType(content.getContentMediaType())
+				.apiId(content.getApiId())
+				.displayMediaType(content.getDisplayMediaType())
+				.title(content.getTitle())
+				.thumbnailImageUrl(content.getThumbnailImageUrl())
+				.build();
+				resultList.add(wishlistService);
+			}
+		}
+		return resultList;
 	}
 
 	/**
@@ -115,7 +159,7 @@ public class WishlistServiceImpl implements WishlistService {
 	public WishlistListServiceDto getWishlist(Long userId) {
 		
 		// 위시리스트에서 콘텐츠 조회
-		List<ContentEntity> wishlistContentList = wishlistRepository.getWishlistByUserId(userId);
+		List<ContentEntity> wishlistContentList = wishlistRepository.getContentListByUserId(userId);
 		
 		// 위시리스트의 콘텐츠가 존재하는 경우
 		if (wishlistContentList != null && !wishlistContentList.isEmpty()) {
@@ -125,19 +169,31 @@ public class WishlistServiceImpl implements WishlistService {
 			wisilistList.forEach(wishlist -> wishlist.setUserId(userId));
 			
 			// 미디어 타입별로 필터링
-			List<WishlistServiceDto> aniWishlist = wisilistList.stream().filter(e -> e.getMediaType()
-					.equals(CommonMediaTypeEnum.MEDIA_TYPE_ANI.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> dramaWisilist = wisilistList.stream().filter(e -> e.getMediaType()
-					.equals(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> movieWisilist = wisilistList.stream().filter(e -> e.getMediaType()
-					.equals(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode())).toList();
-			List<WishlistServiceDto> comicsWisilist = wisilistList.stream().filter(e -> e.getMediaType()
-					.equals(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode())).toList();
+			List<WishlistServiceDto> aniWishlist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_ANI.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> dramaWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_DRAMA.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> documentaryWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> kidsWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_KIDS.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> newsWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_NEWS.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> varietyWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_VARIETY.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> movieWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_MOVIE.getDisplayMediaTypeCode())).toList();
+			List<WishlistServiceDto> comicsWisilist = wisilistList.stream().filter(e -> e.getDisplayMediaType()
+					.equals(DisplayMediaTypeEnum.MEDIA_TYPE_COMICS.getDisplayMediaTypeCode())).toList();
 			
 			// 결과 반환
 			return WishlistListServiceDto.builder()
 					.aniWishlist(aniWishlist)
 					.dramaWishlist(dramaWisilist)
+					.documentaryWishlist(documentaryWisilist)
+					.kidsWishlist(kidsWisilist)
+					.newsWishlist(newsWisilist)
+					.varietyWishlist(varietyWisilist)
 					.movieWishlist(movieWisilist)
 					.comicsWishlist(comicsWisilist)
 					.build();

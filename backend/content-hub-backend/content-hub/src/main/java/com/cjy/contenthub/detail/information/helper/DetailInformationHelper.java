@@ -23,13 +23,13 @@ public class DetailInformationHelper {
 	 * 특정 유저가 특정 콘텐츠를 위시리스트에 등록했는지 여부를 확인
 	 * 
 	 * @param userId            유저 테이블 ID
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId             API ID
 	 * @return 위시리스트에 등록된 경우 true, 그렇지 않은 경우 false
 	 */
-	public boolean setWishlisted(Long userId, String originalMediaType, String apiId) {
+	public boolean setWishlisted(Long userId, String contentMediaType, String apiId) {
 		
-		List<WishlistEntity> wishlistList = wishlistRepository.getRegisteredWishlist(userId, originalMediaType, apiId);
+		List<WishlistEntity> wishlistList = wishlistRepository.getWishlistListByUserIdAndContentMediaTypeAndApiId(userId, contentMediaType, apiId);
 		
 		return wishlistList != null && !wishlistList.isEmpty();
 	}

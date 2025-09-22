@@ -28,7 +28,7 @@ export type DisplaySearchResultsPropsType = {
   mediaName?: string; // 미디어 이름
   results: SearchCommonResultType[] | RecommendationContentResultType[]; // 검색 결과 리스트
   isViewMore?: boolean; // 전체보기 여부
-  mediaType: string; // 미디어 타입
+  displayMediaType: string; // 화면 표시용 미디어 타입
   keyword: string; // 검색어
   isAdult: string; // 성인물 포함 여부
   searchScreenType: string; // 검색 화면 타입
@@ -41,7 +41,7 @@ export const DisplaySearchResults = ({
   mediaName,
   results,
   isViewMore,
-  mediaType,
+  displayMediaType,
   keyword,
   isAdult,
   searchScreenType,
@@ -69,7 +69,7 @@ export const DisplaySearchResults = ({
                   to={viewMoreUrlQuery({
                     keyword: keyword,
                     isAdult: isAdult,
-                    mediaType: mediaType,
+                    displayMediaType: displayMediaType,
                   })}
                 >
                   {t('info.viewMore')} &gt;
@@ -93,21 +93,18 @@ export const DisplaySearchResults = ({
           results.map((items, index) => {
             // 썸네일 이미지 경로
             const thumbnail = items.backdropPath
-              ? mediaType === MEDIA_TYPE.COMICS
+              ? displayMediaType === MEDIA_TYPE.COMICS
                 ? items.backdropPath
                 : thumbnailImagePath + items.backdropPath
               : items.posterPath
                 ? thumbnailImagePath + items.posterPath
                 : COMMON_IMAGES.NO_IMAGE;
             // 하트 아이콘 style
-            const heartStyle =
-              mediaType === MEDIA_TYPE.COMICS
-                ? 'z-1 absolute bottom-2 right-3'
-                : 'z-1 absolute bottom-2 right-3';
+            const heartStyle = 'z-1 absolute bottom-2 right-3';
             // 제목
             const title =
-              isSearchTvType(items, mediaType) ||
-              isRecommendationsTvType(items, mediaType)
+              isSearchTvType(items, displayMediaType) ||
+              isRecommendationsTvType(items, displayMediaType)
                 ? items.name
                 : items.title;
             // 이전 요소의 id가 중복이면 렌더링 중지
@@ -120,7 +117,7 @@ export const DisplaySearchResults = ({
                 key={'frame_' + index}
                 className={
                   `${highlightHoverColor} ml-1 cursor-pointer ` +
-                  (mediaType === MEDIA_TYPE.COMICS
+                  (displayMediaType === MEDIA_TYPE.COMICS
                     ? ' mr-1 w-[195px] h-full'
                     : ' mr-3 w-[290px] h-full')
                 }
@@ -129,7 +126,7 @@ export const DisplaySearchResults = ({
                   checkApiId(items.id);
                   // 상세화면 URL 생성
                   const detailUrl = detailUrlQuery({
-                    originalMediaType: items.originalMediaType!,
+                    contentMediaType: items.contentMediaType!,
                     apiId: String(items.id),
                     tabNo: 0,
                   });
@@ -146,19 +143,21 @@ export const DisplaySearchResults = ({
                     src={thumbnail}
                     alt={'Thumbnail Image'}
                     className={
-                      (mediaType === MEDIA_TYPE.COMICS
+                      (displayMediaType === MEDIA_TYPE.COMICS
                         ? 'max-w-full h-[270px]'
                         : 'max-w-full h-[180px]') + ' object-cover rounded-2xl'
                     }
                   />
                   <div className={heartStyle}>
                     <WishlistUi
-                      originalMediaType={items.originalMediaType!}
+                      contentMediaType={items.contentMediaType!}
                       apiId={Number(items.id)}
                       title={title!}
                       userId={user?.userId}
                       isWishlisted={items.wishlisted!}
-                      thumbnailImageUrl={items.backdropPath!}
+                      thumbnailImageUrl={
+                        items.backdropPath ?? items.posterPath ?? ''
+                      }
                       genreIds={items.genreIds ?? []}
                     />
                   </div>

@@ -8,12 +8,12 @@ import { useState } from 'react';
 export type WishlistUiPropsType = {
   isWishlisted: boolean;
   userId?: number;
-  originalMediaType: string;
+  contentMediaType: string;
   apiId: number;
   title: string;
   thumbnailImageUrl?: string;
   genreIds?: number[];
-  mediaType?: string;
+  displayMediaType?: string;
 };
 
 /**
@@ -22,23 +22,23 @@ export type WishlistUiPropsType = {
 export const WishlistUi = ({
   isWishlisted,
   userId,
-  originalMediaType,
+  contentMediaType,
   apiId,
   title,
   thumbnailImageUrl,
   genreIds,
-  mediaType,
+  displayMediaType,
 }: WishlistUiPropsType) => {
   // 위시리스트 훅
   const { addToWishlist, handleOnClickHeart, isExecuting } = useWishlistUi({
     isWishlisted,
     userId,
-    originalMediaType,
+    contentMediaType,
     apiId,
     title,
     thumbnailImageUrl,
     genreIds,
-    mediaType,
+    displayMediaType,
   });
 
   // 하트 아이콘 hover 상태

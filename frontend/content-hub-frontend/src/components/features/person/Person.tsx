@@ -224,7 +224,7 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
         // 캐스트인지 타입 확인
         const isCast = isPersonCreditsCastType(items);
         // TV인 경우 애니메이션 고정, 그 이외의 경우 영화로 설정
-        const originalMediaType =
+        const contentMediaType =
           items.mediaType === 'TV' ? MEDIA_TYPE.ANI : MEDIA_TYPE.MOVIE;
         // 캐스트인 경우 캐릭터, 크루인 경우 작업 역할 표시
         const role = isCast ? items.character : items.job;
@@ -248,7 +248,7 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
               {/* 작품 링크 */}
               <Link
                 to={detailUrlQuery({
-                  originalMediaType: originalMediaType,
+                  contentMediaType: contentMediaType,
                   apiId: String(items.id),
                   tabNo: 0,
                 })}

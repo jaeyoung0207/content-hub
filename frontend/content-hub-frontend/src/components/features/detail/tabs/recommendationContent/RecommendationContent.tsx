@@ -1,34 +1,44 @@
 import { DetailResponseType } from '../../useDetail';
 import { useRecommendationContent } from './useRecommendationContent';
-import { SEARCH_SCREEN_TYPE } from '@/components/common/constants/constants';
+import {
+  MEDIA_TYPE_KIND,
+  SEARCH_SCREEN_TYPE,
+} from '@/components/common/constants/constants';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { useTranslation } from 'react-i18next';
 import { memo } from 'react';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
+import { mappingToMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 추천 콘텐츠 컴포넌트 props 타입
  */
 type RecommendationContentPropsType = {
   detailResult: DetailResponseType;
-  originalMediaType: string;
+  contentMediaType: string;
 };
 
 /**
  * 추천 콘텐츠 컴포넌트
  * @param detailResult 상세 정보 결과
- * @param originalMediaType 원본 미디어 타입
+ * @param contentMediaType 컨텐츠 미디어 타입
  * @returns 추천 콘텐츠 컴포넌트
  */
 export const RecommendationContent = memo(
-  ({ detailResult, originalMediaType }: RecommendationContentPropsType) => {
+  ({ detailResult, contentMediaType }: RecommendationContentPropsType) => {
     // i18n 번역 훅
     const { t } = useTranslation();
 
+    // 화면 표시용 미디어 타입으로 변환
+    const displayMediaType = mappingToMediaType(
+      contentMediaType,
+      MEDIA_TYPE_KIND.DISPLAY_MEDIA_TYPE
+    )!;
+
     // 추천 콘텐츠를 가져오기 위한 커스텀 훅 호출
     const { data, isFetchingNextPage, hasNextPage, setObserveTarget } =
-      useRecommendationContent(detailResult, originalMediaType);
+      useRecommendationContent(detailResult, displayMediaType);
 
     return (
       <>
@@ -39,7 +49,7 @@ export const RecommendationContent = memo(
               mediaName={t('info.recommendation')}
               results={data.pages.flat()}
               isViewMore={hasNextPage}
-              mediaType={originalMediaType}
+              displayMediaType={displayMediaType}
               keyword={''}
               isAdult={'false'}
               searchScreenType={SEARCH_SCREEN_TYPE.RECOMMENDATION}

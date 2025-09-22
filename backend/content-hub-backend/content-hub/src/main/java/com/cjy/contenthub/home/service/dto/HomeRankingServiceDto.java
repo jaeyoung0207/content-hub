@@ -20,11 +20,11 @@ import lombok.Setter;
 	/** 순위 */
 	private Long rowNum;
 
-	/** 원본 미디어 타입 */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** 미디어 타입(화면 표시용) */
-	private String mediaType;
+	private String displayMediaType;
 
 	/** API ID */
 	private String apiId;

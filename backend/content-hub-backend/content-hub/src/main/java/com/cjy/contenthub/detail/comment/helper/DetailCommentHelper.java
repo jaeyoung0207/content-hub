@@ -38,14 +38,14 @@ public class DetailCommentHelper {
 	 * 유저ID에 해당하는 코멘트를 첫번째 페이지에 추가
 	 * 
 	 * @param commentList 코멘트 엔티티 리스트
-	 * @param originalMediaType 원본 미디어 타입
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param apiId API ID
 	 * @param page 페이지 번호
 	 * @param providerId 프로바이더 ID
 	 */
 	public void getCommentListPerPage(
 			List<DetailCommentViewEntity> commentList,
-			String originalMediaType,
+			String contentMediaType,
 			String apiId,
 			Integer page,
 			String providerId
@@ -55,7 +55,7 @@ public class DetailCommentHelper {
 		DetailCommentViewEntity myCommentViewEntity = commentList.stream()
 				.filter(e -> StringUtils.equals(e.getProviderId(), providerId))
 				.findFirst()
-				.orElse(commentViewRepository.findByOriginalMediaTypeAndApiIdAndProviderId(originalMediaType, apiId, providerId));
+				.orElse(commentViewRepository.findByContentMediaTypeAndApiIdAndProviderId(contentMediaType, apiId, providerId));
 
 		// 유저ID에 해당하는 코멘트가 없는 경우 처리 종료
 		if (ObjectUtils.isEmpty(myCommentViewEntity)) {

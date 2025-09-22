@@ -40,7 +40,12 @@ export const ConfirmModalUi = ({
         }}
       >
         <div className="mt-10">
-          <p className="flex justify-center text-gray-800">{confirmMsg}</p>
+          <div
+            className="flex justify-center text-gray-800"
+            style={{ whiteSpace: 'pre-line' }}
+          >
+            {confirmMsg}
+          </div>
           <div className="mt-8 flex justify-center gap-4">
             {/* OK 버튼 */}
             <button

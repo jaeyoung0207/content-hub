@@ -11,8 +11,11 @@ export type HeaderType = Partial<{
   aniFlg?: boolean;
   dramaFlg?: boolean;
   movieFlg?: boolean;
-  comicsFlg?: boolean;
+  documentaryFlg?: boolean;
+  kidsFlg?: boolean;
+  newsFlg?: boolean;
   varietyFlg?: boolean;
+  comicsFlg?: boolean;
   adultFlg?: boolean;
 }>;
 
@@ -26,10 +29,13 @@ export type UseHeaderFormReturnType = {
   reset: (values?: HeaderType) => void; // react-hook-form의 reset 함수
   keyword?: string; // 현재 입력된 검색어
   aniFlg?: boolean; // 애니메이션 검색 여부
-  comicsFlg?: boolean; // 만화 검색 여부
-  movieFlg?: boolean; // 영화 검색 여부
   dramaFlg?: boolean; // 드라마 검색 여부
+  movieFlg?: boolean; // 영화 검색 여부
+  documentaryFlg?: boolean; // 다큐멘터리 검색 여부
+  kidsFlg?: boolean; // 어린이 검색 여부
+  newsFlg?: boolean; // 뉴스 검색 여부
   varietyFlg?: boolean; // 예능 검색 여부
+  comicsFlg?: boolean; // 만화 검색 여부
   adultFlg?: boolean; // 성인물 검색 여부
 };
 
@@ -48,10 +54,13 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
   const defaultValue = {
     keyword: '',
     aniFlg: true,
-    comicsFlg: true,
-    movieFlg: true,
     dramaFlg: true,
+    movieFlg: true,
+    documentaryFlg: true,
+    kidsFlg: true,
+    newsFlg: true,
     varietyFlg: true,
+    comicsFlg: true,
     adultFlg: false,
   };
 
@@ -78,14 +87,27 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
     control,
     name: 'movieFlg',
   });
-  const comicsFlg = useWatch({
+  const documentaryFlg = useWatch({
     control,
-    name: 'comicsFlg',
+    name: 'documentaryFlg',
+  });
+  const kidsFlg = useWatch({
+    control,
+    name: 'kidsFlg',
+  });
+  const newsFlg = useWatch({
+    control,
+    name: 'newsFlg',
   });
   const varietyFlg = useWatch({
     control,
     name: 'varietyFlg',
   });
+  const comicsFlg = useWatch({
+    control,
+    name: 'comicsFlg',
+  });
+
   const adultFlg = useWatch({
     control,
     name: 'adultFlg',
@@ -97,8 +119,27 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
    * 검색 종류의 체크 상태를 검색 종류 전역 상태에 설정(검색 훅에서 사용하기 위함)
    */
   useEffect(() => {
-    setSearchTypeState(aniFlg!, dramaFlg!, movieFlg!, comicsFlg!, varietyFlg!);
-  }, [aniFlg, dramaFlg, movieFlg, comicsFlg, varietyFlg, setSearchTypeState]);
+    setSearchTypeState(
+      aniFlg!,
+      dramaFlg!,
+      movieFlg!,
+      documentaryFlg!,
+      kidsFlg!,
+      newsFlg!,
+      varietyFlg!,
+      comicsFlg!
+    );
+  }, [
+    aniFlg,
+    dramaFlg,
+    movieFlg,
+    documentaryFlg,
+    kidsFlg,
+    newsFlg,
+    varietyFlg,
+    comicsFlg,
+    setSearchTypeState,
+  ]);
 
   // ================================================================================================== return
 
@@ -111,8 +152,11 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
     aniFlg: aniFlg,
     dramaFlg: dramaFlg,
     movieFlg: movieFlg,
-    comicsFlg: comicsFlg,
+    documentaryFlg: documentaryFlg,
+    kidsFlg: kidsFlg,
+    newsFlg: newsFlg,
     varietyFlg: varietyFlg,
+    comicsFlg: comicsFlg,
     adultFlg: adultFlg,
   };
 };

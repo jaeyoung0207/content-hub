@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------
  */
 
-import { CsrfToken } from './data-contracts';
+import { CommonMediaTypeResponseDto, CsrfToken } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Common<
@@ -46,6 +46,19 @@ export class Common<
     this.request<void, any>({
       path: `/common/clearAdultFlg`,
       method: 'POST',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags common-controller
+   * @name GetMediaTypes
+   * @request GET:/common/getMediaTypes
+   */
+  getMediaTypes = (params: RequestParams = {}) =>
+    this.request<CommonMediaTypeResponseDto, any>({
+      path: `/common/getMediaTypes`,
+      method: 'GET',
       ...params,
     });
   /**

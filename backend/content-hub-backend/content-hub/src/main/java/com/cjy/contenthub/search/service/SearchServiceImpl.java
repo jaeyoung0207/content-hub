@@ -27,8 +27,7 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
 import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
@@ -140,17 +139,17 @@ public class SearchServiceImpl implements SearchService {
 						}
 						// 검색 결과에서 TV, 영화 정보만 추출
 						List<String> nameList = resultList.stream()
-								.filter(e -> !StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getMediaTypeValue()) // 인물 제외
-										&& !CollectionUtils.isEmpty(e.getGenreIds()) 
-										&& (StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getMediaTypeValue())
-												&& (e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish())) // 애니 필터링
-														|| (!e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()))
-																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_KIDS.getGenreEnglish()))
-																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()))
-																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()))
-																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()))) // 드라마 필터링
-														))
-										|| StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getMediaTypeValue()) // 영화 필터링
+								.filter(e -> !StringUtils.equals(e.getMediaType(), ContentMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getContentMediaTypeValue()) // 인물 제외
+										&& e.getGenreIds() != null
+//										&& (StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue())
+//												&& (e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish())) // 애니 필터링
+//														|| (!e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()))
+//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_KIDS.getGenreEnglish()))
+//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()))
+//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()))
+//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()))) // 드라마 필터링
+//														))
+//										|| StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue()) // 영화 필터링
 										)
 								.map(e -> StringUtils.defaultIfEmpty(e.getName(), e.getTitle())) // 둘 중 하나만 들어가 있으므로, 한쪽이 empty면 다른 한쪽을 설정
 								.filter(StringUtils::isNotEmpty) // 빈 요소 제거
@@ -166,7 +165,7 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	/**
-	 * 애니메이션/드라마/영화 검색 API
+	 * TV 시리즈 및 영화 검색 API
 	 * 
 	 * @param keyword 검색어
 	 * @return 애니메이션/드라마/영화 검색 결과 응답 오브젝트
@@ -194,13 +193,27 @@ public class SearchServiceImpl implements SearchService {
 							.map(response -> {
 								// API 응답을 검색 결과 DTO 리스트로 변환 
 								List<SearchTvResultsDto> tvResultsList = mapper.tvResultsListToTmdbTvResultsList(response.getResults());
-								// 애니, 드라마 리스트 분리
+								// 장르 카테고리별로 분류
 								List<SearchTvResultsDto> aniList = helper.getAniList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(aniList); // 중복 제거
 								List<SearchTvResultsDto> dramaList = helper.getDramaList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(dramaList);
+								List<SearchTvResultsDto> documentaryList = helper.getDocumentaryList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(documentaryList);
+								List<SearchTvResultsDto> kidsList = helper.getKidsList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(kidsList);
+								List<SearchTvResultsDto> newsList = helper.getNewsList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(newsList);
+								List<SearchTvResultsDto> varietyList = helper.getVarietyList(tvResultsList, tvGenreMap);
+								tvResultsList.removeAll(varietyList);
 								// 응답 오브젝트 생성
 								return SearchTvResponseDto.builder()
 										.aniResults(aniList)
 										.dramaResults(dramaList)
+										.documentaryResults(documentaryList)
+										.kidsResults(kidsList)
+										.newsResults(newsList)
+										.varietyResults(varietyList)
 										.page(response.getPage())
 										.totalPages(response.getTotalPages())
 										.totalResults(response.getTotalResults())
@@ -216,6 +229,10 @@ public class SearchServiceImpl implements SearchService {
 						SearchTvResponseDto tvResponse = SearchTvResponseDto.builder()
 								.aniResults(new ArrayList<>())
 								.dramaResults(new ArrayList<>())
+								.documentaryResults(new ArrayList<>())
+								.kidsResults(new ArrayList<>())
+								.newsResults(new ArrayList<>())
+								.varietyResults(new ArrayList<>())
 								.page(0)
 								.totalPages(0)
 								.totalResults(0)
@@ -223,6 +240,10 @@ public class SearchServiceImpl implements SearchService {
 						for (SearchTvResponseDto result : resultList) {
 							tvResponse.getAniResults().addAll(result.getAniResults());
 							tvResponse.getDramaResults().addAll(result.getDramaResults());
+							tvResponse.getDocumentaryResults().addAll(result.getDocumentaryResults());
+							tvResponse.getKidsResults().addAll(result.getKidsResults());
+							tvResponse.getNewsResults().addAll(result.getNewsResults());
+							tvResponse.getVarietyResults().addAll(result.getVarietyResults());
 						}
 						tvResponse.setPage(resultList.get(0).getPage());
 						tvResponse.setTotalPages(resultList.get(0).getTotalPages());
@@ -280,24 +301,8 @@ public class SearchServiceImpl implements SearchService {
 				SearchTvResponseDto tvResponse = dtoTuple.getT1();
 				// 영화 응답 DTO
 				SearchMovieResponseDto movieResponse = dtoTuple.getT2();
-				// 애니 검색 결과 리스트
-				List<SearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getAniResults()).orElse(Collections.emptyList());
-				// 드라마 검색 결과 리스트
-				List<SearchTvResultsDto> dramaResultList = Optional.ofNullable(tvResponse.getDramaResults()).orElse(Collections.emptyList());
-				// 영화 검색 결과 리스트
-				List<SearchMovieResultsDto> movieResultList = Optional.ofNullable(movieResponse.getMovieResults()).orElse(Collections.emptyList());
-				// 필터링된 영화 리스트
-				List<SearchMovieResultsDto> filteredMovieList = new ArrayList<>();
-				// 영화 정보에서 애니메이션 정보 추출 
-				aniResultList.addAll(helper.getAniMovieList(movieResultList, movieGenreMap));
-				// 영화 정보에서 애니영화 제외한 정보 추출
-				filteredMovieList.addAll(helper.getMovieList(movieResultList, movieGenreMap));
-
-				// 응답 오브젝트 설정
-				return helper.setVideoResponse(
-						aniResultList, dramaResultList,
-						filteredMovieList, tvResponse.getPage(), tvResponse.getTotalPages(),
-						movieResponse.getPage(), movieResponse.getTotalPages());
+                // 비디오 검색 결과 DTO를 설정
+				return helper.setVideoResponse(tvResponse, movieResponse, movieGenreMap);
 			});
 		}).block();
 	}
@@ -380,15 +385,18 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	/**
-	 * 드라마 검색 데이터 조회
+	 * TV 시리즈 검색 데이터 조회(애니 제외)
 	 * 
 	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param page 페이지
+	 * @param userId 유저 테이블 ID
 	 * @return 드라마 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchDrama", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
-	public SearchTvResponseDto searchDrama(String keyword, boolean isAdult, Integer page, Long userId) {
+	@Cacheable(value = "searchTvExceptAni", key = "#keyword + '_' + #isAdult + '_' + #contentMediaType + '_' + #page + '_' + #userId", unless = "#result == null")
+	public SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page, Long userId) {
 
 		// 드라마 장르 정보 조회
 		return apiUtil.getTvGenres().flatMap(tvGenreMap -> 
@@ -402,7 +410,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 결과값 설정
 			SearchTvResponseDto dramaResponse = SearchTvResponseDto.builder()
-					.dramaResults(helper.getDramaList(tvResultsList, tvGenreMap))
+					.dramaResults(helper.getTvListOfMediaType(tvResultsList, tvGenreMap, contentMediaType))
 					.page(response.getPage())
 					.totalPages(response.getTotalPages())
 					.totalResults(response.getTotalResults())

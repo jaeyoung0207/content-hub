@@ -29,10 +29,18 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
   const dramaSearchResults = data?.videoResult?.dramaResults;
   const movieSearchResults = data?.videoResult?.movieResults;
   const comicsSearchResults = data?.comicsResult?.comicsResults;
+  const documentarySearchResults = data?.videoResult?.documentaryResults;
+  const kidsSearchResults = data?.videoResult?.kidsResults;
+  const newsSearchResults = data?.videoResult?.newsResults;
+  const varietySearchResults = data?.videoResult?.varietyResults;
   const isAniViewMore = data?.videoResult?.isAniViewMore;
   const isDramaViewMore = data?.videoResult?.isDramaViewMore;
   const isMovieViewMore = data?.videoResult?.isMovieViewMore;
   const isComicsViewMore = data?.comicsResult?.isComicsViewMore;
+  const isDocumentaryViewMore = data?.videoResult?.isDocumentaryViewMore;
+  const isKidsViewMore = data?.videoResult?.isKidsViewMore;
+  const isNewsViewMore = data?.videoResult?.isNewsViewMore;
+  const isVarietyViewMore = data?.videoResult?.isVarietyViewMore;
 
   // 검색 결과 인자값 리스트
   const dataList = [
@@ -41,37 +49,74 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
       dataResults: aniSearchResults,
       media: t('info.animation'),
       isViewMore: isAniViewMore,
-      mediaType: MEDIA_TYPE.ANI,
+      displayMediaType: MEDIA_TYPE.ANI,
     },
     {
       displayFlg: searchTypeState.dramaFlg,
       dataResults: dramaSearchResults,
       media: t('info.drama'),
       isViewMore: isDramaViewMore,
-      mediaType: MEDIA_TYPE.DRAMA,
+      displayMediaType: MEDIA_TYPE.DRAMA,
     },
     {
       displayFlg: searchTypeState.movieFlg,
       dataResults: movieSearchResults,
       media: t('info.movie'),
       isViewMore: isMovieViewMore,
-      mediaType: MEDIA_TYPE.MOVIE,
+      displayMediaType: MEDIA_TYPE.MOVIE,
+    },
+    {
+      displayFlg: searchTypeState.documentaryFlg,
+      dataResults: documentarySearchResults,
+      media: t('info.documentary'),
+      isViewMore: isDocumentaryViewMore,
+      displayMediaType: MEDIA_TYPE.DOCUMENTARY,
+    },
+    {
+      displayFlg: searchTypeState.kidsFlg,
+      dataResults: kidsSearchResults,
+      media: t('info.kids'),
+      isViewMore: isKidsViewMore,
+      displayMediaType: MEDIA_TYPE.KIDS,
+    },
+    {
+      displayFlg: searchTypeState.newsFlg,
+      dataResults: newsSearchResults,
+      media: t('info.news'),
+      isViewMore: isNewsViewMore,
+      displayMediaType: MEDIA_TYPE.NEWS,
+    },
+    {
+      displayFlg: searchTypeState.varietyFlg,
+      dataResults: varietySearchResults,
+      media: t('info.variety'),
+      isViewMore: isVarietyViewMore,
+      displayMediaType: MEDIA_TYPE.VARIETY,
     },
     {
       displayFlg: searchTypeState.comicsFlg,
       dataResults: comicsSearchResults,
       media: t('info.comics'),
       isViewMore: isComicsViewMore,
-      mediaType: MEDIA_TYPE.COMICS,
+      displayMediaType: MEDIA_TYPE.COMICS,
     },
   ];
+
+  const isSearchResultEmpty = dataList.every(
+    (item) => !item.dataResults || item.dataResults.length === 0
+  );
 
   return (
     <>
       <div className="mt-28 w-sm lg:w-7xl">
         {/* 검색 결과 */}
         {isLoading ? (
-          <LoadingUi />
+          <>
+            <LoadingUi />
+            <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">
+              {t('info.beforeSearchMessage')}
+            </div>
+          </>
         ) : (
           data &&
           dataList.map((items, index) => {
@@ -85,7 +130,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
                       mediaName={items.media}
                       results={items.dataResults}
                       isViewMore={items.isViewMore}
-                      mediaType={items.mediaType}
+                      displayMediaType={items.displayMediaType}
                       keyword={keyword!}
                       isAdult={isAdult!}
                       searchScreenType={SEARCH_SCREEN_TYPE.MAIN}
@@ -96,24 +141,11 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           })
         )}
         {/* 검색 결과가 없을 때 표시할 메시지 */}
-        {!isLoading &&
-          (!aniSearchResults || aniSearchResults?.length === 0) &&
-          (!dramaSearchResults || dramaSearchResults?.length === 0) &&
-          (!movieSearchResults || movieSearchResults?.length === 0) &&
-          (!comicsSearchResults || comicsSearchResults?.length === 0) && (
-            <div className="mt-60">
-              <NodataMessageUi message={t('warn.noSearchData')} />
-            </div>
-          )}
-        {/* 검색 전 메세지 */}
-        {aniSearchResults === undefined &&
-          dramaSearchResults === undefined &&
-          movieSearchResults === undefined &&
-          comicsSearchResults === undefined && (
-            <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">
-              {t('info.beforeSearchMessage')}
-            </div>
-          )}
+        {!isLoading && isSearchResultEmpty && (
+          <div className="mt-60">
+            <NodataMessageUi message={t('warn.noSearchData')} />
+          </div>
+        )}
       </div>
     </>
   );

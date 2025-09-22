@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -41,30 +41,30 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	@Override
 	public void setWishlistFromVideoResponse(SearchVideoResponseDto serchVideoResponse, Long userId) {
 		
-		// 애니메이션 원본 미디어 타입 리스트 생성
-		List<String> aniOriginalMediaTypeList = serchVideoResponse.getAniResults().stream()
-				.map(dto -> dto.getOriginalMediaType())
+		// 애니메이션 컨텐츠 미디어 타입 리스트 생성
+		List<String> aniContentMediaTypeList = serchVideoResponse.getAniResults().stream()
+				.map(dto -> dto.getContentMediaType())
 				.distinct()
 				.toList();
 		
 		// 각 미디어 타입별로 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				serchVideoResponse.getAniResults(), 
-				aniOriginalMediaTypeList, 
+				aniContentMediaTypeList, 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
-				SearchTvResultsDto::setWishlisted, // (dto, wishlisted) -> dto.setWishlisted(wishlisted)
+				SearchTvResultsDto::setWishlisted,
 				wishlistRepository);
 		businessUtil.setWishlisted(
 				serchVideoResponse.getDramaResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchTvResultsDto::setWishlisted,
 				wishlistRepository);
 		businessUtil.setWishlisted(
 				serchVideoResponse.getMovieResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchMovieResultsDto::setWishlisted, 
@@ -80,16 +80,16 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	@Override
 	public void setWishlistFromAniResponse(SearchTvResponseDto searchTvResponse, Long userId) {
 		
-		// 애니메이션 원본 미디어 타입 리스트 생성
-		List<String> aniOriginalMediaTypeList = searchTvResponse.getAniResults().stream()
-				.map(dto -> dto.getOriginalMediaType())
+		// 애니메이션 컨텐츠 미디어 타입 리스트 생성
+		List<String> aniContentMediaTypeList = searchTvResponse.getAniResults().stream()
+				.map(dto -> dto.getContentMediaType())
 				.distinct()
 				.toList();
 		
 		// 애니메이션 검색 결과에 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				searchTvResponse.getAniResults(), 
-				aniOriginalMediaTypeList, 
+				aniContentMediaTypeList, 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchTvResultsDto::setWishlisted,
@@ -97,18 +97,19 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	}
 
 	/**
-	 * 드라마 검색 결과에 위시리스트 여부 설정
+	 * TV검색 결과에 위시리스트 여부 설정 (애니 제외)
 	 * 
 	 * @param searchTvResponse 검색 결과 DTO
 	 * @param userId           유저 ID
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 */
 	@Override
-	public void setWishlistFromDramaResponse(SearchTvResponseDto searchTvResponse, Long userId) {
+	public void setWishlistFromTvExceptAniResponse(SearchTvResponseDto searchTvResponse, Long userId, String contentMediaType) {
 		
         // 드라마 검색 결과에 위시리스트 여부 설정		
 		businessUtil.setWishlisted(
 				searchTvResponse.getDramaResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_DRAMA.getMediaTypeCode()), 
+				List.of(contentMediaType),
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchTvResultsDto::setWishlisted,
@@ -127,7 +128,7 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 		// 영화 검색 결과에 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				searchMovieResponse.getMovieResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_MOVIE.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchMovieResultsDto::setWishlisted,
@@ -146,7 +147,7 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 		// 만화 검색 결과에 위시리스트 여부 설정
 		businessUtil.setWishlisted(
 				searchComicsResponse.getComicsResults(), 
-				List.of(CommonMediaTypeEnum.MEDIA_TYPE_COMICS.getMediaTypeCode()), 
+				List.of(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode()), 
 				userId, 
 				dto -> String.valueOf(dto.getId()),
 				SearchComicsResultDto::setWishlisted,

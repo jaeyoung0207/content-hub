@@ -11,6 +11,7 @@ import {
   ESC_KEY,
   INFINITE_SCROLL_THROTTLE_DELAY,
   MEDIA_TYPE,
+  MEDIA_TYPE_KIND,
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -19,6 +20,7 @@ import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 import throttle from 'lodash/throttle';
 import { useUserStore } from '@/components/common/store/globalStateStore';
+import { mappingToMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -42,13 +44,13 @@ export type UseInfiniteQueryResultType = {
 /**
  * 전체보기 모달화면 훅
  * @param keyword 검색어
- * @param mediaType 미디어 타입
+ * @param displayMediaType 미디어 타입
  * @returns UseSearchConentModalReturnType
  */
 export const useSearchMore = (
   keyword: string,
   isAdult: boolean,
-  mediaType: string
+  displayMediaType: string
 ): UseSearchConentModalReturnType => {
   // ================================================================================================== URL query string
 
@@ -76,7 +78,7 @@ export const useSearchMore = (
 
   // 전체보기 검색결과를 가져오기 위한 API 호출 함수
   const judgeExecApi = async (pageParam: number) => {
-    if (mediaType == MEDIA_TYPE.ANI) {
+    if (displayMediaType == MEDIA_TYPE.ANI) {
       // 애니메이션 검색 API 호출
       const response = await await searchApi.searchAni(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
@@ -87,10 +89,26 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.aniResults;
-    } else if (mediaType == MEDIA_TYPE.DRAMA) {
+    } else if (
+      displayMediaType == MEDIA_TYPE.DRAMA ||
+      displayMediaType == MEDIA_TYPE.VARIETY ||
+      displayMediaType == MEDIA_TYPE.DOCUMENTARY ||
+      displayMediaType == MEDIA_TYPE.KIDS ||
+      displayMediaType == MEDIA_TYPE.NEWS
+    ) {
+      // 컨텐츠 미디어 타입 코드 가져오기
+      const contentMediaType = mappingToMediaType(
+        displayMediaType,
+        MEDIA_TYPE_KIND.CONTENT_MEDIA_TYPE
+      )!;
       // 드라마 검색 API 호출
-      const response = await await searchApi.searchDrama(
-        { keyword: keyword, page: pageParam, user_id: user?.userId },
+      const response = await await searchApi.searchTvExceptAni(
+        {
+          keyword: keyword,
+          content_media_type: contentMediaType,
+          page: pageParam,
+          user_id: user?.userId,
+        },
         {}
       );
       // 전체 페이지 수 저장
@@ -98,7 +116,7 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.dramaResults;
-    } else if (mediaType == MEDIA_TYPE.MOVIE) {
+    } else if (displayMediaType == MEDIA_TYPE.MOVIE) {
       // 영화 검색 API 호출
       const response = await await searchApi.searchMovie(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
@@ -109,7 +127,7 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.movieResults;
-    } else if (mediaType == MEDIA_TYPE.COMICS) {
+    } else if (displayMediaType == MEDIA_TYPE.COMICS) {
       // 만화 검색 API 호출
       const response = await await searchApi.searchComics(
         {
@@ -147,7 +165,7 @@ export const useSearchMore = (
     queryKey: searchQueryKeys.searchMore.searchMore(
       keyword,
       isAdult,
-      mediaType,
+      displayMediaType,
       user?.userId
     ) as [string, string, boolean, string, number | undefined],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
@@ -169,7 +187,7 @@ export const useSearchMore = (
       pageParams: data.pageParams,
     }),
     initialPageParam: 1, // 초기 페이지 매개변수를 지정
-    enabled: !!keyword && !!mediaType, // useInfiniteQuery가 실행되는 조건 지정
+    enabled: !!keyword && !!displayMediaType, // useInfiniteQuery가 실행되는 조건 지정
     staleTime: 0, // 데이터를 바로 stale로 간주
     gcTime: 0, // 캐시된 데이터를 바로 제거
   });

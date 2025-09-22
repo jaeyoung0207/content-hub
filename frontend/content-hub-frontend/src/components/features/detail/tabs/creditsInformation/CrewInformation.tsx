@@ -14,44 +14,49 @@ import {
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 export const CrewInformation = memo(
-  ({ detailResult, originalMediaType }: VideoInformationPropsType) => {
+  ({ detailResult, contentMediaType }: VideoInformationPropsType) => {
     // i18n
     const { t } = useTranslation();
     // 비디오 제작진 정보 존재 여부
     const isVideoCrew =
-      (isDetailTvType(detailResult, originalMediaType) ||
-        isDetailMovieType(detailResult, originalMediaType)) &&
+      (isDetailTvType(detailResult, contentMediaType) ||
+        isDetailMovieType(detailResult, contentMediaType)) &&
       detailResult.credits &&
       detailResult.credits.crew &&
       detailResult.credits.crew.length !== 0;
     // 만화 제작진 정보 존재 여부
     const isComicsStaff =
-      isDetailComicsType(detailResult, originalMediaType) &&
+      isDetailComicsType(detailResult, contentMediaType) &&
       detailResult.staff &&
       detailResult.staff.edges &&
       detailResult.staff.edges.length !== 0;
     return (
       <div className="ml-5 mr-5">
-        {(originalMediaType === MEDIA_TYPE.ANI ||
-          originalMediaType === MEDIA_TYPE.DRAMA ||
-          originalMediaType === MEDIA_TYPE.MOVIE) &&
+        {(contentMediaType === getContentMediaType().aniCode ||
+          contentMediaType === getContentMediaType().dramaCode ||
+          contentMediaType === getContentMediaType().movieCode ||
+          contentMediaType === getContentMediaType().documentaryCode ||
+          contentMediaType === getContentMediaType().kidsCode ||
+          contentMediaType === getContentMediaType().newsCode ||
+          contentMediaType === getContentMediaType().varietyCode) &&
           (isVideoCrew ? (
             <DisplayVideoCredits
               detailResult={detailResult}
-              originalMediaType={originalMediaType}
+              contentMediaType={contentMediaType}
               creditsType={VIDEO_CREDITS_TYPE.CREW}
               isOmit={false}
             />
           ) : (
             <NodataMessageUi message={t('warn.noStaffInfo')} />
           ))}
-        {originalMediaType === MEDIA_TYPE.COMICS &&
+        {contentMediaType === getContentMediaType().comicsCode &&
           (isComicsStaff ? (
             <ComicsCharacterInformation
               detailResult={detailResult}
-              originalMediaType={originalMediaType}
+              contentMediaType={contentMediaType}
               creditsType={COMICS_CREDITS_TYPE.STAFF}
             />
           ) : (

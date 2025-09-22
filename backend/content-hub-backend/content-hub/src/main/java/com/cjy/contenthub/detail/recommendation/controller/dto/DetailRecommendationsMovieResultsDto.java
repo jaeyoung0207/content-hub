@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DetailRecommendationsMovieResultsDto extends TmdbRecommendationsMovieResultsDto {
 	
-	/** 원작품 미디어 타입 */
-	private String originalMediaType;
+	/** 컨텐츠 미디어 타입 */
+	private String contentMediaType;
 	
 	/** 위시리스트 여부 */
 	private boolean isWishlisted;

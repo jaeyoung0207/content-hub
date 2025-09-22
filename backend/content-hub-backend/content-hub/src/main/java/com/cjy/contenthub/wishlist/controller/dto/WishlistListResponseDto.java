@@ -24,6 +24,18 @@ public class WishlistListResponseDto {
 	/** 드라마 위시리스트 */
 	private List<WishlistResponseDto> dramaWishlist;
 	
+	/** 다큐멘터리 위시리스트 */
+	private List<WishlistResponseDto> documentaryWishlist;
+	
+	/** 키즈 위시리스트 */
+	private List<WishlistResponseDto> kidsWishlist;
+	
+	/** 뉴스 위시리스트 */
+	private List<WishlistResponseDto> newsWishlist;
+	
+	/** 예능 위시리스트 */
+	private List<WishlistResponseDto> varietyWishlist;
+	
 	/** 영화 위시리스트 */
 	private List<WishlistResponseDto> movieWishlist;
 	
