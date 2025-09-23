@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { detailUrlQuery, viewMoreUrlQuery } from '../common/utils/urlUtil';
 import {
   COMMON_IMAGES,
-  MEDIA_TYPE,
   SEARCH_SCREEN_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
@@ -20,6 +19,7 @@ import { LazyImage } from './common/LazyImageUi';
 import { highlightHoverColor } from '../common/constants/tailwindStyles';
 import { WishlistUi } from './WishlistUi';
 import { useUserStore } from '../common/store/globalStateStore';
+import { getDisplayMediaType } from '../common/utils/convertUtil';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입
@@ -93,7 +93,7 @@ export const DisplaySearchResults = ({
           results.map((items, index) => {
             // 썸네일 이미지 경로
             const thumbnail = items.backdropPath
-              ? displayMediaType === MEDIA_TYPE.COMICS
+              ? displayMediaType === getDisplayMediaType().comicsCode
                 ? items.backdropPath
                 : thumbnailImagePath + items.backdropPath
               : items.posterPath
@@ -117,7 +117,7 @@ export const DisplaySearchResults = ({
                 key={'frame_' + index}
                 className={
                   `${highlightHoverColor} ml-1 cursor-pointer ` +
-                  (displayMediaType === MEDIA_TYPE.COMICS
+                  (displayMediaType === getDisplayMediaType().comicsCode
                     ? ' mr-1 w-[195px] h-full'
                     : ' mr-3 w-[290px] h-full')
                 }
@@ -143,7 +143,7 @@ export const DisplaySearchResults = ({
                     src={thumbnail}
                     alt={'Thumbnail Image'}
                     className={
-                      (displayMediaType === MEDIA_TYPE.COMICS
+                      (displayMediaType === getDisplayMediaType().comicsCode
                         ? 'max-w-full h-[270px]'
                         : 'max-w-full h-[180px]') + ' object-cover rounded-2xl'
                     }

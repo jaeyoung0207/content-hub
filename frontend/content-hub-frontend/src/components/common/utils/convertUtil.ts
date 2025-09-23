@@ -3,25 +3,7 @@ import {
   useContentMediaTypeMapStore,
   useDisplayMediaTypeMapStore,
 } from '../store/globalStateStore';
-import {
-  MEDIA_TYPE,
-  MEDIA_TYPE_KIND,
-  MEDIA_TYPE_NAME,
-} from '../constants/constants';
-
-/**
- * 값을 변환하는 함수를 정의하는 유틸 파일
- */
-
-// type mediaTypeName = 'ANI' | 'DRAMA' | 'DOCUMENTARY' | 'KIDS' | 'NEWS' | 'VARIETY' | 'MOVIE' | 'COMICS' | 'PERSON';
-
-// export const ORIGINAL_MEDIA_TYPE = (mediaTypeName: mediaTypeName) => {
-//   const contentMediaTypeMap = useContentMediaTypeMapStore.getState().contentMediaTypeMap;
-//   Object.keys(contentMediaTypeMap).forEach((key) => {
-//     console.log(`Key: ${key}, Value: ${contentMediaTypeMap[key]}`);
-//   });
-//   return contentMediaTypeMap[mediaTypeName];
-// }
+import { MEDIA_TYPE_KIND, MEDIA_TYPE_NAME } from '../constants/constants';
 
 /**
  * 컨텐츠 미디어 타입 값을 가져오는 함수
@@ -69,23 +51,23 @@ export const mappingToMediaType = (
       console.error('toMediaTypeKind is wrong:', mediaType);
       return mediaType;
     }
-    if (mediaType == MEDIA_TYPE.ANI) {
+    if (mediaType == getDisplayMediaType().aniCode) {
       return getContentMediaType().aniCode;
-    } else if (mediaType == MEDIA_TYPE.DRAMA) {
+    } else if (mediaType == getDisplayMediaType().dramaCode) {
       return getContentMediaType().dramaCode;
-    } else if (mediaType == MEDIA_TYPE.DOCUMENTARY) {
+    } else if (mediaType == getDisplayMediaType().documentaryCode) {
       return getContentMediaType().documentaryCode;
-    } else if (mediaType == MEDIA_TYPE.KIDS) {
+    } else if (mediaType == getDisplayMediaType().kidsCode) {
       return getContentMediaType().kidsCode;
-    } else if (mediaType == MEDIA_TYPE.NEWS) {
+    } else if (mediaType == getDisplayMediaType().newsCode) {
       return getContentMediaType().newsCode;
-    } else if (mediaType == MEDIA_TYPE.VARIETY) {
+    } else if (mediaType == getDisplayMediaType().varietyCode) {
       return getContentMediaType().varietyCode;
-    } else if (mediaType == MEDIA_TYPE.MOVIE) {
+    } else if (mediaType == getDisplayMediaType().movieCode) {
       return getContentMediaType().movieCode;
-    } else if (mediaType == MEDIA_TYPE.PERSON) {
+    } else if (mediaType == getDisplayMediaType().personCode) {
       return getContentMediaType().personCode;
-    } else if (mediaType == MEDIA_TYPE.COMICS) {
+    } else if (mediaType == getDisplayMediaType().comicsCode) {
       return getContentMediaType().comicsCode;
     } else {
       return null;
@@ -127,23 +109,23 @@ export const mappingToMediaType = (
  * @returns 미디어 타입 이름
  */
 export const getDisplayMediaTypeName = (displayMediaType: string) => {
-  if (displayMediaType == MEDIA_TYPE.ANI) {
+  if (displayMediaType == getDisplayMediaType().aniCode) {
     return MEDIA_TYPE_NAME.ANI;
-  } else if (displayMediaType == MEDIA_TYPE.DRAMA) {
+  } else if (displayMediaType == getDisplayMediaType().dramaCode) {
     return MEDIA_TYPE_NAME.DRAMA;
-  } else if (displayMediaType == MEDIA_TYPE.DOCUMENTARY) {
+  } else if (displayMediaType == getDisplayMediaType().documentaryCode) {
     return MEDIA_TYPE_NAME.DOCUMENTARY;
-  } else if (displayMediaType == MEDIA_TYPE.KIDS) {
+  } else if (displayMediaType == getDisplayMediaType().kidsCode) {
     return MEDIA_TYPE_NAME.KIDS;
-  } else if (displayMediaType == MEDIA_TYPE.NEWS) {
+  } else if (displayMediaType == getDisplayMediaType().newsCode) {
     return MEDIA_TYPE_NAME.NEWS;
-  } else if (displayMediaType == MEDIA_TYPE.VARIETY) {
+  } else if (displayMediaType == getDisplayMediaType().varietyCode) {
     return MEDIA_TYPE_NAME.VARIETY;
-  } else if (displayMediaType == MEDIA_TYPE.MOVIE) {
+  } else if (displayMediaType == getDisplayMediaType().movieCode) {
     return MEDIA_TYPE_NAME.MOVIE;
-  } else if (displayMediaType == MEDIA_TYPE.PERSON) {
+  } else if (displayMediaType == getDisplayMediaType().personCode) {
     return MEDIA_TYPE_NAME.PERSON;
-  } else if (displayMediaType == MEDIA_TYPE.COMICS) {
+  } else if (displayMediaType == getDisplayMediaType().comicsCode) {
     return MEDIA_TYPE_NAME.COMICS;
   } else {
     return null;

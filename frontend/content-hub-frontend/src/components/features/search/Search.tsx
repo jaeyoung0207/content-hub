@@ -1,14 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useSearch } from './useSearch';
-import {
-  MEDIA_TYPE,
-  SEARCH_SCREEN_TYPE,
-} from '@/components/common/constants/constants';
+import { SEARCH_SCREEN_TYPE } from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from './SearchPage';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
+import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 검색 화면 컴포넌트
@@ -49,56 +47,56 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
       dataResults: aniSearchResults,
       media: t('info.animation'),
       isViewMore: isAniViewMore,
-      displayMediaType: MEDIA_TYPE.ANI,
+      displayMediaType: getDisplayMediaType().aniCode,
     },
     {
       displayFlg: searchTypeState.dramaFlg,
       dataResults: dramaSearchResults,
       media: t('info.drama'),
       isViewMore: isDramaViewMore,
-      displayMediaType: MEDIA_TYPE.DRAMA,
+      displayMediaType: getDisplayMediaType().dramaCode,
     },
     {
       displayFlg: searchTypeState.movieFlg,
       dataResults: movieSearchResults,
       media: t('info.movie'),
       isViewMore: isMovieViewMore,
-      displayMediaType: MEDIA_TYPE.MOVIE,
+      displayMediaType: getDisplayMediaType().movieCode,
     },
     {
       displayFlg: searchTypeState.documentaryFlg,
       dataResults: documentarySearchResults,
       media: t('info.documentary'),
       isViewMore: isDocumentaryViewMore,
-      displayMediaType: MEDIA_TYPE.DOCUMENTARY,
+      displayMediaType: getDisplayMediaType().documentaryCode,
     },
     {
       displayFlg: searchTypeState.kidsFlg,
       dataResults: kidsSearchResults,
       media: t('info.kids'),
       isViewMore: isKidsViewMore,
-      displayMediaType: MEDIA_TYPE.KIDS,
+      displayMediaType: getDisplayMediaType().kidsCode,
     },
     {
       displayFlg: searchTypeState.newsFlg,
       dataResults: newsSearchResults,
       media: t('info.news'),
       isViewMore: isNewsViewMore,
-      displayMediaType: MEDIA_TYPE.NEWS,
+      displayMediaType: getDisplayMediaType().newsCode,
     },
     {
       displayFlg: searchTypeState.varietyFlg,
       dataResults: varietySearchResults,
       media: t('info.variety'),
       isViewMore: isVarietyViewMore,
-      displayMediaType: MEDIA_TYPE.VARIETY,
+      displayMediaType: getDisplayMediaType().varietyCode,
     },
     {
       displayFlg: searchTypeState.comicsFlg,
       dataResults: comicsSearchResults,
       media: t('info.comics'),
       isViewMore: isComicsViewMore,
-      displayMediaType: MEDIA_TYPE.COMICS,
+      displayMediaType: getDisplayMediaType().comicsCode,
     },
   ];
 

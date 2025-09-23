@@ -1,5 +1,4 @@
 import {
-  MEDIA_TYPE,
   IS_MOBILE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,

@@ -10,7 +10,6 @@ import { Search } from '@/api/Search';
 import {
   ESC_KEY,
   INFINITE_SCROLL_THROTTLE_DELAY,
-  MEDIA_TYPE,
   MEDIA_TYPE_KIND,
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -20,7 +19,10 @@ import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 import throttle from 'lodash/throttle';
 import { useUserStore } from '@/components/common/store/globalStateStore';
-import { mappingToMediaType } from '@/components/common/utils/convertUtil';
+import {
+  getDisplayMediaType,
+  mappingToMediaType,
+} from '@/components/common/utils/convertUtil';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -78,7 +80,7 @@ export const useSearchMore = (
 
   // 전체보기 검색결과를 가져오기 위한 API 호출 함수
   const judgeExecApi = async (pageParam: number) => {
-    if (displayMediaType == MEDIA_TYPE.ANI) {
+    if (displayMediaType == getDisplayMediaType().aniCode) {
       // 애니메이션 검색 API 호출
       const response = await await searchApi.searchAni(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
@@ -90,11 +92,11 @@ export const useSearchMore = (
       }
       return response.data.aniResults;
     } else if (
-      displayMediaType == MEDIA_TYPE.DRAMA ||
-      displayMediaType == MEDIA_TYPE.VARIETY ||
-      displayMediaType == MEDIA_TYPE.DOCUMENTARY ||
-      displayMediaType == MEDIA_TYPE.KIDS ||
-      displayMediaType == MEDIA_TYPE.NEWS
+      displayMediaType == getDisplayMediaType().dramaCode ||
+      displayMediaType == getDisplayMediaType().varietyCode ||
+      displayMediaType == getDisplayMediaType().documentaryCode ||
+      displayMediaType == getDisplayMediaType().kidsCode ||
+      displayMediaType == getDisplayMediaType().newsCode
     ) {
       // 컨텐츠 미디어 타입 코드 가져오기
       const contentMediaType = mappingToMediaType(
@@ -116,7 +118,7 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.dramaResults;
-    } else if (displayMediaType == MEDIA_TYPE.MOVIE) {
+    } else if (displayMediaType == getDisplayMediaType().movieCode) {
       // 영화 검색 API 호출
       const response = await await searchApi.searchMovie(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
@@ -127,7 +129,7 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.movieResults;
-    } else if (displayMediaType == MEDIA_TYPE.COMICS) {
+    } else if (displayMediaType == getDisplayMediaType().comicsCode) {
       // 만화 검색 API 호출
       const response = await await searchApi.searchComics(
         {

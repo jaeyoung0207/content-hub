@@ -1,5 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '@components/features/header/Header';
+import { Suspense } from 'react';
+import { LoadingUi } from '@/components/ui/LoadingUi';
 
 /**
  * 레이아웃 컴포넌트
@@ -13,7 +15,9 @@ export const Layout = () => {
     <>
       <Header />
       <main>
-        <Outlet />
+        <Suspense fallback={<LoadingUi />}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   );

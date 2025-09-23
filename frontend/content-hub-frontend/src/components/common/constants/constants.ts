@@ -61,19 +61,6 @@ export const INFINITE_SCROLL_THROTTLE_DELAY = 1000;
 // 툴팁 닫힘 상태
 export const TOOLTIP_CLOSE_STATE = 0;
 
-// 미디어 타입(화면 표시용)
-export const MEDIA_TYPE = {
-  ANI: '1',
-  DRAMA: '2',
-  MOVIE: '3',
-  DOCUMENTARY: '4',
-  KIDS: '5',
-  NEWS: '6',
-  VARIETY: '7',
-  COMICS: '21',
-  PERSON: '31',
-};
-
 // 미디어 타입 이름(화면 표시용)
 export const MEDIA_TYPE_NAME = {
   ANI: 'info.animation',

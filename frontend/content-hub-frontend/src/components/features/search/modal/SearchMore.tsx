@@ -1,7 +1,4 @@
-import {
-  MEDIA_TYPE,
-  SEARCH_SCREEN_TYPE,
-} from '@/components/common/constants/constants';
+import { SEARCH_SCREEN_TYPE } from '@/components/common/constants/constants';
 import { CloseButtonUi } from '@/components/ui/common/CloseButtonUi';
 import { useSearchMore } from './useSearchMore';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +6,7 @@ import { memo } from 'react';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from '../SearchPage';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
+import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 전체보기 모달화면 컴포넌트
@@ -34,21 +32,21 @@ export const SearchMore = memo(
 
     // 각 미디어 이름을 가져오는 함수
     const getMediaName = () => {
-      if (displayMediaType === MEDIA_TYPE.ANI) {
+      if (displayMediaType === getDisplayMediaType().aniCode) {
         return 'info.animation';
-      } else if (displayMediaType === MEDIA_TYPE.DRAMA) {
+      } else if (displayMediaType === getDisplayMediaType().dramaCode) {
         return 'info.drama';
-      } else if (displayMediaType === MEDIA_TYPE.MOVIE) {
+      } else if (displayMediaType === getDisplayMediaType().movieCode) {
         return 'info.movie';
-      } else if (displayMediaType === MEDIA_TYPE.DOCUMENTARY) {
+      } else if (displayMediaType === getDisplayMediaType().documentaryCode) {
         return 'info.documentary';
-      } else if (displayMediaType === MEDIA_TYPE.KIDS) {
+      } else if (displayMediaType === getDisplayMediaType().kidsCode) {
         return 'info.kids';
-      } else if (displayMediaType === MEDIA_TYPE.NEWS) {
+      } else if (displayMediaType === getDisplayMediaType().newsCode) {
         return 'info.news';
-      } else if (displayMediaType === MEDIA_TYPE.VARIETY) {
+      } else if (displayMediaType === getDisplayMediaType().varietyCode) {
         return 'info.variety';
-      } else if (displayMediaType === MEDIA_TYPE.COMICS) {
+      } else if (displayMediaType === getDisplayMediaType().comicsCode) {
         return 'info.comics';
       } else {
         return 'info.variety';

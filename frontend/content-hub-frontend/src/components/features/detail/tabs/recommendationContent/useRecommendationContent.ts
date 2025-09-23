@@ -14,13 +14,11 @@ import {
   useEffect,
   useState,
 } from 'react';
-import {
-  INFINITE_SCROLL_THROTTLE_DELAY,
-  MEDIA_TYPE,
-} from '@/components/common/constants/constants';
+import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/constants';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import throttle from 'lodash/throttle';
 import { useUserStore } from '@/components/common/store/globalStateStore';
+import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 
 /**
  * 추천 콘텐츠 무한 스크롤 결과 타입
@@ -81,12 +79,12 @@ export const useRecommendationContent = (
   const judgeExecApi = async (pageParam: number) => {
     // 화면 표시용 미디어 타입이 ANI 또는 DRAMA인 경우
     if (
-      displayMediaType == MEDIA_TYPE.ANI ||
-      displayMediaType == MEDIA_TYPE.DRAMA ||
-      displayMediaType == MEDIA_TYPE.DOCUMENTARY ||
-      displayMediaType == MEDIA_TYPE.KIDS ||
-      displayMediaType == MEDIA_TYPE.NEWS ||
-      displayMediaType == MEDIA_TYPE.VARIETY
+      displayMediaType == getDisplayMediaType().aniCode ||
+      displayMediaType == getDisplayMediaType().dramaCode ||
+      displayMediaType == getDisplayMediaType().documentaryCode ||
+      displayMediaType == getDisplayMediaType().kidsCode ||
+      displayMediaType == getDisplayMediaType().newsCode ||
+      displayMediaType == getDisplayMediaType().varietyCode
     ) {
       return (
         await detailApi.getTvRecommendations({
@@ -97,7 +95,7 @@ export const useRecommendationContent = (
       ).data.results;
     }
     // 화면 표시용 미디어 타입이 MOVIE인 경우
-    else if (displayMediaType == MEDIA_TYPE.MOVIE) {
+    else if (displayMediaType == getDisplayMediaType().movieCode) {
       return (
         await detailApi.getMovieRecommendations({
           movie_id: detailResult.id!,
@@ -107,7 +105,7 @@ export const useRecommendationContent = (
       ).data.results;
     }
     // 화면 표시용 미디어 타입이 COMICS인 경우
-    else if (displayMediaType == MEDIA_TYPE.COMICS) {
+    else if (displayMediaType == getDisplayMediaType().comicsCode) {
       return (
         await detailApi.getComicsRecommendations({
           media_id: detailResult.id!,

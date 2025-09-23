@@ -18,6 +18,7 @@ import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.BusinessUtil;
+import com.cjy.contenthub.common.util.GenreUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
@@ -115,7 +116,7 @@ public class SearchHelper {
 			SearchMovieResponseDto movieResponse,
 			Map<String, Integer> movieGenreMap
 			) {
-		
+
 		// 애니 검색 결과 리스트
 		List<SearchTvResultsDto> aniResultList = Optional.ofNullable(tvResponse.getAniResults()).orElse(Collections.emptyList());
 		// 드라마 검색 결과 리스트
@@ -136,7 +137,7 @@ public class SearchHelper {
 		aniResultList.addAll(getAniMovieList(movieResultList, movieGenreMap));
 		// 영화 정보에서 애니영화 제외한 정보 추출
 		filteredMovieList.addAll(getMovieList(movieResultList, movieGenreMap));
-		
+
 		// 각 미디어 타입별 설정된 페이지당 작품 표시 개수 이상의 데이터가 존재하는지 여부 
 		int tvPage = tvResponse.getPage();
 		int tvTotalPages = tvResponse.getTotalPages();
@@ -158,7 +159,7 @@ public class SearchHelper {
 		boolean isNewsViewMore = tvPage < tvTotalPages || isMoreNews;
 		boolean isVarietyViewMore = tvPage < tvTotalPages || isMoreVariety;
 		boolean isMovieViewMore = moviePage < movieTotalPages || isMoreMovie;
-		
+
 		// 응답 오브젝트 반환
 		return SearchVideoResponseDto.builder()
 				.aniResults(isMoreAni ? 
@@ -236,31 +237,8 @@ public class SearchHelper {
 	public List<SearchTvResultsDto> getDramaList(List<SearchTvResultsDto> resultList, 
 			Map<String, Integer> tvGenreMap) {
 		List<SearchTvResultsDto> dramaList = new ArrayList<>();
-		// 드라마 장르 리스트
-		List<Integer> dramaCodeList = List.of(
-				tvGenreMap.get(TmdbGenreEnum.GENRE_DRAMA.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_COMEDY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_WESTERN.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_CRIME.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_MYSTERY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_FAMILY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_ACTION_ADVENTURE.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_SCI_FI_FANTASY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_SOAP.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_WAR_POLITICS.getGenreEnglish()));
-		// 기타 장르 리스트
-		List<Integer> othersCodeList = List.of(
-				tvGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_KIDS.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()));
 		resultList.stream()
-		.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds())
-				&& (!CollectionUtils.containsAny(result.getGenreIds(), othersCodeList)
-						&& CollectionUtils.containsAny(result.getGenreIds(), dramaCodeList))
-				)
+		.filter(result -> GenreUtil.isDramaGenre(tvGenreMap, result.getGenreIds()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
 			dramaList.add(result);
@@ -280,7 +258,7 @@ public class SearchHelper {
 		return getTvListOfGenre(resultList, tvGenreMap, TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish(),
 				ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode());
 	}
-	
+
 	/**
 	 * 키즈 리스트를 추출
 	 * 
@@ -293,7 +271,7 @@ public class SearchHelper {
 		return getTvListOfGenre(
 				resultList, tvGenreMap, TmdbGenreEnum.GENRE_KIDS.getGenreEnglish(), ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode());
 	}
-	
+
 	/**
 	 * 뉴스 리스트를 추출
 	 * 
@@ -306,7 +284,7 @@ public class SearchHelper {
 		return getTvListOfGenre(
 				resultList, tvGenreMap, TmdbGenreEnum.GENRE_NEWS.getGenreEnglish(), ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode());
 	}
-	
+
 	/**
 	 * 버라이어티 리스트를 추출
 	 * 
@@ -317,21 +295,16 @@ public class SearchHelper {
 	public List<SearchTvResultsDto> getVarietyList(List<SearchTvResultsDto> resultList, 
 			Map<String, Integer> tvGenreMap) {
 		List<SearchTvResultsDto> varietyList = new ArrayList<>();
-		List<Integer> varietyCodeList = List.of(
-				tvGenreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()),
-				tvGenreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()));
 		resultList.stream()
 		.filter(result -> result.getGenreIds() != null && result.getGenreIds().isEmpty() 
-			|| (!CollectionUtils.isEmpty(result.getGenreIds())
-				&& CollectionUtils.containsAny(result.getGenreIds(), varietyCodeList))
-			)
+		|| GenreUtil.isVarietyGenre(tvGenreMap, result.getGenreIds()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
 			varietyList.add(result);
 		});
 		return varietyList;
 	}
-	
+
 	/**
 	 * 특정 장르의 TV시리즈 리스트를 추출
 	 * 
@@ -346,14 +319,14 @@ public class SearchHelper {
 		List<SearchTvResultsDto> tvList = new ArrayList<>();
 		resultList.stream()
 		.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds())
-				&& result.getGenreIds().contains(tvGenreMap.get(targetGenreName)))
+				&& GenreUtil.isTargetGenre(tvGenreMap, result.getGenreIds(), targetGenreName))
 		.forEach(result -> {
 			result.setContentMediaType(contentMediaType);
 			tvList.add(result);
 		});
 		return tvList;
 	}
-	
+
 	/**
 	 * 컨텐츠 미디어 타입에 따른 TV시리즈 리스트 추출
 	 * 
@@ -371,16 +344,16 @@ public class SearchHelper {
 		if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
 			return getDramaList(tvResultsList, tvGenreMap);
 		} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())) {
-            return getDocumentaryList(tvResultsList, tvGenreMap);
-        } else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
-            return getKidsList(tvResultsList, tvGenreMap);
-        } else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
-            return getNewsList(tvResultsList, tvGenreMap);
-        } else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
-            return getVarietyList(tvResultsList, tvGenreMap);
-        } else {
-            return new ArrayList<>();
-        }
+			return getDocumentaryList(tvResultsList, tvGenreMap);
+		} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
+			return getKidsList(tvResultsList, tvGenreMap);
+		} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
+			return getNewsList(tvResultsList, tvGenreMap);
+		} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
+			return getVarietyList(tvResultsList, tvGenreMap);
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**
@@ -394,8 +367,7 @@ public class SearchHelper {
 			Map<String, Integer> movieGenreMap) {
 		List<SearchTvResultsDto> aniMovieList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds())
-				&& result.getGenreIds().contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish())))
+		.filter(result -> GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 		.forEach(result -> 
 		aniMovieList.add(convertMovieToAni(result))
 				);
@@ -414,8 +386,7 @@ public class SearchHelper {
 		List<SearchMovieResultsDto> movieList = new ArrayList<>();
 		resultList.stream()
 		.filter(result -> result.getGenreIds() != null && result.getGenreIds().isEmpty()
-		|| (!CollectionUtils.isEmpty(result.getGenreIds())
-				&& !result.getGenreIds().contains(movieGenreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))))
+		|| !GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode());
 			movieList.add(result);

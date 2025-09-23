@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import {
   COMMON_IMAGES,
   IS_MOBILE,
-  MEDIA_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_185,
   WIDTH_300,
@@ -223,9 +222,6 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
       {credits.map((items, index) => {
         // 캐스트인지 타입 확인
         const isCast = isPersonCreditsCastType(items);
-        // TV인 경우 애니메이션 고정, 그 이외의 경우 영화로 설정
-        const contentMediaType =
-          items.mediaType === 'TV' ? MEDIA_TYPE.ANI : MEDIA_TYPE.MOVIE;
         // 캐스트인 경우 캐릭터, 크루인 경우 작업 역할 표시
         const role = isCast ? items.character : items.job;
         return (
@@ -244,11 +240,13 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
                   : t('info.unknown')}
               </div>
               {/* 미디어 타입 */}
-              <div className="flex justify-center pt-1">{items.mediaType}</div>
+              <div className="flex justify-center pt-1">
+                {items.contentMediaType}
+              </div>
               {/* 작품 링크 */}
               <Link
                 to={detailUrlQuery({
-                  contentMediaType: contentMediaType,
+                  contentMediaType: items.contentMediaType,
                   apiId: String(items.id),
                   tabNo: 0,
                 })}

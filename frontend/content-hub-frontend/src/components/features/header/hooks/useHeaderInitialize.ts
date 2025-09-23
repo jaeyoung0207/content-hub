@@ -44,12 +44,8 @@ export const useHeaderInitialize = () => {
       queryKey: headerQueryKeys.getMediaTypes(),
       queryFn: async () => {
         const mediaTypes = (await commonApi.getMediaTypes()).data;
-        setContentMediaType(mediaTypes.contentMediaTypeDto);
-        setDisplayMediaType(mediaTypes.displayMediaTypeDto);
-
-        console.log(mediaTypes.contentMediaTypeDto);
-        console.log(mediaTypes.displayMediaTypeDto);
-
+        setContentMediaType(mediaTypes.contentMediaTypeDto, true);
+        setDisplayMediaType(mediaTypes.displayMediaTypeDto, true);
         return mediaTypes;
       },
     });

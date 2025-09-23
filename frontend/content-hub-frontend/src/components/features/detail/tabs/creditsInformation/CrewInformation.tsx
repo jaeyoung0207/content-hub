@@ -1,6 +1,5 @@
 import {
   VIDEO_CREDITS_TYPE,
-  MEDIA_TYPE,
   COMICS_CREDITS_TYPE,
 } from '@/components/common/constants/constants';
 import { VideoInformationPropsType } from '../contentInformation/VideoInformation';

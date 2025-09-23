@@ -113,7 +113,11 @@ type UseTooltipStoreType = {
  */
 type UseContentMediaTypeMapStoreType = {
   contentMediaType: CommonContentMediaTypeDto | undefined;
-  setContentMediaType: (contentMediaType: CommonContentMediaTypeDto) => void;
+  isContentMediaTypeInitialized: boolean;
+  setContentMediaType: (
+    contentMediaType: CommonContentMediaTypeDto,
+    isContentMediaTypeInitialized: boolean
+  ) => void;
   clearContentMediaType: () => void;
 };
 
@@ -122,7 +126,11 @@ type UseContentMediaTypeMapStoreType = {
  */
 type UseDisplayMediaTypeMapStoreType = {
   displayMediaType: CommonDisplayMediaTypeDto | undefined;
-  setDisplayMediaType: (displayMediaType: CommonDisplayMediaTypeDto) => void;
+  isDisplayMediaTypeInitialized: boolean;
+  setDisplayMediaType: (
+    displayMediaType: CommonDisplayMediaTypeDto,
+    isDisplayMediaTypeInitialized: boolean
+  ) => void;
   clearDisplayMediaType: () => void;
 };
 
@@ -254,8 +262,14 @@ export const useTooltipStore = create<UseTooltipStoreType>((set) => ({
 export const useContentMediaTypeMapStore =
   create<UseContentMediaTypeMapStoreType>((set) => ({
     contentMediaType: undefined,
-    setContentMediaType: (contentMediaType) => set({ contentMediaType }),
-    clearContentMediaType: () => set({ contentMediaType: undefined }),
+    isContentMediaTypeInitialized: false,
+    setContentMediaType: (contentMediaType, isContentMediaTypeInitialized) =>
+      set({ contentMediaType, isContentMediaTypeInitialized }),
+    clearContentMediaType: () =>
+      set({
+        contentMediaType: undefined,
+        isContentMediaTypeInitialized: false,
+      }),
   }));
 
 /**
@@ -264,6 +278,12 @@ export const useContentMediaTypeMapStore =
 export const useDisplayMediaTypeMapStore =
   create<UseDisplayMediaTypeMapStoreType>((set) => ({
     displayMediaType: undefined,
-    setDisplayMediaType: (displayMediaType) => set({ displayMediaType }),
-    clearDisplayMediaType: () => set({ displayMediaType: undefined }),
+    isDisplayMediaTypeInitialized: false,
+    setDisplayMediaType: (displayMediaType, isDisplayMediaTypeInitialized) =>
+      set({ displayMediaType, isDisplayMediaTypeInitialized }),
+    clearDisplayMediaType: () =>
+      set({
+        displayMediaType: undefined,
+        isDisplayMediaTypeInitialized: false,
+      }),
   }));

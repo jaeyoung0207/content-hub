@@ -1,4 +1,3 @@
-import { MEDIA_TYPE } from '../constants/constants';
 import { SearchCommonResultType } from '@/components/features/search/useSearch';
 import {
   AniListCharactersNodeDto,
@@ -19,7 +18,7 @@ import {
 import { RecommendationContentResultType } from '@/components/features/detail/tabs/recommendationContent/useRecommendationContent';
 import { DetailResponseType } from '@/components/features/detail/useDetail';
 import { PersonCredits } from '@/components/features/person/Person';
-import { getContentMediaType } from './convertUtil';
+import { getContentMediaType, getDisplayMediaType } from './convertUtil';
 
 /**
  * 검색 결과의 타입이 TV 타입인지 확인하는 함수
@@ -33,12 +32,12 @@ export const isSearchTvType = (
 ): results is SearchTvResultsDto => {
   return (
     results &&
-    (displayMediaType === MEDIA_TYPE.ANI ||
-      displayMediaType === MEDIA_TYPE.DRAMA ||
-      displayMediaType === MEDIA_TYPE.DOCUMENTARY ||
-      displayMediaType === MEDIA_TYPE.KIDS ||
-      displayMediaType === MEDIA_TYPE.NEWS ||
-      displayMediaType === MEDIA_TYPE.VARIETY)
+    (displayMediaType === getDisplayMediaType().aniCode ||
+      displayMediaType === getDisplayMediaType().dramaCode ||
+      displayMediaType === getDisplayMediaType().documentaryCode ||
+      displayMediaType === getDisplayMediaType().kidsCode ||
+      displayMediaType === getDisplayMediaType().newsCode ||
+      displayMediaType === getDisplayMediaType().varietyCode)
   );
 };
 
@@ -52,7 +51,7 @@ export const isSearchMovieType = (
   results: SearchCommonResultType,
   displayMediaType: string
 ): results is SearchMovieResultsDto => {
-  return results && displayMediaType === MEDIA_TYPE.MOVIE;
+  return results && displayMediaType === getDisplayMediaType().movieCode;
 };
 
 /**
@@ -65,7 +64,7 @@ export const isSearchComicsType = (
   results: SearchCommonResultType,
   displayMediaType: string
 ): results is SearchComicsResultDto => {
-  return results && displayMediaType === MEDIA_TYPE.COMICS;
+  return results && displayMediaType === getDisplayMediaType().comicsCode;
 };
 
 /**
@@ -80,12 +79,12 @@ export const isRecommendationsTvType = (
 ): results is DetailRecommendationsTvResultsDto => {
   return (
     results &&
-    (displayMediaType === MEDIA_TYPE.ANI ||
-      displayMediaType === MEDIA_TYPE.DRAMA ||
-      displayMediaType === MEDIA_TYPE.DOCUMENTARY ||
-      displayMediaType === MEDIA_TYPE.KIDS ||
-      displayMediaType === MEDIA_TYPE.NEWS ||
-      displayMediaType === MEDIA_TYPE.VARIETY)
+    (displayMediaType === getDisplayMediaType().aniCode ||
+      displayMediaType === getDisplayMediaType().dramaCode ||
+      displayMediaType === getDisplayMediaType().documentaryCode ||
+      displayMediaType === getDisplayMediaType().kidsCode ||
+      displayMediaType === getDisplayMediaType().newsCode ||
+      displayMediaType === getDisplayMediaType().varietyCode)
   );
 };
 
@@ -99,7 +98,7 @@ export const isRecommendationsMovieType = (
   results: RecommendationContentResultType,
   displayMediaType: string
 ): results is DetailRecommendationsMovieResultsDto => {
-  return results && displayMediaType === MEDIA_TYPE.MOVIE;
+  return results && displayMediaType === getDisplayMediaType().movieCode;
 };
 
 /**
@@ -112,7 +111,7 @@ export const isRecommendationsComicsType = (
   results: RecommendationContentResultType,
   displayMediaType: string
 ): results is DetailComicsResponseDto => {
-  return results && displayMediaType === MEDIA_TYPE.COMICS;
+  return results && displayMediaType === getDisplayMediaType().comicsCode;
 };
 
 /**

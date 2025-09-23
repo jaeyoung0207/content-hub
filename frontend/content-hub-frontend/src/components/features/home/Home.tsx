@@ -3,7 +3,6 @@ import { useHome } from './useHome';
 import { useTranslation } from 'react-i18next';
 import {
   COMMON_IMAGES,
-  MEDIA_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
 } from '@/components/common/constants/constants';
@@ -16,6 +15,11 @@ import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
 import { WishlistUi } from '@/components/ui/WishlistUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
+import {
+  useContentMediaTypeMapStore,
+  useDisplayMediaTypeMapStore,
+} from '@/components/common/store/globalStateStore';
 
 type DisplayRankingsProps = {
   title: string;
@@ -29,6 +33,10 @@ type DisplayRankingsProps = {
 export const Home = () => {
   // i18n 번역 훅
   const { t } = useTranslation();
+  // 컨텐츠 미디어 타입 맵 상태관리
+  const { isContentMediaTypeInitialized } = useContentMediaTypeMapStore();
+  // 화면 표시용 미디어 타입 맵 상태관리
+  const { isDisplayMediaTypeInitialized } = useDisplayMediaTypeMapStore();
 
   // 홈 화면 훅 호출
   const { data, isLoading, user } = useHome();
@@ -78,33 +86,42 @@ export const Home = () => {
   return (
     <div className="w-sm lg:w-7xl">
       <div className="mt-30">
-        {isLoading ? (
-          <LoadingUi />
-        ) : (
-          data && (
+        {
+          // 콘텐츠 미디어 타입 및 화면 표시용 미디어 타입이 초기화 되었을 때만 렌더링
+          isContentMediaTypeInitialized && isDisplayMediaTypeInitialized ? (
             <>
-              <div className="text-4xl font-bold mb-10">
-                {t('info.rankingTitle')}
-              </div>
-              {contentRankings.map(
-                (ranking, index) =>
-                  ranking.items.length > 0 && (
-                    <DisplayRankings
-                      key={index}
-                      title={ranking.title}
-                      items={ranking.items}
-                      user={user}
-                    />
-                  )
+              {isLoading ? (
+                <LoadingUi />
+              ) : (
+                data && (
+                  <>
+                    <div className="text-4xl font-bold mb-10">
+                      {t('info.rankingTitle')}
+                    </div>
+                    {contentRankings.map(
+                      (ranking, index) =>
+                        ranking.items.length > 0 && (
+                          <DisplayRankings
+                            key={index}
+                            title={ranking.title}
+                            items={ranking.items}
+                            user={user}
+                          />
+                        )
+                    )}
+                  </>
+                )
+              )}
+              {!isLoading && isDataEmpty && (
+                <div className="text-2xl">
+                  <NodataMessageUi message={t('warn.noRankingData')} />
+                </div>
               )}
             </>
+          ) : (
+            <LoadingUi />
           )
-        )}
-        {!isLoading && isDataEmpty && (
-          <div className="text-2xl">
-            <NodataMessageUi message={t('warn.noRankingData')} />
-          </div>
-        )}
+        }
       </div>
     </div>
   );
@@ -130,19 +147,19 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
         {items.map((items, index) => {
           // 썸네일 이미지
           const thumbnailImageUrl =
-            items.displayMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === getDisplayMediaType().comicsCode
               ? items.thumbnailImageUrl
               : thumbnailImagePath + items.thumbnailImageUrl;
           const widthStyle =
-            items.displayMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === getDisplayMediaType().comicsCode
               ? 'w-[195px]'
               : 'w-[300px]';
           const heightStyle =
-            items.displayMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === getDisplayMediaType().comicsCode
               ? 'h-[270px]'
               : 'h-[180px]';
           const heartStyle =
-            items.displayMediaType === MEDIA_TYPE.COMICS
+            items.displayMediaType === getDisplayMediaType().comicsCode
               ? 'z-1 relative top-28 left-16'
               : 'z-1 relative top-15 left-30';
           return (
