@@ -141,15 +141,6 @@ public class SearchServiceImpl implements SearchService {
 						List<String> nameList = resultList.stream()
 								.filter(e -> !StringUtils.equals(e.getMediaType(), ContentMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getContentMediaTypeValue()) // 인물 제외
 										&& e.getGenreIds() != null
-//										&& (StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue())
-//												&& (e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_ANI.getGenreEnglish())) // 애니 필터링
-//														|| (!e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_DOCUMENTARY.getGenreEnglish()))
-//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_KIDS.getGenreEnglish()))
-//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_NEWS.getGenreEnglish()))
-//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_REALITY.getGenreEnglish()))
-//																&& !e.getGenreIds().contains(genreMap.get(TmdbGenreEnum.GENRE_TALK.getGenreEnglish()))) // 드라마 필터링
-//														))
-//										|| StringUtils.equals(e.getMediaType(), CommonMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue()) // 영화 필터링
 										)
 								.map(e -> StringUtils.defaultIfEmpty(e.getName(), e.getTitle())) // 둘 중 하나만 들어가 있으므로, 한쪽이 empty면 다른 한쪽을 설정
 								.filter(StringUtils::isNotEmpty) // 빈 요소 제거

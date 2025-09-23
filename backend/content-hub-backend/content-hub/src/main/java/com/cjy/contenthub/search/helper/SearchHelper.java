@@ -318,8 +318,7 @@ public class SearchHelper {
 			Map<String, Integer> tvGenreMap, String targetGenreName, String contentMediaType) {
 		List<SearchTvResultsDto> tvList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> !CollectionUtils.isEmpty(result.getGenreIds())
-				&& GenreUtil.isTargetGenre(tvGenreMap, result.getGenreIds(), targetGenreName))
+		.filter(result -> GenreUtil.isTargetGenre(tvGenreMap, result.getGenreIds(), targetGenreName))
 		.forEach(result -> {
 			result.setContentMediaType(contentMediaType);
 			tvList.add(result);
@@ -385,8 +384,8 @@ public class SearchHelper {
 			Map<String, Integer> movieGenreMap) {
 		List<SearchMovieResultsDto> movieList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> result.getGenreIds() != null && result.getGenreIds().isEmpty()
-		|| !GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
+		.filter(result -> result.getGenreIds() != null)
+		.filter(result -> !GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode());
 			movieList.add(result);

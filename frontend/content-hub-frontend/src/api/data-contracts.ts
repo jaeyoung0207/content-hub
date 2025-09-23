@@ -219,6 +219,7 @@ export interface PersonCreditsCastDto {
   title?: string;
   /** @format int32 */
   episodeCount?: number;
+  contentMediaTypeName?: string;
   contentMediaType?: string;
 }
 
@@ -244,6 +245,7 @@ export interface PersonCreditsCrewDto {
   title?: string;
   /** @format int32 */
   episodeCount?: number;
+  contentMediaTypeName?: string;
   contentMediaType?: string;
 }
 
@@ -335,8 +337,8 @@ export interface KakaoAccountDto {
   /** @format date-time */
   ciAuthenticatedAt?: string;
   emailValid?: boolean;
-  leapMonth?: boolean;
   emailVerified?: boolean;
+  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -347,8 +349,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultNickname?: boolean;
   defaultImage?: boolean;
+  defaultNickname?: boolean;
 }
 
 export interface KakaoUserInfoDto {

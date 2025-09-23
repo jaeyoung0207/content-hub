@@ -62,6 +62,7 @@ public class PersonHelper {
 				cast.setTitle(tvCast.getName());
 				cast.setReleaseDate(tvCast.getFirstCreditAirDate());
 				cast.setEpisodeCount(tvCast.getEpisodeCount());
+				cast.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
 				cast.setContentMediaType(GenreUtil.getContentMediaTypeByGenre(genreMap, genreIds));
 			} 
 			// 영화 출연작인 경우
@@ -72,7 +73,8 @@ public class PersonHelper {
 				cast.setOriginalTitle(movieCast.getOriginalTitle());
 				cast.setTitle(movieCast.getTitle());
 				cast.setReleaseDate(movieCast.getReleaseDate());
-				cast.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeValue());
+				cast.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue().toUpperCase());
+				cast.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode());
 			}
 			// 첫 상영연도 설정
 			cast.setReleaseYear(setReleaseYear(cast.getReleaseDate()));
@@ -112,6 +114,7 @@ public class PersonHelper {
 				crew.setTitle(tvCrew.getName());
 				crew.setReleaseDate(tvCrew.getFirstCreditAirDate());
 				crew.setEpisodeCount(tvCrew.getEpisodeCount());
+				crew.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
 				crew.setContentMediaType(GenreUtil.getContentMediaTypeByGenre(genreMap, genreIds));
 			} 
 			// 영화 출연작인 경우
@@ -122,7 +125,8 @@ public class PersonHelper {
 				crew.setOriginalTitle(movieCrew.getOriginalTitle());
 				crew.setTitle(movieCrew.getTitle());
 				crew.setReleaseDate(movieCrew.getReleaseDate());
-				crew.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeValue());
+				crew.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeValue().toUpperCase());
+				crew.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode());
 			}
 			// 첫 상영연도 설정
 			crew.setReleaseYear(setReleaseYear(crew.getReleaseDate()));

@@ -1376,6 +1376,8 @@ components:
         episodeCount:
           type: integer
           format: int32
+        contentMediaTypeName:
+          type: string
         contentMediaType:
           type: string
     PersonCreditsCrewDto:
@@ -1423,6 +1425,8 @@ components:
         episodeCount:
           type: integer
           format: int32
+        contentMediaTypeName:
+          type: string
         contentMediaType:
           type: string
     PersonResponseDto:
@@ -1588,9 +1592,9 @@ components:
           format: date-time
         emailValid:
           type: boolean
-        leapMonth:
-          type: boolean
         emailVerified:
+          type: boolean
+        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -1606,9 +1610,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultNickname:
-          type: boolean
         defaultImage:
+          type: boolean
+        defaultNickname:
           type: boolean
     KakaoUserInfoDto:
       type: object

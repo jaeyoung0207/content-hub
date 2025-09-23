@@ -241,7 +241,7 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
               </div>
               {/* 미디어 타입 */}
               <div className="flex justify-center pt-1">
-                {items.contentMediaType}
+                {items.contentMediaTypeName}
               </div>
               {/* 작품 링크 */}
               <Link
