@@ -1,6 +1,9 @@
 import naverLoginBtn from '@assets/buttons/btnG_naver_login.png';
 import kakaoLoginBtn from '@assets/buttons/kakao_login_large_narrow.png';
 import { settings } from '@/components/common/config/settings';
+import { useEffect } from 'react';
+import { useUserStore } from '@/components/common/store/globalStateStore';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * 로그인 컴포넌트
@@ -21,6 +24,22 @@ export const Login = () => {
   const kakaoLogin = () => {
     window.location.href = KAKAO_AUTH_URL;
   };
+
+  // navigate 훅
+  const navigate = useNavigate();
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
+  /**
+   * 유저 정보 존재 시 리다이렉트 처리
+   */
+  useEffect(() => {
+    if (user) {
+      // 사용자가 로그인한 상태일 때 처리
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   return (
     <>
