@@ -118,7 +118,9 @@ export class HttpClient<SecurityDataType = unknown> {
         // 현재시각
         const now = dayjs();
         // 접근토큰 만료 확인
-        if (jwt && dayjs(expireDate).isBefore(dayjs(now)) && user && provider) {
+        const isJwtExpired =
+          jwt && dayjs(expireDate).isBefore(dayjs(now)) && user && provider;
+        if (isJwtExpired) {
           // 접근토큰 갱신 API 조회
           let res;
           if (provider === LOGIN_PROVIDER.NAVER) {
@@ -148,8 +150,6 @@ export class HttpClient<SecurityDataType = unknown> {
         } else if (!jwt && user) {
           // 유저정보 클리어
           clearUserData();
-          // 로그인 확인 다이얼로그 표시
-          // useConfirmDialogStore.getState().setIsConfirmDialogOpen(true);
         }
         return request;
       },
@@ -168,16 +168,9 @@ export class HttpClient<SecurityDataType = unknown> {
       (error: AxiosError<AxiosErrorType>) => {
         const data = error.response?.data;
         // 로그인 만료시 로그인 만료시 또는 권한없음인 경우
-        if (
-          data?.status === 401 ||
-          data?.status === '401' ||
-          data?.status === 403 ||
-          data?.status === '403'
-        ) {
+        if (data?.status === 401 || data?.status === 403) {
           // 유저정보 클리어
           clearUserData();
-          // 로그인 확인 다이얼로그 표시
-          useConfirmDialogStore.getState().setIsConfirmDialogOpen(true); // TODO
         }
         return Promise.reject(error);
       }
