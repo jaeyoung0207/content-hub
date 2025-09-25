@@ -56,6 +56,7 @@ export const useHeaderInitialize = () => {
   /**
    * 컴포넌트 마운트 시 초기화 작업 수행
    */
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     getCsrfToken();
     getMediaTypes();

@@ -12,7 +12,7 @@ import {
   INFINITE_SCROLL_THROTTLE_DELAY,
   MEDIA_TYPE_KIND,
 } from '@/components/common/constants/constants';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { SearchCommonResultType } from '../useSearch';
 import { useSearchParams } from 'react-router-dom';
@@ -74,6 +74,9 @@ export const useSearchMore = (
   const { user } = useUserStore();
 
   // ================================================================================================== react query
+
+  // React Query 클라이언트 인스턴스
+  const queryClient = useQueryClient();
 
   // 검색 API 인스턴스 생성
   const searchApi = new Search();
@@ -160,7 +163,7 @@ export const useSearchMore = (
     SearchCommonResultType[], // queryFn이 반환하는 원본 데이터
     AxiosError, // 에러 타입 (보통 AxiosError)
     UseInfiniteQueryResultType, // 반환할 최종 데이터 형태 (select로 가공한 경우)
-    [string, string, boolean, string, number | undefined], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
+    [string, string, string, boolean, string, number | undefined], // query key의 타입 (예: [string, string] -> [루트 키, 서브 키])
     number | undefined // pageParam 타입 (보통 number | undefined)
   >({
     // useInfiniteQuery의 키 지정
@@ -169,7 +172,7 @@ export const useSearchMore = (
       isAdult,
       displayMediaType,
       user?.userId
-    ) as [string, string, boolean, string, number | undefined],
+    ) as [string, string, string, boolean, string, number | undefined],
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 1 }) => {
       const responseDataResults = await judgeExecApi(pageParam);
@@ -279,6 +282,25 @@ export const useSearchMore = (
       document.removeEventListener('keydown', handleOnEscKey);
     };
   }, [handleModalClose]);
+
+  /**
+   * 컴포넌트 언마운트 시 검색결과 캐시 제거
+   * 모달을 닫고 검색페이지로 돌아왔을 때 기존 검색결과(+ 위시리스트)가 남아있는 현상 방지
+   * 의존성 배열에 넣은 값이 바뀔때마다 실행되지 않도록 의존성 배열을 빈 배열로 설정
+   */
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries({
+        queryKey: searchQueryKeys.search.search(
+          keyword,
+          String(isAdult),
+          user?.userId
+        ),
+        exact: true, // 완전히 일치하는 쿼리만 제거
+      });
+    };
+  }, []);
 
   // ================================================================================================== return
 

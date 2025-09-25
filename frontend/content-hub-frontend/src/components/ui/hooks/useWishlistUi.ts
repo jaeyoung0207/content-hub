@@ -189,7 +189,7 @@ export const useWishlistUi = ({
     } else {
       checkWishlistExists().then((res) => {
         if (res && res.length > 0) {
-          let displayMediaTypeNames: string[] = [];
+          const displayMediaTypeNames: string[] = [];
           res.forEach((items) => {
             if (items.displayMediaType) {
               displayMediaTypeNames.push(
