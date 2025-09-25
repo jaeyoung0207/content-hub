@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistResponseDto;
@@ -27,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * 위시리스트 API 컨트롤러 클래스
  */
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping(CommonConstants.WISHLIST_PATH)
 @RequiredArgsConstructor
 @Slf4j
 public class WishlistController {

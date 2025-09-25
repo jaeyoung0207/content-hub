@@ -1,9 +1,12 @@
 package com.cjy.contenthub.common.filter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -98,7 +101,13 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			// user 테이블에 등록되어 있는지 확인
 			boolean isSaved = userRepository.existsByProviderAndProviderId(provider, providerId);
 			// 유저가 존재하지 않는 경우, 예외를 발생시킴
-			if(!isSaved) {
+			if(isSaved) {
+				// 인증 객체 생성
+			    UsernamePasswordAuthenticationToken authentication =
+			        new UsernamePasswordAuthenticationToken(providerId, null, Collections.emptyList());
+			    // SecurityContext에 인증 객체 세팅
+			    SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else {
 				throw new UsernameNotFoundException("User ID is not registered");
 			}
 		}

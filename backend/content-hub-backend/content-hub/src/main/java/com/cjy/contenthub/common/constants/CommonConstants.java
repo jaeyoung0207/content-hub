@@ -63,4 +63,7 @@ public class CommonConstants {
     /** 첫번째 페이지 번호 */
 	public static final int FIRST_PAGE_NO = 1;
 	
+	/** 위시리스트 경로 */
+	public static final String WISHLIST_PATH = "/wishlist";
+	
 }
