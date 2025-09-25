@@ -134,6 +134,12 @@ public class WishlistServiceImpl implements WishlistService {
 		
 		// 존재하는 경우 결과 리스트에 추가
 		if (!contentList.isEmpty()) {
+			// 동일 미디어 타입이 존재하는 경우 리턴
+			List<String> contentMediaTypes = contentList.stream().map(ContentEntity::getContentMediaType).toList();
+			if (contentMediaTypes.contains(contentMediaType)) {
+				return resultList;
+			}
+			// 다른 미디어 타입이 존재하는 경우 결과 리스트에 추가
 			for (ContentEntity content : contentList) {
 				WishlistServiceDto wishlistService = WishlistServiceDto.builder()
 				.userId(userId)
