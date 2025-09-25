@@ -14,7 +14,7 @@ public class CommonErrorResponse {
 	private String path;
 	
 	/** 상태코드 */
-	private String status;
+	private int status;
 	
 	/** 메세지 */
 	private String message;

@@ -15,7 +15,7 @@ import { ERROR_CODE, ERROR_MESSAGE, ONE_MINUTE } from '../constants/constants';
  */
 export type AxiosErrorType = {
   path: string;
-  status: string;
+  status: number;
   message: string;
   body?: string;
   name: string;
@@ -108,10 +108,9 @@ const outputError = (error: Error) => {
       );
       return;
     }
-    // AxiosErrorType에서 data 속성을 가져옴
-    const data = axiosError.response.data;
     // AxiosErrorType의 속성들을 추출
-    const name = data.name;
+    const data = axiosError.response.data;
+    const name = data.name ?? ERROR_MESSAGE.UNEXPECTED_ERROR.name;
     const path = data.path;
     const status = data.status;
     const message = data.message;
@@ -127,7 +126,7 @@ const outputError = (error: Error) => {
     changeConsoleColor(consoleErrorMsg);
     // 토스트 에러 메시지 출력
     const toastErrorMsg = getErrorMessage(name);
-    if (!redirectFromErrCode(status)) {
+    if (!redirectFromErrorCode(status)) {
       toast.error(formattingErrorMsg(name, toastErrorMsg), {
         toastId: 'apiResponseError', // 중복 토스트 방지
       });
@@ -156,18 +155,18 @@ const outputError = (error: Error) => {
  * @param status 상태 코드
  * @returns boolean
  */
-const redirectFromErrCode = (status: string): boolean => {
-  if (status === ERROR_CODE.UNAUTHORIZED.name) {
-    // 응답 인터셉터에서 대응 -> true반환
+const redirectFromErrorCode = (status: number): boolean => {
+  if (status === ERROR_CODE.UNAUTHORIZED.status) {
+    window.location.href = `/`;
     return true;
-  } else if (status === ERROR_CODE.FORBIDDEN.name) {
+  } else if (status === ERROR_CODE.FORBIDDEN.status) {
     const message = i18n.t('error.forbidden');
     window.location.href = `/error?status=${status}&message=${encodeURIComponent(message)}`;
     return true;
-  } else if (status === ERROR_CODE.NOT_FOUND.name) {
+  } else if (status === ERROR_CODE.NOT_FOUND.status) {
     window.location.href = `/error`;
     return true;
-  } else if (status === ERROR_CODE.SERVICE_UNAVAILABLE.name) {
+  } else if (status === ERROR_CODE.SERVICE_UNAVAILABLE.status) {
     window.location.href = `/maintenance`;
     return true;
   }

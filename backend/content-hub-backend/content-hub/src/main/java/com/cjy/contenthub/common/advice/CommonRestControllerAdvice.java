@@ -71,7 +71,7 @@ public class CommonRestControllerAdvice {
 		String message = ex.getMessage();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
-				.status(String.valueOf(statusCode))
+				.status(statusCode)
 				.message(message)
 				.name(AUTHENTICATION_AUTHORIZATION_ERROR)
 				.build();
@@ -131,7 +131,7 @@ public class CommonRestControllerAdvice {
 
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
-				.status(String.valueOf(statusCode))
+				.status(statusCode)
 				.message(message)
 				.name(VALIDATION_ERROR)
 				.build();
@@ -150,7 +150,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(WebClientResponseException.class)
 	public ResponseEntity<CommonErrorResponse> handleWebClientException(WebClientResponseException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
-		String statusCode = String.valueOf(ex.getStatusCode());
+		int statusCode = ex.getStatusCode().value();
 		String message = ex.getMessage();
 		String body = ex.getResponseBodyAsString();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
@@ -178,7 +178,7 @@ public class CommonRestControllerAdvice {
 		String message = ex.getMessage();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
-				.status(String.valueOf(statusCode))
+				.status(statusCode)
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
@@ -200,7 +200,7 @@ public class CommonRestControllerAdvice {
 		String message = ex.getReason();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
-				.status(String.valueOf(statusCode))
+				.status(statusCode)
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
@@ -222,7 +222,7 @@ public class CommonRestControllerAdvice {
 	    String message = "API Request Timeout: " + ex.getMessage();
 	    CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 	        .path(path)
-	        .status(String.valueOf(statusCode))
+	        .status(statusCode)
 	        .message(message)
 	        .name(TIMEOUT_ERROR)
 	        .build();
@@ -240,7 +240,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<CommonErrorResponse> handleException(Exception ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
-		String statusCode = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		int statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		String message = ex.getMessage();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)

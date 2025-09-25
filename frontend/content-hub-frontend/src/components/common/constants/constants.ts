@@ -129,31 +129,31 @@ export const COMMON_IMAGES = {
 // API 응답 에러 코드
 export const ERROR_CODE = {
   BAD_REQUEST: {
-    name: '400',
+    status: 400,
     message: 'Bad Request',
   },
   UNAUTHORIZED: {
-    name: '401',
+    status: 401,
     message: 'Unauthorized',
   },
   FORBIDDEN: {
-    name: '403',
+    status: 403,
     message: 'Forbidden',
   },
   NOT_FOUND: {
-    name: '404',
+    status: 404,
     message: 'Not Found',
   },
   INTERNAL_SERVER_ERROR: {
-    name: '500',
+    status: 500,
     message: 'Internal Server Error',
   },
   SERVICE_UNAVAILABLE: {
-    name: '503',
+    status: 503,
     message: 'Service Unavailable',
   },
   GATEWAY_TIMEOUT: {
-    name: '504',
+    status: 504,
     message: 'Gateway Timeout',
   },
 };
