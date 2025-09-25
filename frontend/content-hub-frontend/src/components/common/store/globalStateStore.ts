@@ -4,6 +4,7 @@ import {
   LoginUserInfoDto,
 } from '@/api/data-contracts';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 // ================================================================================================== type
 
@@ -260,30 +261,48 @@ export const useTooltipStore = create<UseTooltipStoreType>((set) => ({
  * 컨텐츠 미디어 타입 맵 상태관리
  */
 export const useContentMediaTypeMapStore =
-  create<UseContentMediaTypeMapStoreType>((set) => ({
-    contentMediaType: undefined,
-    isContentMediaTypeInitialized: false,
-    setContentMediaType: (contentMediaType, isContentMediaTypeInitialized) =>
-      set({ contentMediaType, isContentMediaTypeInitialized }),
-    clearContentMediaType: () =>
-      set({
+  create<UseContentMediaTypeMapStoreType>()(
+    persist(
+      (set) => ({
         contentMediaType: undefined,
         isContentMediaTypeInitialized: false,
+        setContentMediaType: (
+          contentMediaType,
+          isContentMediaTypeInitialized
+        ) => set({ contentMediaType, isContentMediaTypeInitialized }),
+        clearContentMediaType: () =>
+          set({
+            contentMediaType: undefined,
+            isContentMediaTypeInitialized: false,
+          }),
       }),
-  }));
+      {
+        name: 'contentMediaTypeMapStore',
+      }
+    )
+  );
 
 /**
  * 화면 표시용 미디어 타입 맵 상태관리
  */
 export const useDisplayMediaTypeMapStore =
-  create<UseDisplayMediaTypeMapStoreType>((set) => ({
-    displayMediaType: undefined,
-    isDisplayMediaTypeInitialized: false,
-    setDisplayMediaType: (displayMediaType, isDisplayMediaTypeInitialized) =>
-      set({ displayMediaType, isDisplayMediaTypeInitialized }),
-    clearDisplayMediaType: () =>
-      set({
+  create<UseDisplayMediaTypeMapStoreType>()(
+    persist(
+      (set) => ({
         displayMediaType: undefined,
         isDisplayMediaTypeInitialized: false,
+        setDisplayMediaType: (
+          displayMediaType,
+          isDisplayMediaTypeInitialized
+        ) => set({ displayMediaType, isDisplayMediaTypeInitialized }),
+        clearDisplayMediaType: () =>
+          set({
+            displayMediaType: undefined,
+            isDisplayMediaTypeInitialized: false,
+          }),
       }),
-  }));
+      {
+        name: 'displayMediaTypeMapStore',
+      }
+    )
+  );
