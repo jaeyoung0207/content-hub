@@ -1,4 +1,3 @@
-
 // 위시리스트 메인 쿼리 키
 const wishlistMainKey = 'wishlist';
 

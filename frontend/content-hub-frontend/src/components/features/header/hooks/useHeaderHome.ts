@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderType } from './useHeaderForm';
+import { SEARCH_TYPE } from '@/components/common/constants/constants';
 
 /**
  * 헤더 컴포넌트의 홈 버튼 클릭 처리 훅 매개변수 타입
@@ -12,6 +13,7 @@ type HeaderHomePropsType = {
   clearAdultFlg: () => void;
   setAutoCompleteList: (list?: string[]) => void;
   setCurrentIndex: (index: number) => void;
+  setLastSelectedSearchType: (value: string) => void;
 };
 
 /**
@@ -30,6 +32,7 @@ export const useHeaderHome = ({
   clearAdultFlg,
   setAutoCompleteList,
   setCurrentIndex,
+  setLastSelectedSearchType,
 }: HeaderHomePropsType): UseHeaderHomeReturnType => {
   // ================================================================================================== react hook
 
@@ -55,11 +58,18 @@ export const useHeaderHome = ({
     setAutoCompleteList(undefined);
     // 자동완성 박스 포커스 인덱스 초기화
     setCurrentIndex(-1);
+    // 마지막 선택된 검색 미디어 타입 값 초기화
+    setLastSelectedSearchType(SEARCH_TYPE.ANI);
     // 캐시에서 모든 쿼리 제거
     queryClient.removeQueries();
-    // // 처음 로드 참조를 true로 설정
-    // firstLoadRef.current = true;
-  }, [clearAdultFlg, reset, setAutoCompleteList, setCurrentIndex, queryClient]);
+  }, [
+    clearAdultFlg,
+    reset,
+    setAutoCompleteList,
+    setCurrentIndex,
+    setLastSelectedSearchType,
+    queryClient,
+  ]);
 
   /**
    * 홈 버튼 클릭시 처리

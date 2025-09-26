@@ -1,3 +1,4 @@
+import { SEARCH_TYPE, SELECT_TYPE } from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { useEffect } from 'react';
 import { Control, useForm, UseFormSetValue, useWatch } from 'react-hook-form';
@@ -8,6 +9,8 @@ import { Control, useForm, UseFormSetValue, useWatch } from 'react-hook-form';
 export type HeaderType = Partial<{
   // Partial로 감싸서 객체를 각 필드로 풀어서 정의
   keyword: string;
+  selectType?: string;
+  searchType?: string;
   aniFlg?: boolean;
   dramaFlg?: boolean;
   movieFlg?: boolean;
@@ -28,6 +31,8 @@ export type UseHeaderFormReturnType = {
   setFocus: (name: keyof HeaderType) => void; // react-hook-form의 setFocus 함수
   reset: (values?: HeaderType) => void; // react-hook-form의 reset 함수
   keyword?: string; // 현재 입력된 검색어
+  selectType?: string; // 검색 종류 선택 방식 (1: 복수선택, 2: 단일선택)
+  searchType?: string; // 검색 타입
   aniFlg?: boolean; // 애니메이션 검색 여부
   dramaFlg?: boolean; // 드라마 검색 여부
   movieFlg?: boolean; // 영화 검색 여부
@@ -53,6 +58,8 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
   // 초기값 설정
   const defaultValue = {
     keyword: '',
+    selectType: SELECT_TYPE.MULTIPLE,
+    searchType: SEARCH_TYPE.ANI,
     aniFlg: true,
     dramaFlg: true,
     movieFlg: true,
@@ -74,6 +81,14 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
   const keyword = useWatch({
     control,
     name: 'keyword',
+  });
+  const selectType = useWatch({
+    control,
+    name: 'selectType',
+  });
+  const searchType = useWatch({
+    control,
+    name: 'searchType',
   });
   const aniFlg = useWatch({
     control,
@@ -149,6 +164,8 @@ export const useHeaderForm = (): UseHeaderFormReturnType => {
     setFocus: setFocus,
     reset: reset,
     keyword: keyword,
+    selectType: selectType,
+    searchType: searchType,
     aniFlg: aniFlg,
     dramaFlg: dramaFlg,
     movieFlg: movieFlg,

@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useSearch } from './useSearch';
-import { SEARCH_SCREEN_TYPE } from '@/components/common/constants/constants';
+import {
+  MEDIA_TYPE_NAME,
+  SEARCH_SCREEN_TYPE,
+} from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from './SearchPage';
@@ -99,10 +102,30 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
       displayMediaType: getDisplayMediaType().comicsCode,
     },
   ];
-
+  // 검색 결과 존재 여부
   const isSearchResultEmpty = dataList.every(
     (item) => !item.dataResults || item.dataResults.length === 0
   );
+
+  // 검색용 미디어 타입 체크박스가 모두 해제된 경우
+  const isSelectedSearchTypeEmpty = Object.values(searchTypeState).every(
+    (value) => value === false
+  );
+
+  // 선택된 미디어 타입 중 검색 결과가 하나도 없는 경우(searchTypeState 의 각 플러그 값이 dataList의 displayFlg 값과 일치하므로 이를 활용)
+  const isOneSelectedAndNoResult = Object.values(searchTypeState).some(
+    (value) =>
+      value === true &&
+      !dataList.find(
+        (item) =>
+          item.displayFlg && item.dataResults && item.dataResults.length > 0
+      )
+  );
+
+  // 미디어 타입 이름 문자열 생성
+  const mediaTypes = Object.keys(MEDIA_TYPE_NAME)
+    .map((key) => t(MEDIA_TYPE_NAME[key as keyof typeof MEDIA_TYPE_NAME]))
+    .join('/');
 
   return (
     <>
@@ -112,7 +135,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           <>
             <LoadingUi />
             <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">
-              {t('info.beforeSearchMessage')}
+              {t('info.beforeSearchMessage', { mediaTypes: mediaTypes })}
             </div>
           </>
         ) : (
@@ -139,11 +162,14 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           })
         )}
         {/* 검색 결과가 없을 때 표시할 메시지 */}
-        {!isLoading && isSearchResultEmpty && (
-          <div className="mt-60">
-            <NodataMessageUi message={t('warn.noSearchData')} />
-          </div>
-        )}
+        {!isLoading &&
+          (isSearchResultEmpty ||
+            isSelectedSearchTypeEmpty ||
+            isOneSelectedAndNoResult) && (
+            <div className="mt-60">
+              <NodataMessageUi message={t('warn.noSearchData')} />
+            </div>
+          )}
       </div>
     </>
   );

@@ -33,6 +33,8 @@ export const useHeader = (): UseHeaderReturnType => {
     setFocus,
     reset,
     keyword,
+    selectType,
+    searchType,
     aniFlg,
     dramaFlg,
     movieFlg,
@@ -77,6 +79,9 @@ export const useHeader = (): UseHeaderReturnType => {
     handleSetCurrentIndex,
     handleDeleteKeyword,
     handleFilterIconOnClick,
+    handleOnClickSelectTypeRadioButton,
+    handleOnClickSearchTypeRadioButton,
+    setLastSelectedSearchType,
   } = useHeaderSearch({
     keyword: keyword,
     adultFlg: adultFlg,
@@ -91,6 +96,7 @@ export const useHeader = (): UseHeaderReturnType => {
     clearAdultFlg: clearAdultFlg,
     setAutoCompleteList: setAutoCompleteList,
     setCurrentIndex: setCurrentIndex,
+    setLastSelectedSearchType: setLastSelectedSearchType,
   });
 
   // 헤더 위시리스트 훅
@@ -104,6 +110,8 @@ export const useHeader = (): UseHeaderReturnType => {
     setFocus: setFocus,
     reset: reset,
     keyword: keyword,
+    selectType: selectType,
+    searchType: searchType,
     aniFlg: aniFlg,
     dramaFlg: dramaFlg,
     movieFlg: movieFlg,
@@ -142,5 +150,8 @@ export const useHeader = (): UseHeaderReturnType => {
     userOptionIsOpen: userOptionIsOpen,
     handleUserOptionToggle: handleUserOptionToggle,
     userOptionRef: userOptionRef,
+    handleOnClickSelectTypeRadioButton: handleOnClickSelectTypeRadioButton,
+    handleOnClickSearchTypeRadioButton: handleOnClickSearchTypeRadioButton,
+    setLastSelectedSearchType: setLastSelectedSearchType,
   };
 };

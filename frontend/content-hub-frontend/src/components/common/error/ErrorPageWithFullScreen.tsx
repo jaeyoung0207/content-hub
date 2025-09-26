@@ -17,7 +17,7 @@ export const ErrorPageWithFullScreen = () => {
 
   // 콘솔에 에러 메시지 출력
   console.error(`Error ${status}: ${message}`);
-  
+
   /**
    * 페이지를 새로고침하여 홈으로 이동
    */

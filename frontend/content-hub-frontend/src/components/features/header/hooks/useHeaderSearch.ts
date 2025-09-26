@@ -17,6 +17,8 @@ import {
   ARROW_UP_KEY,
   ENTER_KEY,
   ESC_KEY,
+  SEARCH_TYPE,
+  SELECT_TYPE,
 } from '@/components/common/constants/constants';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
 import { searchUrlQuery } from '@/components/common/utils/urlUtil';
@@ -55,6 +57,9 @@ export type UseHeaderSearchReturnType = {
   handleSetCurrentIndex: (index: number) => void; // 자동완성 박스 인덱스 설정 함수
   handleDeleteKeyword: () => void; // 검색창 클리어 함수
   handleFilterIconOnClick: () => void; // 필터 아이콘 클릭 처리 함수
+  handleOnClickSelectTypeRadioButton: (value: string) => void; // 선택 타입 라디오 버튼 클릭 처리 함수
+  handleOnClickSearchTypeRadioButton: (value: string) => void; // 검색 타입 라디오 버튼 클릭 처리 함수
+  setLastSelectedSearchType: (value: string) => void; // 마지막 선택된 검색 미디어 타입 값 설정 함수
 };
 
 /**
@@ -90,6 +95,10 @@ export const useHeaderSearch = ({
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   // 검색 이력 상태 저장
   const [searchHistoryisOpen, setSearchHistoryisOpen] = useState<boolean>(true);
+  // 마지막 선택된 검색 미디어 타입 값 저장
+  const [lastSelectedSearchType, setLastSelectedSearchType] = useState<string>(
+    SEARCH_TYPE.ANI
+  );
 
   // 검색어 입력값 참조
   const savedKeyword = useRef<string>('');
@@ -403,6 +412,87 @@ export const useHeaderSearch = ({
     }
   };
 
+  /**
+   * 전체 검색 타입 설정
+   * @param isChecked 체크박스 체크 상태
+   */
+  const setAllSearchTypes = (isChecked: boolean) => {
+    setValue('aniFlg', isChecked);
+    setValue('dramaFlg', isChecked);
+    setValue('movieFlg', isChecked);
+    setValue('documentaryFlg', isChecked);
+    setValue('kidsFlg', isChecked);
+    setValue('newsFlg', isChecked);
+    setValue('varietyFlg', isChecked);
+    setValue('comicsFlg', isChecked);
+  };
+
+  /**
+   * 선택된 검색 미디어 타입 플래그 설정
+   * @param value 검색 미디어 타입 값
+   */
+  const selectSearchType = (value: string) => {
+    switch (value) {
+      case SEARCH_TYPE.ANI:
+        setValue('aniFlg', true);
+        break;
+      case SEARCH_TYPE.DRAMA:
+        setValue('dramaFlg', true);
+        break;
+      case SEARCH_TYPE.MOVIE:
+        setValue('movieFlg', true);
+        break;
+      case SEARCH_TYPE.DOCUMENTARY:
+        setValue('documentaryFlg', true);
+        break;
+      case SEARCH_TYPE.KIDS:
+        setValue('kidsFlg', true);
+        break;
+      case SEARCH_TYPE.NEWS:
+        setValue('newsFlg', true);
+        break;
+      case SEARCH_TYPE.VARIETY:
+        setValue('varietyFlg', true);
+        break;
+      case SEARCH_TYPE.COMICS:
+        setValue('comicsFlg', true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  /**
+   * 검색 종류 선택 방식 라디오 버튼 클릭시 처리
+   * @param value 선택된 라디오 버튼 값
+   */
+  const handleOnClickSelectTypeRadioButton = (value: string) => {
+    switch (value) {
+      case SELECT_TYPE.MULTIPLE:
+        setAllSearchTypes(true);
+        break;
+      case SELECT_TYPE.SINGLE:
+        setAllSearchTypes(false);
+        selectSearchType(lastSelectedSearchType);
+        break;
+      default:
+        break;
+    }
+  };
+
+  /**
+   * 검색 미디어 타입 라디오 버튼 클릭시 처리
+   * @param value 선택된 라디오 버튼 값
+   */
+  const handleOnClickSearchTypeRadioButton = (value: string) => {
+    // 전체 검색 타입 플래그 해제
+    setAllSearchTypes(false);
+    // 선택된 검색 미디어 타입 플래그 설정
+    selectSearchType(value);
+    // 마지막 선택된 검색 미디어 타입 값 설정
+    setLastSelectedSearchType(value);
+  };
+
   // ================================================================================================== useEffect
 
   /**
@@ -542,5 +632,8 @@ export const useHeaderSearch = ({
     handleSetCurrentIndex: handleSetCurrentIndex,
     handleDeleteKeyword: handleDeleteKeyword,
     handleFilterIconOnClick: handleFilterIconOnClick,
+    handleOnClickSelectTypeRadioButton: handleOnClickSelectTypeRadioButton,
+    handleOnClickSearchTypeRadioButton: handleOnClickSearchTypeRadioButton,
+    setLastSelectedSearchType: setLastSelectedSearchType,
   };
 };

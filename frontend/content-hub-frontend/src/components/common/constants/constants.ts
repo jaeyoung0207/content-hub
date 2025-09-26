@@ -74,6 +74,25 @@ export const MEDIA_TYPE_NAME = {
   PERSON: 'info.person',
 };
 
+// 검색 선택 타입
+export const SELECT_TYPE = {
+  MULTIPLE: '1',
+  SINGLE: '2',
+};
+
+// 검색 미디어 타입
+export const SEARCH_TYPE = {
+  ANI: '1',
+  DRAMA: '2',
+  MOVIE: '3',
+  DOCUMENTARY: '4',
+  KIDS: '5',
+  NEWS: '6',
+  VARIETY: '7',
+  COMICS: '8',
+  PERSON: '9',
+};
+
 export const MEDIA_TYPE_KIND = {
   CONTENT_MEDIA_TYPE: '1',
   DISPLAY_MEDIA_TYPE: '2',

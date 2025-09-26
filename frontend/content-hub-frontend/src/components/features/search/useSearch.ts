@@ -102,7 +102,7 @@ export const useSearch = (
   };
 
   /**
-   * 비디오(애니/드라마/영화) 검색 API 호출
+   * 비디오(TV 시리즈/영화) 검색 API 호출
    * @returns 비디오 검색 결과
    */
   const searchVideoApi = async () => {

@@ -22,7 +22,8 @@ const resources = {
         kids: '키즈',
         news: '뉴스',
         variety: '버라이어티',
-        beforeSearchMessage: '애니/드라마/영화/만화 통합검색',
+        person: '인물',
+        beforeSearchMessage: '{{mediaTypes}} 통합검색',
         searchPlease: '검색어를 입력하세요',
         viewMore: '전체보기',
         loginConfirmMsg1: '로그인이 만료되었습니다. 로그인 하시겠습니까?',
@@ -66,7 +67,11 @@ const resources = {
         refresh: '새로고침',
         toHome: '홈으로 돌아가기',
         /* 필터 */
-        mediaType: '검색 종류',
+        searchType: '검색 종류',
+        multiple: '복수선택',
+        single: '단일선택',
+        selectAll: '전체선택',
+        deselectAll: '전체해제',
         searchAdultContent: '성인물',
         include: '포함',
         /* 작품 정보 */

@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { FormFieldProps } from './common/FormFieldProps';
 import { Controller, FieldValues } from 'react-hook-form';
 
@@ -19,7 +18,6 @@ export const CheckBoxUi = <T extends FieldValues>({
   disabled,
 }: FormFieldProps<T>) => {
   // i18n 번역 훅
-  const { t } = useTranslation();
   return (
     <>
       <div className="flex items-center me-4">
@@ -45,9 +43,9 @@ export const CheckBoxUi = <T extends FieldValues>({
                 {/* 체크박스 라벨 */}
                 <label
                   htmlFor={name}
-                  className="px-2 text-black text-xs lg:text-xl font-normal font-['Inter']"
+                  className="px-2 text-black text-xs lg:text-lg font-normal font-['Inter']"
                 >
-                  {t(label!)}
+                  {label!}
                 </label>
               </>
             );

@@ -9,6 +9,8 @@ import { FormFieldProps } from '@/components/ui/common/FormFieldProps';
 import {
   IS_MOBILE,
   OMMIT_TEXT,
+  SEARCH_TYPE,
+  SELECT_TYPE,
   TOOLTIP_CLOSE_STATE,
 } from '@/components/common/constants/constants';
 import { CheckBoxUiM } from '@/components/ui/CheckBoxUiM';
@@ -19,6 +21,10 @@ import { FaHeart } from 'react-icons/fa';
 import { HeaderType } from './hooks/useHeaderForm';
 import { useTooltipStore } from '@/components/common/store/globalStateStore';
 import TooltipUi from '@/components/ui/common/TooltipUi';
+import {
+  RadioButtonGroupUi,
+  RadioButtonProps,
+} from '@/components/ui/RadioButtonGroupUi';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
@@ -55,6 +61,7 @@ export const Header = () => {
     handleLogoutOnClick,
     isFilterOpen,
     handleFilterIconOnClick,
+    selectType,
     aniFlg,
     comicsFlg,
     dramaFlg,
@@ -83,68 +90,79 @@ export const Header = () => {
     userOptionIsOpen,
     handleUserOptionToggle,
     userOptionRef,
+    handleOnClickSelectTypeRadioButton,
+    handleOnClickSearchTypeRadioButton,
   } = useHeader();
 
   // 체크박스용 인자 타입 정의
-  type CheckBoxProps<T extends FieldValues> = {
+  type SearchTypeProps<T extends FieldValues> = {
     label: string;
     name: Path<T>;
     state: boolean;
+    value: string;
   };
 
-  // // name의 타입이 Path<T>이기 때문에, T가 무엇인지 정의
-  // type CheckBoxType = {
-  //   aniFlg: boolean;
-  //   dramaFlg: boolean;
-  //   movieFlg: boolean;
-  //   documentaryFlg: boolean;
-  //   kidsFlg: boolean;
-  //   newsFlg: boolean;
-  //   varietyFlg: boolean;
-  //   comicsFlg: boolean;
-  // };
-
   // 검색 종류 체크박스용 인자값 리스트
-  const checkBoxList: CheckBoxProps<HeaderType>[] = [
+  const searchTypeList: SearchTypeProps<HeaderType>[] = [
     {
       label: 'info.animation',
       name: 'aniFlg',
       state: aniFlg!,
+      value: SEARCH_TYPE.ANI,
     },
     {
       label: 'info.drama',
       name: 'dramaFlg',
       state: dramaFlg!,
+      value: SEARCH_TYPE.DRAMA,
     },
     {
       label: 'info.movie',
       name: 'movieFlg',
       state: movieFlg!,
+      value: SEARCH_TYPE.MOVIE,
     },
     {
       label: 'info.documentary',
       name: 'documentaryFlg',
       state: documentaryFlg!,
+      value: SEARCH_TYPE.DOCUMENTARY,
     },
     {
       label: 'info.kids',
       name: 'kidsFlg',
       state: kidsFlg!,
+      value: SEARCH_TYPE.KIDS,
     },
     {
       label: 'info.news',
       name: 'newsFlg',
       state: newsFlg!,
+      value: SEARCH_TYPE.NEWS,
     },
     {
       label: 'info.variety',
       name: 'varietyFlg',
       state: varietyFlg!,
+      value: SEARCH_TYPE.VARIETY,
     },
     {
       label: 'info.comics',
       name: 'comicsFlg',
       state: comicsFlg!,
+      value: SEARCH_TYPE.COMICS,
+    },
+  ];
+
+  // 검색 종류 선택 방식 라디오 버튼용 인자값 리스트
+  const radioButtonList: RadioButtonProps[] = [
+    {
+      label: t('info.multiple'),
+      value: SELECT_TYPE.MULTIPLE,
+    },
+    {
+      label: t('info.single'),
+      value: SELECT_TYPE.SINGLE,
     },
   ];
 
@@ -241,19 +259,30 @@ export const Header = () => {
                     />
                     {/* 필터 팝업 */}
                     <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-2xl z-50 p-4 space-y-4">
-                      {/* 체크박스 */}
+                      {/* 검색 종류 */}
                       <div className="text-xl font-bold mb-2">
-                        {t('info.mediaType')}
+                        {t('info.searchType')}
+                      </div>
+                      <div className="flex mb-2">
+                        {/* 검색 종류 선택 방식 라디오 버튼 그룹 */}
+                        <RadioButtonGroupUi
+                          name="selectType"
+                          control={control}
+                          radioButtonList={radioButtonList}
+                          displayStyle="flex"
+                          onClickRadioButton={
+                            commonErrorHandler(handleOnClickSelectTypeRadioButton)
+                          }
+                        />
                       </div>
                       <div className="block mb-2">
-                        {
+                        {selectType === radioButtonList[0].value ? (
                           // 검색 종류 체크박스
-                          // 체크박스 리스트를 map을 통해 순회하며 체크박스와 라벨 컴포넌트를 생성
-                          checkBoxList.map((items, index) => {
+                          searchTypeList.map((items, index) => {
                             return (
-                              <div key={index} className="mb-2">
+                              <div key={index} className="mb-1">
                                 <CheckBoxAndLabel<HeaderType>
-                                  label={items.label}
+                                  label={t(items.label)}
                                   name={items.name}
                                   control={control}
                                   defaultChecked={items.state}
@@ -261,7 +290,21 @@ export const Header = () => {
                               </div>
                             );
                           })
-                        }
+                        ) : (
+                          // 단일 선택시 검색 종류 라디오 버튼 그룹
+                          <RadioButtonGroupUi
+                            name="searchType"
+                            control={control}
+                            radioButtonList={searchTypeList.map((item) => ({
+                              label: t(item.label),
+                              value: item.value,
+                            }))}
+                            displayStyle="block"
+                            onClickRadioButton={
+                              commonErrorHandler(handleOnClickSearchTypeRadioButton)
+                            }
+                          />
+                        )}
                       </div>
                       {/* 성인물 포함 체크박스 */}
                       <div>
