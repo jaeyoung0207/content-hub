@@ -66,4 +66,10 @@ public class CommonConstants {
 	/** 위시리스트 경로 */
 	public static final String WISHLIST_PATH = "/wishlist";
 	
+	/** 1KB */
+	public static final int ONE_KB = 1024;
+	
+	/** 1MB */
+	public static final int ONE_MB = ONE_KB * 1024;
+	
 }

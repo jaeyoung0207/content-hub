@@ -1,17 +1,21 @@
 package com.cjy.contenthub.common.config;
 
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -27,6 +31,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebClientConfig {
 
+	/** WebClient 최대 메모리 크기 설정 */
+	@Value("${app.webClient.maxInMemorySize}")
+	private int maxInMemorySize;
+
 	/** TMDB API 인증 토큰 */
 	@Value("${tmdb.api.token}")
 	private String tmdbApiAccessToken;
@@ -34,18 +42,26 @@ public class WebClientConfig {
 	/** TMDB API 기본 URL */
 	@Value("${tmdb.url.baseUrl}")
 	private String tmdbBaseUrl;
-	
-	/** TMDB API Timeout */
-	@Value("${tmdb.custom.timeout}")
-	private int tmdbTimeout;
+
+	/** TMDB API ConnectionRequestTimeout */
+	@Value("${tmdb.custom.connectionRequestTimeout}")
+	private int tmdbConnectionRequestTimeout;
+
+	/** TMDB API ResponseTimeout */
+	@Value("${tmdb.custom.responseTimeout}")
+	private int tmdbResponseTimeout;
 
 	/** AniList API 기본 URL */
 	@Value("${anilist.url.baseUrl}")
 	private String anilistBaseUrl;
-	
-	/** AniList API Timeout */
-	@Value("${anilist.custom.timeout}")
-	private int anilistTimeout;
+
+	/** AniList API ConnectionRequestTimeout */
+	@Value("${anilist.custom.connectionRequestTimeout}")
+	private int anilistConnectionRequestTimeout;
+
+	/** AniList API ResponseTimeout */
+	@Value("${anilist.custom.responseTimeout}")
+	private int anilistResponseTimeout;
 
 	/** DeepL API 기본 URL */
 	@Value("${deepl.url.baseUrl}")
@@ -54,18 +70,30 @@ public class WebClientConfig {
 	/** DeepL API 인증 키 */
 	@Value("${deepl.api.key}")
 	private String deeplApiKey;
-	
-	/** DeepL API Timeout */
-	@Value("${deepl.custom.timeout}")
-	private int deeplTimeout;
-	
-	/** NAVER API Timeout */
-	@Value("${login.naver.custom.timeout}")
-	private int naverTimeout;
-	
-	/** KAKAO API Timeout */
-	@Value("${login.kakao.custom.timeout}")
-	private int kakaoTimeout;
+
+	/** DeepL API ConnectionRequestTimeout */
+	@Value("${deepl.custom.connectionRequestTimeout}")
+	private int deeplConnectionRequestTimeout;
+
+	/** DeepL API ResponseTimeout */
+	@Value("${deepl.custom.responseTimeout}")
+	private int deeplResponseTimeout;
+
+	/** NAVER API ConnectionRequestTimeout */
+	@Value("${login.naver.custom.connectionRequestTimeout}")
+	private int naverConnectionRequestTimeout;
+
+	/** NAVER API ResponseTimeout */
+	@Value("${login.naver.custom.responseTimeout}")
+	private int naverResponseTimeout;
+
+	/** KAKAO API ConnectionRequestTimeout */
+	@Value("${login.kakao.custom.connectionRequestTimeout}")
+	private int kakaoConnectionRequestTimeout;
+
+	/** KAKAO API ResponseTimeout */
+	@Value("${login.kakao.custom.responseTimeout}")
+	private int kakaoResponseTimeout;
 
 	/**
 	 * TMDB API와 통신하기 위한 WebClient를 설정
@@ -75,14 +103,20 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient tmdbWebClient() {
-		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(tmdbTimeout));
+		// 타임아웃 설정
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(tmdbConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
+				.setResponseTimeout(tmdbResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
+				.build();
 		// WebClient 공통설정
 		return WebClient.builder()
 				.baseUrl(tmdbBaseUrl) // TMDB API 기본 URL 설정
 				.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ".concat(tmdbApiAccessToken)) // 헤더에 인증에 필요한 토큰 설정
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
-				.filter(timeoutFilter) // 타임아웃 필터 설정 
+				.clientConnector(new HttpComponentsClientHttpConnector(
+						HttpAsyncClients.custom()
+						.setDefaultRequestConfig(requestConfig)
+						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
@@ -96,14 +130,22 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient anilistWebClient() {
-		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(anilistTimeout));
+		// 타임아웃 설정
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(anilistConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
+				.setResponseTimeout(anilistResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
+				.build();
+
 		// WebClient 공통설정
 		return WebClient.builder() // WebClient 빌더 생성
 				.baseUrl(anilistBaseUrl) // AniList API 기본 URL 설정
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // 헤더에 전송하는 데이터 타입 설정
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
-				.filter(timeoutFilter) // 타임아웃 필터 설정 
+				.clientConnector(new HttpComponentsClientHttpConnector(
+						HttpAsyncClients.custom()
+						.setDefaultRequestConfig(requestConfig)
+						.build())) // HttpClient 커넥터 설정
+				//				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
 
@@ -115,14 +157,21 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient deeplWebClient() {
-		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(deeplTimeout));
+		// 타임아웃 설정
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(deeplConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
+				.setResponseTimeout(deeplResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
+				.build();
+
 		// WebClient 공통설정
 		return WebClient.builder()
 				.baseUrl(deeplBaseUrl) // DeepL API 기본 URL 설정
 				.defaultHeader(HttpHeaders.AUTHORIZATION, "DeepL-Auth-Key ".concat(deeplApiKey)) // 헤더에 인증 키 설정
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE) // 헤더에 전송하는 데이터 타입 설정
-				.filter(timeoutFilter) // 타임아웃 필터 설정 
+				.clientConnector(new HttpComponentsClientHttpConnector(
+						HttpAsyncClients.custom()
+						.setDefaultRequestConfig(requestConfig)
+						.build())) // HttpClient 커넥터 설정
 				.build();
 	}
 
@@ -134,11 +183,18 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient naverWebClient() {
-		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(naverTimeout));
+		// 타임아웃 설정
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(naverConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
+				.setResponseTimeout(naverResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
+				.build();
+
 		// WebClient 공통설정
 		return WebClient.builder()
-				.filter(timeoutFilter) // 타임아웃 필터 설정
+				.clientConnector(new HttpComponentsClientHttpConnector(
+						HttpAsyncClients.custom()
+						.setDefaultRequestConfig(requestConfig)
+						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
@@ -151,12 +207,19 @@ public class WebClientConfig {
 	 */
 	@Bean
 	WebClient kakaoWebClient() {
-		// 타임아웃 필터
-		ExchangeFilterFunction timeoutFilter = (request, next) -> next.exchange(request).timeout(Duration.ofSeconds(kakaoTimeout));
+		// 타임아웃 설정
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(kakaoConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
+				.setResponseTimeout(kakaoResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
+				.build();
+
 		// WebClient 공통설정
 		return WebClient.builder()
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8") // 헤더에 전송하는 데이터 타입 설정
-				.filter(timeoutFilter) // 타임아웃 필터 설정
+				.clientConnector(new HttpComponentsClientHttpConnector(
+						HttpAsyncClients.custom()
+						.setDefaultRequestConfig(requestConfig)
+						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
 				.build();
 	}
@@ -167,20 +230,22 @@ public class WebClientConfig {
 	 * @return ExchangeStrategies 인스턴스
 	 */
 	private ExchangeStrategies getExchangeStrategies() {
-		// snake_case → camelCase 매핑되는 ObjectMapper(JSON <-> Java 객체 간 변환을 담당) 생성
+		// ObjectMapper(JSON <-> Java 객체 간 변환을 담당) 생성
 		ObjectMapper objectMapper = new ObjectMapper();
 		// JSON에서 오는 snake_case 키(ex:first_air_date)를 → Java의 camelCase 필드(ex:firstAirDate)에 자동으로 매핑하도록 설정
 		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 		// 응답 JSON에 정의되고 DTO에 정의 되어있지 않아도 무시하는 설정
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		// WebClient에서 사용할 ExchangeStrategie를 통해 JSON 응답을 파싱할 때 사용할 디코더를 설정
-		// objectMapper를 사용하는 Jackson2JsonDecoder를 설정
-		// JSON 응답에 대해서만 해당 매핑 전략을 적용
-		return ExchangeStrategies.builder() // ExchangeStrategies 빌더 생성
+		return ExchangeStrategies.builder()
 				.codecs(configurer -> {
-					configurer.defaultCodecs().maxInMemorySize(1024 * 1024); // 최대 메모리 크기 설정 (1MB)
-					configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON)); // JSON 디코더 설정
-				}).build();  // ExchangeStrategies 빌드
+					// 응답 시 최대 메모리 크기 설정
+					configurer.defaultCodecs().maxInMemorySize(CommonConstants.ONE_MB * maxInMemorySize);
+					// Decoder: JSON 응답 역직렬화 처리(응답(JSON → Java)에서 snake_case → camelCase 매핑)
+					configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper));
+					// Encoder: JSON 요청 직렬화 처리(요청(Java → JSON)에서 camelCase → snake_case 매핑)
+					configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper));
+				})
+				.build();
 	}
 }

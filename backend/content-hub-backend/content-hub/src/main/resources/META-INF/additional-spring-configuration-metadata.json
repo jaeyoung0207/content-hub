@@ -105,9 +105,14 @@
     "description": "A description for 'tmdb.custom.autoCompleteCount'"
   },
   {
-    "name": "tmdb.custom.timeout",
+    "name": "tmdb.custom.connectionRequestTimeout",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.timeout'"
+    "description": "A description for 'tmdb.custom.connectionRequestTimeout'"
+  },
+  {
+    "name": "tmdb.custom.responseTimeout",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.responseTimeout'"
   },
   {
     "name": "tmdb.custom.retryCount",
@@ -135,9 +140,14 @@
     "description": "A description for 'anilist.custom.perCharacterPage'"
   },
   {
-    "name": "anilist.custom.timeout",
+    "name": "anilist.custom.connectionRequestTimeout",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.timeout'"
+    "description": "A description for 'anilist.custom.connectionRequestTimeout'"
+  },
+  {
+    "name": "anilist.custom.responseTimeout",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.custom.responseTimeout'"
   },
   {
     "name": "deepl.api.key",
@@ -155,9 +165,14 @@
     "description": "A description for 'deepl.url.translatePath'"
   },
   {
-    "name": "deepl.custom.timeout",
+    "name": "deepl.custom.connectionRequestTimeout",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.custom.timeout'"
+    "description": "A description for 'deepl.custom.connectionRequestTimeout'"
+  },
+  {
+    "name": "deepl.custom.responseTimeout",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.custom.responseTimeout'"
   },
   {
     "name": "login.jwt.secretKey",
@@ -190,9 +205,14 @@
     "description": "A description for 'login.naver.url.userInfoUrl'"
   },
   {
-    "name": "login.naver.custom.timeout",
+    "name": "login.naver.custom.connectionRequestTimeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.timeout'"
+    "description": "A description for 'login.naver.custom.connectionRequestTimeout'"
+  },
+  {
+    "name": "login.naver.custom.responseTimeout",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.custom.responseTimeout'"
   },
   {
     "name": "login.naver.custom.refreshTokenExpiresIn",
@@ -225,9 +245,14 @@
     "description": "A description for 'login.kakao.url.logoutUrl'"
   },
   {
-    "name": "login.kakao.custom.timeout",
+    "name": "login.kakao.custom.connectionRequestTimeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.timeout'"
+    "description": "A description for 'login.kakao.custom.connectionRequestTimeout'"
+  },
+  {
+    "name": "login.kakao.custom.responseTimeout",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.custom.responseTimeout'"
   },
   {
     "name": "login.kakao.custom.refreshTokenExpiresIn",
@@ -248,5 +273,10 @@
     "name": "app.comment.perPage",
     "type": "java.lang.String",
     "description": "A description for 'app.comment.perPage'"
+  },
+  {
+    "name": "app.webClient.maxInMemorySize",
+    "type": "java.lang.String",
+    "description": "A description for 'app.webClient.maxInMemorySize'"
   }
 ]}

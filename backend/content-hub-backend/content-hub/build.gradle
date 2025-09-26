@@ -25,14 +25,12 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine:3.2.0'
-	// implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.postgresql:postgresql'
 	compileOnly 'org.projectlombok:lombok'
@@ -41,11 +39,9 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	// developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	// testImplementation 'org.springframework.graphql:spring-graphql-test:1.3.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	// Jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
@@ -55,6 +51,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.data:spring-data-redis'
     implementation 'redis.clients:jedis'
+    // HttpClient5
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
+    implementation 'org.apache.httpcomponents.core5:httpcore5:5.3.5'
+    implementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.5'
+    implementation 'org.apache.httpcomponents.core5:httpcore5-reactive:5.3.5'
 }
 
 tasks.named('test') {
@@ -73,6 +74,5 @@ sourceSets {
 // 매번 DTO/엔티티 바뀔 때 MapperImpl을 재생성 하기 위한 설정
 tasks.withType(JavaCompile).configureEach {
     options.incremental = false // 매번 annotation processor 실행
-    // options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotationProcessor/java/main")
     options.generatedSourceOutputDirectory = file("$buildDir/generated/sources/annotationProcessor/java/main")
 }
