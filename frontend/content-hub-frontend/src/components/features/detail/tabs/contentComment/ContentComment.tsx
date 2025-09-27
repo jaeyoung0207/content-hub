@@ -132,11 +132,11 @@ export const ContentComment = ({
       </div>
       {/* 코멘트 목록 */}
       <div className="mt-3 ml-10 mr-10">
-        {data?.pages.flat().map((items, index) => {
+        {data?.pages.flat().map((items, _) => {
           return (
-            <div key={index + '_comment'}>
+            <div key={items?.commentId}>
               {items && (
-                <div className="mt-5 mb-5" key={index}>
+                <div className="mt-5 mb-5">
                   <div className="flex justify-items-start items-center">
                     <StarRatingUi
                       name="starRating"

@@ -15,8 +15,8 @@ export type RadioButtonProps = {
  */
 type RadioButtonGroupUiProps<T extends FieldValues> = FormFieldProps<T> & {
   radioButtonList: RadioButtonProps[];
-  displayStyle?: 'block' | 'flex'; // 라디오 버튼 그룹의 디스플레이 스타일 (기본값: 'block')
-  onClickRadioButton?: (value: string) => void; // 라디오 버튼 클릭 이벤트 핸들러
+  displayStyle?: 'block' | 'flex'; // 기본값: 'block'
+  onClickRadioButton?: (value: string) => void;
   defaultValue?: string;
 };
 
@@ -25,8 +25,12 @@ type RadioButtonGroupUiProps<T extends FieldValues> = FormFieldProps<T> & {
  * @template T - FormFieldProps의 제네릭 타입
  * @param name - 폼 필드 이름
  * @param control - react-hook-form의 control 객체
- * @param defaultChecked - 기본 선택 상태
+ * @param label - 라디오 버튼 그룹 라벨
+ * @param onClickRadioButton - 라디오 버튼 클릭 이벤트 핸들러
  * @param radioButtonList - 라디오 버튼 목록
+ * @param displayStyle - 라디오 버튼 그룹의 디스플레이 스타일
+ * @param defaultChecked - 기본 선택 상태
+ * @param defaultValue - 기본 값
  */
 export const RadioButtonGroupUi = <T extends FieldValues>({
   name,
@@ -49,8 +53,8 @@ export const RadioButtonGroupUi = <T extends FieldValues>({
             return (
               <div className={displayStyle}>
                 {/* 라디오 버튼 */}
-                {radioButtonList.map((items, index) => (
-                  <div key={index} className="flex items-center me-2 mb-1">
+                {radioButtonList.map((items, _) => (
+                  <div key={items.value} className="flex items-center me-2 mb-1">
                     <input
                       id={`${name}-${items.value}`}
                       className="w-4 h-4 text-blue-600 bg-white border-gray-300 focus:ring-blue-500"

@@ -48,56 +48,56 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
     {
       displayFlg: searchTypeState.aniFlg,
       dataResults: aniSearchResults,
-      media: t('info.animation'),
+      mediaName: t('info.animation'),
       isViewMore: isAniViewMore,
       displayMediaType: getDisplayMediaType().aniCode,
     },
     {
       displayFlg: searchTypeState.dramaFlg,
       dataResults: dramaSearchResults,
-      media: t('info.drama'),
+      mediaName: t('info.drama'),
       isViewMore: isDramaViewMore,
       displayMediaType: getDisplayMediaType().dramaCode,
     },
     {
       displayFlg: searchTypeState.movieFlg,
       dataResults: movieSearchResults,
-      media: t('info.movie'),
+      mediaName: t('info.movie'),
       isViewMore: isMovieViewMore,
       displayMediaType: getDisplayMediaType().movieCode,
     },
     {
       displayFlg: searchTypeState.documentaryFlg,
       dataResults: documentarySearchResults,
-      media: t('info.documentary'),
+      mediaName: t('info.documentary'),
       isViewMore: isDocumentaryViewMore,
       displayMediaType: getDisplayMediaType().documentaryCode,
     },
     {
       displayFlg: searchTypeState.kidsFlg,
       dataResults: kidsSearchResults,
-      media: t('info.kids'),
+      mediaName: t('info.kids'),
       isViewMore: isKidsViewMore,
       displayMediaType: getDisplayMediaType().kidsCode,
     },
     {
       displayFlg: searchTypeState.newsFlg,
       dataResults: newsSearchResults,
-      media: t('info.news'),
+      mediaName: t('info.news'),
       isViewMore: isNewsViewMore,
       displayMediaType: getDisplayMediaType().newsCode,
     },
     {
       displayFlg: searchTypeState.varietyFlg,
       dataResults: varietySearchResults,
-      media: t('info.variety'),
+      mediaName: t('info.variety'),
       isViewMore: isVarietyViewMore,
       displayMediaType: getDisplayMediaType().varietyCode,
     },
     {
       displayFlg: searchTypeState.comicsFlg,
       dataResults: comicsSearchResults,
-      media: t('info.comics'),
+      mediaName: t('info.comics'),
       isViewMore: isComicsViewMore,
       displayMediaType: getDisplayMediaType().comicsCode,
     },
@@ -140,15 +140,15 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           </>
         ) : (
           data &&
-          dataList.map((items, index) => {
+          dataList.map((items, _) => {
             return (
-              <div key={index}>
+              <div key={items.mediaName}>
                 {items.displayFlg &&
                   items.dataResults &&
                   items.dataResults.length !== 0 && (
                     // 각 미디어 검색결과 컴포넌트
                     <DisplaySearchResults
-                      mediaName={items.media}
+                      mediaName={items.mediaName}
                       results={items.dataResults}
                       isViewMore={items.isViewMore}
                       displayMediaType={items.displayMediaType}

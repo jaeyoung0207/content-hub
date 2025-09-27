@@ -278,9 +278,9 @@ export const Header = () => {
                       <div className="block mb-2">
                         {selectType === radioButtonList[0].value ? (
                           // 검색 종류 체크박스
-                          searchTypeList.map((items, index) => {
+                          searchTypeList.map((items, _) => {
                             return (
-                              <div key={index} className="mb-1">
+                              <div key={items.value} className="mb-1">
                                 <CheckBoxAndLabel<HeaderType>
                                   label={t(items.label)}
                                   name={items.name}

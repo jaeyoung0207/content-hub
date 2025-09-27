@@ -118,11 +118,11 @@ export const Detail = memo(() => {
         <div className="mb-10 flex justify-center items-center">
           {
             // 탭 정보 배열 수만큼 반복하여 탭 버튼 생성
-            tabInfo.map((tabInfo, index) => {
+            tabInfo.map((tabInfo, _) => {
               const isActive = tabIndex === tabInfo.id;
               return (
                 <div
-                  key={index}
+                  key={tabInfo.id}
                   className={`text-sm sm:text-lg md:text-xl px-4 py-2 mx-2 transition duration-200
                     ${
                       isActive

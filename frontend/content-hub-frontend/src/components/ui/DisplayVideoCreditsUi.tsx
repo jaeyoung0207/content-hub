@@ -99,6 +99,7 @@ export const DisplayVideoCredits = ({
           </div>
           <div className="flex flex-wrap items-start mt-5">
             {creditsList.map((items, index) => {
+              // 역할
               const role = isDetailCreditsCrewType(items)
                 ? isDetailTvType(detailResult, contentMediaType)
                   ? items.jobs?.map((job) => job.job).join(SEPERATE_SLASH)

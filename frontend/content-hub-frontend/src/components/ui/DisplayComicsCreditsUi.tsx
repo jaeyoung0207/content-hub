@@ -78,14 +78,13 @@ export const DisplayComicsCredits = ({
       </div>
       <div className="flex flex-wrap items-start mt-5">
         {creditsList &&
-          creditsList.map((items, index) => {
+          creditsList.map((items, _) => {
             const creditsInfo = items?.node;
             const role = items?.role;
             return (
-              <div>
+              <div key={items?.id}>
                 {creditsInfo && (
                   <div
-                    key={index}
                     className={`ml-1 mr-1 w-[220px]`}
                     style={{ height: `${heightStyle}px` }}
                     onClick={() =>

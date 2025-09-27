@@ -139,7 +139,7 @@ export const Wishlist = () => {
             return (
               items.resultList &&
               items.resultList.length !== 0 && (
-                <>
+                <div key={items.mediaName}>
                   <DisplayWishlist
                     mediaName={items.mediaName}
                     resultList={items.resultList}
@@ -151,7 +151,7 @@ export const Wishlist = () => {
                     wishlistContentMediaType={wishlistContentMediaType}
                     wishlistOptionIndex={wishlistOptionIndex}
                   />
-                </>
+                </div>
               )
             );
           })}
