@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Detail } from '@/api/Detail';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -11,6 +18,7 @@ import { detailQueryKeys } from './queryKeys/detailQueryKeys';
 import { useTranslation } from 'react-i18next';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
+import { settings } from '@/components/common/config/settings';
 
 /**
  * 상세 정보 결과 타입
@@ -31,6 +39,10 @@ type useDetailReturnType = {
   isError: boolean; // 에러 여부
   userStarRating?: string; // 유저 평균 평점
   user: LoginUserInfoDto | null; // 유저 정보
+  setCastObserveTarget: Dispatch<SetStateAction<HTMLDivElement | null>>; // cast 관찰 대상 ref 설정 함수
+  setCrewObserveTarget: Dispatch<SetStateAction<HTMLDivElement | null>>; // crew 관찰 대상 ref 설정 함수
+  castDisplayCount: number; // cast 항목 수
+  crewDisplayCount: number; // crew 항목 수
 };
 
 /**
@@ -45,6 +57,11 @@ export const useDetail = (
   apiId: string,
   tabNo: number
 ): useDetailReturnType => {
+  // ================================================================================================== custom
+
+  // 한 페이지당 항목 수
+  const creditsPerPage = settings.detailCreditsPerPage;
+
   // ================================================================================================== react hook
 
   // i18n 훅
@@ -53,6 +70,18 @@ export const useDetail = (
   const [tabIndex, setTabIndex] = useState(tabNo);
   // 유저 평균 평점 상태
   const [userStarRating, setUserStarRating] = useState<string>();
+  // cast 관찰 대상 ref 상태
+  const [castObserveTarget, setCastObserveTarget] =
+    useState<HTMLDivElement | null>(null);
+  // crew 관찰 대상 ref 상태
+  const [crewObserveTarget, setCrewObserveTarget] =
+    useState<HTMLDivElement | null>(null);
+  // cast 표시할 항목 수 상태
+  const [castDisplayCount, setCastDisplayCount] =
+    useState<number>(creditsPerPage);
+  // crew 표시할 항목 수 상태
+  const [crewDisplayCount, setCrewDisplayCount] =
+    useState<number>(creditsPerPage);
 
   // ================================================================================================== zustand
 
@@ -135,6 +164,38 @@ export const useDetail = (
 
   // ================================================================================================== function
 
+  /**
+   * IntersectionObserver 콜백 함수
+   * castObserveTarget이 화면에 나타날 때마다 실행
+   */
+  const castObserverCallback = useCallback<IntersectionObserverCallback>(
+    (entries) => {
+      entries.forEach((entry) => {
+        // castObserveTarget이 화면에 나타나면 표시할 항목 수 증가
+        if (entry.isIntersecting) {
+          setCastDisplayCount((prev) => prev + creditsPerPage);
+        }
+      });
+    },
+    [setCastDisplayCount, creditsPerPage]
+  );
+
+  /**
+   * IntersectionObserver 콜백 함수
+   * crewObserveTarget이 화면에 나타날 때마다 실행
+   */
+  const crewObserverCallback = useCallback<IntersectionObserverCallback>(
+    (entries) => {
+      entries.forEach((entry) => {
+        // crewObserveTarget이 화면에 나타나면 표시할 항목 수 증가
+        if (entry.isIntersecting) {
+          setCrewDisplayCount((prev) => prev + creditsPerPage);
+        }
+      });
+    },
+    [setCrewDisplayCount, creditsPerPage]
+  );
+
   // ================================================================================================== useEffect
 
   /**
@@ -174,6 +235,62 @@ export const useDetail = (
     }
   }, [tabNo, tabIndex]);
 
+  /**
+   * IntersectionObserver를 설정하는 useEffect
+   * castObserveTarget이 변경될 때마다 실행
+   */
+  useEffect(() => {
+    // castObserveTarget이 null인 경우에는 관찰을 중지
+    if (!castObserveTarget) {
+      return;
+    }
+
+    // 새로운 IntersectionObserver를 생성
+    const observer = new IntersectionObserver(castObserverCallback, {
+      threshold: 0.1,
+    });
+
+    // castObserveTarget이 화면에 보이면 관찰을 시작
+    observer.observe(castObserveTarget);
+
+    // castObserveTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
+    return () => {
+      observer.unobserve(castObserveTarget);
+    };
+  }, [castObserveTarget, castObserverCallback]);
+
+  /**
+   * IntersectionObserver를 설정하는 useEffect
+   * crewObserveTarget이 변경될 때마다 실행
+   */
+  useEffect(() => {
+    // crewObserveTarget이 null인 경우에는 관찰을 중지
+    if (!crewObserveTarget) {
+      return;
+    }
+
+    // 새로운 IntersectionObserver를 생성
+    const observer = new IntersectionObserver(crewObserverCallback, {
+      threshold: 0.1,
+    });
+
+    // crewObserveTarget이 화면에 보이면 관찰을 시작
+    observer.observe(crewObserveTarget);
+
+    // crewObserveTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
+    return () => {
+      observer.unobserve(crewObserveTarget);
+    };
+  }, [crewObserveTarget, crewObserverCallback]);
+
+  /**
+   * 표시할 항목 수 초기화 useEffect
+   */
+  useEffect(() => {
+    setCastDisplayCount(creditsPerPage);
+    setCrewDisplayCount(creditsPerPage);
+  }, [contentMediaType, apiId, creditsPerPage]);
+
   // ================================================================================================== return
 
   return {
@@ -184,5 +301,9 @@ export const useDetail = (
     isError: isError,
     userStarRating: userStarRating,
     user: user,
+    setCastObserveTarget: setCastObserveTarget,
+    setCrewObserveTarget: setCrewObserveTarget,
+    castDisplayCount: castDisplayCount,
+    crewDisplayCount: crewDisplayCount,
   };
 };

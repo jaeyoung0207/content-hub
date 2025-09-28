@@ -23,6 +23,7 @@ export const settings = {
     'http://localhost:3000/login/kakao',
   kakaoClientId:
     import.meta.env.VITE_KAKAO_CLIENT_ID || 'kakao_client_id_placeholder',
-  detailVideoCount: import.meta.env.VITE_VIDEO_CREDIT_COUNT || 6,
-  detailComicsCount: import.meta.env.VITE_COMICS_CREDIT_COUNT || 10,
+  detailVideoCount: Number(import.meta.env.VITE_VIDEO_CREDITS_COUNT || 6),
+  detailComicsCount: Number(import.meta.env.VITE_COMICS_CREDITS_COUNT || 10),
+  detailCreditsPerPage: Number(import.meta.env.VITE_CREDITS_PER_PAGE || 9),
 };

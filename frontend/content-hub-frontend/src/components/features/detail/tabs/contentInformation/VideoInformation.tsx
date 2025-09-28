@@ -6,6 +6,7 @@ import {
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
 import DisplayVideoCredits from '@/components/ui/DisplayVideoCreditsUi';
+import { Dispatch, SetStateAction } from 'react';
 
 /**
  * 비디오 정보 컴포넌트 props 타입
@@ -13,6 +14,8 @@ import DisplayVideoCredits from '@/components/ui/DisplayVideoCreditsUi';
 export type VideoInformationPropsType = {
   detailResult: DetailResponseType;
   contentMediaType: string;
+  setObserveTarget?: Dispatch<SetStateAction<HTMLDivElement | null>>;
+  displayCount?: number;
 };
 
 /**

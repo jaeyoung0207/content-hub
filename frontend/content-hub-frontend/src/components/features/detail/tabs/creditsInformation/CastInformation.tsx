@@ -15,8 +15,20 @@ import {
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
+/**
+ * 출연진 정보 컴포넌트
+ * @param detailResult 상세 정보
+ * @param contentMediaType 컨텐츠 미디어 타입
+ * @param setObserveTarget 관찰 대상 ref 설정 함수
+ * @param displayCount 표시할 항목 수
+ */
 export const CastInformation = memo(
-  ({ detailResult, contentMediaType }: VideoInformationPropsType) => {
+  ({
+    detailResult,
+    contentMediaType,
+    setObserveTarget,
+    displayCount,
+  }: VideoInformationPropsType) => {
     // i18n
     const { t } = useTranslation();
     // 비디오 출연진 정보 존재 여부
@@ -44,12 +56,16 @@ export const CastInformation = memo(
           contentMediaType === getContentMediaType().newsCode ||
           contentMediaType === getContentMediaType().varietyCode) &&
           (isVideoCast ? (
-            <DisplayVideoCredits
-              detailResult={detailResult}
-              contentMediaType={contentMediaType}
-              creditsType={VIDEO_CREDITS_TYPE.CAST}
-              isOmit={false}
-            />
+            <>
+              <DisplayVideoCredits
+                detailResult={detailResult}
+                contentMediaType={contentMediaType}
+                creditsType={VIDEO_CREDITS_TYPE.CAST}
+                isOmit={false}
+                displayCount={displayCount}
+              />
+              <div ref={(el) => setObserveTarget!(el)} />
+            </>
           ) : (
             <NodataMessageUi message={t('warn.noCastInfo')} />
           ))}

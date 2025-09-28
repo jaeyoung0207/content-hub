@@ -102,7 +102,10 @@ export const StarRatingUi = <T extends FieldValues>({
                   };
 
                   return (
-                    <div className="relative w-6 h-6" key={items.starRating + '_' + index}>
+                    <div
+                      className="relative w-6 h-6"
+                      key={items.starRating + '_' + index}
+                    >
                       {/* 반 별 */}
                       {/* z-index를 통해 우선순위를 정해서 각 별 아이콘이 겹치지 않도록 함 */}
                       {/* 별의 표시영역을 가로/세로 절반으로 설정하고, overflow-hidden을 통해 넘치는 영역을 잘라냄 */}

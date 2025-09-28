@@ -8,7 +8,7 @@ import {
   WIDTH_300,
 } from '@/components/common/constants/constants';
 import { useTranslation } from 'react-i18next';
-import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
+import { HIGHLIGHT_HOVER_COLOR } from '@/components/common/constants/tailwindStyles';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { checkApiId } from '@/components/common/utils/checkUtil';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
@@ -196,7 +196,7 @@ const DisplayWishlist = ({
             <ul
               key={items.apiId}
               className={
-                `${highlightHoverColor} ml-1 mr-3 cursor-pointer ` +
+                `${HIGHLIGHT_HOVER_COLOR} ml-1 mr-3 cursor-pointer ` +
                 (items.contentMediaType === getContentMediaType().comicsCode
                   ? 'w-[195px] h-full'
                   : 'w-[290px] h-full')

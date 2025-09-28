@@ -16,7 +16,7 @@ import {
   isSearchTvType,
 } from '../common/utils/typeGuardUtil';
 import { LazyImage } from './common/LazyImageUi';
-import { highlightHoverColor } from '../common/constants/tailwindStyles';
+import { HIGHLIGHT_HOVER_COLOR } from '../common/constants/tailwindStyles';
 import { WishlistUi } from './WishlistUi';
 import { useUserStore } from '../common/store/globalStateStore';
 import { getDisplayMediaType } from '../common/utils/convertUtil';
@@ -64,7 +64,7 @@ export const DisplaySearchResults = ({
           {
             // 전체보기 링크
             isViewMore && (
-              <div className={`text-xl ${highlightHoverColor}`}>
+              <div className={`text-xl ${HIGHLIGHT_HOVER_COLOR}`}>
                 <Link
                   to={viewMoreUrlQuery({
                     keyword: keyword,
@@ -116,7 +116,7 @@ export const DisplaySearchResults = ({
               <ul
                 key={items.id}
                 className={
-                  `${highlightHoverColor} ml-1 cursor-pointer ` +
+                  `${HIGHLIGHT_HOVER_COLOR} ml-1 cursor-pointer ` +
                   (displayMediaType === getDisplayMediaType().comicsCode
                     ? ' mr-1 w-[195px] h-full'
                     : ' mr-3 w-[290px] h-full')

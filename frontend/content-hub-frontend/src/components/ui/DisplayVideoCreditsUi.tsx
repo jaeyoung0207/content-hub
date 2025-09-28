@@ -18,7 +18,10 @@ import { Link } from 'react-router-dom';
 import { detailUrlQuery, personUrlQuery } from '../common/utils/urlUtil';
 import { checkPersonId } from '../common/utils/checkUtil';
 import { LazyImage } from './common/LazyImageUi';
-import { highlightHoverColor } from '../common/constants/tailwindStyles';
+import {
+  HIGHLIGHT_HOVER_COLOR,
+  OVERFLOW_AUTO_STYLE,
+} from '../common/constants/tailwindStyles';
 
 /**
  * 크레딧 정보 표시 컴포넌트 props 타입
@@ -26,6 +29,7 @@ import { highlightHoverColor } from '../common/constants/tailwindStyles';
 type DisplayVideoCreditsPropsType = VideoInformationPropsType & {
   creditsType: string;
   isOmit?: boolean;
+  displayCount?: number;
 };
 
 /**
@@ -34,12 +38,14 @@ type DisplayVideoCreditsPropsType = VideoInformationPropsType & {
  * @param contentMediaType 컨텐츠 미디어 타입
  * @param creditsType 크레딧 타입
  * @param isOmit 생략 여부
+ * @param displayCount 표시할 항목 수
  */
 export const DisplayVideoCredits = ({
   detailResult,
   contentMediaType,
   creditsType,
   isOmit,
+  displayCount,
 }: DisplayVideoCreditsPropsType) => {
   // i18n
   const { t } = useTranslation();
@@ -62,7 +68,9 @@ export const DisplayVideoCredits = ({
     creditsAll &&
     (isOmit
       ? creditsAll.filter((_, index) => index < settings.detailVideoCount)
-      : creditsAll);
+      : displayCount
+        ? creditsAll.slice(0, displayCount)
+        : creditsAll);
   // 탭 번호
   const tabNo =
     creditsType === VIDEO_CREDITS_TYPE.CAST
@@ -90,7 +98,7 @@ export const DisplayVideoCredits = ({
                     apiId: String(detailResult.id),
                     tabNo: tabNo,
                   })}
-                  className={`ml-5 ${highlightHoverColor}`}
+                  className={`ml-5 ${HIGHLIGHT_HOVER_COLOR}`}
                 >
                   {t('info.seeMore') + ' >'}
                 </Link>
@@ -120,7 +128,7 @@ export const DisplayVideoCredits = ({
                     to={items.id ? personUrlQuery({ personId: items.id }) : '#'}
                   >
                     <ul
-                      className={`flex justify-center items-center ${highlightHoverColor} w-full h-full`}
+                      className={`flex justify-center items-center ${HIGHLIGHT_HOVER_COLOR} w-full h-full`}
                     >
                       {/* 이미지 */}
                       <li className="max-w-[30%]">
@@ -137,7 +145,7 @@ export const DisplayVideoCredits = ({
                       {/* 이름 & 역할 */}
                       <li className="ml-4 mr-1 text-lg w-[70%] break-words">
                         <div
-                          className={`flex items-center-safe overflow-y-auto not-hover:scrollbar-default`}
+                          className={`flex items-center-safe ${OVERFLOW_AUTO_STYLE}`}
                           style={{ height: `${heightStyle - 15}px` }}
                         >
                           <div>

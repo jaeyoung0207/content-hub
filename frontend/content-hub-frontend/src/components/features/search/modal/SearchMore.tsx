@@ -7,6 +7,7 @@ import { LoadingUi } from '@/components/ui/LoadingUi';
 import { SearchPropsType } from '../SearchPage';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
+import { OVERFLOW_AUTO_STYLE } from '@/components/common/constants/tailwindStyles';
 
 /**
  * 전체보기 모달화면 컴포넌트
@@ -57,7 +58,9 @@ export const SearchMore = memo(
       <>
         {
           <div className="flex justify-center items-center fixed top-0 left-0 w-full h-full bg-black/30 z-50">
-            <div className="w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl overflow-auto mx-auto mt-10 not-hover:scrollbar-default">
+            <div
+              className={`w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl mt-10 mx-auto ${OVERFLOW_AUTO_STYLE}`}
+            >
               <div className="mb-5 p-4">
                 {/* 닫기 버튼 */}
                 <CloseButtonUi modalClose={handleModalClose} />

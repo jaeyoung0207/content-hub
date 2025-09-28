@@ -270,15 +270,15 @@ export const Header = () => {
                           control={control}
                           radioButtonList={radioButtonList}
                           displayStyle="flex"
-                          onClickRadioButton={
-                            commonErrorHandler(handleOnClickSelectTypeRadioButton)
-                          }
+                          onClickRadioButton={commonErrorHandler(
+                            handleOnClickSelectTypeRadioButton
+                          )}
                         />
                       </div>
                       <div className="block mb-2">
                         {selectType === radioButtonList[0].value ? (
                           // 검색 종류 체크박스
-                          searchTypeList.map((items, _) => {
+                          searchTypeList.map((items) => {
                             return (
                               <div key={items.value} className="mb-1">
                                 <CheckBoxAndLabel<HeaderType>
@@ -300,9 +300,9 @@ export const Header = () => {
                               value: item.value,
                             }))}
                             displayStyle="block"
-                            onClickRadioButton={
-                              commonErrorHandler(handleOnClickSearchTypeRadioButton)
-                            }
+                            onClickRadioButton={commonErrorHandler(
+                              handleOnClickSearchTypeRadioButton
+                            )}
                           />
                         )}
                       </div>

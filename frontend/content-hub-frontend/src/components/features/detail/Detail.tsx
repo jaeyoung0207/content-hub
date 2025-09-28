@@ -67,6 +67,10 @@ export const Detail = memo(() => {
     isError,
     userStarRating,
     user,
+    setCastObserveTarget,
+    setCrewObserveTarget,
+    castDisplayCount,
+    crewDisplayCount,
   } = useDetail(contentMediaType!, apiId!, tabNo);
 
   // i18n 훅
@@ -118,7 +122,7 @@ export const Detail = memo(() => {
         <div className="mb-10 flex justify-center items-center">
           {
             // 탭 정보 배열 수만큼 반복하여 탭 버튼 생성
-            tabInfo.map((tabInfo, _) => {
+            tabInfo.map((tabInfo) => {
               const isActive = tabIndex === tabInfo.id;
               return (
                 <div
@@ -395,6 +399,8 @@ export const Detail = memo(() => {
                     <CastInformation
                       detailResult={data}
                       contentMediaType={contentMediaType}
+                      setObserveTarget={setCastObserveTarget}
+                      displayCount={castDisplayCount}
                     />
                   </div>
                 </Suspense>
@@ -406,6 +412,8 @@ export const Detail = memo(() => {
                     <CrewInformation
                       detailResult={data}
                       contentMediaType={contentMediaType}
+                      setObserveTarget={setCrewObserveTarget}
+                      displayCount={crewDisplayCount}
                     />
                   </div>
                 </Suspense>

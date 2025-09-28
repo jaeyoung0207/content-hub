@@ -140,7 +140,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           </>
         ) : (
           data &&
-          dataList.map((items, _) => {
+          dataList.map((items) => {
             return (
               <div key={items.mediaName}>
                 {items.displayFlg &&

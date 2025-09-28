@@ -53,8 +53,11 @@ export const RadioButtonGroupUi = <T extends FieldValues>({
             return (
               <div className={displayStyle}>
                 {/* 라디오 버튼 */}
-                {radioButtonList.map((items, _) => (
-                  <div key={items.value} className="flex items-center me-2 mb-1">
+                {radioButtonList.map((items) => (
+                  <div
+                    key={items.value}
+                    className="flex items-center me-2 mb-1"
+                  >
                     <input
                       id={`${name}-${items.value}`}
                       className="w-4 h-4 text-blue-600 bg-white border-gray-300 focus:ring-blue-500"

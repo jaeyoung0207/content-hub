@@ -12,7 +12,10 @@ import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { checkApiId } from '@/components/common/utils/checkUtil';
 import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
-import { highlightHoverColor } from '@/components/common/constants/tailwindStyles';
+import {
+  HIGHLIGHT_HOVER_COLOR,
+  OVERFLOW_AUTO_STYLE,
+} from '@/components/common/constants/tailwindStyles';
 import { WishlistUi } from '@/components/ui/WishlistUi';
 import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
@@ -143,7 +146,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
     <div className="block mb-10">
       {/* 각 랭킹 타이틀 */}
       <div className="flex items-start text-3xl font-bold mb-5">{title}</div>
-      <div className="whitespace-nowrap flex overflow-x-auto not-hover:scrollbar-default">
+      <div className={`whitespace-nowrap flex ${OVERFLOW_AUTO_STYLE}`}>
         {items.map((items, index) => {
           // 썸네일 이미지
           const thumbnailImageUrl =
@@ -165,7 +168,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
           return (
             <ul
               key={index}
-              className={`ml-1 mr-1 block ${highlightHoverColor} cursor-pointer ${widthStyle}`}
+              className={`ml-1 mr-1 block ${HIGHLIGHT_HOVER_COLOR} cursor-pointer ${widthStyle}`}
               onClick={commonErrorHandler(() => {
                 // apiId 체크
                 checkApiId(Number(items.apiId));

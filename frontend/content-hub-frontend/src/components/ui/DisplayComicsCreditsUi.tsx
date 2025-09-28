@@ -13,7 +13,10 @@ import { Link } from 'react-router-dom';
 import { characterUrlQuery, detailUrlQuery } from '../common/utils/urlUtil';
 import { checkCharacterId, checkStaffId } from '../common/utils/checkUtil';
 import { LazyImage } from './common/LazyImageUi';
-import { highlightHoverColor } from '../common/constants/tailwindStyles';
+import {
+  HIGHLIGHT_HOVER_COLOR,
+  OVERFLOW_AUTO_STYLE,
+} from '../common/constants/tailwindStyles';
 
 /**
  * 만화 크레딧 표시 컴포넌트 props 타입
@@ -69,7 +72,7 @@ export const DisplayComicsCredits = ({
                 apiId: String(apiId),
                 tabNo: tabNo,
               })}
-              className={`ml-5 ${highlightHoverColor}`}
+              className={`ml-5 ${HIGHLIGHT_HOVER_COLOR}`}
             >
               {t('info.seeMore') + ' >'}
             </Link>
@@ -78,7 +81,7 @@ export const DisplayComicsCredits = ({
       </div>
       <div className="flex flex-wrap items-start mt-5">
         {creditsList &&
-          creditsList.map((items, _) => {
+          creditsList.map((items) => {
             const creditsInfo = items?.node;
             const role = items?.role;
             return (
@@ -106,7 +109,7 @@ export const DisplayComicsCredits = ({
                       }
                     >
                       <ul
-                        className={`flex justify-center items-center ${highlightHoverColor} w-full h-full`}
+                        className={`flex justify-center items-center ${HIGHLIGHT_HOVER_COLOR} w-full h-full`}
                       >
                         {/* 이미지 */}
                         <li className="max-w-[35%]">
@@ -122,7 +125,7 @@ export const DisplayComicsCredits = ({
                         {/* 이름 & 역할 */}
                         <li className={`ml-4 mr-1 text-sm w-[65%] break-words`}>
                           <div
-                            className={`flex items-center-safe overflow-y-auto not-hover:scrollbar-default`}
+                            className={`flex items-center-safe ${OVERFLOW_AUTO_STYLE}`}
                             style={{ height: `${heightStyle - 15}px` }}
                           >
                             <div>

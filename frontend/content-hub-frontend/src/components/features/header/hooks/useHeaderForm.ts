@@ -1,4 +1,7 @@
-import { SEARCH_TYPE, SELECT_TYPE } from '@/components/common/constants/constants';
+import {
+  SEARCH_TYPE,
+  SELECT_TYPE,
+} from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
 import { useEffect } from 'react';
 import { Control, useForm, UseFormSetValue, useWatch } from 'react-hook-form';
