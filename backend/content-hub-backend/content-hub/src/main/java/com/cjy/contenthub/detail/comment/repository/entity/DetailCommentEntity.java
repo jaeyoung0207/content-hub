@@ -71,7 +71,7 @@ public class DetailCommentEntity implements Serializable {
 
 	/** 코멘트 */
 	@NotNull
-	@Column(name = "comment")
+	@Column(name = "comment", length = 500)
 	private String comment;
 
 	/** 추천 수 */

@@ -6,6 +6,8 @@ import { commonErrorHandler } from '../common/utils/errorUtil';
 
 type CommentTextAreaUiProps<T extends FieldValues> = FormFieldProps<T> & {
   textAreaRef: RefObject<HTMLTextAreaElement | null>;
+  maxLength: number;
+  textAreaStyle?: string;
 };
 
 /**
@@ -20,6 +22,8 @@ export const CommentTextAreaUi = <T extends FieldValues>({
   control,
   onClick,
   textAreaRef,
+  maxLength,
+  textAreaStyle,
 }: CommentTextAreaUiProps<T>) => {
   // i18n 번역 훅
   const { t } = useTranslation();
@@ -34,7 +38,7 @@ export const CommentTextAreaUi = <T extends FieldValues>({
                 <div className="block">
                   {/* 텍스트 영역 */}
                   <textarea
-                    className="mt-2 w-2xl h-50 text-xl border-1 resize-none p-3"
+                    className={`mt-2 text-xl border-1 resize-none p-3 ${textAreaStyle ? textAreaStyle : 'w-2xl h-50'}`}
                     placeholder={t('info.requireComment')}
                     name={name}
                     value={value}
@@ -42,6 +46,7 @@ export const CommentTextAreaUi = <T extends FieldValues>({
                     onBlur={onBlur}
                     onClick={onClick && commonErrorHandler(onClick)}
                     ref={textAreaRef}
+                    maxLength={maxLength}
                   />
                 </div>
               </>

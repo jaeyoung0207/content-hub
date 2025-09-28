@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { CommentTextAreaUi } from '@/components/ui/CommentTextAreaUi';
 import { DetailResponseType } from '../../useDetail';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
+import { settings } from '@/components/common/config/settings';
+import { IS_MOBILE } from '@/components/common/constants/constants';
 
 /**
  * 콘텐츠 코멘트 컴포넌트 props 타입
@@ -58,7 +60,8 @@ export const ContentComment = ({
   // 코멘트 작성 버튼 스타일
   const commentButtonStyle =
     'w-20 h-10 border-1 rounded-md bg-blue-600 text-2xl disabled:bg-gray-500 text-white cursor-pointer';
-
+  // 코멘트 최대 글자 수
+  const commentMaxLength = settings.commentMaxLength;
   return (
     <>
       {/* 코멘트 작성/수정 영역 */}
@@ -80,14 +83,24 @@ export const ContentComment = ({
                 starRatingErrorMsg={starRatingErrorMsg}
               />
               {/* 코멘트 입력 UI */}
-              <CommentTextAreaUi
-                name="comment"
-                control={control}
-                onClick={commonErrorHandler(handleCommentOnClick)}
-                textAreaRef={textAreaRef}
-              />
+              <div className="flex justify-center">
+                <div>
+                  <CommentTextAreaUi
+                    name="comment"
+                    control={control}
+                    onClick={commonErrorHandler(handleCommentOnClick)}
+                    textAreaRef={textAreaRef}
+                    maxLength={commentMaxLength}
+                    textAreaStyle={IS_MOBILE ? 'w-sm h-32' : undefined}
+                  />
+                  {/* 글자 수 */}
+                  <div className="flex justify-end text-sm text-gray-500">
+                    {comment ? comment.length : 0}/{commentMaxLength}
+                  </div>
+                </div>
+              </div>
               {/* 버튼 영역 */}
-              <div className="mt-2 mb-2 flex justify-center">
+              <div className="mt-1 mb-2 flex justify-center">
                 {
                   // isMyComment가 true이면서 isCommentEditable가 true인 경우에는 코멘트 수정 버튼을 표시
                   isMyComment && isCommentEditable && (

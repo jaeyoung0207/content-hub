@@ -26,4 +26,5 @@ export const settings = {
   detailVideoCount: Number(import.meta.env.VITE_VIDEO_CREDITS_COUNT || 6),
   detailComicsCount: Number(import.meta.env.VITE_COMICS_CREDITS_COUNT || 10),
   detailCreditsPerPage: Number(import.meta.env.VITE_CREDITS_PER_PAGE || 9),
+  commentMaxLength: Number(import.meta.env.VITE_COMMENT_MAX_LENGTH || 500),
 };
