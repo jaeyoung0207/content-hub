@@ -1590,11 +1590,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        leapMonth:
+          type: boolean
         emailValid:
           type: boolean
         emailVerified:
-          type: boolean
-        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -2254,9 +2254,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favouriteBlocked:
-          type: boolean
         favourite:
+          type: boolean
+        favouriteBlocked:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2280,6 +2280,10 @@ components:
           type: string
         title:
           type: string
+        synonyms:
+          type: array
+          items:
+            type: string
         comicsGenres:
           type: array
           items:

@@ -9,6 +9,7 @@ query($mediaId: Int, $page: Int, $perPage: Int, $staffPage2: Int, $staffPerPage2
     status
     type
     siteUrl
+    synonyms
     title {
       romaji
       english

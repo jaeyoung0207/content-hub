@@ -268,6 +268,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 							.status(media.getStatus())
 							.homepage(media.getSiteUrl())
 							.title(media.getTitle().getUserPreferred())
+							.synonyms(media.getSynonyms())
 							.backdropPath(media.getCoverImage().getLarge())
 							.posterPath(media.getCoverImage().getExtraLarge())
 							.characters(media.getCharacters())

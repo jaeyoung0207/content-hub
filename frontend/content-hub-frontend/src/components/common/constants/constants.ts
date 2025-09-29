@@ -145,6 +145,35 @@ export const COMMON_IMAGES = {
   NO_IMAGE: NoImageThumbnailFile,
 };
 
+// TMDB TV 방영 상태
+export const TV_RELEASE_STATUS: Record<string, string> = {
+  'Returning Series': '방영 중',
+  Planned: '방영 예정',
+  'In Production': '제작 중',
+  Ended: '방영 종료',
+  Canceled: '방영 취소',
+  Pilot: '파일럿',
+};
+
+// TMDB 영화 개봉 상태
+export const MOVIE_RELEASE_STATUS: Record<string, string> = {
+  Rumored: '루머',
+  Planned: '제작 예정',
+  'In Production': '제작 중',
+  'Post Production': '후반 작업 중',
+  Released: '개봉',
+  Canceled: '제작 취소',
+};
+
+// AniList 만화 출간 상태
+export const COMICS_RELEASE_STATUS: Record<string, string> = {
+  FINISHED: '완결',
+  RELEASING: '연재 중',
+  NOT_YET_RELEASED: '미출간',
+  CANCELED: '연재 중단',
+  HIATUS: '휴재',
+};
+
 // API 응답 에러 코드
 export const ERROR_CODE = {
   BAD_REQUEST: {

@@ -5,6 +5,9 @@ import {
   COMMON_IMAGES,
   DETAIL_TAB_ID,
   WIDTH_185,
+  TV_RELEASE_STATUS,
+  MOVIE_RELEASE_STATUS,
+  COMICS_RELEASE_STATUS,
 } from '@/components/common/constants/constants';
 import { Suspense, lazy, memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +22,10 @@ import {
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
 import { WishlistUi } from '@/components/ui/WishlistUi';
-import { getContentMediaType } from '@/components/common/utils/convertUtil';
+import {
+  convertDate,
+  getContentMediaType,
+} from '@/components/common/utils/convertUtil';
 
 // lazy loading
 const VideoInformation = lazy(
@@ -102,6 +108,10 @@ export const Detail = memo(() => {
       tabTitle: t('info.recommend'),
     },
   ];
+  // 작품 정보 스타일
+  const detailInfoStyle = 'flex mb-2 mr-3 break-all';
+  // 소제목 스타일
+  const subTitleStyle = 'mr-2 whitespace-nowrap';
 
   // 작품 타입에 따라 조건부 렌더링을 위한 변수 설정
   const isTvType =
@@ -110,11 +120,51 @@ export const Detail = memo(() => {
     data && contentMediaType && isDetailMovieType(data, contentMediaType);
   const isComicsType =
     data && contentMediaType && isDetailComicsType(data, contentMediaType);
+  // 작품 제목
   const title = isTvType
     ? data.name
     : isMovieType || isComicsType
       ? data.title
       : 'No Title';
+  // 장르
+  const videoGenres =
+    (isTvType || isMovieType) &&
+    data.genres?.map((genre) => genre.name).join(', ');
+  const comicsGenres = isComicsType && data.comicsGenres?.join(', ');
+  const genres = videoGenres || comicsGenres;
+  // 방영 시간
+  const tvRuntime =
+    isTvType &&
+    data.episodeRunTime &&
+    data.episodeRunTime.length > 0 &&
+    data.episodeRunTime[0] + t('info.minutes');
+  // 상영 시간
+  const movieRuntime =
+    isMovieType && data.runtime && data.runtime + t('info.minutes');
+  // 총 권수
+  const comicsVolume =
+    isComicsType && data.volumes
+      ? data.status === 'RELEASING'
+        ? t('info.notEndedYet')
+        : data.volumes + t('info.volume')
+      : undefined;
+  // 출시일(방영 시작일, 개봉일, 연재 시작일)
+  const releaseDateArray =
+    (isTvType && data.firstAirDate?.split('-')) ||
+    (isMovieType && data.releaseDate?.split('-')) ||
+    (isComicsType && data.startDate?.split('/'));
+  const idValidateDateArray =
+    Array.isArray(releaseDateArray) &&
+    releaseDateArray.length === 3 &&
+    releaseDateArray.every((date) => !isNaN(Number(date)));
+  const convertedReleaseDate = idValidateDateArray
+    ? convertDate(
+        Number(releaseDateArray[0]),
+        Number(releaseDateArray[1]),
+        Number(releaseDateArray[2])
+      )
+    : undefined;
+
   return (
     <>
       <div className="mt-30 mb-10">
@@ -208,111 +258,119 @@ export const Detail = memo(() => {
                   />
                 </div>
               </div>
-              {/* 제목 */}
               <div className="w-[70%] block">
+                {/* 제목 */}
                 <div className="text-2xl mb-3 mr-3">{title}</div>
                 <div className="flex">
                   <div className="w-full">
                     <ul className="mt-5 mb-5">
-                      {/* 장르 */}
-                      <li className="mb-2 flex">
-                        <div className="mr-2">
-                          {t('info.genre') + t('info.colon')}
-                        </div>
-                        <div>
-                          {(isTvType || isMovieType) &&
-                            data.genres?.map(
-                              (genre, index) =>
-                                genre.name +
-                                (index + 1 !== data.genres?.length ? ', ' : '')
-                            )}
-                          {isComicsType &&
-                            data.comicsGenres?.map(
-                              (genre, index) =>
-                                genre +
-                                (index + 1 !== data.comicsGenres?.length
-                                  ? ', '
-                                  : '')
-                            )}
-                        </div>
-                      </li>
+                      <>
+                        {/* 다른 제목 */}
+                        {isComicsType &&
+                          data.synonyms &&
+                          data.synonyms.length > 0 && (
+                            <li className={detailInfoStyle}>
+                              <div className={subTitleStyle}>
+                                {t('info.otherTitles') + t('info.colon')}
+                              </div>
+                              <div>{data.synonyms.join(', ')}</div>
+                            </li>
+                          )}
+                        {/* 장르 */}
+                        {genres && (
+                          <li className={detailInfoStyle}>
+                            <div className={subTitleStyle}>
+                              {t('info.genre') + t('info.colon')}
+                            </div>
+                            <div>{genres}</div>
+                          </li>
+                        )}
+                      </>
                       {/* 연령 제한 */}
                       {data.adult && (
-                        <li className="mb-2 flex">
-                          <div className="mr-2">
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
                             {t('info.movieRating') + t('info.colon')}
                           </div>
                           <div>{t('info.adultContent')}</div>
                         </li>
                       )}
-                      {/* 방영 시간 OR 총 권 수 */}
-                      <li className="mb-2 flex">
-                        <div className="mr-2">
-                          {((isTvType && t('info.tvRunningTime')) ||
-                            (isMovieType && t('info.movieRunningTime')) ||
-                            (isComicsType && t('info.volumes'))) +
-                            t('info.colon')}
-                        </div>
-                        <div>
-                          {(isTvType &&
-                            data.episodeRunTime + t('info.minutes')) ||
-                            (isMovieType && data.runtime + t('info.minutes')) ||
-                            (isComicsType &&
-                              (data.status === 'RELEASING'
-                                ? t('info.notEndedYet')
-                                : data.volumes + t('info.volume')))}
-                        </div>
-                      </li>
-                      {/* 방영시작일 OR 연재시작일 */}
-                      <li className="mb-2 flex">
-                        <div className="mr-2">
-                          {((isTvType && t('info.tvReleaseDate')) ||
-                            (isMovieType && t('info.movieReleaseDate')) ||
-                            (isComicsType && t('info.serializeDate'))) +
-                            t('info.colon')}
-                        </div>
-                        <div>
-                          {(isTvType && data.firstAirDate) ||
-                            (isMovieType && data.releaseDate) ||
-                            (isComicsType && data.startDate)}
-                        </div>
-                      </li>
-                      {/* 시즌 수 */}
-                      {isTvType && data.seasons && (
-                        <li className="mb-2 flex">
-                          <div className="mr-2">
-                            {t('info.seasonNumbers') + t('info.colon')}
+                      {/* 방영시작일 OR 개봉일 OR 연재시작일 */}
+                      {convertedReleaseDate && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {((isTvType && t('info.tvReleaseDate')) ||
+                              (isMovieType && t('info.movieReleaseDate')) ||
+                              (isComicsType && t('info.serializeDate'))) +
+                              t('info.colon')}
                           </div>
-                          <div>{data.seasons?.length + t('info.season')}</div>
+                          <div>{convertedReleaseDate}</div>
                         </li>
                       )}
-                      {/* 방영 상태 OR 연재 상태 */}
-                      <li className="mb-2 flex">
-                        <div className="mr-2">
-                          {((isTvType && t('info.tvReleaseStatus')) ||
-                            (isMovieType && t('info.movieReleaseStatus')) ||
-                            (isComicsType && t('info.serializeStatus'))) +
-                            t('info.colon')}
-                        </div>
-                        <div>
-                          {(isTvType &&
-                            (data.status === 'Ended'
-                              ? t('info.ended')
-                              : t('info.onAir'))) ||
-                            (isMovieType &&
-                              (data.status === 'Released'
-                                ? t('info.released')
-                                : t('info.planned'))) ||
-                            (isComicsType &&
-                              (data.status === 'FINISHED'
-                                ? t('info.finished')
-                                : t('info.releasing')))}
-                        </div>
-                      </li>
+                      {/* 총 권수 */}
+                      {comicsVolume && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {t('info.volumes') + t('info.colon')}
+                          </div>
+                          <div>{comicsVolume}</div>
+                        </li>
+                      )}
+                      {/* 시즌 수 */}
+                      {isTvType && data.numberOfSeasons && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {t('info.seasonNumbers') + t('info.colon')}
+                          </div>
+                          <div>{data.numberOfSeasons + t('info.season')}</div>
+                        </li>
+                      )}
+                      {/* 총 에피소드 수 */}
+                      {isTvType && data.numberOfEpisodes && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {t('info.totalEpisodeNumbers') + t('info.colon')}
+                          </div>
+                          <div>{data.numberOfEpisodes + t('info.episode')}</div>
+                        </li>
+                      )}
+                      {/* 방영 시간 OR 상영 시간 */}
+                      {(tvRuntime || movieRuntime) && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {((tvRuntime && t('info.tvRunningTime')) ||
+                              (movieRuntime && t('info.movieRunningTime'))) +
+                              t('info.colon')}
+                          </div>
+                          <div>{tvRuntime || movieRuntime}</div>
+                        </li>
+                      )}
+                      {/* 방영 상태 OR 상영 상태 OR 연재 상태 */}
+                      {data.status && (
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
+                            {((isTvType && t('info.tvReleaseStatus')) ||
+                              (isMovieType && t('info.movieReleaseStatus')) ||
+                              (isComicsType && t('info.comicsReleaseStatus'))) +
+                              t('info.colon')}
+                          </div>
+                          <div>
+                            {(isTvType &&
+                              (TV_RELEASE_STATUS[data.status] ??
+                                t('info.unknown'))) ||
+                              (isMovieType &&
+                                (MOVIE_RELEASE_STATUS[data.status] ??
+                                  t('info.unknown'))) ||
+                              (isComicsType &&
+                                (COMICS_RELEASE_STATUS[data.status] ??
+                                  t('info.unknown')))}
+                          </div>
+                        </li>
+                      )}
                       {/* 홈페이지 */}
                       {data.homepage && (
-                        <li className="mb-2 flex">
-                          <div className="mr-2">
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
                             {t('info.homepage') + t('info.colon')}
                           </div>
                           <div>
@@ -327,8 +385,8 @@ export const Detail = memo(() => {
                         </li>
                       )}
                       {/* 유저 평점 */}
-                      <li className="mb-2 flex">
-                        <div className="mr-2">
+                      <li className={detailInfoStyle}>
+                        <div className={subTitleStyle}>
                           {t('info.userStarRating') + t('info.colon')}
                         </div>
                         <div>
@@ -337,8 +395,8 @@ export const Detail = memo(() => {
                       </li>
                       {/* 볼 수 있는 곳 */}
                       {(isTvType || isMovieType) && data.link && (
-                        <li className="mb-2 flex">
-                          <div className="mr-2">
+                        <li className={detailInfoStyle}>
+                          <div className={subTitleStyle}>
                             {t('info.ableToWatching') + t('info.colon')}
                           </div>
                           <div>
@@ -374,7 +432,7 @@ export const Detail = memo(() => {
                         contentMediaType={contentMediaType}
                       />
                     )}
-                    {/* 애니, 드라마, 영화 정보 */}
+                    {/* TV 시리즈, 영화 정보 */}
                     {(contentMediaType === getContentMediaType().aniCode ||
                       contentMediaType === getContentMediaType().dramaCode ||
                       contentMediaType === getContentMediaType().movieCode ||

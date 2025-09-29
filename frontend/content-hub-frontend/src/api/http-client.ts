@@ -13,7 +13,6 @@
 import { AxiosErrorType } from '@/components/common/config/queryClientConfig'; // add custom config
 import { settings } from '@/components/common/config/settings'; // add custom config
 import {
-  useConfirmDialogStore,
   useProviderStore,
   useUserStore,
 } from '@/components/common/store/globalStateStore'; // add custom config

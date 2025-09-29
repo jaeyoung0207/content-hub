@@ -336,9 +336,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  leapMonth?: boolean;
   emailValid?: boolean;
   emailVerified?: boolean;
-  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -701,8 +701,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -716,6 +716,7 @@ export interface DetailComicsResponseDto {
   posterPath?: string;
   status?: string;
   title?: string;
+  synonyms?: string[];
   comicsGenres?: string[];
   genreIds?: number[];
   characters?: AniListCharactersDto;

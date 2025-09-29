@@ -38,7 +38,7 @@ export const Person = memo(() => {
   const { data, isLoading, isError } = usePerson(personId!);
 
   // 인물 정보 스타일
-  const personInfoStyle = 'flex text-xl mb-2 mr-3 break-all';
+  const personInfoStyle = 'flex text-lg mb-2 mr-3 break-all';
   // 소제목 스타일
   const subTitleStyle = 'mr-2 whitespace-nowrap';
 

@@ -40,6 +40,9 @@ public class AniListMediaDto {
 
 	/** 사이트 URL */
 	private String siteUrl;
+	
+	/** 다른 제목 */
+	private List<String> synonyms;
 
 	/** 미디어 제목 DTO */
 	private AniListTitleDto title;
