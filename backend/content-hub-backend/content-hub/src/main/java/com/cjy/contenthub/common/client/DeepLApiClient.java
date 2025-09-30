@@ -3,15 +3,18 @@ package com.cjy.contenthub.common.client;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * DeepL API 클라이언트 클래스
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DeepLApiClient {
 
 	@Qualifier("deeplWebClient")
@@ -41,20 +45,25 @@ public class DeepLApiClient {
 	 */
 	@Cacheable(value = CommonConstants.API_TRANSLATE_NAME)
 	public String translateText(String text, String targetLang, String sourceLang) {
-		
-		// 파라미터 맵 생성
-		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
-		paramsMap.add("text", text);
-		paramsMap.add("target_lang", targetLang);
-		paramsMap.add("source_lang", sourceLang);
-		
-		// DeepL API를 호출하여 번역 요청
-		return deeplWebClient.post()
-				.uri(translatePath)
-				.bodyValue(paramsMap)
-				.retrieve()
-				.bodyToMono(JsonNode.class)
-				.map(json -> json.get("translations").get(0).get("text").asText())
-				.block();
+		try {
+			// 파라미터 맵 생성
+			MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+			paramsMap.add("text", text);
+			paramsMap.add("target_lang", targetLang);
+			paramsMap.add("source_lang", sourceLang);
+
+			// DeepL API를 호출하여 번역 요청
+			return deeplWebClient.post()
+					.uri(translatePath)
+					.bodyValue(paramsMap)
+					.retrieve()
+					.bodyToMono(JsonNode.class)
+					.map(json -> json.get("translations").get(0).get("text").asText())
+					.block();
+		} catch(Exception ex) {
+			// 상세 예외 로깅
+	        log.error("DeepL API 호출 실패: text={}, targetLang={}, sourceLang={}, error={}", text, targetLang, sourceLang, ex.getMessage(), ex);
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "DeepL API 호출 중 오류 발생: " + ex.getMessage());
+		}
 	}
 }

@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.nio.AsyncClientConnectionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +52,14 @@ public class WebClientConfig {
 	/** TMDB API ResponseTimeout */
 	@Value("${tmdb.custom.responseTimeout}")
 	private int tmdbResponseTimeout;
+	
+	/** TMDB API 최대 커넥션 수 */
+	@Value("${tmdb.custom.maxConnTotal}")
+	private int tmdbMaxConnTotal;
+	
+	/** TMDB API 라우트당 최대 커넥션 수 */
+	@Value("${tmdb.custom.maxConnPerRoute}")
+	private int tmdbMaxConnPerRoute;
 
 	/** AniList API 기본 URL */
 	@Value("${anilist.url.baseUrl}")
@@ -62,6 +72,14 @@ public class WebClientConfig {
 	/** AniList API ResponseTimeout */
 	@Value("${anilist.custom.responseTimeout}")
 	private int anilistResponseTimeout;
+	
+	/** AniList API 최대 커넥션 수 */
+	@Value("${anilist.custom.maxConnTotal}")
+	private int anilistMaxConnTotal;
+	
+	/** AniList API 라우트당 최대 커넥션 수 */
+	@Value("${anilist.custom.maxConnPerRoute}")
+	private int anilistMaxConnPerRoute;
 
 	/** DeepL API 기본 URL */
 	@Value("${deepl.url.baseUrl}")
@@ -78,6 +96,14 @@ public class WebClientConfig {
 	/** DeepL API ResponseTimeout */
 	@Value("${deepl.custom.responseTimeout}")
 	private int deeplResponseTimeout;
+	
+	/** DeepL API 최대 커넥션 수 */
+	@Value("${deepl.custom.maxConnTotal}")
+	private int deeplMaxConnTotal;
+	
+	/** DeepL API 라우트당 최대 커넥션 수 */
+	@Value("${deepl.custom.maxConnPerRoute}")
+	private int deeplMaxConnPerRoute;
 
 	/** NAVER API ConnectionRequestTimeout */
 	@Value("${login.naver.custom.connectionRequestTimeout}")
@@ -86,6 +112,14 @@ public class WebClientConfig {
 	/** NAVER API ResponseTimeout */
 	@Value("${login.naver.custom.responseTimeout}")
 	private int naverResponseTimeout;
+	
+	/** NAVER API 최대 커넥션 수 */
+	@Value("${login.naver.custom.maxConnTotal}")
+	private int naverMaxConnTotal;
+	
+	/** NAVER API 라우트당 최대 커넥션 수 */
+	@Value("${login.naver.custom.maxConnPerRoute}")
+	private int naverMaxConnPerRoute;
 
 	/** KAKAO API ConnectionRequestTimeout */
 	@Value("${login.kakao.custom.connectionRequestTimeout}")
@@ -94,6 +128,14 @@ public class WebClientConfig {
 	/** KAKAO API ResponseTimeout */
 	@Value("${login.kakao.custom.responseTimeout}")
 	private int kakaoResponseTimeout;
+	
+	/** KAKAO API 최대 커넥션 수 */
+	@Value("${login.kakao.custom.maxConnTotal}")
+	private int kakaoMaxConnTotal;
+	
+	/** KAKAO API 라우트당 최대 커넥션 수 */
+	@Value("${login.kakao.custom.maxConnPerRoute}")
+	private int kakaoMaxConnPerRoute;
 
 	/**
 	 * TMDB API와 통신하기 위한 WebClient를 설정
@@ -108,6 +150,13 @@ public class WebClientConfig {
 				.setConnectionRequestTimeout(tmdbConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
 				.setResponseTimeout(tmdbResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
 				.build();
+		
+		// 커넥션 풀 설정
+		AsyncClientConnectionManager connManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setMaxConnTotal(tmdbMaxConnTotal) // 최대 커넥션 수
+				.setMaxConnPerRoute(tmdbMaxConnPerRoute) // 라우트당 최대 커넥션 수
+				.build();
+		
 		// WebClient 공통설정
 		return WebClient.builder()
 				.baseUrl(tmdbBaseUrl) // TMDB API 기본 URL 설정
@@ -115,6 +164,7 @@ public class WebClientConfig {
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
 				.clientConnector(new HttpComponentsClientHttpConnector(
 						HttpAsyncClients.custom()
+						.setConnectionManager(connManager)
 						.setDefaultRequestConfig(requestConfig)
 						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
@@ -135,7 +185,13 @@ public class WebClientConfig {
 				.setConnectionRequestTimeout(anilistConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
 				.setResponseTimeout(anilistResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
 				.build();
-
+		
+		// 커넥션 풀 설정
+		AsyncClientConnectionManager connManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setMaxConnTotal(anilistMaxConnTotal) // 최대 커넥션 수
+				.setMaxConnPerRoute(anilistMaxConnPerRoute) // 라우트당 최대 커넥션 수
+				.build();
+		
 		// WebClient 공통설정
 		return WebClient.builder() // WebClient 빌더 생성
 				.baseUrl(anilistBaseUrl) // AniList API 기본 URL 설정
@@ -143,9 +199,13 @@ public class WebClientConfig {
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE) // 헤더에 응답 데이터 타입 설정
 				.clientConnector(new HttpComponentsClientHttpConnector(
 						HttpAsyncClients.custom()
+						.setConnectionManager(connManager)
 						.setDefaultRequestConfig(requestConfig)
 						.build())) // HttpClient 커넥터 설정
-				//				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
+				.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs(configurer -> configurer.defaultCodecs()
+								.maxInMemorySize(CommonConstants.ONE_MB * maxInMemorySize))
+						.build()) // 응답 데이터 매핑 전략 설정(최대 메모리 크기 설정)
 				.build();
 	}
 
@@ -162,6 +222,12 @@ public class WebClientConfig {
 				.setConnectionRequestTimeout(deeplConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
 				.setResponseTimeout(deeplResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
 				.build();
+		
+		// 커넥션 풀 설정
+		AsyncClientConnectionManager connManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setMaxConnTotal(deeplMaxConnTotal) // 최대 커넥션 수
+				.setMaxConnPerRoute(deeplMaxConnPerRoute) // 라우트당 최대 커넥션 수
+				.build();
 
 		// WebClient 공통설정
 		return WebClient.builder()
@@ -170,8 +236,12 @@ public class WebClientConfig {
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE) // 헤더에 전송하는 데이터 타입 설정
 				.clientConnector(new HttpComponentsClientHttpConnector(
 						HttpAsyncClients.custom()
+						.setConnectionManager(connManager)
 						.setDefaultRequestConfig(requestConfig)
 						.build())) // HttpClient 커넥터 설정
+				.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs(configurer -> configurer.defaultCodecs()
+								.maxInMemorySize(CommonConstants.ONE_MB * maxInMemorySize)).build()) // 응답 데이터 매핑 전략 설정(최대 메모리 크기 설정)
 				.build();
 	}
 
@@ -189,10 +259,17 @@ public class WebClientConfig {
 				.setResponseTimeout(naverResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
 				.build();
 
+		// 커넥션 풀 설정
+		AsyncClientConnectionManager connManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setMaxConnTotal(naverMaxConnTotal) // 최대 커넥션 수
+				.setMaxConnPerRoute(naverMaxConnPerRoute) // 라우트당 최대 커넥션 수
+				.build();
+		
 		// WebClient 공통설정
 		return WebClient.builder()
 				.clientConnector(new HttpComponentsClientHttpConnector(
 						HttpAsyncClients.custom()
+						.setConnectionManager(connManager)
 						.setDefaultRequestConfig(requestConfig)
 						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정
@@ -212,12 +289,19 @@ public class WebClientConfig {
 				.setConnectionRequestTimeout(kakaoConnectionRequestTimeout, TimeUnit.SECONDS) // 커넥션 풀에서 커넥션을 가져올 때의 타임아웃
 				.setResponseTimeout(kakaoResponseTimeout, TimeUnit.SECONDS) // 서버 응답(읽기) 타임아웃
 				.build();
+		
+		// 커넥션 풀 설정
+		AsyncClientConnectionManager connManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setMaxConnTotal(kakaoMaxConnTotal) // 최대 커넥션 수
+				.setMaxConnPerRoute(kakaoMaxConnPerRoute) // 라우트당 최대 커넥션 수
+				.build();
 
 		// WebClient 공통설정
 		return WebClient.builder()
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8") // 헤더에 전송하는 데이터 타입 설정
 				.clientConnector(new HttpComponentsClientHttpConnector(
 						HttpAsyncClients.custom()
+						.setConnectionManager(connManager)
 						.setDefaultRequestConfig(requestConfig)
 						.build())) // HttpClient 커넥터 설정
 				.exchangeStrategies(getExchangeStrategies()) // 응답 데이터 매핑 전략 설정

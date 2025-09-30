@@ -105,6 +105,11 @@
     "description": "A description for 'tmdb.custom.autoCompleteCount'"
   },
   {
+    "name": "tmdb.custom.retryCount",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.retryCount'"
+  },
+  {
     "name": "tmdb.custom.connectionRequestTimeout",
     "type": "java.lang.String",
     "description": "A description for 'tmdb.custom.connectionRequestTimeout'"
@@ -115,9 +120,14 @@
     "description": "A description for 'tmdb.custom.responseTimeout'"
   },
   {
-    "name": "tmdb.custom.retryCount",
+    "name": "tmdb.custom.maxConnTotal",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.retryCount'"
+    "description": "A description for 'tmdb.custom.maxConnTotal'"
+  },
+  {
+    "name": "tmdb.custom.maxConnPerRoute",
+    "type": "java.lang.String",
+    "description": "A description for 'tmdb.custom.maxConnPerRoute'"
   },
   {
     "name": "anilist.url.base-url",
@@ -150,6 +160,16 @@
     "description": "A description for 'anilist.custom.responseTimeout'"
   },
   {
+    "name": "anilist.custom.maxConnPerRoute",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.custom.maxConnPerRoute'"
+  },
+  {
+    "name": "anilist.custom.maxConnTotal",
+    "type": "java.lang.String",
+    "description": "A description for 'anilist.custom.maxConnTotal'"
+  },
+  {
     "name": "deepl.api.key",
     "type": "java.lang.String",
     "description": "A description for 'deepl.api.key'"
@@ -173,6 +193,16 @@
     "name": "deepl.custom.responseTimeout",
     "type": "java.lang.String",
     "description": "A description for 'deepl.custom.responseTimeout'"
+  },
+  {
+    "name": "deepl.custom.maxConnTotal",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.custom.maxConnTotal'"
+  },
+  {
+    "name": "deepl.custom.maxConnPerRoute",
+    "type": "java.lang.String",
+    "description": "A description for 'deepl.custom.maxConnPerRoute'"
   },
   {
     "name": "login.jwt.secretKey",
@@ -205,6 +235,11 @@
     "description": "A description for 'login.naver.url.userInfoUrl'"
   },
   {
+    "name": "login.naver.custom.refreshTokenExpiresIn",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.custom.refreshTokenExpiresIn'"
+  },
+  {
     "name": "login.naver.custom.connectionRequestTimeout",
     "type": "java.lang.String",
     "description": "A description for 'login.naver.custom.connectionRequestTimeout'"
@@ -215,9 +250,14 @@
     "description": "A description for 'login.naver.custom.responseTimeout'"
   },
   {
-    "name": "login.naver.custom.refreshTokenExpiresIn",
+    "name": "login.naver.custom.maxConnPerRoute",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.refreshTokenExpiresIn'"
+    "description": "A description for 'login.naver.custom.maxConnPerRoute'"
+  },
+  {
+    "name": "login.naver.custom.maxConnTotal",
+    "type": "java.lang.String",
+    "description": "A description for 'login.naver.custom.maxConnTotal'"
   },
   {
     "name": "login.kakao.api.clientSecret",
@@ -245,6 +285,11 @@
     "description": "A description for 'login.kakao.url.logoutUrl'"
   },
   {
+    "name": "login.kakao.custom.refreshTokenExpiresIn",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.custom.refreshTokenExpiresIn'"
+  },
+  {
     "name": "login.kakao.custom.connectionRequestTimeout",
     "type": "java.lang.String",
     "description": "A description for 'login.kakao.custom.connectionRequestTimeout'"
@@ -255,9 +300,14 @@
     "description": "A description for 'login.kakao.custom.responseTimeout'"
   },
   {
-    "name": "login.kakao.custom.refreshTokenExpiresIn",
+    "name": "login.kakao.custom.maxConnPerRoute",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.refreshTokenExpiresIn'"
+    "description": "A description for 'login.kakao.custom.maxConnPerRoute'"
+  },
+  {
+    "name": "login.kakao.custom.maxConnTotal",
+    "type": "java.lang.String",
+    "description": "A description for 'login.kakao.custom.maxConnTotal'"
   },
   {
     "name": "app.url",

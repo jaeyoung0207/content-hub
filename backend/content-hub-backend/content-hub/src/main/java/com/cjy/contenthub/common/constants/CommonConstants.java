@@ -18,11 +18,14 @@ public class CommonConstants {
     /** 번역 API 이름 */
     public static final String API_TRANSLATE_NAME = "translate";
     
-    /** 번역 API 언어 코드 : 영어 */
+    /** 번역 API 언어 코드 : 한국어 */
     public static final String API_LANGUAGE_KOREAN = "KO";
     
     /** 번역 API 언어 코드 : 일본어 */
     public static final String API_LANGUAGE_JAPANESE = "JA";
+    
+    /** 번역 API 언어 코드 : 영어 */
+    public static final String API_LANGUAGE_ENGLISH = "EN";
     
     /** DB 스키마명: content */
     public static final String SCHEMA_NAME_CONTENT = "content";

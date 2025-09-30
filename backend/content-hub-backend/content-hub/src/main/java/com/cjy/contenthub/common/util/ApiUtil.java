@@ -11,6 +11,7 @@ import com.cjy.contenthub.common.client.TmdbApiGenreClient;
 import com.cjy.contenthub.common.constants.CommonConstants;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -18,14 +19,15 @@ import reactor.core.publisher.Mono;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ApiUtil {
-	
+
 	/** TMDB API 장르 WebClient 클래스 */
 	private final TmdbApiGenreClient tmdbApiGenreClient;
 
 	/** DeepL API 번역 WebClient 클래스 */
 	private final DeepLApiClient deeplApiClient;
-	
+
 	/**
 	 * 어플리케이션 기동시 ApplicationReadyEvent를 이용하여, 
 	 * 모든 빈 초기화 + 어플리케이션 준비 완료 후에 캐시화 로직을 실행
@@ -60,11 +62,19 @@ public class ApiUtil {
 	 * DeepL API를 사용하여 대상 문자열을 설정언어로 변역
 	 * 
 	 * @param keyword 번역할 문자열
+	 * @param targetLang 번역할 언어 (예: "KO", "JA")
+	 * @param sourceLang 원본 언어 (예: "KO", "JA")
 	 * @return 번역된 문자열
 	 */
-	public Mono<String> getTranslationText(String keyword) {
-		return Mono.just(deeplApiClient.translateText(
-				keyword, CommonConstants.API_LANGUAGE_JAPANESE, CommonConstants.API_LANGUAGE_KOREAN));
+	public Mono<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
+		return Mono.fromCallable(() -> 
+		deeplApiClient.translateText(
+				keyword, targetLang, sourceLang))
+				.onErrorResume(ex -> {
+					log.warn("DeepL 번역 실패: {}", ex.getMessage(), ex);
+					// 번역 실패 시 빈 문자열 반환
+					return Mono.just("");
+				});
 	}
 
 }

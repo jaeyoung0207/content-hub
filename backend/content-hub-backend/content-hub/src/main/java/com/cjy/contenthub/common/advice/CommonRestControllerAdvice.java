@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,6 +39,9 @@ public class CommonRestControllerAdvice {
 	/** 입력값 검사 에러 */
 	private static final String VALIDATION_ERROR = "Validation Error";
 
+	/** API 요청 에러 */
+	private static final String API_REQUEST_ERROR = "API Request Error";
+	
 	/** API 응답 에러 */
 	private static final String API_RESPONSE_ERROR = "API Response Error";
 
@@ -143,25 +147,32 @@ public class CommonRestControllerAdvice {
 	/**
 	 * WebClient의 .retrieve() 사용 시 발생하는 예외 처리
 	 * 
-	 * @param ex WebClientResponseException
+	 * @param ex WebClientException
 	 * @param request HttpServletRequest
 	 * @return 공통 에러 응답 오브젝트
 	 */
-	@ExceptionHandler(WebClientResponseException.class)
-	public ResponseEntity<CommonErrorResponse> handleWebClientException(WebClientResponseException ex, HttpServletRequest request) {
+	@ExceptionHandler(WebClientException.class)
+	public ResponseEntity<CommonErrorResponse> handleWebClientException(WebClientException ex, HttpServletRequest request) {
+		// response Error 정보가 있는 경우에만 추출
+		WebClientResponseException responseEx = ex instanceof WebClientResponseException responseError ? responseError : null;
+		// WebClient 통신중 발생한 4XX/5XX 이외의 예외는 시스템 에러로 처리
+		if (responseEx != null && responseEx.getStatusCode() != null && !responseEx.getStatusCode().isError()) {
+			return handleException(ex, request);
+		}
 		String path = request.getRequestURI();
-		int statusCode = ex.getStatusCode().value();
+		int statusCode = responseEx != null ? responseEx.getStatusCode().value() : HttpStatus.BAD_REQUEST.value();
 		String message = ex.getMessage();
-		String body = ex.getResponseBodyAsString();
+		String body = responseEx != null ? responseEx.getResponseBodyAsString() : "";
+		String errorName = responseEx ==  null ? API_REQUEST_ERROR : API_RESPONSE_ERROR;
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
 				.status(statusCode)
 				.message(message)
 				.body(body)
-				.name(API_RESPONSE_ERROR)
+				.name(errorName)
 				.build();
-		log.error(API_RESPONSE_ERROR.concat(LOG_FORMAT.concat(", body={}")), path, statusCode, message, body, ex);
-		return new ResponseEntity<>(errorResponse, ex.getStatusCode());
+		log.error(errorName.concat(LOG_FORMAT.concat(", body={}")), path, statusCode, message, body, ex);
+		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
 	/**

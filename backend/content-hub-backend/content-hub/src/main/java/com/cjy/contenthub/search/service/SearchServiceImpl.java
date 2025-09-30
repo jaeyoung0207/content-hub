@@ -462,7 +462,7 @@ public class SearchServiceImpl implements SearchService {
 		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;
 
 		// 한글 검색어 -> 일본어로 번역후(DeepL API), AniList API 조회
-		return apiUtil.getTranslationText(keyword).flatMap(jaKeyword -> {
+		return apiUtil.getTranslationText(keyword, CommonConstants.API_LANGUAGE_JAPANESE, CommonConstants.API_LANGUAGE_KOREAN).flatMap(jaKeyword -> {
 			try {
 				// graphql 쿼리 파일 불러오기
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");
