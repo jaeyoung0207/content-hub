@@ -23,6 +23,8 @@ import {
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
 import { searchUrlQuery } from '@/components/common/utils/urlUtil';
 import { UseFormSetValue } from 'react-hook-form';
+import { convertURIEncodedText } from '@/components/common/utils/convertUtil';
+import { settings } from '@/components/common/config/settings';
 
 /**
  * 헤더 컴포넌트의 검색 상태와 동작을 관리하는 훅 매개변수 타입
@@ -81,8 +83,6 @@ export const useHeaderSearch = ({
   const isAdultParam = searchParams.get('isAdult');
   // 전체보기 여부 파라미터
   const viewMore = searchParams.get('viewMore');
-  // API ID 파라미터
-  const apiId = searchParams.get('apiId');
 
   // navigate 훅
   const navigate = useNavigate();
@@ -260,9 +260,16 @@ export const useHeaderSearch = ({
       searchExecuteRef.current = true;
       // 검색 이력에 검색어 저장
       saveSearchHistory(selectedKeyword);
+      // 자동완성에서 선택된 검색어
+      let searchKeyword = selectedKeyword;
+      // 검색어가 인코딩 후 최대 길이를 초과하는 경우, 최대 길이에 맞게 변환
+      const encodedMaxLength = settings.tmdbSearchKeywordMaxLength;
+      if (encodeURIComponent(searchKeyword!).length > encodedMaxLength) {
+        searchKeyword = convertURIEncodedText(searchKeyword!, encodedMaxLength);
+      }
       // 검색 실행
       navigate(
-        searchUrlQuery({ keyword: selectedKeyword, isAdult: String(adultFlg) }),
+        searchUrlQuery({ keyword: searchKeyword, isAdult: String(adultFlg) }),
         { replace: true }
       );
     },
@@ -281,7 +288,12 @@ export const useHeaderSearch = ({
    */
   const handleSearchOnClick = useCallback(() => {
     // 현재 검색어 설정
-    const currentKeyword = keyword ? keyword : keywordParam;
+    let currentKeyword = keyword ? keyword : keywordParam;
+    // 검색어가 인코딩 후 최대 길이를 초과하는 경우, 최대 길이에 맞게 변환
+    const encodedMaxLength = settings.tmdbSearchKeywordMaxLength;
+    if (encodeURIComponent(currentKeyword!).length > encodedMaxLength) {
+      currentKeyword = convertURIEncodedText(currentKeyword!, encodedMaxLength);
+    }
     // 검색어가 비어있지 않은 경우
     if (currentKeyword) {
       // 자동완성박스 이동용 인덱스 초기화
@@ -507,8 +519,8 @@ export const useHeaderSearch = ({
     if (keywordParam) {
       setValue('keyword', keywordParam);
     }
-    // 전체보기, 상세화면용 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
-    if (!viewMore && !apiId) {
+    // 전체보기 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
+    if (!viewMore) {
       // 초기 포커스
       setFocus('keyword');
     }
@@ -527,8 +539,8 @@ export const useHeaderSearch = ({
     if (firstLoadRef.current) {
       return;
     }
-    // 전체보기, 상세화면용 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
-    if (!viewMore && !apiId) {
+    // 전체보기 URL쿼리스트링이 없을 경우에만 처리(URL직접 입력 고려)
+    if (!viewMore) {
       // 성인물 체크시 처리
       setAdultFlg();
     }

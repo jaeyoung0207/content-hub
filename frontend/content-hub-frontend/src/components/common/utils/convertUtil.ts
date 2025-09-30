@@ -149,3 +149,22 @@ export const convertDate = (
   const convertedDay = day ? day.toString().concat('일') : '';
   return convertedYear.concat(convertedMonth).concat(convertedDay).trim();
 };
+
+/**
+ * URI 인코딩 후 텍스트 길이 변환 함수
+ * @param text 변환할 텍스트
+ * @param maxLength 최대 길이
+ * @returns 변환된 텍스트
+ */
+export const convertURIEncodedText = (text: string, maxLength: number) => {
+  let convertedText = '';
+  for (let i = 0; i < text.length; i++) {
+    convertedText = text.slice(0, i + 1);
+    const encodedText = encodeURIComponent(convertedText);
+    if (encodedText.length > maxLength) {
+      convertedText = text.slice(0, i);
+      break;
+    }
+  }
+  return convertedText;
+};

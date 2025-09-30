@@ -27,4 +27,7 @@ export const settings = {
   detailComicsCount: Number(import.meta.env.VITE_COMICS_CREDITS_COUNT || 10),
   detailCreditsPerPage: Number(import.meta.env.VITE_CREDITS_PER_PAGE || 9),
   commentMaxLength: Number(import.meta.env.VITE_COMMENT_MAX_LENGTH || 500),
+  tmdbSearchKeywordMaxLength: Number(
+    import.meta.env.VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH || 500
+  ),
 };

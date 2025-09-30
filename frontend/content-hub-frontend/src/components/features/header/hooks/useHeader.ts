@@ -97,6 +97,7 @@ export const useHeader = (): UseHeaderReturnType => {
     setAutoCompleteList: setAutoCompleteList,
     setCurrentIndex: setCurrentIndex,
     setLastSelectedSearchType: setLastSelectedSearchType,
+    firstLoadRef: firstLoadRef,
   });
 
   // 헤더 위시리스트 훅

@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { RefObject, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderType } from './useHeaderForm';
 import { SEARCH_TYPE } from '@/components/common/constants/constants';
@@ -14,6 +14,7 @@ type HeaderHomePropsType = {
   setAutoCompleteList: (list?: string[]) => void;
   setCurrentIndex: (index: number) => void;
   setLastSelectedSearchType: (value: string) => void;
+  firstLoadRef: RefObject<boolean | null>;
 };
 
 /**
@@ -33,6 +34,7 @@ export const useHeaderHome = ({
   setAutoCompleteList,
   setCurrentIndex,
   setLastSelectedSearchType,
+  firstLoadRef,
 }: HeaderHomePropsType): UseHeaderHomeReturnType => {
   // ================================================================================================== react hook
 
@@ -60,6 +62,8 @@ export const useHeaderHome = ({
     setCurrentIndex(-1);
     // 마지막 선택된 검색 미디어 타입 값 초기화
     setLastSelectedSearchType(SEARCH_TYPE.ANI);
+    // 처음 로드 플래그 설정
+    firstLoadRef.current = true;
     // 캐시에서 모든 쿼리 제거
     queryClient.removeQueries();
   }, [
@@ -68,6 +72,7 @@ export const useHeaderHome = ({
     setAutoCompleteList,
     setCurrentIndex,
     setLastSelectedSearchType,
+    firstLoadRef,
     queryClient,
   ]);
 
