@@ -14,7 +14,7 @@ import {
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { SearchCommonResultType } from '../useSearch';
+import { SearchCommonResultType } from '../Search';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 import throttle from 'lodash/throttle';
@@ -292,7 +292,15 @@ export const useSearchMore = (
   useEffect(() => {
     return () => {
       queryClient.removeQueries({
-        queryKey: searchQueryKeys.search.search(
+        queryKey: searchQueryKeys.search.videoSearch(
+          keyword,
+          String(isAdult),
+          user?.userId
+        ),
+        exact: true, // 완전히 일치하는 쿼리만 제거
+      });
+      queryClient.removeQueries({
+        queryKey: searchQueryKeys.search.comicsSearch(
           keyword,
           String(isAdult),
           user?.userId

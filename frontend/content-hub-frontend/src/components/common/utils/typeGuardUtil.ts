@@ -1,4 +1,4 @@
-import { SearchCommonResultType } from '@/components/features/search/useSearch';
+import { SearchCommonResultType } from '@/components/features/search/Search';
 import {
   AniListCharactersNodeDto,
   AniListStaffNodeDto,
