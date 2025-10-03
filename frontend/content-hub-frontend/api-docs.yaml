@@ -325,6 +325,31 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/PersonResponseDto'
+  /my/comments/getMyCommentList:
+    get:
+      tags:
+        - my-comments-controller
+      operationId: getMyCommentList
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page_no
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MyCommentsResponseDto'
   /login/updateNaverLoginInfo:
     get:
       tags:
@@ -1480,6 +1505,42 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PersonCreditsCrewDto'
+    MyCommentsDataResponseDto:
+      type: object
+      properties:
+        commentId:
+          type: integer
+          format: int64
+        contentId:
+          type: integer
+          format: int64
+        contentMediaType:
+          type: string
+        apiId:
+          type: string
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
+        comment:
+          type: string
+        starRating:
+          type: number
+        createTimeStr:
+          type: string
+    MyCommentsResponseDto:
+      type: object
+      properties:
+        myCommentList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyCommentsDataResponseDto'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
     LoginUserInfoDto:
       type: object
       properties:
@@ -2254,9 +2315,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favourite:
-          type: boolean
         favouriteBlocked:
+          type: boolean
+        favourite:
           type: boolean
     DetailComicsResponseDto:
       type: object

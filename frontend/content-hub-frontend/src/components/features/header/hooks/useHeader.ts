@@ -54,6 +54,7 @@ export const useHeader = (): UseHeaderReturnType => {
     userOptionIsOpen,
     handleUserOptionToggle,
     userOptionRef,
+    setUserOptionIsOpen,
   } = useHeaderLogin();
 
   // 헤더 검색 훅
@@ -151,6 +152,7 @@ export const useHeader = (): UseHeaderReturnType => {
     userOptionIsOpen: userOptionIsOpen,
     handleUserOptionToggle: handleUserOptionToggle,
     userOptionRef: userOptionRef,
+    setUserOptionIsOpen: setUserOptionIsOpen,
     handleOnClickSelectTypeRadioButton: handleOnClickSelectTypeRadioButton,
     handleOnClickSearchTypeRadioButton: handleOnClickSearchTypeRadioButton,
     setLastSelectedSearchType: setLastSelectedSearchType,

@@ -30,4 +30,8 @@ export const settings = {
   tmdbSearchKeywordMaxLength: Number(
     import.meta.env.VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH || 500
   ),
+  pageRangeDisplayed: Number(import.meta.env.VITE_PAGE_RANGE_DISPLAYED || 10),
+  marginPagesDisplayed: Number(
+    import.meta.env.VITE_MARGIN_PAGES_DISPLAYED || 4
+  ),
 };

@@ -30,6 +30,13 @@ const resources = {
         notExist: '없음',
         description: '설명',
         colon: ' : ',
+        /* 마이페이지 화면 */
+        myComments: '나의 코멘트',
+        totalComments: '총 {{totalElements}}개의 코멘트가 있습니다.',
+        noMyComments: '작성한 코멘트가 없습니다.',
+        ommitString: '...',
+        inShort: '간략히',
+        readMore: '더보기',
         /* 홈 화면 */
         home: '홈',
         rankingTitle: '실시간 순위',

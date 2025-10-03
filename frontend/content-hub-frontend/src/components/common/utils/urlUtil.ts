@@ -87,3 +87,12 @@ export const characterUrlQuery = ({
 export const wishlistUrlQuery = ({ userId }: SearchUrlQueryPropsType) => {
   return `/wishlist/${userId}`;
 };
+
+/**
+ * 마이 코멘트 화면 URL 쿼리 생성 함수
+ * @param userId 유저 ID
+ * @returns 마이 코멘트 화면 URL 쿼리 문자열
+ */
+export const myCommentsUrlQuery = ({ userId }: SearchUrlQueryPropsType) => {
+  return `/my/comments/${userId}`;
+};

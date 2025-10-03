@@ -141,6 +141,8 @@ app:
     mode: ${MAINTENANCE_MODE:false}
   comment:
     perPage: 20
+  myComments:
+    perPage: 10
   webClient:
     maxInMemorySize: 10 # MB
 

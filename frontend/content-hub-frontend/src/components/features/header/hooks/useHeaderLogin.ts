@@ -10,7 +10,15 @@ import {
 } from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
@@ -28,6 +36,7 @@ export type UseHeaderLoginReturnType = {
   userOptionIsOpen: boolean; // 유저 옵션 열림 상태
   handleUserOptionToggle: () => void; // 유저 옵션 토글 함수
   userOptionRef: RefObject<HTMLDivElement | null>; // 유저 옵션 참조
+  setUserOptionIsOpen: Dispatch<SetStateAction<boolean>>; // 유저 옵션 열림 상태 설정 함수
 };
 
 export const useHeaderLogin = (): UseHeaderLoginReturnType => {
@@ -199,6 +208,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     userOptionIsOpen: userOptionIsOpen,
     handleUserOptionToggle: handleUserOptionToggle,
     userOptionRef: userOptionRef,
+    setUserOptionIsOpen: setUserOptionIsOpen,
   };
 };
 

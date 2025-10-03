@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
-import com.cjy.contenthub.common.controller.dto.CommonContentMediaTypeDto;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.home.mapper.HomeMapper;
 import com.cjy.contenthub.home.repository.HomeRankingViewRepository;

@@ -275,6 +275,28 @@ export interface PersonResponseDto {
   crew?: PersonCreditsCrewDto[];
 }
 
+export interface MyCommentsDataResponseDto {
+  /** @format int64 */
+  commentId?: number;
+  /** @format int64 */
+  contentId?: number;
+  contentMediaType?: string;
+  apiId?: string;
+  title?: string;
+  thumbnailImageUrl?: string;
+  comment?: string;
+  starRating?: number;
+  createTimeStr?: string;
+}
+
+export interface MyCommentsResponseDto {
+  myCommentList?: MyCommentsDataResponseDto[];
+  /** @format int32 */
+  totalPages?: number;
+  /** @format int64 */
+  totalElements?: number;
+}
+
 export interface LoginUserInfoDto {
   /** @format int64 */
   userId?: number;
@@ -701,8 +723,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favourite?: boolean;
   favouriteBlocked?: boolean;
+  favourite?: boolean;
 }
 
 export interface DetailComicsResponseDto {

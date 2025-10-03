@@ -45,7 +45,7 @@ public class DetailCommentViewEntity implements Serializable {
 	private Long commentId;
 	
 	/** 컨텐츠 미디어 타입 */
-	@Column(name = "content_media_type", length = 1)
+	@Column(name = "content_media_type")
 	private String contentMediaType;
 	
 	/** API ID */
@@ -57,7 +57,7 @@ public class DetailCommentViewEntity implements Serializable {
 	private String providerId;
 	
 	/** 닉네임 */
-	@Column(name = "nickname", length = 100)
+	@Column(name = "nickname")
 	private String nickname;
 	
 	/** 별점 */

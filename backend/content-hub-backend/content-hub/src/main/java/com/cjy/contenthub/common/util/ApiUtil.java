@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.client.DeepLApiClient;
 import com.cjy.contenthub.common.client.TmdbApiGenreClient;
-import com.cjy.contenthub.common.constants.CommonConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

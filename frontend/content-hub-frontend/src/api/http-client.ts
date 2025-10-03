@@ -28,6 +28,7 @@ import type {
 import axios from 'axios';
 import dayjs from 'dayjs'; // add custom config
 import { LoginProfileResultDto } from './data-contracts'; // add custom config
+import { LOGIN_PROVIDER } from '@/components/common/constants/constants'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 

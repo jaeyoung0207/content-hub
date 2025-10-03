@@ -25,6 +25,8 @@ import {
   RadioButtonGroupUi,
   RadioButtonProps,
 } from '@/components/ui/RadioButtonGroupUi';
+import { myCommentsUrlQuery } from '@/components/common/utils/urlUtil';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
@@ -49,6 +51,9 @@ type autoCompletePropsType = {
 export const Header = () => {
   // i18n 번역 함수
   const { t } = useTranslation();
+
+  // navigate 훅
+  const navigate = useNavigate();
 
   // 툴팁 상태 저장 훅
   const { isTooltipOpen, setIsTooltipOpen } = useTooltipStore();
@@ -90,6 +95,7 @@ export const Header = () => {
     userOptionIsOpen,
     handleUserOptionToggle,
     userOptionRef,
+    setUserOptionIsOpen,
     handleOnClickSelectTypeRadioButton,
     handleOnClickSearchTypeRadioButton,
   } = useHeader();
@@ -358,10 +364,25 @@ export const Header = () => {
                   )}
                   {/* 유저 옵션 팝업 */}
                   {userOptionIsOpen && (
-                    <div className="absolute flex justify-center right-0 mt-2 w-30 bg-white border rounded shadow-2xl z-50 p-1">
+                    <div className="absolute right-0 mt-2 w-30 bg-white border rounded shadow-2xl z-50 p-1">
+                      <div>
+                        {/* 마이페이지(코멘트 관리) */}
+                        <div
+                          className="flex justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
+                          onClick={commonErrorHandler(() => {
+                            const myCommentsUrl = myCommentsUrlQuery({
+                              userId: user.userId,
+                            });
+                            setUserOptionIsOpen(false);
+                            navigate(myCommentsUrl);
+                          })}
+                        >
+                          {t('info.myComments')}
+                        </div>
+                      </div>
                       {/* 로그아웃 */}
                       <div
-                        className="px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
+                        className="flex justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
                         onClick={commonErrorHandler(handleLogoutOnClick)}
                       >
                         {t('info.logout')}
