@@ -24,8 +24,8 @@ type UseMyCommentsReturnType = {
   totalPages: number;
   totalElements: number;
   handlePageOnClick: (page: number) => void;
-  isOmmitComment: boolean[];
-  handleOnClickOmmitComment: (index: number) => void;
+  isOmitComment: boolean[];
+  handleOnClickOmitComment: (index: number) => void;
   perPageCountRef: RefObject<number>;
   control: Control<MyCommentsFormType>;
 };
@@ -46,7 +46,7 @@ export const useMyComments = (): UseMyCommentsReturnType => {
   // 전체 코멘트 수
   const [totalElements, setTotalElements] = useState<number>(0);
   // 코멘트 생략 처리용
-  const [isOmmitComment, setIsOmmitComment] = useState<boolean[]>([]);
+  const [isOmitComment, setIsOmitComment] = useState<boolean[]>([]);
 
   // 페이지 당 코멘트 수
   const perPageCountRef = useRef<number>(0);
@@ -107,8 +107,8 @@ export const useMyComments = (): UseMyCommentsReturnType => {
    * 코멘트 생략 처리 함수
    * @param index 코멘트 인덱스
    */
-  const handleOnClickOmmitComment = (index: number) => {
-    setIsOmmitComment((prevState) => {
+  const handleOnClickOmitComment = (index: number) => {
+    setIsOmitComment((prevState) => {
       const newState = [...prevState];
       newState[index] = !newState[index];
       return newState;
@@ -145,8 +145,8 @@ export const useMyComments = (): UseMyCommentsReturnType => {
     totalPages: totalPages,
     totalElements: totalElements,
     handlePageOnClick: handlePageOnClick,
-    isOmmitComment: isOmmitComment,
-    handleOnClickOmmitComment: handleOnClickOmmitComment,
+    isOmitComment: isOmitComment,
+    handleOnClickOmitComment: handleOnClickOmitComment,
     perPageCountRef: perPageCountRef,
     control: control,
   };

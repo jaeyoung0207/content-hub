@@ -55,6 +55,8 @@ export const ContentComment = ({
     handleDeleteConfirmOk,
     handleDeleteConfirmCancel,
     starRatingErrorMsg,
+    isOmitComment,
+    handleOnClickOmitComment,
   } = useContentComment(detailResult, contentMediaType);
 
   // 코멘트 작성 버튼 스타일
@@ -62,6 +64,11 @@ export const ContentComment = ({
     'w-20 h-10 border-1 rounded-md bg-blue-600 text-2xl disabled:bg-gray-500 text-white cursor-pointer';
   // 코멘트 최대 글자 수
   const commentMaxLength = settings.commentMaxLength;
+    // 코멘트 생략 처리 기준(개행 문자 수)
+  const isOmitCommentLf = settings.commentLfOmissionLength;
+  // 코멘트 생략 처리 기준(글자 수)
+  const isOmitCommentLength = settings.commentLengthOmissionLength;
+
   return (
     <>
       {/* 코멘트 작성/수정 영역 */}
@@ -145,7 +152,25 @@ export const ContentComment = ({
       </div>
       {/* 코멘트 목록 */}
       <div className="mt-3 ml-10 mr-10">
-        {data?.pages.flat().map((items) => {
+        {data?.pages.flat().map((items, index) => {
+          // items가 없으면 null 반환
+          if (!items) {
+            return null;
+          }
+          // 코멘트 배열화
+          const commentArray = items.comment!.split('\n');
+          // 코멘트 생략 처리(개행 문자)
+          const isLfOmit = commentArray && commentArray.length > isOmitCommentLf;
+          // 코멘트 생략 처리(글자 수)
+          const isLengthOmit = items.comment && items.comment!.length > isOmitCommentLength;
+          // 표시할 코멘트
+          const comment = !isOmitComment[index]
+            ? isLfOmit
+              ? commentArray.slice(0, isOmitCommentLf).join('\n') + t('info.omissionString')
+              : isLengthOmit
+                ? items.comment?.substring(0, isOmitCommentLength) + t('info.omissionString')
+                : items.comment
+            : items.comment;
           return (
             <div key={items?.commentId}>
               {items && (
@@ -199,8 +224,21 @@ export const ContentComment = ({
                       </div>
                     )}
                   </div>
+                  {/* 코멘트 내용 */}
                   <div className="mr-1 whitespace-pre-line">
-                    {items.comment}
+                    <div>
+                      <div>{comment}</div>
+                      {(isLfOmit || isLengthOmit) && (
+                        <div
+                          className="mt-2 text-sm text-gray-500 cursor-pointer"
+                          onClick={() => handleOnClickOmitComment(index)}
+                        >
+                          {isOmitComment[index]
+                            ? t('info.inShort')
+                            : t('info.readMore')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

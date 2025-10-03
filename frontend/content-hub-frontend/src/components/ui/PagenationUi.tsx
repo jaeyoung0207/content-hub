@@ -1,5 +1,5 @@
 import ReactPaginate from 'react-paginate';
-import { OMMIT_TEXT } from '../common/constants/constants';
+import { OMISSION_TEXT } from '../common/constants/constants';
 
 /**
  * 페이지네이션 UI 컴포넌트 Props 타입
@@ -38,7 +38,7 @@ export const PagenationUi = ({
         onPageChange={onPageChange} // 페이지 변경 시 호출되는 함수
         containerClassName="flex items-center justify-center" // 페이지네이션 컨테이너 클래스 이름
         activeClassName="bg-blue-600 text-lg underline cursor-default" // 활성화된 페이지 클래스 이름
-        breakLabel={OMMIT_TEXT} // 생략 표시
+        breakLabel={OMISSION_TEXT} // 생략 표시
         // breakClassName="break-me" // 생략 표시 클래스 이름
         pageClassName="flex items-center justify-center w-8 h-8 mx-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 cursor-pointer" // 페이지 아이템 클래스 이름
         pageLinkClassName="flex items-center justify-center w-full h-full" // 페이지 링크 클래스 이름

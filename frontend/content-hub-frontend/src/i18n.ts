@@ -34,7 +34,7 @@ const resources = {
         myComments: '나의 코멘트',
         totalComments: '총 {{totalElements}}개의 코멘트가 있습니다.',
         noMyComments: '작성한 코멘트가 없습니다.',
-        ommitString: '...',
+        omissionString: '...',
         inShort: '간략히',
         readMore: '더보기',
         /* 홈 화면 */

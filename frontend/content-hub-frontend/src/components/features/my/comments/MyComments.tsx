@@ -32,8 +32,8 @@ export const MyComments = () => {
     totalPages,
     totalElements,
     handlePageOnClick,
-    isOmmitComment,
-    handleOnClickOmmitComment,
+    isOmitComment,
+    handleOnClickOmitComment,
     perPageCountRef,
     control,
   } = useMyComments();
@@ -42,6 +42,10 @@ export const MyComments = () => {
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
   // 아이템 번호
   const itemNo = totalElements - currentPage * perPageCountRef.current;
+  // 코멘트 생략 처리 기준(개행 문자 수)
+  const isOmitCommentLf = settings.commentLfOmissionLength;
+  // 코멘트 생략 처리 기준(글자 수)
+  const isOmitCommentLength = settings.commentLengthOmissionLength;
   return (
     <div className="mt-25 p-4">
       <div className="mb-5 text-3xl font-bold">{t('info.myComments')}</div>
@@ -62,16 +66,16 @@ export const MyComments = () => {
                 : COMMON_IMAGES.NO_IMAGE;
               // 코멘트 배열화
               const commentArray = items.comment!.split('\n');
-              // 코멘트 생략 처리(개행 문자)
-              const isLfOmmit = commentArray.length > 4;
+              // 코멘트 생략 처리(개행 문자 수)
+              const isLfOmit = commentArray.length > isOmitCommentLf;
               // 코멘트 생략 처리(글자 수)
-              const isLengthOmmit = items.comment!.length > 200;
+              const isLengthOmit = items.comment!.length > isOmitCommentLength;
               // 표시할 코멘트
-              const comment = !isOmmitComment[index]
-                ? isLfOmmit
-                  ? commentArray.slice(0, 4).join('\n') + t('info.ommitString')
-                  : isLengthOmmit
-                    ? items.comment?.substring(0, 200) + t('info.ommitString')
+              const comment = !isOmitComment[index]
+                ? isLfOmit
+                  ? commentArray.slice(0, isOmitCommentLf).join('\n') + t('info.omissionString')
+                  : isLengthOmit
+                    ? items.comment?.substring(0, isOmitCommentLength) + t('info.omissionString')
                     : items.comment
                 : items.comment;
               return (
@@ -138,12 +142,12 @@ export const MyComments = () => {
                     <li className="flex items-end p-4 whitespace-pre-line">
                       <div>
                         <div>{comment}</div>
-                        {(isLfOmmit || isLengthOmmit) && (
+                        {(isLfOmit || isLengthOmit) && (
                           <div
                             className="mt-2 text-sm text-gray-500 cursor-pointer"
-                            onClick={() => handleOnClickOmmitComment(index)}
+                            onClick={() => handleOnClickOmitComment(index)}
                           >
-                            {isOmmitComment[index]
+                            {isOmitComment[index]
                               ? t('info.inShort')
                               : t('info.readMore')}
                           </div>

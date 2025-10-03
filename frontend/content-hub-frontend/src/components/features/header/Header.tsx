@@ -8,7 +8,7 @@ import { FieldValues, Path } from 'react-hook-form';
 import { FormFieldProps } from '@/components/ui/common/FormFieldProps';
 import {
   IS_MOBILE,
-  OMMIT_TEXT,
+  OMISSION_TEXT,
   SEARCH_TYPE,
   SELECT_TYPE,
   TOOLTIP_CLOSE_STATE,
@@ -352,7 +352,7 @@ export const Header = () => {
                     }
                   >
                     {isHideNickname
-                      ? userNickname.slice(0, DISPLAY_LENGTH) + OMMIT_TEXT
+                      ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
                       : userNickname}
                   </div>
                   {/* 유저 닉네임 툴팁 */}

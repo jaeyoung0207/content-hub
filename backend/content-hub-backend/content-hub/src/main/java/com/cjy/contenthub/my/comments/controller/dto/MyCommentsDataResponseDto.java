@@ -1,7 +1,6 @@
 package com.cjy.contenthub.my.comments.controller.dto;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

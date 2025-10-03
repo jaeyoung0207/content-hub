@@ -47,7 +47,7 @@ export const ARROW_UP_KEY = 'ArrowUp';
 export const SEPERATE_SLASH = ' / ';
 
 // 생략 텍스트
-export const OMMIT_TEXT = '...';
+export const OMISSION_TEXT = '...';
 
 // 리다이렉트 URL
 export const REDIRECT_URL = 'redirectUrl';

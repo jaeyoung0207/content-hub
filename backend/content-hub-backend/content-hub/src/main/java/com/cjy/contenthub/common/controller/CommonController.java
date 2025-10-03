@@ -50,9 +50,6 @@ public class CommonController {
 	 */
     @GetMapping("/getMediaTypes")
     public CommonMediaTypeResponseDto getMediaTypes() {
-//    	return Stream.of(CommonMediaTypeEnum.values()).collect(
-//    			Collectors.toMap(mt -> mt.getContentMediaTypeValue().toUpperCase(), CommonMediaTypeEnum::getMediaTypeCode, (oldValue, newValue) -> oldValue)
-//    			);
     	// 컨텐츠 미디어 타입 DTO 생성
     	CommonContentMediaTypeDto contentMediaTypeDto = CommonContentMediaTypeDto.builder()
     			.aniCode(ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode())

@@ -39,6 +39,7 @@ import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
 import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { settings } from '@/components/common/config/settings';
 
 /**
  * 콘텐츠 코멘트 훅의 결과 타입
@@ -65,6 +66,8 @@ type useContentCommentReturnType = {
   starRating: number; // 별점 선택 시 입력된 값
   isCommentEditable: boolean; // 코멘트 수정 가능 상태
   starRatingErrorMsg?: string; // 별점 선택 시 유효성 검사 에러 메시지
+  isOmitComment: boolean[]; // 코멘트 생략 처리 상태
+  handleOnClickOmitComment: (index: number) => void; // 코멘트 생략 처리 상태 변경 함수
 };
 
 /**
@@ -120,6 +123,8 @@ export const useContentComment = (
   const [isUpdating, setIsUpdating] = useState(false);
   // 삭제 중 상태
   const [isDeleting, setIsDeleting] = useState(false);
+  // 코멘트 생략 처리 상태
+  const [isOmitComment, setIsOmitComment] = useState<boolean[]>([]);
 
   // ================================================================================================== zustand
 
@@ -127,6 +132,11 @@ export const useContentComment = (
   const { user } = useUserStore();
   // 프로바이더 정보 전역 상태 저장 훅
   const { provider } = useProviderStore();
+
+  // ================================================================================================== custom variables
+
+  // 최대 코멘트 길이
+  const commentMaxLength = settings.commentMaxLength; // 최대 코멘트 길이
 
   // ================================================================================================== react hook form
 
@@ -274,7 +284,10 @@ export const useContentComment = (
         provider: provider,
         providerId: user?.id,
         nickname: user?.nickname,
-        comment: data.comment,
+        comment:
+          data.comment.length > commentMaxLength
+            ? data.comment.substring(0, commentMaxLength)
+            : data.comment, // 코멘트는 지정된 최대 길이까지만 저장
         starRating: data.starRating,
       } as DetailCommentSaveRequestDto;
       // 코멘트 저장 API 호출
@@ -319,7 +332,10 @@ export const useContentComment = (
         apiId: apiId,
         providerId: user?.id,
         nickname: user?.nickname,
-        comment: data.comment,
+        comment:
+          data.comment.length > commentMaxLength
+            ? data.comment.substring(0, commentMaxLength)
+            : data.comment, // 코멘트는 지정된 최대 길이까지만 저장
         starRating: data.starRating,
       } as DetailCommentUpdateRequestDto;
       // 코멘트 수정 API 호출
@@ -621,6 +637,15 @@ export const useContentComment = (
     [hasNextPage, isFetchingNextPage, throttledFetchNextPage, isLoading]
   );
 
+  // 코멘트 생략 처리 상태 변경 함수
+  const handleOnClickOmitComment = (index: number) => {
+    setIsOmitComment((prevState) => {
+      const newState = [...prevState];
+      newState[index] = !newState[index];
+      return newState;
+    });
+  };
+
   // ================================================================================================== useEffect
 
   /**
@@ -714,5 +739,7 @@ export const useContentComment = (
     handleDeleteConfirmOk: handleDeleteConfirmOk,
     handleDeleteConfirmCancel: handleDeleteConfirmCancel,
     starRatingErrorMsg: errors.starRating?.message,
+    isOmitComment: isOmitComment,
+    handleOnClickOmitComment: handleOnClickOmitComment,
   };
 };
