@@ -73,7 +73,8 @@ public class SecurityConfig {
 		httpSecurity
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
-				.requestMatchers(CommonConstants.WISHLIST_PATH.concat("/**")).authenticated() // "/wishlist/**" 경로에 대한 요청은 인증 필요
+				.requestMatchers(CommonConstants.WISHLIST_PATH.concat("/**")).authenticated() // 위시리스트 경로에 대한 요청은 인증 필요
+				.requestMatchers("/my/comments/**").authenticated() // 나의 코멘트 경로에 대한 요청은 인증 필요
 				.anyRequest().permitAll() // 로그인 없이 접근 가능하므로, 모든 요청에 대해 인증 없이 접근 허용
 				)
 		.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
