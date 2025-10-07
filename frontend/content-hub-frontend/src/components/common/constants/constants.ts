@@ -192,6 +192,10 @@ export const ERROR_CODE = {
     status: 404,
     message: 'Not Found',
   },
+  TOO_MANY_REQUESTS: {
+    status: 429,
+    message: 'Too Many Requests',
+  },
   INTERNAL_SERVER_ERROR: {
     status: 500,
     message: 'Internal Server Error',
@@ -258,5 +262,9 @@ export const ERROR_MESSAGE = {
   TIMEOUT_ERROR: {
     name: 'Timeout Error',
     message: i18n.t('error.timeoutError'),
+  },
+  API_RATE_LIMIT_EXCEEDED_ERROR: {
+    name: 'API Rate Limit Exceeded Error',
+    message: i18n.t('error.apiRateLimitExceededError'),
   },
 };

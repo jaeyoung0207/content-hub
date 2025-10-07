@@ -143,7 +143,6 @@ public class CommonRestControllerAdvice {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
-
 	/**
 	 * WebClient의 .retrieve() 사용 시 발생하는 예외 처리
 	 * 

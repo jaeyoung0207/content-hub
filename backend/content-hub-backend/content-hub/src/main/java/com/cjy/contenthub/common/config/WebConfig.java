@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.interceptor.ApiRateLimitInterceptor;
 import com.cjy.contenthub.common.interceptor.CommonInterceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,10 @@ public class WebConfig implements WebMvcConfigurer {
 
 	/** 공통 인터셉터 */
 	private final CommonInterceptor commonInterceptor;
-	
+
+	/** API Rate Limit 인터셉터 */
+	private final ApiRateLimitInterceptor apiRateLimitInterceptor;
+
 	/** 어플리케이션 URL(프론트엔드) */
 	@Value("${app.url}")
 	private String appUrl;
@@ -40,8 +44,9 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addMapping("/**") // CORS를 적용할 URL 패턴을 정의
 		.allowedOrigins(appUrl) // resources를 공유할 URL을 지정(IP주소:포트번호)
 		.allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), 
-	    		HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()) // 허용할 HTTP method를 지정
+				HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()) // 허용할 HTTP method를 지정
 		.allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER) // 클라이언트 측의 CORS 요청에 허용되는 헤더를 지정
+		.exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER, HttpHeaders.RETRY_AFTER) // 클라이언트 측에서 접근할 수 있는 응답 헤더를 지정
 		.allowCredentials(true) // 클라이언트 측에 대한 응답에 credentials(쿠키, 인증 헤더)를 포함할 수 있는지 여부를 지정(true 설정시, allowedOrigins에 와일드카드(*) 설정 불가)
 		.maxAge(3600); // 지정한 시간만큼 preflight 리퀘스트(정식 요청처리 전에 OPTIONS 메소드로 사전에 CORS위반을 확인하기 위한 요청 처리)를 캐싱
 	}
@@ -56,6 +61,10 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(commonInterceptor)
 		.addPathPatterns("/search/*", "/detail/*","/common/*"); // 이 경로에서만 적용
+		registry.addInterceptor(apiRateLimitInterceptor)
+		.addPathPatterns("/**") // 모든 경로에서 적용
+		.excludePathPatterns("/common/**", "/error"); // 이 경로에서는 제외
+		
 	}
 
 }

@@ -556,5 +556,57 @@ public class CommonEnum {
         FAVORITES,
         FAVORITES_DESC;
 	}
+	
+	/**
+	 * API Rate Limit 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum ApiRateLimitEnum {
+		/** 공통 */
+		COMMON("/common/**", 120, CommonConstants.SIXTY_SECONDS),
+		/** 로그인 */
+		LOGIN("/login/**", 10, CommonConstants.SIXTY_SECONDS),
+		/** 검색 */
+		SEARCH("/search/**", 30, CommonConstants.SIXTY_SECONDS),
+		/** 상세 - 정보 */
+        DETAIL_INFORMATION("/detail/information/**", 20, CommonConstants.SIXTY_SECONDS),
+        /** 상세 - 코멘트 */
+        DETAIL_COMMENTS("/detail/comments/**", 20, CommonConstants.SIXTY_SECONDS),
+        /** 상세 - 추천 */
+        DETAIL_RECOMMENDATION("/detail/recommendation/**", 20, CommonConstants.SIXTY_SECONDS),
+        /** 캐릭터 */
+        CHARACTER("/character/**", 20, CommonConstants.SIXTY_SECONDS),
+        /** 인물 */
+        PERSON("/person/**", 20, CommonConstants.SIXTY_SECONDS),
+        /** 홈 */
+		HOME("/home/**", 20, CommonConstants.SIXTY_SECONDS),
+		/** 나의 코멘트 */
+		MY_COMMENTS("/my/comments/**", 10, CommonConstants.SIXTY_SECONDS),
+		/** 위시리스트 */
+		WISHLIST("/wishlist/**", 10, CommonConstants.SIXTY_SECONDS),
+		/** 디폴트 */
+		DEFAULT("/**", 60, CommonConstants.SIXTY_SECONDS);
+		
+		/** 경로 패턴 */
+		String pathPattern;
+		/** 최대 요청 수 */
+		int maxRequestCount;
+		/** 시간(초) */
+		int limit;
+		
+		/**
+		 * 요청 경로로부터 ApiRateLimitEnum을 반환
+		 * 
+		 * @param path 요청 경로
+		 * @return ApiRateLimitEnum
+		 */
+		public static ApiRateLimitEnum getRateLimit(String path) {
+			return Arrays.stream(values())
+					.filter(e -> path.matches(e.pathPattern.replace("**", ".*"))) // 경로 패턴이 일치하는지 확인
+					.findFirst() // 첫 번째 일치하는 경로 패턴을 찾음
+					.orElse(DEFAULT); // 기본값으로 DEFAULT 반환
+		}
+	}
 
 }

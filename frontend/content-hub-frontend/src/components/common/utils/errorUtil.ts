@@ -101,6 +101,8 @@ export const getErrorMessage = (errorName: string): string => {
       return ERROR_MESSAGE.TIMEOUT_ERROR.message;
     case ERROR_MESSAGE.UNEXPECTED_ERROR.name:
       return ERROR_MESSAGE.UNEXPECTED_ERROR.message;
+    case ERROR_MESSAGE.API_RATE_LIMIT_EXCEEDED_ERROR.name:
+      return ERROR_MESSAGE.API_RATE_LIMIT_EXCEEDED_ERROR.message;
     default:
       return i18n.t('error.unexpectedError');
   }

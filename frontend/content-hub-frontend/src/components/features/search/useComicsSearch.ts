@@ -10,6 +10,8 @@ import { useUserStore } from '@/components/common/store/globalStateStore';
 type UseComicsSearchReturnType = {
   isComicsLoading?: boolean; // 로딩 중 여부
   comicsData?: SearchComicsResponseDto | undefined; // 검색 결과 데이터
+  comicsStatus?: number; // HTTP 상태 코드
+  isComicsError?: boolean; // 에러 발생 여부
 };
 
 /**
@@ -44,7 +46,7 @@ export const useComicsSearch = (
       user?.userId
     ),
     queryFn: async () => {
-      // 비디오 및 만화 검색 결과를 가져오는 API 호출
+      // 만화 검색 결과를 가져오는 API 호출
       return (
         await searchApi.searchComics({
           keyword: keyword,

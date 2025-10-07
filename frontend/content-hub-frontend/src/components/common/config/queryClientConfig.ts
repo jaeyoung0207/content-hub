@@ -27,7 +27,7 @@ export type AxiosErrorType = {
 export const queryClientConfig = new QueryClient({
   defaultOptions: {
     queries: {
-      throwOnError: true,
+      throwOnError: false, // 에러 발생시 throw하지 않음
       retry: false, // 재시도 해제
       refetchOnWindowFocus: false, // 브라우저 포커스시 재요청 방지
       staleTime: ONE_MINUTE * 5, // 데이터를 5분간 fresh로 간주
@@ -125,7 +125,12 @@ const outputError = (error: Error) => {
     });
     changeConsoleColor(consoleErrorMsg);
     // 토스트 에러 메시지 출력
-    const toastErrorMsg = getErrorMessage(name);
+    const toastErrorMsg =
+      status === 429
+        ? i18n.t('warn.apiRateLimitExceeded', {
+            retryAfter: axiosError.response.headers['retry-after'],
+          })
+        : getErrorMessage(name);
     if (!redirectFromErrorCode(status)) {
       toast.error(formattingErrorMsg(name, toastErrorMsg), {
         toastId: 'apiResponseError', // 중복 토스트 방지

@@ -212,7 +212,11 @@ export const Detail = memo(() => {
           isLoading ? (
             <LoadingUi />
           ) : (
-            isError && <div className="mt-60 text-3xl">{t('warn.noData')}</div>
+            isError && (
+              <div className="mt-60 flex justify-center text-3xl">
+                {t('warn.noData')}
+              </div>
+            )
           )
         }
         <div className="flex justify-center m-5">

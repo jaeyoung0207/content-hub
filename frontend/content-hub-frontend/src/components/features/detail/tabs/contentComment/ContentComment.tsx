@@ -64,7 +64,7 @@ export const ContentComment = ({
     'w-20 h-10 border-1 rounded-md bg-blue-600 text-2xl disabled:bg-gray-500 text-white cursor-pointer';
   // 코멘트 최대 글자 수
   const commentMaxLength = settings.commentMaxLength;
-    // 코멘트 생략 처리 기준(개행 문자 수)
+  // 코멘트 생략 처리 기준(개행 문자 수)
   const isOmitCommentLf = settings.commentLfOmissionLength;
   // 코멘트 생략 처리 기준(글자 수)
   const isOmitCommentLength = settings.commentLengthOmissionLength;
@@ -160,15 +160,19 @@ export const ContentComment = ({
           // 코멘트 배열화
           const commentArray = items.comment!.split('\n');
           // 코멘트 생략 처리(개행 문자)
-          const isLfOmit = commentArray && commentArray.length > isOmitCommentLf;
+          const isLfOmit =
+            commentArray && commentArray.length > isOmitCommentLf;
           // 코멘트 생략 처리(글자 수)
-          const isLengthOmit = items.comment && items.comment!.length > isOmitCommentLength;
+          const isLengthOmit =
+            items.comment && items.comment!.length > isOmitCommentLength;
           // 표시할 코멘트
           const comment = !isOmitComment[index]
             ? isLfOmit
-              ? commentArray.slice(0, isOmitCommentLf).join('\n') + t('info.omissionString')
+              ? commentArray.slice(0, isOmitCommentLf).join('\n') +
+                t('info.omissionString')
               : isLengthOmit
-                ? items.comment?.substring(0, isOmitCommentLength) + t('info.omissionString')
+                ? items.comment?.substring(0, isOmitCommentLength) +
+                  t('info.omissionString')
                 : items.comment
             : items.comment;
           return (

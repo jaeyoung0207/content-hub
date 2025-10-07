@@ -44,7 +44,7 @@ export const useVideoSearch = (
       user?.userId
     ),
     queryFn: async () => {
-      // 비디오 및 만화 검색 결과를 가져오는 API 호출
+      // 비디오 검색 결과를 가져오는 API 호출
       return (
         await searchApi.searchVideo({ keyword: keyword, user_id: user?.userId })
       ).data;

@@ -292,7 +292,7 @@ public class SearchServiceImpl implements SearchService {
 				SearchTvResponseDto tvResponse = dtoTuple.getT1();
 				// 영화 응답 DTO
 				SearchMovieResponseDto movieResponse = dtoTuple.getT2();
-                // 비디오 검색 결과 DTO를 설정
+				// 비디오 검색 결과 DTO를 설정
 				return helper.setVideoResponse(tvResponse, movieResponse, movieGenreMap);
 			});
 		}).block();

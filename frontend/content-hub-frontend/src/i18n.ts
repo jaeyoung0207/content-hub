@@ -155,6 +155,8 @@ const resources = {
         noCastInfo: '출연진 정보가 없습니다.',
         noCharacterInfo: '캐릭터 정보가 없습니다.',
         noStaffInfo: '제작진 정보가 없습니다.',
+        apiRateLimitExceeded:
+          'API 요청 한도를 초과했습니다. {{retryAfter}}초 후 다시 시도해 주세요.',
       },
       validation: {
         starRatingError: '별점을 입력해 주세요.',
@@ -176,6 +178,8 @@ const resources = {
         systemError:
           '시스템에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
         timeoutError: '요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.',
+        apiRateLimitExceededError:
+          'API 요청 한도를 초과했습니다. \r\n 잠시 후 다시 시도해 주세요.',
       },
     },
   },

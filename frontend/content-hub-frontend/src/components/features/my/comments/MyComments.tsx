@@ -73,9 +73,11 @@ export const MyComments = () => {
               // 표시할 코멘트
               const comment = !isOmitComment[index]
                 ? isLfOmit
-                  ? commentArray.slice(0, isOmitCommentLf).join('\n') + t('info.omissionString')
+                  ? commentArray.slice(0, isOmitCommentLf).join('\n') +
+                    t('info.omissionString')
                   : isLengthOmit
-                    ? items.comment?.substring(0, isOmitCommentLength) + t('info.omissionString')
+                    ? items.comment?.substring(0, isOmitCommentLength) +
+                      t('info.omissionString')
                     : items.comment
                 : items.comment;
               return (

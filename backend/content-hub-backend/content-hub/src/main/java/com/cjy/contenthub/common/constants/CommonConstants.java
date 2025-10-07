@@ -75,4 +75,7 @@ public class CommonConstants {
 	/** 1MB */
 	public static final int ONE_MB = ONE_KB * 1024;
 	
+	/** 60초 */
+	public static final int SIXTY_SECONDS = 60;
+	
 }

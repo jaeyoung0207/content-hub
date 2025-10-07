@@ -34,6 +34,10 @@ export const settings = {
   marginPagesDisplayed: Number(
     import.meta.env.VITE_MARGIN_PAGES_DISPLAYED || 4
   ),
-  commentLfOmissionLength: Number(import.meta.env.VITE_COMMENT_LF_OMISSION_LENGTH || 4),
-  commentLengthOmissionLength: Number(import.meta.env.VITE_COMMENT_LENGTH_OMISSION_LENGTH || 200),
+  commentLfOmissionLength: Number(
+    import.meta.env.VITE_COMMENT_LF_OMISSION_LENGTH || 4
+  ),
+  commentLengthOmissionLength: Number(
+    import.meta.env.VITE_COMMENT_LENGTH_OMISSION_LENGTH || 200
+  ),
 };
