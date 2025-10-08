@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { RecommendationContentResultType } from '../features/detail/tabs/recommendationContent/useRecommendationContent';
+import { RecommendationContentResultType } from '../features/detail/tabs/recommendation/useDetailRecommendation';
 import { SearchCommonResultType } from '../features/search/Search';
 import { Link, useNavigate } from 'react-router-dom';
 import { detailUrlQuery, viewMoreUrlQuery } from '../common/utils/urlUtil';

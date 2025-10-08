@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { VideoInformationPropsType } from '../features/detail/tabs/contentInformation/VideoInformation';
+import { DetailVideoInformationPropsType } from '../features/detail/tabs/information/contentInformation/DetailVideoInformation';
 import {
   COMMON_IMAGES,
   DETAIL_TAB_ID,
@@ -26,7 +26,7 @@ import {
 /**
  * 크레딧 정보 표시 컴포넌트 props 타입
  */
-type DisplayVideoCreditsPropsType = VideoInformationPropsType & {
+type DisplayVideoCreditsPropsType = DetailVideoInformationPropsType & {
   creditsType: string;
   isOmit?: boolean;
   displayCount?: number;

@@ -9,13 +9,13 @@ paths:
   /detail/comment/updateComment:
     put:
       tags:
-        - detail-comment-controller
+        - detail-comments-controller
       operationId: updateComent
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DetailCommentUpdateRequestDto'
+              $ref: '#/components/schemas/DetailCommentsUpdateRequestDto'
         required: true
       responses:
         '200':
@@ -64,13 +64,13 @@ paths:
   /detail/comment/saveComment:
     post:
       tags:
-        - detail-comment-controller
+        - detail-comments-controller
       operationId: saveComent
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DetailCommentSaveRequestDto'
+              $ref: '#/components/schemas/DetailCommentsSaveRequestDto'
         required: true
       responses:
         '200':
@@ -792,7 +792,7 @@ paths:
   /detail/comment/getStarRatingAverage:
     get:
       tags:
-        - detail-comment-controller
+        - detail-comments-controller
       operationId: getStarRatingAverage
       parameters:
         - name: content_media_type
@@ -815,7 +815,7 @@ paths:
   /detail/comment/getCommentList:
     get:
       tags:
-        - detail-comment-controller
+        - detail-comments-controller
       operationId: getCommentList
       parameters:
         - name: content_media_type
@@ -845,7 +845,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/DetailCommentGetResponseDto'
+                $ref: '#/components/schemas/DetailCommentsGetResponseDto'
   /common/getMediaTypes:
     get:
       tags:
@@ -935,7 +935,7 @@ paths:
   /detail/comment/deleteComment:
     delete:
       tags:
-        - detail-comment-controller
+        - detail-comments-controller
       operationId: deleteComment
       parameters:
         - name: comment_id
@@ -953,7 +953,7 @@ paths:
                 type: boolean
 components:
   schemas:
-    DetailCommentUpdateRequestDto:
+    DetailCommentsUpdateRequestDto:
       required:
         - apiId
         - comment
@@ -1061,7 +1061,7 @@ components:
           type: string
         thumbnailImageUrl:
           type: string
-    DetailCommentSaveRequestDto:
+    DetailCommentsSaveRequestDto:
       required:
         - apiId
         - comment
@@ -1671,9 +1671,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultImage:
-          type: boolean
         defaultNickname:
+          type: boolean
+        defaultImage:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -2315,9 +2315,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favouriteBlocked:
-          type: boolean
         favourite:
+          type: boolean
+        favouriteBlocked:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2368,7 +2368,7 @@ components:
           type: string
         wishlisted:
           type: boolean
-    DetailCommentGetDataDto:
+    DetailCommentsGetDataDto:
       type: object
       properties:
         commentId:
@@ -2394,7 +2394,7 @@ components:
           format: int64
         createTime:
           type: string
-    DetailCommentGetResponseDto:
+    DetailCommentsGetResponseDto:
       type: object
       properties:
         totalElements:
@@ -2403,7 +2403,7 @@ components:
         responseList:
           type: array
           items:
-            $ref: '#/components/schemas/DetailCommentGetDataDto'
+            $ref: '#/components/schemas/DetailCommentsGetDataDto'
     CommonContentMediaTypeDto:
       required:
         - aniCode
@@ -2479,9 +2479,9 @@ components:
     CsrfToken:
       type: object
       properties:
-        token:
-          type: string
         parameterName:
           type: string
         headerName:
+          type: string
+        token:
           type: string

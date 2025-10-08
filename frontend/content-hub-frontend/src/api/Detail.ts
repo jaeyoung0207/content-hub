@@ -14,9 +14,9 @@ import {
   AniListCharactersDto,
   AniListStaffDto,
   DetailComicsResponseDto,
-  DetailCommentGetResponseDto,
-  DetailCommentSaveRequestDto,
-  DetailCommentUpdateRequestDto,
+  DetailCommentsGetResponseDto,
+  DetailCommentsSaveRequestDto,
+  DetailCommentsUpdateRequestDto,
   DetailMovieResponseDto,
   DetailRecommendationsComicsResponseDto,
   DetailRecommendationsMovieDto,
@@ -31,12 +31,12 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-comment-controller
+   * @tags detail-comments-controller
    * @name UpdateComent
    * @request PUT:/detail/comment/updateComment
    */
   updateComent = (
-    data: DetailCommentUpdateRequestDto,
+    data: DetailCommentsUpdateRequestDto,
     params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
@@ -49,12 +49,12 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-comment-controller
+   * @tags detail-comments-controller
    * @name SaveComent
    * @request POST:/detail/comment/saveComment
    */
   saveComent = (
-    data: DetailCommentSaveRequestDto,
+    data: DetailCommentsSaveRequestDto,
     params: RequestParams = {}
   ) =>
     this.request<boolean, any>({
@@ -252,7 +252,7 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-comment-controller
+   * @tags detail-comments-controller
    * @name GetStarRatingAverage
    * @request GET:/detail/comment/getStarRatingAverage
    */
@@ -272,7 +272,7 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-comment-controller
+   * @tags detail-comments-controller
    * @name GetCommentList
    * @request GET:/detail/comment/getCommentList
    */
@@ -286,7 +286,7 @@ export class Detail<
     },
     params: RequestParams = {}
   ) =>
-    this.request<DetailCommentGetResponseDto, any>({
+    this.request<DetailCommentsGetResponseDto, any>({
       path: `/detail/comment/getCommentList`,
       method: 'GET',
       query: query,
@@ -295,7 +295,7 @@ export class Detail<
   /**
    * No description
    *
-   * @tags detail-comment-controller
+   * @tags detail-comments-controller
    * @name DeleteComment
    * @request DELETE:/detail/comment/deleteComment
    */

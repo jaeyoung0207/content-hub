@@ -28,23 +28,21 @@ import {
 } from '@/components/common/utils/convertUtil';
 
 // lazy loading
-const VideoInformation = lazy(
-  () => import('./tabs/contentInformation/VideoInformation')
+const DetailVideoInformation = lazy(
+  () => import('./tabs/information/contentInformation/DetailVideoInformation')
 );
-const ComicsInformation = lazy(
-  () => import('./tabs/contentInformation/ComicsInformation')
+const DetailComicsInformation = lazy(
+  () => import('./tabs/information/contentInformation/DetailComicsInformation')
 );
-const CastInformation = lazy(
-  () => import('./tabs/creditsInformation/CastInformation')
+const DetailCastInformation = lazy(
+  () => import('./tabs/information/creditsInformation/DetailCastInformation')
 );
-const CrewInformation = lazy(
-  () => import('./tabs/creditsInformation/CrewInformation')
+const DetailCrewInformation = lazy(
+  () => import('./tabs/information/creditsInformation/DetailCrewInformation')
 );
-const ContentComment = lazy(
-  () => import('./tabs/contentComment/ContentComment')
-);
+const DetailComments = lazy(() => import('./tabs/comments/DetailComments'));
 const RecommendationContent = lazy(
-  () => import('./tabs/recommendationContent/RecommendationContent')
+  () => import('./tabs/recommendation/DetailRecommendation')
 );
 
 /**
@@ -431,7 +429,7 @@ export const Detail = memo(() => {
                   <div>
                     {/* 만화 정보 */}
                     {contentMediaType === getContentMediaType().comicsCode && (
-                      <ComicsInformation
+                      <DetailComicsInformation
                         detailResult={data}
                         contentMediaType={contentMediaType}
                       />
@@ -446,7 +444,7 @@ export const Detail = memo(() => {
                       contentMediaType === getContentMediaType().newsCode ||
                       contentMediaType ===
                         getContentMediaType().varietyCode) && (
-                      <VideoInformation
+                      <DetailVideoInformation
                         detailResult={data}
                         contentMediaType={contentMediaType}
                       />
@@ -458,7 +456,7 @@ export const Detail = memo(() => {
                 <Suspense fallback={<LoadingUi />}>
                   <div>
                     {/* 출연진 */}
-                    <CastInformation
+                    <DetailCastInformation
                       detailResult={data}
                       contentMediaType={contentMediaType}
                       setObserveTarget={setCastObserveTarget}
@@ -471,7 +469,7 @@ export const Detail = memo(() => {
                 <Suspense fallback={<LoadingUi />}>
                   <div>
                     {/* 제작진 */}
-                    <CrewInformation
+                    <DetailCrewInformation
                       detailResult={data}
                       contentMediaType={contentMediaType}
                       setObserveTarget={setCrewObserveTarget}
@@ -484,7 +482,7 @@ export const Detail = memo(() => {
                 <Suspense fallback={<LoadingUi />}>
                   <div>
                     {/* 평가&리뷰 */}
-                    <ContentComment
+                    <DetailComments
                       detailResult={data}
                       contentMediaType={contentMediaType}
                     />

@@ -12,6 +12,7 @@
 
 import { AxiosErrorType } from '@/components/common/config/queryClientConfig'; // add custom config
 import { settings } from '@/components/common/config/settings'; // add custom config
+import { LOGIN_PROVIDER } from '@/components/common/constants/constants'; // add custom config
 import {
   useProviderStore,
   useUserStore,
@@ -28,7 +29,6 @@ import type {
 import axios from 'axios';
 import dayjs from 'dayjs'; // add custom config
 import { LoginProfileResultDto } from './data-contracts'; // add custom config
-import { LOGIN_PROVIDER } from '@/components/common/constants/constants'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 

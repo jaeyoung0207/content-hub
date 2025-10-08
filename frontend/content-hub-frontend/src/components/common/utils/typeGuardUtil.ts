@@ -15,7 +15,7 @@ import {
   TmdbVideoCreditsCastDto,
   TmdbVideoCreditsCrewDto,
 } from '@/api/data-contracts';
-import { RecommendationContentResultType } from '@/components/features/detail/tabs/recommendationContent/useRecommendationContent';
+import { RecommendationContentResultType } from '@/components/features/detail/tabs/recommendation/useDetailRecommendation';
 import { DetailResponseType } from '@/components/features/detail/useDetail';
 import { PersonCredits } from '@/components/features/person/Person';
 import { getContentMediaType, getDisplayMediaType } from './convertUtil';

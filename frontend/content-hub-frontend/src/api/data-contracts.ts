@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------
  */
 
-export interface DetailCommentUpdateRequestDto {
+export interface DetailCommentsUpdateRequestDto {
   /** @format int64 */
   commentId: number;
   contentMediaType: string;
@@ -57,7 +57,7 @@ export interface WishlistResponseDto {
   thumbnailImageUrl?: string;
 }
 
-export interface DetailCommentSaveRequestDto {
+export interface DetailCommentsSaveRequestDto {
   contentMediaType: string;
   apiId: string;
   genreIds: number[];
@@ -371,8 +371,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultImage?: boolean;
   defaultNickname?: boolean;
+  defaultImage?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -723,8 +723,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -751,7 +751,7 @@ export interface DetailComicsResponseDto {
   wishlisted?: boolean;
 }
 
-export interface DetailCommentGetDataDto {
+export interface DetailCommentsGetDataDto {
   /** @format int64 */
   commentId?: number;
   contentMediaType?: string;
@@ -767,10 +767,10 @@ export interface DetailCommentGetDataDto {
   createTime?: string;
 }
 
-export interface DetailCommentGetResponseDto {
+export interface DetailCommentsGetResponseDto {
   /** @format int64 */
   totalElements?: number;
-  responseList?: DetailCommentGetDataDto[];
+  responseList?: DetailCommentsGetDataDto[];
 }
 
 export interface CommonContentMediaTypeDto {
@@ -803,7 +803,7 @@ export interface CommonMediaTypeResponseDto {
 }
 
 export interface CsrfToken {
-  token?: string;
   parameterName?: string;
   headerName?: string;
+  token?: string;
 }
