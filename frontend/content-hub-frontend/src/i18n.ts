@@ -157,6 +157,7 @@ const resources = {
         noStaffInfo: '제작진 정보가 없습니다.',
         apiRateLimitExceeded:
           'API 요청 한도를 초과했습니다. {{retryAfter}}초 후 다시 시도해 주세요.',
+        tooManyWishlistEntries: '등록된 작품이 너무 많습니다. 위시리스트에서 등록된 작품을 제거해 주세요. (최대 {{maxEntries}}개)',
       },
       validation: {
         starRatingError: '별점을 입력해 주세요.',

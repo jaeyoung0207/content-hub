@@ -584,7 +584,7 @@ public class CommonEnum {
 		/** 나의 코멘트 */
 		MY_COMMENTS("/my/comments/**", 10, CommonConstants.SIXTY_SECONDS),
 		/** 위시리스트 */
-		WISHLIST("/wishlist/**", 10, CommonConstants.SIXTY_SECONDS),
+		WISHLIST("/wishlist/**", 30, CommonConstants.SIXTY_SECONDS),
 		/** 디폴트 */
 		DEFAULT("/**", 60, CommonConstants.SIXTY_SECONDS);
 		

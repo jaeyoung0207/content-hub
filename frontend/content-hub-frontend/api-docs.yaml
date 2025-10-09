@@ -129,9 +129,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/WishlistResponseDto'
+                $ref: '#/components/schemas/WishlistCheckResultResponseDto'
   /search/searchVideo:
     get:
       tags:
@@ -1102,6 +1100,37 @@ components:
         bad:
           type: integer
           format: int64
+    WishlistCheckResultResponseDto:
+      type: object
+      properties:
+        maxWishlistCount:
+          type: integer
+          format: int32
+        wishlists:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishlistServiceDto'
+    WishlistServiceDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        contentMediaType:
+          type: string
+        apiId:
+          type: string
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+        displayMediaType:
+          type: string
+        title:
+          type: string
+        thumbnailImageUrl:
+          type: string
     SearchMovieResultsDto:
       type: object
       properties:
@@ -1651,11 +1680,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        emailVerified:
+          type: boolean
         leapMonth:
           type: boolean
         emailValid:
-          type: boolean
-        emailVerified:
           type: boolean
     KakaoPartnerDto:
       type: object

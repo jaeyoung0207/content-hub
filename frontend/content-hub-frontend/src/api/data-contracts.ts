@@ -74,6 +74,23 @@ export interface DetailCommentsSaveRequestDto {
   bad?: number;
 }
 
+export interface WishlistCheckResultResponseDto {
+  /** @format int32 */
+  maxWishlistCount?: number;
+  wishlists?: WishlistServiceDto[];
+}
+
+export interface WishlistServiceDto {
+  /** @format int64 */
+  userId?: number;
+  contentMediaType?: string;
+  apiId?: string;
+  genreIds?: number[];
+  displayMediaType?: string;
+  title?: string;
+  thumbnailImageUrl?: string;
+}
+
 export interface SearchMovieResultsDto {
   adult?: boolean;
   backdropPath?: string;
@@ -358,9 +375,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  emailVerified?: boolean;
   leapMonth?: boolean;
   emailValid?: boolean;
-  emailVerified?: boolean;
 }
 
 export interface KakaoPartnerDto {

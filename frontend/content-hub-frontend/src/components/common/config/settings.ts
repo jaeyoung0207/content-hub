@@ -40,4 +40,10 @@ export const settings = {
   commentLengthOmissionLength: Number(
     import.meta.env.VITE_COMMENT_LENGTH_OMISSION_LENGTH || 200
   ),
+  wishlistVideoOmissionLength: Number(
+    import.meta.env.VITE_WISHLIST_VIDEO_OMISSION_LENGTH || 8
+  ),
+  wishlistComicsOmissionLength: Number(
+    import.meta.env.VITE_WISHLIST_COMICS_OMISSION_LENGTH || 12
+  ),
 };

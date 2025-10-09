@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.wishlist.mapper.WishlistMapper;
 import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 import com.cjy.contenthub.wishlist.repository.entity.WishlistEntity;
+import com.cjy.contenthub.wishlist.service.dto.WishlistCheckResultServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
@@ -43,6 +45,9 @@ public class WishlistServiceImpl implements WishlistService {
 	
 	/** 비즈니스 유틸리티 */
 	private final BusinessUtil businessUtil;
+	
+	@Value("${app.wishlist.maxRegistrationSize}")
+	private int maxWishlistEntries;
 	
 	/**
 	 * 위시리스트에 콘텐츠 추가
@@ -108,13 +113,25 @@ public class WishlistServiceImpl implements WishlistService {
 	}
 	
 	/**
-	 * 위시리스트에 이미 존재하는지 확인
+	 * 위시리스트 체크 처리
 	 * 
-	 * @param serviceDto
+	 * @param userId           유저 테이블 ID
+	 * @param apiId            API ID
+	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return 중복 작품 리스트
 	 */
 	@Override
-	public List<WishlistServiceDto> checkWishlistExist(Long userId, String apiId, String contentMediaType) {
+	public WishlistCheckResultServiceDto checkWishlist(Long userId, String apiId, String contentMediaType) {
+		
+		// 유저가 등록한 위시리스트 개수 조회
+		long wishlistCount = wishlistRepository.countByUser_UserId(userId);
+		
+		// 등록된 위시리스트가 지정한 개수를 초과한 경우
+		if (wishlistCount > maxWishlistEntries) {
+			return WishlistCheckResultServiceDto.builder()
+					.maxWishlistCount(maxWishlistEntries)
+					.build();
+		}
 		
 		List<WishlistServiceDto> resultList = new ArrayList<>();
 		
@@ -137,7 +154,7 @@ public class WishlistServiceImpl implements WishlistService {
 			// 동일 미디어 타입이 존재하는 경우 리턴
 			List<String> contentMediaTypes = contentList.stream().map(ContentEntity::getContentMediaType).toList();
 			if (contentMediaTypes.contains(contentMediaType)) {
-				return resultList;
+				return new WishlistCheckResultServiceDto();
 			}
 			// 다른 미디어 타입이 존재하는 경우 결과 리스트에 추가
 			for (ContentEntity content : contentList) {
@@ -151,8 +168,11 @@ public class WishlistServiceImpl implements WishlistService {
 				.build();
 				resultList.add(wishlistService);
 			}
+			return WishlistCheckResultServiceDto.builder()
+					.wishlists(resultList)
+					.build();
 		}
-		return resultList;
+		return new WishlistCheckResultServiceDto();
 	}
 
 	/**

@@ -4,6 +4,7 @@ import { WishlistResponseDto } from '@/api/data-contracts';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import {
   COMMON_IMAGES,
+  SEARCH_TYPE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
 } from '@/components/common/constants/constants';
@@ -15,6 +16,7 @@ import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { RefObject } from 'react';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
+import { settings } from '@/components/common/config/settings';
 
 /**
  * DisplayWishlist 컴포넌트 props 타입
@@ -36,6 +38,9 @@ type DisplayWishlistPropsType = {
   wishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
   wishlistContentMediaType: string;
   wishlistOptionIndex: number;
+  searchType: string;
+  handleOnClickOmitWishlist: (searchType: string) => void;
+  isOmit: boolean;
 };
 
 /**
@@ -65,6 +70,15 @@ export const Wishlist = () => {
     comicsWishlistOptionRef,
     wishlistContentMediaType,
     wishlistOptionIndex,
+    isOmitAniList,
+    isOmitDramaList,
+    isOmitDocumentaryList,
+    isOmitKidsList,
+    isOmitNewsList,
+    isOmitVarietyList,
+    isOmitMovieList,
+    isOmitComicsList,
+    handleOnClickOmitWishlist,
   } = useWishlist(Number(userId));
 
   // 각 미디어 타입별 위시리스트 결과
@@ -86,43 +100,59 @@ export const Wishlist = () => {
   const wishlistItems = [
     {
       mediaName: t('info.animation'),
+      searchType: SEARCH_TYPE.ANI,
       resultList: aniResultList,
       ref: aniWishlistOptionRef,
+      isOmit: isOmitAniList,
     },
     {
       mediaName: t('info.drama'),
+      searchType: SEARCH_TYPE.DRAMA,
       resultList: dramaResultList,
       ref: dramaWishlistOptionRef,
+      isOmit: isOmitDramaList,
     },
     {
       mediaName: t('info.movie'),
+      searchType: SEARCH_TYPE.MOVIE,
       resultList: movieResultList,
       ref: movieWishlistOptionRef,
+      isOmit: isOmitMovieList,
     },
     {
       mediaName: t('info.documentary'),
+      searchType: SEARCH_TYPE.DOCUMENTARY,
       resultList: documentaryResultList,
       ref: documentaryWishlistOptionRef,
+      isOmit: isOmitDocumentaryList,
     },
     {
       mediaName: t('info.kids'),
+      searchType: SEARCH_TYPE.KIDS,
       resultList: kidsResultList,
       ref: kidsWishlistOptionRef,
+      isOmit: isOmitKidsList,
     },
     {
       mediaName: t('info.news'),
+      searchType: SEARCH_TYPE.NEWS,
       resultList: newsResultList,
       ref: newsWishlistOptionRef,
+      isOmit: isOmitNewsList,
     },
     {
       mediaName: t('info.variety'),
+      searchType: SEARCH_TYPE.VARIETY,
       resultList: varietyResultList,
       ref: varietyWishlistOptionRef,
+      isOmit: isOmitVarietyList,
     },
     {
       mediaName: t('info.comics'),
+      searchType: SEARCH_TYPE.COMICS,
       resultList: comicsResultList,
       ref: comicsWishlistOptionRef,
+      isOmit: isOmitComicsList,
     },
   ];
 
@@ -142,6 +172,7 @@ export const Wishlist = () => {
                 <div key={items.mediaName}>
                   <DisplayWishlist
                     mediaName={items.mediaName}
+                    searchType={items.searchType}
                     resultList={items.resultList}
                     handleWishlistDeleteOnClick={handleWishlistDeleteOnClick}
                     isExecuting={isExecuting}
@@ -150,6 +181,8 @@ export const Wishlist = () => {
                     wishlistOptionRef={items.ref}
                     wishlistContentMediaType={wishlistContentMediaType}
                     wishlistOptionIndex={wishlistOptionIndex}
+                    handleOnClickOmitWishlist={handleOnClickOmitWishlist}
+                    isOmit={items.isOmit}
                   />
                 </div>
               )
@@ -168,10 +201,21 @@ export const Wishlist = () => {
 /**
  * 위시리스트 결과 표시 컴포넌트
  * @param mediaName 미디어 이름
+ * @param searchType 검색 타입
  * @param resultList 위시리스트 결과 리스트
+ * @param handleWishlistDeleteOnClick 위시리스트 삭제 클릭 핸들러
+ * @param isExecuting 실행 중 여부
+ * @param wishlistOptionIsOpen 위시리스트 옵션 열림 여부
+ * @param handleWishlistOptionOnClick 위시리스트 옵션 클릭 핸들러
+ * @param wishlistOptionRef 위시리스트 옵션 ref
+ * @param wishlistContentMediaType 위시리스트 콘텐츠 미디어 타입
+ * @param wishlistOptionIndex 위시리스트 옵션 인덱스
+ * @param handleOnClickOmitWishlist 위시리스트 간략히/더보기 클릭 핸들러
+ * @param isOmit 생략 여부
  */
 const DisplayWishlist = ({
   mediaName,
+  searchType,
   resultList,
   handleWishlistDeleteOnClick,
   isExecuting,
@@ -180,18 +224,27 @@ const DisplayWishlist = ({
   wishlistOptionRef,
   wishlistContentMediaType,
   wishlistOptionIndex,
+  handleOnClickOmitWishlist,
+  isOmit,
 }: DisplayWishlistPropsType) => {
   // navigate 훅
   const navigate = useNavigate();
   // i18n
   const { t } = useTranslation();
+  // 항목별 남길 개수
+  const restCount =
+    searchType === SEARCH_TYPE.COMICS
+      ? settings.wishlistComicsOmissionLength
+      : settings.wishlistVideoOmissionLength;
+  // 표시할 항목 리스트
+  const displayList = isOmit ? filterList(resultList, restCount) : resultList;
   // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
   return (
     <div className="mb-10">
       <div className="ml-5 text-3xl font-bold">{mediaName}</div>
       <div className="ml-5 w-full flex flex-wrap items-start mt-6">
-        {resultList.map((items, index) => {
+        {displayList.map((items, index) => {
           return (
             <ul
               key={items.apiId}
@@ -291,8 +344,34 @@ const DisplayWishlist = ({
           );
         })}
       </div>
+      {/* 더보기/간략히 버튼 */}
+      <div>
+        {resultList.length >
+          (searchType === SEARCH_TYPE.COMICS
+            ? settings.wishlistComicsOmissionLength
+            : settings.wishlistVideoOmissionLength) && (
+          <div
+            className={`mt-1 ml-5 text-gray-500 cursor-pointer`}
+            onClick={() => {
+              handleOnClickOmitWishlist(searchType);
+            }}
+          >
+            {isOmit ? t('info.readMore') : t('info.inShort')}
+          </div>
+        )}
+      </div>
     </div>
   );
+};
+
+/**
+ * 리스트를 필터링하는 함수
+ * @param list 필터링할 리스트
+ * @param restCount 남길 항목 수
+ * @returns 필터링된 리스트
+ */
+const filterList = (list: WishlistResponseDto[], restCount: number) => {
+  return list.length > restCount ? list.slice(0, restCount) : list;
 };
 
 export default Wishlist;

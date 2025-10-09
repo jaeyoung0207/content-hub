@@ -149,7 +149,10 @@ export const useWishlistUi = ({
     },
   });
 
-  const checkWishlistExists = async () => {
+  /**
+   * 위시리스트 존재 여부 확인 함수
+   */
+  const checkWishlist = async () => {
     return await queryClient.fetchQuery({
       queryKey: wishlistQueryKeys.wishlist.exists(
         userId!,
@@ -187,10 +190,15 @@ export const useWishlistUi = ({
     if (addToWishlist) {
       deleteWishlistMutation.mutate();
     } else {
-      checkWishlistExists().then((res) => {
-        if (res && res.length > 0) {
+      checkWishlist().then((res) => {
+        // 위시리스트 등록 가능 항목 수 초과
+        if (res.maxWishlistCount) {
+          toast.warn(t('warn.tooManyWishlistEntries', { maxEntries: res.maxWishlistCount }));
+        }
+        // 이미 위시리스트에 존재하는지 확인
+        else if (res.wishlists && res.wishlists.length > 0) {
           const displayMediaTypeNames: string[] = [];
-          res.forEach((items) => {
+          res.wishlists.forEach((items) => {
             if (items.displayMediaType) {
               displayMediaTypeNames.push(
                 t(getDisplayMediaTypeName(items.displayMediaType)!) ?? ''

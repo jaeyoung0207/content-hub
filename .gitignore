@@ -49,7 +49,7 @@ $RECYCLE.BIN/
 *.nar
 *.ear
 *.zip
-*.tar.gz
+*.gz
 *.rar
 hs_err_pid*
 replay_pid*

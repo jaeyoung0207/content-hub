@@ -25,6 +25,15 @@ public interface WishlistRepository extends JpaRepository<WishlistEntity, Long> 
 	 */
 	List<WishlistEntity> findByUser_UserIdAndContent_ContentId(Long userId, Long contentId);
 	
+
+	/**
+	 * 특정 유저가 위시리스트에 등록한 콘텐츠 수를 조회
+	 * 
+	 * @param userId 유저 테이블 ID
+	 * @return 콘텐츠 수
+	 */
+	long countByUser_UserId(Long userId);
+	
 	/**
 	 * 위시리스트에 등록된 userId와 apiId, contentMediaTypeList에 해당하는 ContentEntity 목록을 조회
 	 * 

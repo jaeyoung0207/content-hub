@@ -139,10 +139,12 @@ app:
   url: http://192.168.219.101:3000
   maintenance:
     mode: ${MAINTENANCE_MODE:false}
+  webClient:
+    maxInMemorySize: 10 # MB
   comment:
     perPage: 20
   myComments:
     perPage: 10
-  webClient:
-    maxInMemorySize: 10 # MB
+  wishlist:
+    maxRegistrationSize: 500
 

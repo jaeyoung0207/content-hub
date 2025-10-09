@@ -7,9 +7,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
+import com.cjy.contenthub.wishlist.controller.dto.WishlistCheckResultResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistResponseDto;
+import com.cjy.contenthub.wishlist.service.dto.WishlistCheckResultServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
@@ -71,5 +73,13 @@ public interface WishlistMapper {
 	 * @return WishlistListResponseDto
 	 */
 	WishlistListResponseDto listServiceToListResponse(WishlistListServiceDto listServiceDto);
+	
+	/**
+	 * WishlistCheckResultServiceDto를 WishlistCheckResultResponseDto로 변환
+	 * 
+	 * @param serviceDto
+	 * @return WishlistCheckResultResponseDto
+	 */
+	WishlistCheckResultResponseDto serviceToCheckResultResponse(WishlistCheckResultServiceDto serviceDto);
 
 }

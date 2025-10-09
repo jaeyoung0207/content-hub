@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/components/common/store/globalStateStore';
-import { ESC_KEY } from '@/components/common/constants/constants';
+import { ESC_KEY, SEARCH_TYPE } from '@/components/common/constants/constants';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -39,6 +39,15 @@ type UseWishlistReturnType = {
   comicsWishlistOptionRef: RefObject<HTMLDivElement[] | null[]>;
   wishlistContentMediaType: string;
   wishlistOptionIndex: number;
+  isOmitAniList: boolean;
+  isOmitDramaList: boolean;
+  isOmitDocumentaryList: boolean;
+  isOmitKidsList: boolean;
+  isOmitNewsList: boolean;
+  isOmitVarietyList: boolean;
+  isOmitMovieList: boolean;
+  isOmitComicsList: boolean;
+  handleOnClickOmitWishlist: (searchType: string) => void;
 };
 
 /**
@@ -64,6 +73,16 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     useState<string>('');
   // 옵션 인덱스
   const [wishlistOptionIndex, setWishlistOptionIndex] = useState<number>(-1);
+
+  const [isOmitAniList, setIsOmitAniList] = useState<boolean>(true);
+  const [isOmitDramaList, setIsOmitDramaList] = useState<boolean>(true);
+  const [isOmitDocumentaryList, setIsOmitDocumentaryList] =
+    useState<boolean>(true);
+  const [isOmitKidsList, setIsOmitKidsList] = useState<boolean>(true);
+  const [isOmitNewsList, setIsOmitNewsList] = useState<boolean>(true);
+  const [isOmitVarietyList, setIsOmitVarietyList] = useState<boolean>(true);
+  const [isOmitMovieList, setIsOmitMovieList] = useState<boolean>(true);
+  const [isOmitComicsList, setIsOmitComicsList] = useState<boolean>(true);
 
   // 옵션 참조
   const aniWishlistOptionRef = useRef<HTMLDivElement[] | null[]>([]);
@@ -176,6 +195,41 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     setWishlistOptionIsOpen((prev) => !prev);
   };
 
+  /**
+   * 생략 처리 토글
+   * @param searchType 미디어 타입
+   */
+  const handleOnClickOmitWishlist = (searchType: string) => {
+    switch (searchType) {
+      case SEARCH_TYPE.ANI:
+        setIsOmitAniList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.DRAMA:
+        setIsOmitDramaList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.MOVIE:
+        setIsOmitMovieList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.DOCUMENTARY:
+        setIsOmitDocumentaryList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.KIDS:
+        setIsOmitKidsList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.NEWS:
+        setIsOmitNewsList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.VARIETY:
+        setIsOmitVarietyList((prev) => !prev);
+        break;
+      case SEARCH_TYPE.COMICS:
+        setIsOmitComicsList((prev) => !prev);
+        break;
+      default:
+        break;
+    }
+  };
+
   // ================================================================================================== useEffect
 
   /**
@@ -198,7 +252,6 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
       if (!wishlistOptionIsOpen) {
         return;
       }
-
       // 각 ref에 현재 인덱스가 존재하고, 클릭한 타겟이 해당 ref 내부에 있는지 확인
       const isAniWishlistOptionRef =
         aniWishlistOptionRef.current &&
@@ -240,7 +293,6 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
         comicsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
           e.target as Node
         );
-
       // 어느 ref에도 해당하지 않으면 옵션 닫기
       if (
         !isAniWishlistOptionRef &&
@@ -262,7 +314,6 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
         setWishlistOptionIsOpen(false);
       }
     };
-
     // 각 이벤트 리스너 추가
     document.addEventListener('mousedown', handleOnClickOutside);
     document.addEventListener('keydown', handleOnKeyDown);
@@ -291,9 +342,14 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
   useEffect(() => {
     aniWishlistOptionRef.current = [];
     dramaWishlistOptionRef.current = [];
+    documentaryWishlistOptionRef.current = [];
+    kidsWishlistOptionRef.current = [];
+    newsWishlistOptionRef.current = [];
+    varietyWishlistOptionRef.current = [];
     movieWishlistOptionRef.current = [];
     comicsWishlistOptionRef.current = [];
   }, [data]);
+
   // ================================================================================================== return
 
   return {
@@ -313,5 +369,14 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     comicsWishlistOptionRef: comicsWishlistOptionRef,
     wishlistContentMediaType: wishlistContentMediaType,
     wishlistOptionIndex: wishlistOptionIndex,
+    isOmitAniList: isOmitAniList,
+    isOmitDramaList: isOmitDramaList,
+    isOmitDocumentaryList: isOmitDocumentaryList,
+    isOmitKidsList: isOmitKidsList,
+    isOmitNewsList: isOmitNewsList,
+    isOmitVarietyList: isOmitVarietyList,
+    isOmitMovieList: isOmitMovieList,
+    isOmitComicsList: isOmitComicsList,
+    handleOnClickOmitWishlist: handleOnClickOmitWishlist,
   };
 };

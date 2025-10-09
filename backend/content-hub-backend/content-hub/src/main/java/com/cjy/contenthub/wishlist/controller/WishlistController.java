@@ -1,7 +1,5 @@
 package com.cjy.contenthub.wishlist.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.wishlist.controller.dto.WishlistCheckResultResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;
-import com.cjy.contenthub.wishlist.controller.dto.WishlistResponseDto;
 import com.cjy.contenthub.wishlist.mapper.WishlistMapper;
 import com.cjy.contenthub.wishlist.service.WishlistService;
+import com.cjy.contenthub.wishlist.service.dto.WishlistCheckResultServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
@@ -89,14 +88,14 @@ public class WishlistController {
 	 * @return 위시리스트 항목 정보
 	 */
 	@GetMapping("/checkWishlist")
-	public ResponseEntity<List<WishlistResponseDto>> checkWishlist(
+	public ResponseEntity<WishlistCheckResultResponseDto> checkWishlist(
 			@RequestParam(PARAM_USER_ID) Long userId, 
 			@RequestParam(PARAM_API_ID) String apiId, 
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType) {
 
-		List<WishlistServiceDto> serviceList = wishlistService.checkWishlistExist(userId, apiId, contentMediaType);
+		WishlistCheckResultServiceDto wishlistCheckResult = wishlistService.checkWishlist(userId, apiId, contentMediaType);
 		
-		List<WishlistResponseDto> responseDto = wishlistMapper.serviceListToResponseList(serviceList);
+		WishlistCheckResultResponseDto responseDto = wishlistMapper.serviceToCheckResultResponse(wishlistCheckResult);
 
 		return ResponseEntity.ok(responseDto);
 	}

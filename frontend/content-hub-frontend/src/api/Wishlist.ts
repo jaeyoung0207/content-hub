@@ -11,9 +11,9 @@
  */
 
 import {
+  WishlistCheckResultResponseDto,
   WishlistListResponseDto,
   WishlistRequestDto,
-  WishlistResponseDto,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
@@ -71,7 +71,7 @@ export class Wishlist<
     },
     params: RequestParams = {}
   ) =>
-    this.request<WishlistResponseDto[], any>({
+    this.request<WishlistCheckResultResponseDto, any>({
       path: `/wishlist/checkWishlist`,
       method: 'GET',
       query: query,
