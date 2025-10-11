@@ -16,7 +16,7 @@ import {
 } from 'react';
 import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/constants';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash-es';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 
@@ -186,7 +186,6 @@ export const useRecommendationContent = (
       entries.forEach((entry) => {
         // observeTarget이 화면에 나타나고, 다음 페이지가 있고, 현재 페이지를 가져오고 있지 않은 경우
         if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
           throttledFetchNextPage();
         }

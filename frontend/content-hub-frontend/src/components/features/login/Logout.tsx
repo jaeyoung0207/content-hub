@@ -5,7 +5,8 @@ import {
   useUserStore,
 } from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
-import { afterLoginRedirect } from '@/components/common/utils/redirectUtil';
+import { afterLoginRedirect } from '@/components/common/utils/loginUtil';
+import Sentry from '@/sentry';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -65,6 +66,8 @@ export const Logout = () => {
         clearUserData();
         // 리다이렉트 처리
         afterLoginRedirect(navigate);
+        // Sentry에 유저 정보 설정
+        Sentry.setUser(null);
       }
     };
     logout();

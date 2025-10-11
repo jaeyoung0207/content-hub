@@ -41,7 +41,12 @@ server:
 #Log Config
 logging:
   level:
-    root: info
+    root: INFO
+    com:
+      cjy:
+        contenthub: DEBUG
+  file:
+    name: logs/app.log
     #org.springframework.security: DEBUG
 
 #TMDB API Config

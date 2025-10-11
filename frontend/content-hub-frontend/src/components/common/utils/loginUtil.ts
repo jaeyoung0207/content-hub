@@ -1,7 +1,13 @@
 import { NavigateFunction } from 'react-router-dom';
-import { REDIRECT_URL } from '../constants/constants';
+import { LOGIN_PROVIDER, REDIRECT_URL } from '../constants/constants';
 import i18n from '@/i18n';
-import { useConfirmDialogStore } from '../store/globalStateStore';
+import {
+  useConfirmDialogStore,
+  useProviderStore,
+  useUserStore,
+} from '../store/globalStateStore';
+import { LoginUserResponseDto } from '@/api/data-contracts';
+import Sentry from '@/sentry';
 
 /**
  * 로그인 후 리다이렉트 처리
@@ -48,4 +54,33 @@ export const loginConfirmDialog = (
     );
   // 메시지 설정
   useConfirmDialogStore.getState().setConfirmMsg(i18n.t(message));
+};
+
+/**
+ * 로그인 정보 설정
+ * @param loginInfo 로그인 정보
+ */
+export const setLoginInfo = (
+  loginInfo: LoginUserResponseDto,
+  provider: string
+) => {
+  // 로그인 정보가 없으면 종료
+  if (!loginInfo.userInfo) {
+    return;
+  }
+  // 유저정보를 전역상태저장
+  useUserStore.getState().setUser(loginInfo.userInfo!);
+  // provider 전역상태저장
+  useProviderStore.getState().setProvider(provider as LOGIN_PROVIDER);
+  // 액세스 토큰을 sessionStorage에 저장
+  sessionStorage.setItem('accessToken', loginInfo.accessToken!);
+  // JWT를 sessionStorage에 저장
+  sessionStorage.setItem('jwt', loginInfo.jwt!);
+  // 만료시각을 sessionStorage에 저장
+  sessionStorage.setItem('expireDate', loginInfo.expireDate!);
+  // Sentry에 유저 정보 설정
+  Sentry.setUser({
+    id: loginInfo.userInfo!.userId,
+    username: loginInfo.userInfo!.nickname,
+  });
 };

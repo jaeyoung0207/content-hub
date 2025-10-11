@@ -17,7 +17,7 @@ import { AxiosError } from 'axios';
 import { SearchCommonResultType } from '../Search';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash-es';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import {
   getDisplayMediaType,
@@ -216,7 +216,6 @@ export const useSearchMore = (
       entries.forEach((entry) => {
         // observeTarget이 화면에 나타나고, 다음 페이지가 있고, 현재 페이지를 가져오고 있지 않은 경우
         if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
           throttledFetchNextPage();
         }

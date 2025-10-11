@@ -29,6 +29,7 @@ import type {
 import axios from 'axios';
 import dayjs from 'dayjs'; // add custom config
 import { LoginProfileResultDto } from './data-contracts'; // add custom config
+import Sentry from '@/sentry'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -136,7 +137,6 @@ export class HttpClient<SecurityDataType = unknown> {
             ).data as LoginProfileResultDto;
           }
           if (res) {
-            console.log('접근토큰 갱신');
             // 접근토큰을 sessionStorage에 저장
             sessionStorage.setItem('accessToken', res.accessToken);
             // JWT를 sessionStorage에 저장
@@ -162,7 +162,12 @@ export class HttpClient<SecurityDataType = unknown> {
     // axios 공통 응답 인터셉터 // add custom config
     this.instance.interceptors.response.use(
       (response) => {
-        console.log('API 조회 성공: ' + response.config.url);
+        // Sentry에 성공 로그 남기기
+        Sentry.addBreadcrumb({
+          category: 'api',
+          message: `API Success: ${response.config.url}`,
+          level: 'info',
+        });
         return response;
       },
       (error: AxiosError<AxiosErrorType>) => {

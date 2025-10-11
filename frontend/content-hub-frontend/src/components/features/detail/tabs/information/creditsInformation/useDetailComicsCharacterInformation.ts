@@ -19,7 +19,7 @@ import {
   INFINITE_SCROLL_THROTTLE_DELAY,
   ONE_MINUTE,
 } from '@/components/common/constants/constants';
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash-es';
 
 /**
  * 만화 캐릭터/제작진 정보 무한스크롤 쿼리 결과 타입
@@ -124,7 +124,6 @@ export const useDetailComicsCharacterInformation = (
       entries.forEach((entry) => {
         // observeTarget이 화면에 나타나고, 다음 페이지가 있고, 현재 페이지를 가져오고 있지 않은 경우
         if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
           throttledFetchNextPage();
         }

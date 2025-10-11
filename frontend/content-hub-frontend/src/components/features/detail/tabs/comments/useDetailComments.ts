@@ -34,9 +34,9 @@ import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/constants';
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash-es';
 import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
-import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
+import { loginConfirmDialog } from '@/components/common/utils/loginUtil';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { settings } from '@/components/common/config/settings';
@@ -628,7 +628,6 @@ export const useDetailComments = (
           !isFetchingNextPage &&
           !isLoading
         ) {
-          console.log('★★★fetchNextPage실행!!!!!!!!!★★★');
           // fetchNextPage를 호출
           throttledFetchNextPage();
         }

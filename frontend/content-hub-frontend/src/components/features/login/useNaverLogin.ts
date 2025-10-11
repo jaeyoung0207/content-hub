@@ -1,13 +1,13 @@
 import { Login } from '@/api/Login';
-import {
-  useProviderStore,
-  useUserStore,
-} from '@/components/common/store/globalStateStore';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
-import { afterLoginRedirect } from '@/components/common/utils/redirectUtil';
+import {
+  afterLoginRedirect,
+  setLoginInfo,
+} from '@/components/common/utils/loginUtil';
 
 /**
  * Naver 로그인 훅
@@ -21,9 +21,7 @@ export const useNaverLogin = () => {
   // URL 쿼리 파라미터 훅
   const [searchParams] = useSearchParams();
   // 유저 정보 전역 상태 저장 훅
-  const { user, setUser } = useUserStore();
-  // provider 전역 상태 저장 훅
-  const { setProvider } = useProviderStore();
+  const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
   const loginApi = new Login();
 
@@ -40,18 +38,8 @@ export const useNaverLogin = () => {
       state: state!,
     });
     const loginInfo = response.data;
-    if (loginInfo && loginInfo.userInfo) {
-      // 유저정보를 전역상태저장
-      setUser(loginInfo.userInfo);
-      // provider 전역상태저장
-      setProvider(LOGIN_PROVIDER.NAVER);
-      // 액세스 토큰을 sessionStorage에 저장
-      sessionStorage.setItem('accessToken', loginInfo.accessToken!);
-      // JWT를 sessionStorage에 저장
-      sessionStorage.setItem('jwt', loginInfo.jwt!);
-      // 만료시각을 sessionStorage에 저장
-      sessionStorage.setItem('expireDate', loginInfo.expireDate!);
-    }
+    // 로그인 정보를 전역 상태에 저장
+    setLoginInfo(loginInfo, LOGIN_PROVIDER.NAVER);
     return loginInfo;
   };
 

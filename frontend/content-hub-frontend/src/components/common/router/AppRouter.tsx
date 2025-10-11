@@ -3,12 +3,12 @@ import { Suspense, lazy } from 'react';
 import { Layout } from '@/components/features/common/Layout';
 import { ErrorPageWithHalfScreen } from '@/components/common/error/ErrorPageWithHalfScreen';
 import { ErrorPageWithFullScreen } from '@/components/common/error/ErrorPageWithFullScreen';
-import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientConfig } from '../config/queryClientConfig';
 import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
 import { LoadingUi } from '@/components/ui/LoadingUi';
+import { ErrorBoundary } from '@sentry/react';
 
 // lazy loading
 const Home = lazy(() => import('@/components/features/home/Home'));
@@ -60,12 +60,7 @@ const AppRouter = () => {
   }
   return (
     <>
-      <ErrorBoundary
-        FallbackComponent={() => {
-          // 전체화면 에러페이지로 이동
-          return <ErrorPageWithFullScreen />;
-        }}
-      >
+      <ErrorBoundary fallback={<ErrorPageWithFullScreen />}>
         <QueryClientProvider client={queryClientConfig}>
           <Suspense fallback={<LoadingUi />}>
             <Routes>

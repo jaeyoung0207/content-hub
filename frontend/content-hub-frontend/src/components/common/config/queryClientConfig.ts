@@ -9,6 +9,7 @@ import i18n from '@/i18n';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
 import { ERROR_CODE, ERROR_MESSAGE, ONE_MINUTE } from '../constants/constants';
+import * as Sentry from '@sentry/react';
 
 /**
  * AxiosErrorType
@@ -136,6 +137,12 @@ const outputError = (error: Error) => {
         toastId: 'apiResponseError', // 중복 토스트 방지
       });
     }
+    // Sentry 에러 보고
+    Sentry.setContext('apiError', {
+      path,
+      status,
+    });
+    Sentry.captureMessage(consoleErrorMsg);
   } else {
     changeConsoleColor(
       formattingErrorMsg(
@@ -152,7 +159,12 @@ const outputError = (error: Error) => {
         toastId: 'unexpectedError', // 중복 토스트 방지
       }
     );
+    // Sentry 에러 보고
+    Sentry.captureMessage(error.stack || error.message);
   }
+  // Sentry 에러 보고
+  Sentry.setTag('page', window.location.pathname);
+  Sentry.captureException(error);
 };
 
 /**

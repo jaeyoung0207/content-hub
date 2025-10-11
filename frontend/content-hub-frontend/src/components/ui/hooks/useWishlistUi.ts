@@ -4,9 +4,9 @@ import { Wishlist } from '@/api/Wishlist';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { wishlistQueryKeys } from '@/components/features/wishlist/queryKeys/wishlistQueryKeys';
 import { toast } from 'react-toastify';
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import { useNavigate } from 'react-router-dom';
-import { loginConfirmDialog } from '@/components/common/utils/redirectUtil';
+import { loginConfirmDialog } from '@/components/common/utils/loginUtil';
 import { useTranslation } from 'react-i18next';
 import {
   getDisplayMediaTypeName,
@@ -193,7 +193,11 @@ export const useWishlistUi = ({
       checkWishlist().then((res) => {
         // 위시리스트 등록 가능 항목 수 초과
         if (res.maxWishlistCount) {
-          toast.warn(t('warn.tooManyWishlistEntries', { maxEntries: res.maxWishlistCount }));
+          toast.warn(
+            t('warn.tooManyWishlistEntries', {
+              maxEntries: res.maxWishlistCount,
+            })
+          );
         }
         // 이미 위시리스트에 존재하는지 확인
         else if (res.wishlists && res.wishlists.length > 0) {

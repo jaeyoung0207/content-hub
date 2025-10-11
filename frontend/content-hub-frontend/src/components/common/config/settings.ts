@@ -23,6 +23,9 @@ export const settings = {
     'http://localhost:3000/login/kakao',
   kakaoClientId:
     import.meta.env.VITE_KAKAO_CLIENT_ID || 'kakao_client_id_placeholder',
+  sentryDsn: import.meta.env.VITE_SENTRY_DSN || 'sentry_dsn_placeholder',
+  sentryAuthToken:
+    import.meta.env.VITE_SENTRY_AUTH_TOKEN || 'sentry_auth_token_placeholder',
   detailVideoCount: Number(import.meta.env.VITE_VIDEO_CREDITS_COUNT || 6),
   detailComicsCount: Number(import.meta.env.VITE_COMICS_CREDITS_COUNT || 10),
   detailCreditsPerPage: Number(import.meta.env.VITE_CREDITS_PER_PAGE || 9),

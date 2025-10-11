@@ -3,6 +3,7 @@ import { isAxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import i18n from 'i18next';
 import { AxiosErrorType } from '../config/queryClientConfig';
+import Sentry from '@/sentry';
 
 /**
  * 콘솔 출력시 글자색을 붉은색으로 출력
@@ -28,6 +29,8 @@ export const commonErrorHandler =
       fn(...args);
     } catch (err) {
       handleUnExceptedError(err, '이벤트 처리 중 문제가 발생했습니다.');
+      // Sentry 에러 캡처
+      Sentry.captureException(err);
     }
   };
 
