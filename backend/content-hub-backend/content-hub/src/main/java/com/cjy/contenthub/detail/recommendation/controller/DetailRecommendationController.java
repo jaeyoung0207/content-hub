@@ -20,7 +20,6 @@ import com.cjy.contenthub.detail.recommendation.service.DetailRecommendationNoCa
 import com.cjy.contenthub.detail.recommendation.service.DetailRecommendationService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 상세 화면 추천 작품 API 컨트롤러 클래스
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/detail/recommendation")
 @RequiredArgsConstructor
-@Slf4j
 public class DetailRecommendationController {
 
 	/** 상세 추천 서비스 */

@@ -21,7 +21,6 @@ import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 위시리스트 API 컨트롤러 클래스
@@ -29,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(CommonConstants.WISHLIST_PATH)
 @RequiredArgsConstructor
-@Slf4j
 public class WishlistController {
 	
 	/** 위시리스트 서비스 */

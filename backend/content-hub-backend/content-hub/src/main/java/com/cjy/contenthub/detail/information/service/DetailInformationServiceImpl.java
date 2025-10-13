@@ -23,10 +23,12 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
 import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.SortEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailTvResponseDto;
@@ -49,6 +51,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	
 	/** 비즈니스 유틸리티 */
 	private final BusinessUtil businessUtil;
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -244,7 +249,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.map(response -> {
 					// 응답 데이터 유효성 검사
 					if (response == null || response.getData() == null || response.getData().getMedia() == null) {
-						log.error("만화 작품정보 조회 실패 - comicsId: {}", comicsId);
+						Object[] messageParams = { comicsId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_DETAIL_INFORMATION_COMICS_NOT_FOUND.getMessageCode(), messageParams));
 						return new DetailComicsResponseDto();
 					}
 					// 응답 데이터 재분배
@@ -314,7 +321,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.map(reponse -> {
 					// 응답 데이터 유효성 검사
 					if (reponse == null || reponse.getData() == null || reponse.getData().getMedia() == null) {
-						log.error("만화 캐릭터 정보 조회 실패 - comicsId: {}", comicsId);
+						Object[] messageParams = { comicsId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_DETAIL_INFORMATION_CHARACTERS_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListCharactersDto();
 					}
 					// 응답 데이터 재분배
@@ -358,7 +367,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.map(reponse -> {
 					// 응답 데이터 유효성 검사
 					if (reponse == null || reponse.getData() == null || reponse.getData().getMedia() == null) {
-						log.error("만화 스태프 정보 조회 실패 - comicsId: {}", comicsId);
+						Object[] messageParams = { comicsId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_DETAIL_INFORMATION_STAFF_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListStaffDto();
 					}
 					// 응답 데이터 재분배

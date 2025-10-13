@@ -12,8 +12,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.util.JwtUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.login.helper.LoginHelper;
 
@@ -46,6 +48,9 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	
 	/** 로그인 헬퍼 */
 	private final LoginHelper loginHelper;
+	
+	/** 메시지 유틸리티 클래스 */
+	private final MessageUtil messageUtil;
 	
 	/**
 	 * 필터가 적용될 URL 패턴을 정의
@@ -81,7 +86,8 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 					throw new AccountExpiredException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
 				}
 			} catch (JwtException ex) {
-				throw new AccountExpiredException("JWT parsing error", ex);
+				throw new AccountExpiredException(
+						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_PARSING.getMessageCode()), ex);
 			}
 
 			// 토큰에서 id와 provider를 추출하여 user테이블에 존재하는지 확인
@@ -95,7 +101,8 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			String refreshToken = loginHelper.getRefreshToken(request, provider);
 			// 리프레시 토큰 검증
 			if (!redisUtil.validateRefreshToken(provider, providerId, refreshToken)) {
-				throw new AccountExpiredException("No available refresh token");
+				throw new AccountExpiredException(
+						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 			}
 			
 			// user 테이블에 등록되어 있는지 확인
@@ -108,7 +115,8 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			    // SecurityContext에 인증 객체 세팅
 			    SecurityContextHolder.getContext().setAuthentication(authentication);
 			} else {
-				throw new UsernameNotFoundException("User ID is not registered");
+				throw new UsernameNotFoundException(
+						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
 			}
 		}
 		// 필터 체인을 계속 진행

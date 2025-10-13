@@ -609,4 +609,114 @@ public class CommonEnum {
 		}
 	}
 
+	/**
+	 * 디버그 메시지 코드 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum MessagesDebugEnum {
+		
+		/** 공통 - 세션 생성 */
+		DEBUG_COMMON_CREATE_SESSION("debug.common.createSession"),
+		/** 공통 - 기존 세션 존재 */
+		DEBUG_COMMON_EXISTING_SESSION("debug.common.existingSession"),
+		/** 공통 - 세션 삭제 */
+		DEBUG_COMMON_DELETE_SESSION("debug.common.deleteSession"),
+		/** 공통 - API Rate Limit 체크 */
+		DEBUG_COMMON_API_RATE_LIMIT_CHECK("debug.common.apiRateLimitCheck");
+		
+		/** 메시지 코드 */
+		private String messageCode;
+	}
+	
+	/**
+	 * 경고 메시지 코드 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum MessagesWarnEnum {
+		
+		/** 공통 - API Rate Limit 초과 */
+		WARN_COMMON_API_RATE_LIMIT_EXCEEDED("warn.common.apiRateLimitExceeded"),
+		/** 공통 - 세션 없음 */
+		WARN_COMMON_SESSION_NOT_FOUND("warn.common.sessionNotFound"),
+		/** 캐릭터 - 캐릭터 정보 없음 */
+		WARN_CHARACTER_CHARACTER_NOT_FOUND("warn.character.characterNotFound"),
+		/** 캐릭터 - 스태프 정보 없음 */
+		WARN_CHARACTER_STAFF_NOT_FOUND("warn.character.staffNotFound"),
+		/** 상세 정보 - 만화 정보 없음 */
+		WARN_DETAIL_INFORMATION_COMICS_NOT_FOUND("warn.detailInformation.comicsNotFound"),
+		/** 상세 정보 - 캐릭터 정보 없음 */
+		WARN_DETAIL_INFORMATION_CHARACTERS_NOT_FOUND("warn.detailInformation.charactersNotFound"),
+		/** 상세 정보 - 스태프 정보 없음 */
+		WARN_DETAIL_INFORMATION_STAFF_NOT_FOUND("warn.detailInformation.staffNotFound"),
+		/** 상세 추천 - 추천 정보 없음 재시도 */
+		WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY("warn.detailRecommendation.recommendationNotFoundThenRetry"),
+		/** 상세 추천 - 추천 정보 없음 */
+		WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND("warn.detailRecommendation.recommendationNotFound"),
+		/** 인물 - 인물 정보 없음 */
+		WARN_PERSON_PERSON_NOT_FOUND("warn.person.personNotFound"),
+		/** 위시리스트 - 위시리스트 없음 */
+		WARN_WISHLIST_WISHLIST_NOT_FOUND("warn.wishlist.wishlistNotFound"),
+		/** 위시리스트 - 이미 존재하는 위시리스트 */
+		WARN_WISHLIST_WISHLIST_ALREADY_EXISTS("warn.wishlist.wishlistAlreadyExists");
+		
+		/** 메시지 코드 */
+		private String messageCode;
+	}
+	
+	/**
+	 * 에러 메시지 코드 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum MessagesErrorEnum {
+		
+		/** 공통 - API Rate Limit 초과 */
+		ERROR_COMMON_API_RATE_LIMIT_EXCEEDED("error.common.apiRateLimitExceeded"),
+		/** 공통 - DeepL API 에러 */
+		ERROR_COMMON_DEEPL("error.common.deepl"),
+		/** 공통 - DeepL API 에러 상세 */
+		ERROR_COMMON_DEEPL_DETAIL("error.common.deeplDetail"),
+		/** 공통 - JWT 파싱 에러 */
+		ERROR_COMMON_JWT_PARSING("error.common.jwtParsing"),
+		/** 공통 - JWT 만료 */
+		ERROR_COMMON_JWT_EXPIRED("error.common.jwtExpired"),
+		/** 공통 - JWT 만료 상세 */
+		ERROR_COMMON_JWT_EXPIRED_DETAIL("error.common.jwtExpiredDetail"),
+		/** 공통 - JWT 유효하지 않음 */
+		ERROR_COMMON_JWT_INVALID("error.common.jwtInvalid"),
+		/** 공통 - JWT 유효하지 않음 상세 */
+		ERROR_COMMON_JWT_INVALID_DETAIL("error.common.jwtInvalidDetail"),
+		/** 공통 - JWT 생성 에러 */
+		ERROR_COMMON_JWT_CREATION("error.common.jwtCreation"),
+		/** 공통 - JWT 검증 에러 */
+		ERROR_COMMON_JWT_VALIDATION("error.common.jwtValidation"),
+		/** 공통 - JWT 리프레시 토큰 검증 에러 */
+		ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION("error.common.jwtRefreshTokenValidation"),
+		/** 공통 - 점검중 */
+		ERROR_COMMON_MAINTENANCE("error.common.maintenance"),
+		/** 공통 - 점검중 상세 */
+		ERROR_COMMON_MAINTENANCE_DETAIL("error.common.maintenanceDetail"),
+		/** 공통 - Redis INCREMENT 에러 */
+		ERROR_COMMON_REDIS_INCREMENT("error.common.redisIncrement"),
+		/** 공통 - 콘텐츠 없음 */
+		ERROR_COMMON_CONTENT_NOT_FOUND("error.common.contentNotFound"),
+		/** 공통 - 컨트롤러 어드바이스 에러 1 */
+		ERROR_COMMON_CONTROLLER_ADVICE_1("error.common.controllerAdvice1"),
+		/** 공통 - 컨트롤러 어드바이스 에러 2 (body 포함) */
+		ERROR_COMMON_CONTROLLER_ADVICE_2("error.common.controllerAdvice2"),
+		/** 로그인 - 유저 없음 */
+		ERROR_LOGIN_NOT_FOUND_USER("error.login.notFoundUser"),
+		/** 로그인 - 프로필 없음 */
+		ERROR_LOGIN_NOT_FOUND_PROFILE("error.login.notFoundProfile"),
+		/** 로그인 - 페이로드 없음 */
+		ERROR_LOGIN_PAYLOAD_EMPTY("error.login.payloadEmpty"),
+		/** 상세 코멘트 - 코멘트 정보 없음 */
+		ERROR_DETAIL_COMMENT_COMMENT_NOT_FOUND("error.detailComment.commentNotFound");
+		
+		/** 메시지 코드 */
+		private String messageCode;
+	}
+
 }

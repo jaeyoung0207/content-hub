@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,9 @@ public class RedisUtil {
 	
 	/** String Redis 템플릿 */
 	private final StringRedisTemplate stringRedisTemplate;
+	
+	/** 메시지 유틸 */
+	private final MessageUtil messageUtil;
 	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
 	@Value("${login.naver.custom.refreshTokenExpiresIn}")
@@ -126,7 +130,8 @@ public class RedisUtil {
 	public Long increment(String key) {
 		Long count = stringRedisTemplate.opsForValue().increment(key);
 		if (count == null) {
-			throw new IllegalStateException("Redis increment returned null");
+			throw new IllegalStateException(
+					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_REDIS_INCREMENT.getMessageCode()));
 		}
 		return count;
 	}

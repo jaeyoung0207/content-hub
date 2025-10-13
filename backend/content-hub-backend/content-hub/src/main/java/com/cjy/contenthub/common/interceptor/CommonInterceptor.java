@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesDebugEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.SessionUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,12 +30,12 @@ public class CommonInterceptor implements HandlerInterceptor {
 	/** 공통 세션 유틸 */
 	private final SessionUtil sessionUtil;
 	
+	/** 메시지 유틸 */
+	private final MessageUtil messageUtil;
+	
 	/** 점검모드 */
 	@Value("${app.maintenance.mode}")
 	private boolean isMaintenanceMode;
-	
-	/** 서비스 점검중 메세지 */
-	private static final String MAINTENANCE_MESSAGE = "서비스 점검중 입니다.";
 	
 	/**
 	 * 요청 처리 전 실행되는 메소드
@@ -48,8 +51,8 @@ public class CommonInterceptor implements HandlerInterceptor {
 		
 		// 점검모드가 true인 경우에 점검화면 표시하도록 503에러
 		if (isMaintenanceMode) {
-			log.warn("서비스 점검중. 요청 URL: {}", request.getRequestURI());
-			throw new CommonBusinessException(MAINTENANCE_MESSAGE, HttpStatus.SERVICE_UNAVAILABLE.value());
+			throw new CommonBusinessException(
+					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_MAINTENANCE.getMessageCode()), HttpStatus.SERVICE_UNAVAILABLE.value());
 		}
 		
 		// 세션을 가져오거나 새로 생성
@@ -61,10 +64,11 @@ public class CommonInterceptor implements HandlerInterceptor {
 		}
 
 		// 세션이 새로 생성되었을 때 로그 출력
+		Object[] messageParams = { httpSession.getId() };
 		if (httpSession.isNew()) {
-			log.debug("새로운 세션이 생성되었습니다. 세션 ID: {}", httpSession.getId());
+			log.debug(messageUtil.getMessageKO(MessagesDebugEnum.DEBUG_COMMON_CREATE_SESSION.getMessageCode(), messageParams));
 		} else {
-			log.debug("기존 세션이 사용됩니다. 세션 ID: {}", httpSession.getId());
+			log.debug(messageUtil.getMessageKO(MessagesDebugEnum.DEBUG_COMMON_EXISTING_SESSION.getMessageCode(), messageParams));
 		}
 		
 		// 세션 유틸리티 클래스에 세션 설정

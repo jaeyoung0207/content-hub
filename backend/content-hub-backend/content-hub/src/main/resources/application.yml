@@ -28,6 +28,10 @@ spring:
       port: 6379
       # 필요시 password: yourpassword
       # database: 0
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
 
 #Server Config
 server:

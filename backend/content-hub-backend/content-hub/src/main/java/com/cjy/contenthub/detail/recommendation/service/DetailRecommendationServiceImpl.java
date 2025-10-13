@@ -25,9 +25,11 @@ import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
 import com.cjy.contenthub.common.constants.AniListParamConstants;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
 import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResponseDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsMovieDto;
@@ -54,6 +56,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 	/** 상세 매퍼 */
 	private final DetailRecommendationMapper detailRecommendationMapper;
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -122,7 +127,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 			// 404의 경우 재시도
 			if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
 				// 로그 출력
-				log.warn("TMDB TV Recommendations not found then retry for seriesId: {}", seriesId);
+				String apiName = "TMDB TV Recommendations";
+				Object[] messageParams = { apiName, seriesId };
+				log.warn(messageUtil.getMessageKO(
+						MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
+						messageParams));
 				// 영어로 재시도
 				return tmdbWebClient.get()
 						.uri(recommendationHelper.getTVRecommendationUri(seriesId, page, TmdbParamConstants.LANGUAGE_ENGLISH))
@@ -131,7 +140,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						response.bodyToMono(String.class).flatMap(body -> {
 							// 404의 경우는 무시하고 빈 응답 반환
 							if (response.statusCode() == HttpStatus.NOT_FOUND) {
-								log.warn("TMDB TV Recommendations not found for seriesId: {}", seriesId);
+								log.warn(messageUtil.getMessageKO(
+										MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+										messageParams));
 								return Mono.empty(); 
 							}
 							// 나머지는 공통 예외 처리로 보냄
@@ -189,7 +200,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					// 404의 경우 재시도
 					if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
 						// 로그 출력
-						log.warn("TMDB Movie Recommendations not found then retry for movieId: {}", movieId);
+						String apiName = "TMDB Movie Recommendations";
+						Object[] messageParams = { apiName, movieId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
+								messageParams));
 						// 영어로 재시도
 						return tmdbWebClient.get()
 								.uri(recommendationHelper.getMovieRecommendationUri(movieId, page, TmdbParamConstants.LANGUAGE_ENGLISH))
@@ -198,7 +213,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 								response.bodyToMono(String.class).flatMap(body -> {
 									// 404의 경우는 무시하고 빈 응답 반환
 									if (response.statusCode() == HttpStatus.NOT_FOUND) {
-										log.warn("TMDB Movie Recommendations not found for movieId: {}", movieId);
+										log.warn(messageUtil.getMessageKO(
+												MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+												messageParams));
 										return Mono.empty();
 									}
 									// 나머지는 공통 예외 처리로 보냄
@@ -267,7 +284,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				response.bodyToMono(String.class).flatMap(body -> {
 					// 404의 경우는 무시하고 빈 응답 반환
 					if (response.statusCode() == HttpStatus.NOT_FOUND) {
-						log.warn("AniList Comics Recommendations not found for mediaId: {}", mediaId);
+						String apiName = "AniList Comics Recommendations";
+						Object[] messageParams = { apiName, mediaId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+								messageParams));
 						return Mono.empty(); 
 					}
 					// 나머지는 공통 예외 처리로 보냄

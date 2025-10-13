@@ -18,7 +18,6 @@ import com.cjy.contenthub.detail.information.service.DetailInformationNoCacheSer
 import com.cjy.contenthub.detail.information.service.DetailInformationService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 상세 화면 기본 정보 API 컨트롤러 클래스
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/detail/information")
 @RequiredArgsConstructor
-@Slf4j
 public class DetailInformationController {
 
 	/** 상세 정보 서비스 */

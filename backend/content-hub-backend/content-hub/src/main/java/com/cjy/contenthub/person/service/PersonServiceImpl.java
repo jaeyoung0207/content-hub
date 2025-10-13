@@ -14,9 +14,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsDto;
 import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsDto;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenderEnum;
 import com.cjy.contenthub.common.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.util.ApiUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonDto;
@@ -39,19 +41,22 @@ public class PersonServiceImpl implements PersonService {
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
 	private final WebClient tmdbWebClient;
+	
+	/** 공통 유틸리티 */
+	private final ApiUtil apiUtil;
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 
 	/** TMDB API 인물 상세 매퍼 */
 	private final PersonMapper mapper;
 
-	/** TMDB API 공통 유틸리티 클래스 */
-	private final ApiUtil apiUtil;
+	/** TMDB API 인물 상세 헬퍼 */
+	private final PersonHelper helper;
 
 	/** TMDB API Person Detail API 패스 */
 	@Value("${tmdb.url.personDetailPath}")
 	private String personDetailPath;
-
-	/** TMDB API 인물 상세 정보 헬퍼 클래스 */
-	private final PersonHelper helper;
 
 	/**
 	 * 인물 상세 정보 조회
@@ -93,7 +98,9 @@ public class PersonServiceImpl implements PersonService {
 						// 크레딧 정보가 없는 경우 경고 로그 출력 후 응답 반환
 						if (response.getTvCredits() == null
 								&& response.getMovieCredits() == null) {
-							log.warn("Person ID {} has no credits data.", personId);
+							Object[] messageParams = { personId };
+							log.warn(messageUtil.getMessageKO(
+									MessagesWarnEnum.WARN_PERSON_PERSON_NOT_FOUND.getMessageCode(), messageParams));
 							return personResponse;
 						}
 

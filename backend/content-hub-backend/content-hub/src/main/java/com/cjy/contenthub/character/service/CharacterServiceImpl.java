@@ -12,7 +12,9 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
 import com.cjy.contenthub.common.constants.AniListParamConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
 import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CharacterServiceImpl implements CharacterService {
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 
 	/** AniList API 통신용 WebClient 클래스 */
 	@Qualifier("anilistWebClient")
@@ -62,7 +67,9 @@ public class CharacterServiceImpl implements CharacterService {
 					// 응답 데이터가 없는 경우 빈 ResponseEntity 반환
 					if (response == null || response.getData() == null
 							|| response.getData().getCharacter() == null) {
-						log.warn("Character not found for ID: {}", characterId);
+						Object[] messageParams = { characterId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_CHARACTER_CHARACTER_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListCharactersNodeDto();
 					}
 					// 응답 데이터가 있는 경우 캐릭터 정보 반환
@@ -101,7 +108,9 @@ public class CharacterServiceImpl implements CharacterService {
 					// 응답 데이터가 없는 경우 빈 ResponseEntity 반환
 					if (response == null || response.getData() == null
 							|| response.getData().getStaff() == null) {
-						log.warn("Staff not found for ID: {}", staffId);
+						Object[] messageParams = { staffId };
+						log.warn(messageUtil.getMessageKO(
+								MessagesWarnEnum.WARN_CHARACTER_STAFF_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListStaffNodeDto();
 					}
 					// 응답 데이터가 있는 경우 스태프 정보 반환

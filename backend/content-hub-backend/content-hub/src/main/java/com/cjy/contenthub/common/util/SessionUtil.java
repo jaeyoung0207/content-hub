@@ -4,7 +4,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
+
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,8 +15,12 @@ import lombok.extern.slf4j.Slf4j;
  * 스레드 세이프한 방식으로 HttpSession을 관리하기 위해 ThreadLocal을 사용
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class SessionUtil {
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 	
 	/** 스레드 세이프를 위한 ThreadLocal */
 	private static final ThreadLocal<HttpSession> sessionHolder = new ThreadLocal<>();
@@ -49,7 +56,9 @@ public class SessionUtil {
 		HttpSession session = getSession();
 		// 세션이 null인 경우 false 반환
 		if (session == null) {
-			log.warn("Session is null for key: {}", key);
+			Object[] messageParams = { key };
+			log.warn(messageUtil.getMessageKO(
+					MessagesWarnEnum.WARN_COMMON_SESSION_NOT_FOUND.getMessageCode(), messageParams));
 			return false;
 		}
 		// 세션에서 지정된 키에 해당하는 값을 Optional로 감싸고, 값이 없으면 false를 반환

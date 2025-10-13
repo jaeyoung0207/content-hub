@@ -19,7 +19,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
+import com.cjy.contenthub.common.util.MessageUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -32,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class CommonRestControllerAdvice {
+	
+	/** 메시지 유틸 */
+	private MessageUtil messageUtil;
 
 	/** 인증 에러 */
 	private static final String AUTHENTICATION_AUTHORIZATION_ERROR = "Authentication/Authorization Error";
@@ -53,9 +58,6 @@ public class CommonRestControllerAdvice {
 	
 	/** 타임아웃 에러 */
 	private static final String TIMEOUT_ERROR = "Timeout Error";
-
-	/** 시스템 에러 */
-	private static final String LOG_FORMAT = " : path={}, status={}, message={}";
 
 	/**
 	 * 인증/인가 관련 예외 처리
@@ -79,8 +81,9 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(AUTHENTICATION_AUTHORIZATION_ERROR)
 				.build();
-		log.error(AUTHENTICATION_AUTHORIZATION_ERROR.concat(LOG_FORMAT),
-				path, statusCode, ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message, ex);
+		Object[] messageParams = {AUTHENTICATION_AUTHORIZATION_ERROR, path, statusCode, 
+				ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -139,7 +142,8 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(VALIDATION_ERROR)
 				.build();
-		log.error(VALIDATION_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
+		Object[] messageParams = {VALIDATION_ERROR, path, statusCode, message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
@@ -170,7 +174,8 @@ public class CommonRestControllerAdvice {
 				.body(body)
 				.name(errorName)
 				.build();
-		log.error(errorName.concat(LOG_FORMAT.concat(", body={}")), path, statusCode, message, body, ex);
+		Object[] messageParams = {errorName, path, statusCode, message, body};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_2.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -192,7 +197,8 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
-		log.error(BUSINESS_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
+		Object[] messageParams = {BUSINESS_ERROR, path, statusCode, message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -214,7 +220,8 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(BUSINESS_ERROR)
 				.build();
-		log.error(BUSINESS_ERROR.concat(" (StatusException)".concat(LOG_FORMAT)), path, statusCode, message, ex);
+		Object[] messageParams = {BUSINESS_ERROR.concat(" (StatusException)"), path, statusCode, message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 	
@@ -236,7 +243,8 @@ public class CommonRestControllerAdvice {
 	        .message(message)
 	        .name(TIMEOUT_ERROR)
 	        .build();
-	    log.error("Timeout Error : path={}, status={}, message={}", path, statusCode, ex.getMessage(), ex);
+	    Object[] messageParams = {TIMEOUT_ERROR, path, statusCode, message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 	    return new ResponseEntity<>(errorResponse, HttpStatus.GATEWAY_TIMEOUT);
 	}
 
@@ -258,7 +266,8 @@ public class CommonRestControllerAdvice {
 				.message(message)
 				.name(SERVER_ERROR)
 				.build();
-		log.error(SERVER_ERROR.concat(LOG_FORMAT), path, statusCode, message, ex);
+		Object[] messageParams = {SERVER_ERROR, path, statusCode, message};
+		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

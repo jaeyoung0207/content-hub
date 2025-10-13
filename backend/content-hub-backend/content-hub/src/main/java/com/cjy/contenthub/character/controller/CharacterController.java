@@ -15,7 +15,6 @@ import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 캐릭터 정보 API 컨트롤러 클래스
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/character")
 @RequiredArgsConstructor
-@Slf4j
 public class CharacterController {
 
 	/** AniList API 통신용 WebClient 클래스 */

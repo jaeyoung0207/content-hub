@@ -10,7 +10,6 @@ import com.cjy.contenthub.common.client.DeepLApiClient;
 import com.cjy.contenthub.common.client.TmdbApiGenreClient;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -18,7 +17,6 @@ import reactor.core.publisher.Mono;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class ApiUtil {
 
 	/** TMDB API 장르 WebClient 클래스 */
@@ -67,13 +65,8 @@ public class ApiUtil {
 	 */
 	public Mono<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
 		return Mono.fromCallable(() -> 
-		deeplApiClient.translateText(
-				keyword, targetLang, sourceLang))
-				.onErrorResume(ex -> {
-					log.warn("DeepL 번역 실패: {}", ex.getMessage(), ex);
-					// 번역 실패 시 빈 문자열 반환
-					return Mono.just("");
-				});
+		deeplApiClient.translateText(keyword, targetLang, sourceLang))
+				.onErrorResume(ex -> Mono.just(""));
 	}
 
 }

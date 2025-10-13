@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class DeepLApiClient {
+	
+	/** 메시지 유틸리티 */
+	private final MessageUtil messageUtil;
 
+	/** DeepL WebClient */
 	@Qualifier("deeplWebClient")
 	private final WebClient deeplWebClient;
 
+	/** DeepL 번역 API 경로 */
 	@Value("${deepl.url.translatePath}")
 	private String translatePath;
 
@@ -61,9 +68,10 @@ public class DeepLApiClient {
 					.map(json -> json.get("translations").get(0).get("text").asText())
 					.block();
 		} catch(Exception ex) {
-			// 상세 예외 로깅
-	        log.error("DeepL API 호출 실패: text={}, targetLang={}, sourceLang={}, error={}", text, targetLang, sourceLang, ex.getMessage(), ex);
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "DeepL API 호출 중 오류 발생: " + ex.getMessage());
+	        Object[] logParams = { text, targetLang, sourceLang, ex.getMessage() };
+	        log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_DEEPL_DETAIL.getMessageCode(), logParams), ex);
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+	        		messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_DEEPL.getMessageCode()), ex);
 		}
 	}
 }

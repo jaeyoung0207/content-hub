@@ -13,7 +13,6 @@ import com.cjy.contenthub.person.controller.dto.PersonResponseDto;
 import com.cjy.contenthub.person.service.PersonService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 인물 정보 API 컨트롤러 클래스
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/person")
 @RequiredArgsConstructor
-@Slf4j
 public class PersonController {
 	
 	/** 인물 상세 서비스 */

@@ -18,6 +18,8 @@ import com.cjy.contenthub.common.api.dto.naver.NaverDeleteTokenDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverIssueTokenDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.login.client.LoginClient;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
@@ -46,6 +48,9 @@ public class LoginController {
 	
 	/** Redis 유틸리티 */
 	private final RedisUtil redisUtil;
+	
+	/** 메시지 유틸 */
+	private final MessageUtil messageUtil;
 
 	/** 파라미터 : 클라이언트 ID */
 	private static final String PARAM_CLIENT_ID = "client_id";
@@ -205,7 +210,8 @@ public class LoginController {
 		String[] idTokenArray = tokenResponse.getIdToken().split("\\.");
 		// ID토큰 정보가 존재하지 않을 경우, 400 에러
 		if (ObjectUtils.isEmpty(idTokenArray) || idTokenArray.length != 3) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is Empty");
+			throw new ResponseStatusException(
+					HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_PAYLOAD_EMPTY.getMessageCode()));
 		}
 		// 유저 정보 가져오기 API 조회
 		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
@@ -239,7 +245,7 @@ public class LoginController {
 		String[] idTokenArray = tokenResponse.getIdToken().split("\\.");
 		// ID토큰 정보가 존재하지 않을 경우, 400 에러
 		if (ObjectUtils.isEmpty(idTokenArray) || idTokenArray.length != 3) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is Empty");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_PAYLOAD_EMPTY.getMessageCode()));
 		}
 		// 유저 정보 가져오기 API 조회
 		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();

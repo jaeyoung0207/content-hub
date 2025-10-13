@@ -30,8 +30,10 @@ import com.cjy.contenthub.common.api.dto.naver.NaverProfileResultDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverUserDetails;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.common.util.JwtUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.login.controller.dto.LoginUserInfoDto;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
@@ -57,6 +59,9 @@ public class LoginClient {
 
 	/** Redis 템플릿 */
 	private final RedisUtil redisUtil;
+	
+	/** 메시지 유틸 */
+	private final MessageUtil messageUtil;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -162,7 +167,8 @@ public class LoginClient {
 									// jwt 생성
 									jwt = jwtUtil.createToken(profile.getId(), provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
-									throw new IllegalStateException("create JWT error!", ex);
+									throw new IllegalStateException(
+											messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
 								}
 
 								// 만료시각 변환(Date -> String)
@@ -244,7 +250,8 @@ public class LoginClient {
 					// 프로필 정보가 존재하지 않을 경우, 400 에러
 					if (ObjectUtils.isEmpty(response.getKakaoAccount())
 							|| ObjectUtils.isEmpty(response.getKakaoAccount().getProfile())) {
-						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile is Empty");
+						throw new ResponseStatusException(
+								HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_PROFILE.getMessageCode()));
 					}
 
 					// 카카오 프로필
@@ -289,7 +296,8 @@ public class LoginClient {
 									// jwt 생성
 									jwt = jwtUtil.createToken(providerId, provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
-									throw new IllegalStateException("create JWT error!", ex);
+									throw new IllegalStateException(
+											messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
 								}
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()

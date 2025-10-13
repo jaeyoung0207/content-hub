@@ -22,7 +22,6 @@ import com.cjy.contenthub.search.service.SearchNoCacheService;
 import com.cjy.contenthub.search.service.SearchService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 검색 콘텐츠 API 컨트롤러 클래스
@@ -30,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/search")
 @RequiredArgsConstructor
-@Slf4j
 public class SearchController {
 
 	/** 검색 서비스 클래스 */

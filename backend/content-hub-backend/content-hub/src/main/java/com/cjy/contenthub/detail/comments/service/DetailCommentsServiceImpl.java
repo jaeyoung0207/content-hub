@@ -15,11 +15,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.repository.entity.ContentEntity;
 import com.cjy.contenthub.common.repository.entity.UserEntity;
 import com.cjy.contenthub.common.util.BusinessUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.detail.comments.helper.DetailCommentsHelper;
 import com.cjy.contenthub.detail.comments.mapper.DetailCommentsMapper;
 import com.cjy.contenthub.detail.comments.repository.DetailCommentsRepository;
@@ -59,6 +61,9 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 	/** 비즈니스 유틸리티 */
 	private final BusinessUtil businessUtil;
 	
+	/** 메시지 유틸 */
+	private final MessageUtil messageUtil;
+	
 	/** 페이지당 코멘트 수 */
 	@Value("${app.comment.perPage}")
 	private int commentPerPage;
@@ -79,7 +84,8 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 		UserEntity user = userRepository.findByProviderAndProviderId(commentParam.getProvider(), commentParam.getProviderId());
 		// 유저 엔티티가 존재하지 않는 경우 예외 처리
 		if (ObjectUtils.isEmpty(user)) {
-			throw new CommonBusinessException("유저 정보가 존재하지 않습니다.");
+			throw new CommonBusinessException(
+					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
 		}
 		// 유저 ID 설정
 		comment.setUserEntity(user);
@@ -115,7 +121,8 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 		Optional<DetailCommentsEntity> selectedComment = commentsRepository.findById(comment.getCommentId());
 		// 코멘트가 존재하지 않는 경우 예외 처리
 		if (!selectedComment.isPresent()) {
-			throw new CommonBusinessException("코멘트가 존재하지 않습니다.");
+			throw new CommonBusinessException(
+					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_DETAIL_COMMENT_COMMENT_NOT_FOUND.getMessageCode()));
 		}
 		// 코멘트 및 별점 설정
 		selectedComment.get().setCommentAndStarRating(commentParam.getComment(), commentParam.getStarRating());

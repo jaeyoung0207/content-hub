@@ -26,7 +26,6 @@ import com.cjy.contenthub.detail.comments.service.dto.DetailCommentsDataServiceD
 import com.cjy.contenthub.detail.comments.service.dto.DetailCommentsServiceDto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 상세 화면 코멘트 API 컨트롤러 클래스
@@ -34,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/detail/comment")
 @RequiredArgsConstructor
-@Slf4j
 public class DetailCommentsController {
 
 	/** 코멘트 서비스 */
