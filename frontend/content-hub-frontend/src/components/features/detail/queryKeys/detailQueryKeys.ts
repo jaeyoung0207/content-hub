@@ -6,6 +6,7 @@ export const detailMainKey = 'detail';
  * 각 쿼리 키는 React Query에서 데이터를 캐싱하고 관리하는 데 사용됨
  */
 export const detailQueryKeys = {
+  all: [detailMainKey] as const,
   detail: {
     getDetail: (contentMediaType: string, apiId: string, userId?: number) =>
       [detailMainKey, contentMediaType, apiId, userId] as const,

@@ -6,6 +6,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { My } from '@/api/My';
 import { useNavigate } from 'react-router-dom';
 import { Control, useForm } from 'react-hook-form';
+import { freshOnMountOptions } from '@/components/common/config/queryOptions';
 
 /**
  * 나의 코멘트 폼 타입
@@ -87,8 +88,7 @@ export const useMyComments = (): UseMyCommentsReturnType => {
     },
     maxPages: totalPages,
     enabled: !!user?.userId,
-    staleTime: 0, // 데이터가 바로 만료되도록 설정
-    gcTime: 0, // 가비지 컬렉션 시간 설정
+    ...freshOnMountOptions // 쿼리 공통 옵션 적용
   });
 
   /**

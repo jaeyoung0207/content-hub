@@ -33,7 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import { INFINITE_SCROLL_THROTTLE_DELAY } from '@/components/common/constants/constants';
+import { INFINITE_SCROLL_THROTTLE_DELAY, ONE_MINUTE } from '@/components/common/constants/constants';
 import { throttle } from 'lodash-es';
 import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
 import { loginConfirmDialog } from '@/components/common/utils/loginUtil';
@@ -234,8 +234,9 @@ export const useDetailComments = (
     // 초기 페이지 매개변수를 지정
     initialPageParam: 0,
     // enabled: !!tabIndex, // useInfiniteQuery가 실행되는 조건 지정
-    staleTime: 0, // 캐시를 무효화 하여 최신 데이터 조회
-    gcTime: 0, // 캐시를 무효화 하여 최신 데이터 조회
+    staleTime: 0,
+    gcTime: ONE_MINUTE * 5,
+    refetchOnMount: 'always',
   });
 
   /**

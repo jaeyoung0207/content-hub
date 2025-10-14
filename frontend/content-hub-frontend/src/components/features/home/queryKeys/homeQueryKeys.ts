@@ -6,6 +6,8 @@ const homeMainKey = 'home';
  * 각 쿼리 키는 React Query에서 데이터를 캐싱하고 관리하는 데 사용됨
  */
 export const homeQueryKeys = {
+  // 홈 화면의 모든 쿼리 키
+  all: [homeMainKey] as const,
   // 홈 화면의 콘텐츠 랭킹 조회 쿼리 키
   getContentRankings: (userId: number | undefined) =>
     [homeMainKey, 'getContentRankings', userId] as const,

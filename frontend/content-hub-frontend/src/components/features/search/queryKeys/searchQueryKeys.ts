@@ -6,8 +6,8 @@ const searchMainKey = 'search';
  */
 export const searchQueryKeys = {
   // 검색 화면에서 검색 결과를 가져오기 위한 쿼리 키
+  all: [searchMainKey] as const,
   search: {
-    searchAll: () => [searchMainKey] as const,
     videoSearch: (keyword: string, isAdult: string, userId?: number) =>
       [searchMainKey, 'videoSearch', keyword, isAdult, userId] as const,
     comicsSearch: (keyword: string, isAdult: string, userId?: number) =>

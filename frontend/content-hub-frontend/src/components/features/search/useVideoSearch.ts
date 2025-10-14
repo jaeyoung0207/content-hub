@@ -3,6 +3,7 @@ import { SearchVideoResponseDto } from '@api/data-contracts';
 import { useQuery } from '@tanstack/react-query';
 import { searchQueryKeys } from './queryKeys/searchQueryKeys';
 import { useUserStore } from '@/components/common/store/globalStateStore';
+import { freshOnMountOptions } from '@/components/common/config/queryOptions';
 
 /**
  * 비디오 검색 훅 반환 타입
@@ -50,8 +51,7 @@ export const useVideoSearch = (
       ).data;
     },
     enabled: !!keyword,
-    staleTime: 0, // 데이터를 바로 stale로 간주
-    gcTime: 0, // 캐시된 데이터를 바로 제거
+    ...freshOnMountOptions // 쿼리 공통 옵션 적용
   });
 
   // ================================================================================================== return

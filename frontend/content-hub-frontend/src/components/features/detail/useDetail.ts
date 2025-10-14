@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
 import { settings } from '@/components/common/config/settings';
+import { freshOnMountOptions } from '@/components/common/config/queryOptions';
 
 /**
  * 상세 정보 결과 타입
@@ -157,9 +158,8 @@ export const useDetail = (
       // 상세 정보를 가져오는 API 호출
       return await getDetailApi();
     },
-    staleTime: 0, // 데이터를 바로 stale로 간주
-    gcTime: 0, // 캐시된 데이터를 바로 제거
     enabled: !!contentMediaType, // contentMediaType이 존재할 때만 쿼리 실행
+    ...freshOnMountOptions // 쿼리 공통 옵션 적용
   });
 
   // ================================================================================================== function

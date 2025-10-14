@@ -17,9 +17,9 @@ import { detailQueryKeys } from '../../../queryKeys/detailQueryKeys';
 import {
   COMICS_CREDITS_TYPE,
   INFINITE_SCROLL_THROTTLE_DELAY,
-  ONE_MINUTE,
 } from '@/components/common/constants/constants';
 import { throttle } from 'lodash-es';
+import { cachedListOptions } from '@/components/common/config/queryOptions';
 
 /**
  * 만화 캐릭터/제작진 정보 무한스크롤 쿼리 결과 타입
@@ -103,8 +103,7 @@ export const useDetailComicsCharacterInformation = (
         pageParams: data.pageParams,
       }),
       initialPageParam: 1,
-      staleTime: ONE_MINUTE * 1,
-      gcTime: ONE_MINUTE * 2,
+      ...cachedListOptions, // 쿼리 공통 캐시형 프리셋
     });
 
   /**

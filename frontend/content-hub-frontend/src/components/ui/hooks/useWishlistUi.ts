@@ -14,6 +14,9 @@ import {
 } from '@/components/common/utils/convertUtil';
 import { MEDIA_TYPE_KIND } from '@/components/common/constants/constants';
 import { useConfirmDialogStore } from '@/components/common/store/globalStateStore';
+import { searchQueryKeys } from '@/components/features/search/queryKeys/searchQueryKeys';
+import { detailQueryKeys } from '@/components/features/detail/queryKeys/detailQueryKeys';
+import { homeQueryKeys } from '@/components/features/home/queryKeys/homeQueryKeys';
 
 /**
  * 위시리스트 훅 반환 타입
@@ -102,10 +105,10 @@ export const useWishlistUi = ({
       });
     },
     onSettled: () => {
+      // 실행 중 상태 해제
       setIsExecuting(false);
-      queryClient.invalidateQueries({
-        queryKey: wishlistQueryKeys.wishlist.all,
-      });
+      // 관련 쿼리 키 무효화
+      invalidateQueries();
     },
   });
 
@@ -142,12 +145,34 @@ export const useWishlistUi = ({
       });
     },
     onSettled: () => {
+      // 실행 중 상태 해제
       setIsExecuting(false);
-      queryClient.invalidateQueries({
-        queryKey: wishlistQueryKeys.wishlist.all,
-      });
+      // 관련 쿼리 키 무효화
+      invalidateQueries();
     },
   });
+
+  /**
+   * 모든 위시리스트 관련 화면 쿼리 무효화 함수
+   */
+  const invalidateQueries = () => {
+    // 위시리스트 관련 쿼리 무효화
+    queryClient.invalidateQueries({
+      queryKey: wishlistQueryKeys.all,
+    });
+    // 홈 화면 관련 쿼리 무효화
+    queryClient.invalidateQueries({
+      queryKey: homeQueryKeys.all,
+    });
+    // 검색 화면 관련 쿼리 무효화
+    queryClient.invalidateQueries({
+      queryKey: searchQueryKeys.all,
+    });
+    // 상세 화면 관련 쿼리 무효화
+    queryClient.invalidateQueries({
+      queryKey: detailQueryKeys.all,
+    });
+  }
 
   /**
    * 위시리스트 존재 여부 확인 함수
@@ -250,10 +275,13 @@ export const useWishlistUi = ({
    * isWishlisted prop이 변경될 때 addToWishlist 상태를 동기화
    */
   useEffect(() => {
-    if (userId) {
+    if (!userId) { 
+      return;
+    }
+    if (addToWishlist !== isWishlisted) {
       setAddToWishlist(isWishlisted);
     }
-  }, [isWishlisted, userId]);
+  }, [isWishlisted, userId, addToWishlist]);
 
   // ================================================================================================== return
 

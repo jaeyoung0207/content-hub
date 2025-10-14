@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { ESC_KEY, SEARCH_TYPE } from '@/components/common/constants/constants';
 import { useTranslation } from 'react-i18next';
+import { freshOnMountOptions } from '@/components/common/config/queryOptions';
 
 /**
  * useWishlist 훅 반환 타입
@@ -114,6 +115,7 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
       return (await wishlistApi.getWishlist({ userId })).data;
     },
     enabled: !!userId,
+    ...freshOnMountOptions // 쿼리 공통 옵션 적용
   });
 
   /**
@@ -154,7 +156,7 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
     onSettled: () => {
       setIsExecuting(false);
       queryClient.invalidateQueries({
-        queryKey: wishlistQueryKeys.wishlist.all,
+        queryKey: wishlistQueryKeys.all,
       });
     },
   });

@@ -11,6 +11,7 @@ import {
   ESC_KEY,
   INFINITE_SCROLL_THROTTLE_DELAY,
   MEDIA_TYPE_KIND,
+  ONE_MINUTE,
 } from '@/components/common/constants/constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -193,8 +194,9 @@ export const useSearchMore = (
     }),
     initialPageParam: 1, // 초기 페이지 매개변수를 지정
     enabled: !!keyword && !!displayMediaType, // useInfiniteQuery가 실행되는 조건 지정
-    staleTime: 0, // 데이터를 바로 stale로 간주
-    gcTime: 0, // 캐시된 데이터를 바로 제거
+    staleTime: 0,
+    gcTime: ONE_MINUTE * 5,
+    refetchOnMount: 'always',
   });
 
   // ================================================================================================== function

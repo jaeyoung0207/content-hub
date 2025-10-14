@@ -6,6 +6,7 @@ import {
   LoginUserInfoDto,
 } from '@/api/data-contracts';
 import { homeQueryKeys } from './queryKeys/homeQueryKeys';
+import { freshOnMountOptions } from '@/components/common/config/queryOptions';
 
 /**
  * 홈 화면 훅 반환 타입
@@ -38,6 +39,7 @@ export const useHome = (): useHomeReturnType => {
     queryKey: homeQueryKeys.getContentRankings(user?.userId),
     queryFn: async () =>
       (await homeApi.getContentRankings({ user_id: user?.userId })).data,
+    ...freshOnMountOptions // 쿼리 공통 옵션 적용
   });
 
   // ================================================================================================== function

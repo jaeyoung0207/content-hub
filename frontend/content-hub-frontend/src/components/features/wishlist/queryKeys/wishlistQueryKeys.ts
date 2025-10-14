@@ -5,8 +5,8 @@ const wishlistMainKey = 'wishlist';
  * 위시리스트 쿼리 키
  */
 export const wishlistQueryKeys = {
+  all: [wishlistMainKey] as const,
   wishlist: {
-    all: [wishlistMainKey] as const,
     add: (userId: number) => [wishlistMainKey, 'addWishlist', userId] as const,
     exists: (userId: number, contentMediaType: string, apiId: number) =>
       [

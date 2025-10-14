@@ -30,10 +30,10 @@ export const queryClientConfig = new QueryClient({
     queries: {
       throwOnError: false, // 에러 발생시 throw하지 않음
       retry: false, // 재시도 해제
-      refetchOnWindowFocus: false, // 브라우저 포커스시 재요청 방지
       staleTime: ONE_MINUTE * 5, // 데이터를 5분간 fresh로 간주
       gcTime: ONE_MINUTE * 10, // 캐시된 데이터를 10분간 유지(旧 react-query의 cacheTime)
-      // refetchOnMount: false, // 컴포넌트 리마운트 시 재요청 방지
+      refetchOnWindowFocus: false, // 브라우저 포커스시 재요청 방지
+      refetchOnMount: false, // 컴포넌트 리마운트 시 재요청 방지
     },
   },
   // queryCache 설정
