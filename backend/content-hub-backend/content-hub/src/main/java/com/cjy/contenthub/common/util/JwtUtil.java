@@ -18,6 +18,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,12 +26,13 @@ import lombok.extern.slf4j.Slf4j;
  * JWT 토큰 생성 및 검증 기능을 제공하는 클래스
  * 주로 유저 인증 및 권한 부여에 사용됨
  */
-@Slf4j
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class JwtUtil {
 	
 	/** 메세지 유틸 */
-	private MessageUtil messageUtil;
+	private final MessageUtil messageUtil;
 
 	/** JWT 서명에 사용할 비밀 키 */
 	@Value("${login.jwt.secretKey}")

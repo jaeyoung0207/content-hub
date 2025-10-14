@@ -25,18 +25,20 @@ import com.cjy.contenthub.common.util.MessageUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Rest API 통신중 발생한 에러를 잡아서 처리하는 클래스
  * 각 메소드에서 예외를 잡아 적절한 에러 메시지와 상태 코드를 JSON 형태의 오브젝트로 반환
  */
-@Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
+@Slf4j
 public class CommonRestControllerAdvice {
 	
 	/** 메시지 유틸 */
-	private MessageUtil messageUtil;
+	private final MessageUtil messageUtil;
 
 	/** 인증 에러 */
 	private static final String AUTHENTICATION_AUTHORIZATION_ERROR = "Authentication/Authorization Error";
