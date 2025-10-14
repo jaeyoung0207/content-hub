@@ -48,7 +48,7 @@ logging:
     root: INFO
     com:
       cjy:
-        contenthub: DEBUG
+        contenthub: INFO
   file:
     name: logs/app.log
     #org.springframework.security: DEBUG
