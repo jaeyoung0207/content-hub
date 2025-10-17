@@ -3,7 +3,7 @@ import { useUserStore } from '@/components/common/store/globalStateStore';
 import { useQuery } from '@tanstack/react-query';
 import { myCommentsQueryKeys } from './queryKeys/myCommentsQueryKeys';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { My } from '@/api/My';
+import { MyCommentsApi } from '@/api/MyCommentsApi';
 import { useNavigate } from 'react-router-dom';
 import { Control, useForm } from 'react-hook-form';
 import { freshOnMountOptions } from '@/components/common/config/queryOptions';
@@ -72,13 +72,13 @@ export const useMyComments = (): UseMyCommentsReturnType => {
   // ================================================================================================== react query
 
   // 나의 코멘트 API 인스턴스
-  const myApi = new My();
+  const myCommentsApi = new MyCommentsApi();
 
   // 나의 코멘트 목록 조회
   const { data, isLoading } = useQuery({
     queryKey: myCommentsQueryKeys.page(user!.userId!, currentPage),
     queryFn: async () => {
-      const response = await myApi.getMyCommentList({
+      const response = await myCommentsApi.getMyCommentList({
         user_id: user!.userId!,
         page_no: currentPage,
       });
@@ -88,7 +88,7 @@ export const useMyComments = (): UseMyCommentsReturnType => {
     },
     maxPages: totalPages,
     enabled: !!user?.userId,
-    ...freshOnMountOptions // 쿼리 공통 옵션 적용
+    ...freshOnMountOptions, // 쿼리 공통 옵션 적용
   });
 
   /**

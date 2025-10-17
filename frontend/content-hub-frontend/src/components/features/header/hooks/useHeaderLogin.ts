@@ -1,4 +1,4 @@
-import { Login } from '@/api/Login';
+import { LoginApi } from '@/api/LoginApi';
 import {
   ESC_KEY,
   LOGIN_PROVIDER,
@@ -22,7 +22,7 @@ import {
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
-import { Common } from '@/api/Common';
+import { CommonApi } from '@/api/CommonApi';
 import { settings } from '@/components/common/config/settings';
 import { LoginUserInfoDto, LoginUserResponseDto } from '@/api/data-contracts';
 
@@ -69,9 +69,9 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   const queryClient = useQueryClient();
 
   // 공통 API 인스턴스 생성
-  const commonApi = new Common();
+  const commonApi = new CommonApi();
   // 로그인 API 인스턴스 생성
-  const loginApi = new Login();
+  const loginApi = new LoginApi();
 
   // ================================================================================================== function
 

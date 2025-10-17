@@ -1,4 +1,4 @@
-import { Detail } from '@/api/Detail';
+import { DetailInformationApi } from '@/api/DetailInformationApi';
 import {
   Dispatch,
   SetStateAction,
@@ -57,7 +57,7 @@ export const useDetailComicsCharacterInformation = (
   // ================================================================================================== react query
 
   // Detail API 인스턴스 생성
-  const detailApi = new Detail();
+  const detailInformationApi = new DetailInformationApi();
 
   /**
    * useInfiniteQuery 훅을 사용하여 캐릭터 정보를 무한 스크롤로 가져오는 쿼리
@@ -83,11 +83,11 @@ export const useDetailComicsCharacterInformation = (
       queryFn: async ({ pageParam = 1 }) => {
         const response =
           creditsType === COMICS_CREDITS_TYPE.CHARACTER
-            ? await detailApi.getComicsCharacterList({
+            ? await detailInformationApi.getComicsCharacterList({
                 comics_id: detailResult.id!,
                 page: pageParam,
               })
-            : await detailApi.getComicsStaffList({
+            : await detailInformationApi.getComicsStaffList({
                 comics_id: detailResult.id!,
                 page: pageParam,
               });

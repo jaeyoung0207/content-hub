@@ -10,51 +10,29 @@
  * ---------------------------------------------------------------
  */
 
-import {
-  AniListCharactersNodeDto,
-  AniListStaffNodeDto,
-} from './data-contracts';
+import { PersonResponseDto } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
-export class Character<
+export class PersonApi<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags character-controller
-   * @name GetStaff
-   * @request GET:/character/getStaff
+   * @tags person-api
+   * @name GetPersonDetails
+   * @summary 인물 상세 정보 조회
+   * @request GET:/api/person/getPersonDetails
    */
-  getStaff = (
+  getPersonDetails = (
     query: {
       /** @format int32 */
-      staff_id: number;
+      person_id: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<AniListStaffNodeDto, any>({
-      path: `/character/getStaff`,
-      method: 'GET',
-      query: query,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags character-controller
-   * @name GetCharacter
-   * @request GET:/character/getCharacter
-   */
-  getCharacter = (
-    query: {
-      /** @format int32 */
-      character_id: number;
-    },
-    params: RequestParams = {}
-  ) =>
-    this.request<AniListCharactersNodeDto, any>({
-      path: `/character/getCharacter`,
+    this.request<PersonResponseDto, any>({
+      path: `/api/person/getPersonDetails`,
       method: 'GET',
       query: query,
       ...params,

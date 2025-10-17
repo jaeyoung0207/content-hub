@@ -1,4 +1,4 @@
-import { Search } from '@api/Search';
+import { SearchApi } from '@api/SearchApi';
 import { SearchComicsResponseDto } from '@api/data-contracts';
 import { useQuery } from '@tanstack/react-query';
 import { searchQueryKeys } from './queryKeys/searchQueryKeys';
@@ -32,7 +32,7 @@ export const useComicsSearch = (
   // ================================================================================================== react query
 
   // 검색 API 인스턴스 생성
-  const searchApi = new Search();
+  const searchApi = new SearchApi();
 
   /**
    * 검색 결과를 가져오기 위한 react-query 훅
@@ -57,7 +57,7 @@ export const useComicsSearch = (
       ).data;
     },
     enabled: !!keyword,
-    ...freshOnMountOptions // 쿼리 공통 옵션 적용
+    ...freshOnMountOptions, // 쿼리 공통 옵션 적용
   });
 
   // ================================================================================================== return

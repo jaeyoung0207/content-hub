@@ -1,4 +1,4 @@
-import { Login } from '@/api/Login';
+import { LoginApi } from '@/api/LoginApi';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -23,7 +23,7 @@ export const useNaverLogin = () => {
   // 유저 정보 전역 상태 저장 훅
   const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
-  const loginApi = new Login();
+  const loginApi = new LoginApi();
 
   /**
    * 네이버 로그인 인증 및 유저 정보 조회 API 요청

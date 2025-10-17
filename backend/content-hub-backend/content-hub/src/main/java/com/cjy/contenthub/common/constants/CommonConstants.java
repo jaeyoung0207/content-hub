@@ -57,6 +57,9 @@ public class CommonConstants {
     /** HYPEN */
     public static final String HYPEN = "-";
     
+    /** SLASH */
+    public static final String SLASH = "/";
+    
     /** 날짜 형식 정규식: yyyy-MM-dd */
     public static final String STR_DATE_REGEX = "^\\d{4}-\\d{2}-\\d{2}$";
     

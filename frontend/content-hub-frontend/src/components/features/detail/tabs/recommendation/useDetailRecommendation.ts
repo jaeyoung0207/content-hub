@@ -3,7 +3,7 @@ import {
   DetailRecommendationsMovieResultsDto,
   DetailRecommendationsTvResultsDto,
 } from '@/api/data-contracts';
-import { Detail } from '@/api/Detail';
+import { DetailRecommendationApi } from '@/api/DetailRecommendationApi';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { DetailResponseType } from '../../useDetail';
@@ -14,7 +14,10 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { INFINITE_SCROLL_THROTTLE_DELAY, ONE_MINUTE } from '@/components/common/constants/constants';
+import {
+  INFINITE_SCROLL_THROTTLE_DELAY,
+  ONE_MINUTE,
+} from '@/components/common/constants/constants';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
 import { throttle } from 'lodash-es';
 import { useUserStore } from '@/components/common/store/globalStateStore';
@@ -69,7 +72,7 @@ export const useRecommendationContent = (
   // ================================================================================================== react query
 
   // Detail API 인스턴스 생성
-  const detailApi = new Detail();
+  const detailRecommendationApi = new DetailRecommendationApi();
 
   /**
    * 추천 콘텐츠를 가져오기 위한 API 호출 함수
@@ -87,7 +90,7 @@ export const useRecommendationContent = (
       displayMediaType == getDisplayMediaType().varietyCode
     ) {
       return (
-        await detailApi.getTvRecommendations({
+        await detailRecommendationApi.getTvRecommendations({
           series_id: detailResult.id!,
           page: pageParam,
           user_id: user?.userId,
@@ -97,7 +100,7 @@ export const useRecommendationContent = (
     // 화면 표시용 미디어 타입이 MOVIE인 경우
     else if (displayMediaType == getDisplayMediaType().movieCode) {
       return (
-        await detailApi.getMovieRecommendations({
+        await detailRecommendationApi.getMovieRecommendations({
           movie_id: detailResult.id!,
           page: pageParam,
           user_id: user?.userId,
@@ -107,7 +110,7 @@ export const useRecommendationContent = (
     // 화면 표시용 미디어 타입이 COMICS인 경우
     else if (displayMediaType == getDisplayMediaType().comicsCode) {
       return (
-        await detailApi.getComicsRecommendations({
+        await detailRecommendationApi.getComicsRecommendations({
           media_id: detailResult.id!,
           page: pageParam,
           user_id: user?.userId,
@@ -163,7 +166,7 @@ export const useRecommendationContent = (
     }),
     // 초기 페이지 매개변수를 지정
     initialPageParam: 1,
-    staleTime: 0, 
+    staleTime: 0,
     gcTime: ONE_MINUTE * 5,
     refetchOnMount: 'always',
   });

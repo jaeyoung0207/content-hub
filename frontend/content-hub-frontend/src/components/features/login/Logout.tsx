@@ -1,4 +1,4 @@
-import { Login } from '@/api/Login';
+import { LoginApi } from '@/api/LoginApi';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
 import {
   useProviderStore,
@@ -21,7 +21,7 @@ export const Logout = () => {
   // user 전역 상태 저장 훅
   const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
-  const loginApi = new Login();
+  const loginApi = new LoginApi();
 
   /**
    * 로그아웃 처리

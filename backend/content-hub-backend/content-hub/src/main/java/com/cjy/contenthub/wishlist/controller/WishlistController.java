@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistCheckResultResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
@@ -20,12 +20,15 @@ import com.cjy.contenthub.wishlist.service.dto.WishlistCheckResultServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistListServiceDto;
 import com.cjy.contenthub.wishlist.service.dto.WishlistServiceDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 위시리스트 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "wishlist-api", description = "Wishlist APIs")
+@ApiController
 @RequestMapping(CommonConstants.WISHLIST_PATH)
 @RequiredArgsConstructor
 public class WishlistController {
@@ -51,6 +54,7 @@ public class WishlistController {
 	 * @param requestDto
 	 * @return 위시리스트 저장 성공 여부
 	 */
+	@Operation(summary = "위시리스트 등록")
 	@PostMapping("/saveWishlist")
 	public ResponseEntity<Boolean> saveWishlist(@RequestBody @Validated WishlistRequestDto requestDto) {
 		
@@ -67,6 +71,7 @@ public class WishlistController {
 	 * @param requestDto
 	 * @return 위시리스트 삭제 성공 여부
 	 */
+	@Operation(summary = "위시리스트 삭제")
 	@DeleteMapping("/deleteWishlist")
 	public ResponseEntity<Boolean> deleteWishlist(@RequestBody @Validated WishlistRequestDto requestDto) {
 
@@ -85,6 +90,7 @@ public class WishlistController {
 	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return 위시리스트 항목 정보
 	 */
+	@Operation(summary = "위시리스트 체크")
 	@GetMapping("/checkWishlist")
 	public ResponseEntity<WishlistCheckResultResponseDto> checkWishlist(
 			@RequestParam(PARAM_USER_ID) Long userId, 
@@ -104,6 +110,7 @@ public class WishlistController {
 	 * @param userId 유저 테이블 ID
 	 * @return 위시리스트 항목 정보
 	 */
+	@Operation(summary = "위시리스트 조회")
 	@PostMapping("/getWishlist")
 	public ResponseEntity<WishlistListResponseDto> getWishlist(Long userId) {
 		

@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsGetDataDto;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsGetResponseDto;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsSaveRequestDto;
@@ -25,13 +25,16 @@ import com.cjy.contenthub.detail.comments.service.DetailCommentsService;
 import com.cjy.contenthub.detail.comments.service.dto.DetailCommentsDataServiceDto;
 import com.cjy.contenthub.detail.comments.service.dto.DetailCommentsServiceDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 상세 화면 코멘트 API 컨트롤러 클래스
  */
-@RestController
-@RequestMapping("/detail/comment")
+@Tag(name = "detail-comments-api", description = "Detail Comments APIs")
+@ApiController
+@RequestMapping("/detail/comments")
 @RequiredArgsConstructor
 public class DetailCommentsController {
 
@@ -62,6 +65,7 @@ public class DetailCommentsController {
 	 * @param params 상세 코멘트 등록 요청 DTO
 	 * @return ResponseEntity<Boolean> 등록 결과
 	 */
+	@Operation(summary = "코멘트 등록")
 	@PostMapping(value = "/saveComment")
 	public ResponseEntity<Boolean> saveComent(@RequestBody @Validated DetailCommentsSaveRequestDto params) {
 
@@ -82,6 +86,7 @@ public class DetailCommentsController {
 	 * @param params 상세 코멘트 갱신 요청 DTO
 	 * @return ResponseEntity<Boolean> 갱신 결과
 	 */
+	@Operation(summary = "코멘트 갱신")
 	@PutMapping(value = "/updateComment")
 	public ResponseEntity<Boolean> updateComent(@RequestBody @Validated DetailCommentsUpdateRequestDto params) {
 
@@ -102,6 +107,7 @@ public class DetailCommentsController {
 	 * @param commentId 코멘트 ID
 	 * @return ResponseEntity<Boolean> 삭제 결과
 	 */
+	@Operation(summary = "코멘트 삭제")
 	@DeleteMapping(value = "/deleteComment")
 	public ResponseEntity<Boolean> deleteComment(@RequestParam(PARAM_COMMENT_ID) Long commentId) {
 
@@ -122,6 +128,7 @@ public class DetailCommentsController {
 	 * @param providerId 프로바이더 ID
 	 * @return ResponseEntity<DetailCommentsGetResponseDto> 코멘트 목록 응답 DTO
 	 */
+	@Operation(summary = "코멘트 목록 조회")
 	@GetMapping(value = "/getCommentList")
 	public ResponseEntity<DetailCommentsGetResponseDto> getCommentList(
 			@RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String contentMediaType,
@@ -155,6 +162,7 @@ public class DetailCommentsController {
 	 * @param apiId API ID
 	 * @return ResponseEntity<BigDecimal> 별점 평균
 	 */
+	@Operation(summary = "별점 평균 조회")
 	@GetMapping(value = "/getStarRatingAverage")
 	public ResponseEntity<BigDecimal> getStarRatingAverage(
 			@RequestParam(PARAM_ORIGINAL_MEDIATYPE) String contentMediaType,

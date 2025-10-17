@@ -1,6 +1,5 @@
 package com.cjy.contenthub.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +15,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.filter.CommonAuthenticationEntryPoint;
 import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
+import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
@@ -51,9 +51,8 @@ public class SecurityConfig {
 	/** 인증 예외 처리 필터 */
 	private final CommonAuthenticationEntryPoint authenticationEntryPoint;
 	
-	/** 어플리케이션 URL(프론트엔드) */
-	@Value("${app.url}")
-	private String appUrl;
+	/** API 접두사 및 버전 설정 */
+	private final ApiPrefixProperties apiPrefixProperties;
 
 	/**
 	 * 스프링 세큐리티 설정
@@ -68,6 +67,9 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		
+		// API 접두사 및 버전
+		String fullPrefix = apiPrefixProperties.getFullPrefix();
+		
 		// CSRF TOKEN 쿠키 저장소 설정 
 		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
 		csrfTokenRepository.setCookieCustomizer(cookie -> 
@@ -77,8 +79,8 @@ public class SecurityConfig {
 		httpSecurity
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
-				.requestMatchers(CommonConstants.WISHLIST_PATH.concat("/**")).authenticated() // 위시리스트 경로에 대한 요청은 인증 필요
-				.requestMatchers("/my/comments/**").authenticated() // 나의 코멘트 경로에 대한 요청은 인증 필요
+				.requestMatchers(fullPrefix.concat(CommonConstants.WISHLIST_PATH).concat("/**")).authenticated() // 위시리스트 경로에 대한 요청은 인증 필요
+				.requestMatchers(fullPrefix.concat("/my/**")).authenticated() // my 하위 경로에 대한 요청은 인증 필요
 				.anyRequest().permitAll() // 로그인 없이 접근 가능하므로, 모든 요청에 대해 인증 없이 접근 허용
 				)
 		.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
@@ -86,7 +88,7 @@ public class SecurityConfig {
 		.csrf(csrf -> csrf
 				.csrfTokenRepository(csrfTokenRepository)
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-				.ignoringRequestMatchers("/login/**")
+				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
 		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, redisUtil, userRepository, loginHelper, messageUtil), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터

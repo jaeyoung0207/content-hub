@@ -6,18 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.person.controller.dto.PersonResponseDto;
 import com.cjy.contenthub.person.service.PersonService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 인물 정보 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "person-api", description = "Person APIs")
+@ApiController
 @RequestMapping("/person")
 @RequiredArgsConstructor
 public class PersonController {
@@ -42,7 +45,8 @@ public class PersonController {
 	 * @param personId 인물 ID
 	 * @return 인물 상세 정보 DTO
 	 */
-	@GetMapping("/details")
+	@Operation(summary = "인물 상세 정보 조회")
+	@GetMapping("/getPersonDetails")
 	public ResponseEntity<PersonResponseDto> getPersonDetails(
 			@RequestParam(PARAM_PERSON_ID) int personId) {
 		return ResponseEntity.ok(personService.getPersonDetails(personId));

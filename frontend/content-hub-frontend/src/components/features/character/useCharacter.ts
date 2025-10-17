@@ -1,4 +1,4 @@
-import { Character } from '@/api/Character';
+import { CharacterApi } from '@/api/CharacterApi';
 import {
   AniListCharactersNodeDto,
   AniListStaffNodeDto,
@@ -27,7 +27,7 @@ export const useCharacter = (
   // ================================================================================================== react query
 
   // character API 인스턴스 생성
-  const characterApi = new Character();
+  const characterApi = new CharacterApi();
 
   // 캐릭터 데이터 API 호출
   const { data, isLoading, isError } = useQuery<

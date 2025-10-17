@@ -18,6 +18,7 @@ import {
   useUserStore,
 } from '@/components/common/store/globalStateStore'; // add custom config
 import { clearUserData } from '@/components/common/utils/clearUtil'; // add custom config
+import Sentry from '@/sentry'; // add custom config
 import type {
   AxiosError,
   AxiosInstance,
@@ -29,7 +30,6 @@ import type {
 import axios from 'axios';
 import dayjs from 'dayjs'; // add custom config
 import { LoginProfileResultDto } from './data-contracts'; // add custom config
-import Sentry from '@/sentry'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 

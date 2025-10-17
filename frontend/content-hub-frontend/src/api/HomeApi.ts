@@ -10,28 +10,29 @@
  * ---------------------------------------------------------------
  */
 
-import { PersonResponseDto } from './data-contracts';
+import { HomeRankingListResponseDto } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
-export class Person<
+export class HomeApi<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags person-controller
-   * @name GetPersonDetails
-   * @request GET:/person/details
+   * @tags home-api
+   * @name GetContentRankings
+   * @summary 콘텐츠 랭킹 정보 조회
+   * @request GET:/api/home/rankings
    */
-  getPersonDetails = (
-    query: {
-      /** @format int32 */
-      person_id: number;
+  getContentRankings = (
+    query?: {
+      /** @format int64 */
+      user_id?: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<PersonResponseDto, any>({
-      path: `/person/details`,
+    this.request<HomeRankingListResponseDto, any>({
+      path: `/api/home/rankings`,
       method: 'GET',
       query: query,
       ...params,

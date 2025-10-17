@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { WishlistUiPropsType } from '../WishlistUi';
-import { Wishlist } from '@/api/Wishlist';
+import { WishlistApi } from '@/api/WishlistApi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { wishlistQueryKeys } from '@/components/features/wishlist/queryKeys/wishlistQueryKeys';
 import { toast } from 'react-toastify';
@@ -52,7 +52,7 @@ export const useWishlistUi = ({
   const { t } = useTranslation();
 
   // Wishlist API 인스턴스
-  const wishlistApi = new Wishlist();
+  const wishlistApi = new WishlistApi();
 
   // 위시리스트 여부 상태
   const [addToWishlist, setAddToWishlist] = useState<boolean>(isWishlisted);
@@ -172,7 +172,7 @@ export const useWishlistUi = ({
     queryClient.invalidateQueries({
       queryKey: detailQueryKeys.all,
     });
-  }
+  };
 
   /**
    * 위시리스트 존재 여부 확인 함수
@@ -275,7 +275,7 @@ export const useWishlistUi = ({
    * isWishlisted prop이 변경될 때 addToWishlist 상태를 동기화
    */
   useEffect(() => {
-    if (!userId) { 
+    if (!userId) {
       return;
     }
     if (addToWishlist !== isWishlisted) {

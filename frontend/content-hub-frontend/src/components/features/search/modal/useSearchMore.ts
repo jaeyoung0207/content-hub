@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Search } from '@/api/Search';
+import { SearchApi } from '@/api/SearchApi';
 import {
   ESC_KEY,
   INFINITE_SCROLL_THROTTLE_DELAY,
@@ -80,7 +80,7 @@ export const useSearchMore = (
   const queryClient = useQueryClient();
 
   // 검색 API 인스턴스 생성
-  const searchApi = new Search();
+  const searchApi = new SearchApi();
 
   // 전체보기 검색결과를 가져오기 위한 API 호출 함수
   const judgeExecApi = async (pageParam: number) => {

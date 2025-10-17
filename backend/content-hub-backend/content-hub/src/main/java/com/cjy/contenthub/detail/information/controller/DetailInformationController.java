@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
 import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
@@ -17,12 +17,15 @@ import com.cjy.contenthub.detail.information.mapper.DetailInformationMapper;
 import com.cjy.contenthub.detail.information.service.DetailInformationNoCacheService;
 import com.cjy.contenthub.detail.information.service.DetailInformationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 상세 화면 기본 정보 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "detail-information-api", description = "Detail Information APIs")
+@ApiController
 @RequestMapping("/detail/information")
 @RequiredArgsConstructor
 public class DetailInformationController {
@@ -62,6 +65,7 @@ public class DetailInformationController {
 	 * @param userId 유저 테이블 ID
 	 * @return TV 상세 응답 DTO
 	 */
+	@Operation(summary = "TV 상세 조회")
 	@GetMapping(value = "/getTvDetail")
 	public ResponseEntity<DetailTvResponseDto> getTvDetail(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
@@ -91,6 +95,7 @@ public class DetailInformationController {
 	 * @param userId 유저 테이블 ID
 	 * @return 영화 상세 응답 DTO
 	 */
+	@Operation(summary = "영화 상세 조회")
 	@GetMapping(value = "/getMovieDetail")
 	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
@@ -121,6 +126,7 @@ public class DetailInformationController {
 	 * @return Comics 상세 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
+	@Operation(summary = "만화 상세 조회")
 	@GetMapping(value = "/getComicsDetail")
 	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
@@ -150,6 +156,7 @@ public class DetailInformationController {
 	 * @return Comics 캐릭터 리스트 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
+	@Operation(summary = "캐릭터 리스트 조회")
 	@GetMapping(value = "/getComicsCharacterList")
 	public ResponseEntity<AniListCharactersDto> getComicsCharacterList(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
@@ -166,6 +173,7 @@ public class DetailInformationController {
 	 * @return Comics 스태프 리스트 응답 DTO
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
+	@Operation(summary = "스태프 리스트 조회")
 	@GetMapping(value = "/getComicsStaffList")
 	public ResponseEntity<AniListStaffDto> getComicsStaffList(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,

@@ -17,28 +17,30 @@ import {
 } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
-export class Login<
+export class LoginApi<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name UpdateNaverLoginInfo
-   * @request GET:/login/updateNaverLoginInfo
+   * @summary 네이버 로그인 정보 갱신
+   * @request GET:/api/login/updateNaverLoginInfo
    */
   updateNaverLoginInfo = (params: RequestParams = {}) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/updateNaverLoginInfo`,
+      path: `/api/login/updateNaverLoginInfo`,
       method: 'GET',
       ...params,
     });
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name UpdateKakaoLoginInfo
-   * @request GET:/login/updateKakaoLoginInfo
+   * @summary 카카오 로그인 정보 갱신
+   * @request GET:/api/login/updateKakaoLoginInfo
    */
   updateKakaoLoginInfo = (
     query: {
@@ -47,7 +49,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/updateKakaoLoginInfo`,
+      path: `/api/login/updateKakaoLoginInfo`,
       method: 'GET',
       query: query,
       ...params,
@@ -55,9 +57,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name GetNaverUserInfo
-   * @request GET:/login/getNaverUserInfo
+   * @summary 네이버 유저 정보 조회
+   * @request GET:/api/login/getNaverUserInfo
    */
   getNaverUserInfo = (
     query: {
@@ -68,7 +71,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/getNaverUserInfo`,
+      path: `/api/login/getNaverUserInfo`,
       method: 'GET',
       query: query,
       ...params,
@@ -76,9 +79,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name GetNaverLoginInfo
-   * @request GET:/login/getNaverLoginInfo
+   * @summary 네이버 로그인 정보 조회
+   * @request GET:/api/login/getNaverLoginInfo
    */
   getNaverLoginInfo = (
     query: {
@@ -88,7 +92,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/getNaverLoginInfo`,
+      path: `/api/login/getNaverLoginInfo`,
       method: 'GET',
       query: query,
       ...params,
@@ -96,9 +100,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name GetKakaoUserInfo
-   * @request GET:/login/getKakaoUserInfo
+   * @summary 카카오 유저 정보 조회
+   * @request GET:/api/login/getKakaoUserInfo
    */
   getKakaoUserInfo = (
     query: {
@@ -109,7 +114,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/getKakaoUserInfo`,
+      path: `/api/login/getKakaoUserInfo`,
       method: 'GET',
       query: query,
       ...params,
@@ -117,9 +122,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name GetKakaoLoginInfo
-   * @request GET:/login/getKakaoLoginInfo
+   * @summary 카카오 로그인 정보 조회
+   * @request GET:/api/login/getKakaoLoginInfo
    */
   getKakaoLoginInfo = (
     query: {
@@ -130,7 +136,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<LoginUserResponseDto, any>({
-      path: `/login/getKakaoLoginInfo`,
+      path: `/api/login/getKakaoLoginInfo`,
       method: 'GET',
       query: query,
       ...params,
@@ -138,9 +144,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name DeleteNaverToken
-   * @request GET:/login/deleteNaverToken
+   * @summary 네이버 토큰 삭제
+   * @request GET:/api/login/deleteNaverToken
    */
   deleteNaverToken = (
     query: {
@@ -152,7 +159,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<NaverDeleteTokenDto, any>({
-      path: `/login/deleteNaverToken`,
+      path: `/api/login/deleteNaverToken`,
       method: 'GET',
       query: query,
       ...params,
@@ -160,9 +167,10 @@ export class Login<
   /**
    * No description
    *
-   * @tags login-controller
+   * @tags login-api
    * @name DeleteKakaoToken
-   * @request GET:/login/deleteKakaoToken
+   * @summary 카카오 토큰 삭제
+   * @request GET:/api/login/deleteKakaoToken
    */
   deleteKakaoToken = (
     query: {
@@ -174,7 +182,7 @@ export class Login<
     params: RequestParams = {}
   ) =>
     this.request<KakaoUserInfoDto, any>({
-      path: `/login/deleteKakaoToken`,
+      path: `/api/login/deleteKakaoToken`,
       method: 'GET',
       query: query,
       ...params,

@@ -12,9 +12,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.ApiRateLimitEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.MessagesDebugEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
+import com.cjy.contenthub.common.ratelimit.service.ApiRateLimitService;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +39,9 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
 	
+	/** API Rate Limit 서비스 */
+	private final ApiRateLimitService apiRateLimitService;
+	
 	/**
 	 * API 요청 전 처리 메소드
 	 * 
@@ -62,6 +65,10 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 		String uri = request.getRequestURI();
 		String key = "rate_limit:".concat(ip).concat(CommonConstants.COLON).concat(uri);
 		
+		// 해당 URI에 대한 최대 요청 횟수와 시간(초) 조회
+		int maxRequestCount = apiRateLimitService.getMaxRequestCount(uri);
+		int seconds = apiRateLimitService.getSeconds(uri);
+		
 		// Lua 스크립트를 사용하여 원자적으로 요청 횟수를 증가시키고 만료 시간을 설정
 		String script = "local current=redis.call('INCR', KEYS[1]) " +
                 "if current==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end " +
@@ -69,16 +76,16 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 		// KEYS[1]: 요청을 추적할 고유 키
 		List<String> keyList = Collections.singletonList(key);
 		// ARGV[1]: 요청 제한 기간(초 단위)
-		List<String> args = Collections.singletonList(String.valueOf(ApiRateLimitEnum.getRateLimit(uri).getLimit()));
+		List<String> args = Collections.singletonList(String.valueOf(seconds));
 		// 스크립트 실행
 		Long count = redisUtil.executeScript(script, keyList, args, Long.class);
 		
-		Object[] logParams = { ip, uri, key, count, ApiRateLimitEnum.getRateLimit(uri).getMaxRequestCount() };
+		Object[] logParams = { ip, uri, key, count, maxRequestCount };
 		log.debug(messageUtil.getMessageKO(
 				MessagesDebugEnum.DEBUG_COMMON_API_RATE_LIMIT_CHECK.getMessageCode(), logParams));
 		
 		// 요청 횟수가 허용된 최대치를 초과하는 경우
-		if (count > ApiRateLimitEnum.getRateLimit(uri).getMaxRequestCount()) {
+		if (count > maxRequestCount) {
 			// 남은 TTL(Time To Live) 값을 가져와서 응답 헤더에 설정
 			Long ttl = redisUtil.getExpire(key, TimeUnit.SECONDS);
 			// 429 Too Many Requests 상태 코드와 함께 응답 설정
@@ -87,7 +94,7 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 			response.setContentType("application/json; charset=UTF-8");
 			// Retry-After 헤더 설정 (클라이언트가 재시도하기 전에 기다려야 하는 시간)
 			response.setHeader(HttpHeaders.RETRY_AFTER, 
-					ttl != null && ttl > 0 ? String.valueOf(ttl) : String.valueOf(CommonConstants.SIXTY_SECONDS));
+					ttl != null && ttl > 0 ? String.valueOf(ttl) : String.valueOf(seconds));
 			// 응답 본문에 공통 에러 응답 작성
 			CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 					.path(uri)

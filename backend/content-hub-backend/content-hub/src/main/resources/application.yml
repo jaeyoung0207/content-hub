@@ -146,6 +146,8 @@ login:
 #Application Config
 app:
   url: http://192.168.219.101:3000
+  prefix: /api
+  version: "" # 필요 시 "/v1"로 변경
   maintenance:
     mode: ${MAINTENANCE_MODE:false}
   webClient:
@@ -156,4 +158,140 @@ app:
     perPage: 10
   wishlist:
     maxRegistrationSize: 500
+  rate-limit:
+    defaults:
+      max-request-count: 60
+      seconds: 60
+    rules:
+      # common
+      - path: "/common/getCsrfToken"
+        max-request-count: 20
+        seconds: 60
+      - path: "/common/getMediaTypes"
+        max-request-count: 20
+        seconds: 60
+      - path: "/common/setAdultFlg"
+        max-request-count: 20
+        seconds: 60
+      - path: "/common/clearAdultFlg"
+        max-request-count: 20
+        seconds: 60
+      # character
+      - path: "/character/getCharacter"
+        max-request-count: 60
+        seconds: 60
+      - path: "/character/getStaff"
+        max-request-count: 60
+        seconds: 60
+      # detail/comments
+      - path: "/detail/comments/saveComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/updateComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/deleteComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/getCommentList"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/comments/getStarRatingAverage"
+        max-request-count: 60
+        seconds: 60
+      # detail/information
+      - path: "/detail/information/getTvDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getMovieDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getComicsDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getComicsCharacterList"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/information/getComicsStaffList"
+        max-request-count: 100
+        seconds: 60
+      # detail/recommendation
+      - path: "/detail/recommendation/getTvRecommendations"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/recommendation/getMovieRecommendations"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/recommendation/getComicsRecommendations"
+        max-request-count: 100
+        seconds: 60
+      # home
+      - path: "/home/rankings"
+        max-request-count: 60
+        seconds: 60
+      # login
+      - path: "/login/getNaverLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/updateNaverLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getNaverUserInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/deleteNaverToken"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getKakaoLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/updateKakaoLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getKakaoUserInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/deleteKakaoToken"
+        max-request-count: 10
+        seconds: 60
+      # my/comments
+      - path: "/my/comments/getMyCommentList"
+        max-request-count: 60
+        seconds: 60
+      # person
+      - path: "/person/getPersonDetails"
+        max-request-count: 60
+        seconds: 60
+      # serach
+      - path: "/search/searchKeyword"
+        max-request-count: 180
+        seconds: 60
+      - path: "/search/searchVideo"
+        max-request-count: 60
+        seconds: 60
+      - path: "/search/searchAni"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchTvExceptAni"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchMovie"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchComics"
+        max-request-count: 100
+        seconds: 60
+      # wishlist
+      - path: "/wishlist/saveWishlist"
+        max-request-count: 100
+        seconds: 60
+      - path: "/wishlist/deleteWishlist"
+        max-request-count: 60
+        seconds: 60
+      - path: "/wishlist/checkWishlist"
+        max-request-count: 100
+        seconds: 60
+      - path: "/wishlist/getWishlist"
+        max-request-count: 60
+        seconds: 60
 

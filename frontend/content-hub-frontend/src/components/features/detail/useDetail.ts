@@ -6,7 +6,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Detail } from '@/api/Detail';
+import { DetailInformationApi } from '@/api/DetailInformationApi';
+import { DetailCommentsApi } from '@/api/DetailCommentsApi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   DetailTvResponseDto,
@@ -94,7 +95,8 @@ export const useDetail = (
   // react query 클라이언트 훅
   const queryClient = useQueryClient();
   // 상세 API 인스턴스 생성
-  const detailApi = useMemo(() => new Detail(), []);
+  const detailInformationApi = useMemo(() => new DetailInformationApi(), []);
+  const detailCommentsApi = useMemo(() => new DetailCommentsApi(), []);
   // 리퀘스트 파라미터용 콘텐츠ID
   const apiIdParam = Number(apiId);
 
@@ -114,7 +116,7 @@ export const useDetail = (
     ) {
       // TV 상세 정보를 가져오는 API 호출
       return (
-        await detailApi.getTvDetail({
+        await detailInformationApi.getTvDetail({
           series_id: apiIdParam,
           content_media_type: contentMediaType,
           user_id: user?.userId,
@@ -125,7 +127,7 @@ export const useDetail = (
     else if (contentMediaType === getContentMediaType().movieCode) {
       // MOVIE 상세 정보를 가져오는 API 호출
       return (
-        await detailApi.getMovieDetail({
+        await detailInformationApi.getMovieDetail({
           movie_id: apiIdParam,
           content_media_type: contentMediaType,
           user_id: user?.userId,
@@ -136,7 +138,7 @@ export const useDetail = (
     else if (contentMediaType === getContentMediaType().comicsCode) {
       // COMICS 상세 정보를 가져오는 API 호출
       return (
-        await detailApi.getComicsDetail({
+        await detailInformationApi.getComicsDetail({
           comics_id: apiIdParam,
           content_media_type: contentMediaType,
           user_id: user?.userId,
@@ -159,7 +161,7 @@ export const useDetail = (
       return await getDetailApi();
     },
     enabled: !!contentMediaType, // contentMediaType이 존재할 때만 쿼리 실행
-    ...freshOnMountOptions // 쿼리 공통 옵션 적용
+    ...freshOnMountOptions, // 쿼리 공통 옵션 적용
   });
 
   // ================================================================================================== function
@@ -210,7 +212,7 @@ export const useDetail = (
       queryFn: async () => {
         // 유저 평균 평점 취득
         const response = (
-          await detailApi.getStarRatingAverage({
+          await detailCommentsApi.getStarRatingAverage({
             content_media_type: contentMediaType,
             api_id: apiId,
           })
@@ -223,7 +225,7 @@ export const useDetail = (
         return convertResponse;
       },
     });
-  }, [tabIndex, apiId, detailApi, contentMediaType, queryClient, t]);
+  }, [tabIndex, apiId, detailCommentsApi, contentMediaType, queryClient, t]);
 
   /**
    * 탭 번호가 변경될 때마다 실행되는 useEffect

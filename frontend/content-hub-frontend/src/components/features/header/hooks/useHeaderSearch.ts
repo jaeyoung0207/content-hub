@@ -10,8 +10,8 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/components/common/hooks/useDebounce';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Common } from '@/api/Common';
-import { Search } from '@/api/Search';
+import { CommonApi } from '@/api/CommonApi';
+import { SearchApi } from '@/api/SearchApi';
 import {
   ARROW_DOWN_KEY,
   ARROW_UP_KEY,
@@ -127,9 +127,9 @@ export const useHeaderSearch = ({
   // react query 클라이언트 훅
   const queryClient = useQueryClient();
   // 공통 API 인스턴스 생성
-  const commonApi = new Common();
+  const commonApi = new CommonApi();
   // 검색 API 인스턴스 생성
-  const searchApi = new Search();
+  const searchApi = new SearchApi();
 
   /**
    * 성인물 검색 플래그 설정 API 호출

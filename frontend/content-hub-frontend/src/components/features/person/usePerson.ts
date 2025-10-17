@@ -1,4 +1,4 @@
-import { Person } from '@/api/Person';
+import { PersonApi } from '@/api/PersonApi';
 import { useQuery } from '@tanstack/react-query';
 import { personQueryKeys } from './queryKeys/personQueryKeys';
 import { PersonResponseDto } from '@/api/data-contracts';
@@ -21,7 +21,7 @@ export const usePerson = (personId: string): UsePersonReturnType => {
   // ================================================================================================== react query
 
   // person API 인스턴스 생성
-  const personApi = new Person();
+  const personApi = new PersonApi();
 
   // 인물 데이터 API 호출
   const { data, isLoading, isError } = useQuery<PersonResponseDto>({

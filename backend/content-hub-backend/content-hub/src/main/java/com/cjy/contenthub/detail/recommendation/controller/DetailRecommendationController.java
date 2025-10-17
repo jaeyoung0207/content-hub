@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResponseDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsMovieDto;
@@ -19,12 +19,15 @@ import com.cjy.contenthub.detail.recommendation.mapper.DetailRecommendationMappe
 import com.cjy.contenthub.detail.recommendation.service.DetailRecommendationNoCacheService;
 import com.cjy.contenthub.detail.recommendation.service.DetailRecommendationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 상세 화면 추천 작품 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "detail-recommendation-api", description = "Detail Recommendation APIs")
+@ApiController
 @RequestMapping("/detail/recommendation")
 @RequiredArgsConstructor
 public class DetailRecommendationController {
@@ -61,6 +64,7 @@ public class DetailRecommendationController {
 	 * @param userId 유저 테이블 ID
 	 * @return 추천 작품 응답 DTO
 	 */
+	@Operation(summary = "TV 추천 작품 조회")
 	@GetMapping(value = "/getTvRecommendations")
 	public ResponseEntity<DetailRecommendationsTvDto> getTvRecommendations(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
@@ -100,6 +104,7 @@ public class DetailRecommendationController {
 	 * @param userId 유저 테이블 ID
 	 * @return 추천 작품 응답 DTO
 	 */
+	@Operation(summary = "영화 추천 작품 조회")
 	@GetMapping(value = "/getMovieRecommendations")
 	public ResponseEntity<DetailRecommendationsMovieDto> getMovieRecommendations(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
@@ -139,6 +144,7 @@ public class DetailRecommendationController {
 	 * @param userId 유저 테이블 ID
 	 * @return 추천 작품 응답 DTO
 	 */
+	@Operation(summary = "만화 추천 작품 조회")
 	@GetMapping(value = "/getComicsRecommendations")
 	public ResponseEntity<DetailRecommendationsComicsResponseDto> getComicsRecommendations(
 			@RequestParam(PARAM_MEDIA_ID) Integer mediaId,

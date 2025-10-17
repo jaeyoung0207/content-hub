@@ -17,19 +17,20 @@ import {
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
-export class Wishlist<
+export class WishlistApi<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags wishlist-controller
+   * @tags wishlist-api
    * @name SaveWishlist
-   * @request POST:/wishlist/saveWishlist
+   * @summary 위시리스트 등록
+   * @request POST:/api/wishlist/saveWishlist
    */
   saveWishlist = (data: WishlistRequestDto, params: RequestParams = {}) =>
     this.request<boolean, any>({
-      path: `/wishlist/saveWishlist`,
+      path: `/api/wishlist/saveWishlist`,
       method: 'POST',
       body: data,
       type: ContentType.Json,
@@ -38,9 +39,10 @@ export class Wishlist<
   /**
    * No description
    *
-   * @tags wishlist-controller
+   * @tags wishlist-api
    * @name GetWishlist
-   * @request POST:/wishlist/getWishlist
+   * @summary 위시리스트 조회
+   * @request POST:/api/wishlist/getWishlist
    */
   getWishlist = (
     query: {
@@ -50,7 +52,7 @@ export class Wishlist<
     params: RequestParams = {}
   ) =>
     this.request<WishlistListResponseDto, any>({
-      path: `/wishlist/getWishlist`,
+      path: `/api/wishlist/getWishlist`,
       method: 'POST',
       query: query,
       ...params,
@@ -58,9 +60,10 @@ export class Wishlist<
   /**
    * No description
    *
-   * @tags wishlist-controller
+   * @tags wishlist-api
    * @name CheckWishlist
-   * @request GET:/wishlist/checkWishlist
+   * @summary 위시리스트 체크
+   * @request GET:/api/wishlist/checkWishlist
    */
   checkWishlist = (
     query: {
@@ -72,7 +75,7 @@ export class Wishlist<
     params: RequestParams = {}
   ) =>
     this.request<WishlistCheckResultResponseDto, any>({
-      path: `/wishlist/checkWishlist`,
+      path: `/api/wishlist/checkWishlist`,
       method: 'GET',
       query: query,
       ...params,
@@ -80,13 +83,14 @@ export class Wishlist<
   /**
    * No description
    *
-   * @tags wishlist-controller
+   * @tags wishlist-api
    * @name DeleteWishlist
-   * @request DELETE:/wishlist/deleteWishlist
+   * @summary 위시리스트 삭제
+   * @request DELETE:/api/wishlist/deleteWishlist
    */
   deleteWishlist = (data: WishlistRequestDto, params: RequestParams = {}) =>
     this.request<boolean, any>({
-      path: `/wishlist/deleteWishlist`,
+      path: `/api/wishlist/deleteWishlist`,
       method: 'DELETE',
       body: data,
       type: ContentType.Json,

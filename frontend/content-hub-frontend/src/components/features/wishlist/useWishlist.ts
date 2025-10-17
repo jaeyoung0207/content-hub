@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Wishlist } from '@/api/Wishlist';
+import { WishlistApi } from '@/api/WishlistApi';
 import {
   WishlistListResponseDto,
   WishlistRequestDto,
@@ -106,7 +106,7 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
   const queryClient = useQueryClient();
 
   // 위시리스트 API 인스턴스
-  const wishlistApi = new Wishlist();
+  const wishlistApi = new WishlistApi();
 
   // 위시리스트 조회
   const { data, isLoading } = useQuery<WishlistListResponseDto>({
@@ -115,7 +115,7 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
       return (await wishlistApi.getWishlist({ userId })).data;
     },
     enabled: !!userId,
-    ...freshOnMountOptions // 쿼리 공통 옵션 적용
+    ...freshOnMountOptions, // 쿼리 공통 옵션 적용
   });
 
   /**

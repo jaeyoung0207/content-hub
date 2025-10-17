@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
-import { Common } from '@/api/Common';
+import { CommonApi } from '@/api/CommonApi';
 import {
   useContentMediaTypeMapStore,
   useDisplayMediaTypeMapStore,
@@ -21,7 +21,7 @@ export const useHeaderInitialize = () => {
   const queryClient = useQueryClient();
 
   // 공통 API 인스턴스 생성
-  const commonApi = new Common();
+  const commonApi = new CommonApi();
 
   /**
    * CSRF 토큰 초기화 함수

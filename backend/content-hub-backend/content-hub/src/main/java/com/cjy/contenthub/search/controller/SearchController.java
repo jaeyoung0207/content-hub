@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
@@ -21,12 +21,15 @@ import com.cjy.contenthub.search.mapper.SearchMapper;
 import com.cjy.contenthub.search.service.SearchNoCacheService;
 import com.cjy.contenthub.search.service.SearchService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 검색 콘텐츠 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "search-api", description = "Search APIs")
+@ApiController
 @RequestMapping("/search")
 @RequiredArgsConstructor
 public class SearchController {
@@ -100,6 +103,7 @@ public class SearchController {
 	 * @param keyword 검색어
 	 * @return ResponseEntity<List<String>> 검색어 리스트
 	 */
+	@Operation(summary = "검색어 리스트 조회")
 	@GetMapping(value = "/searchKeyword")
 	public ResponseEntity<List<String>> searchKeyword(@RequestParam(PARAM_KEYWORD) String keyword) {
 		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
@@ -107,12 +111,13 @@ public class SearchController {
 	}
 
 	/**
-	 * 애니메이션/드라마/영화 검색 API
+	 * 비디오 검색 API
 	 * 
 	 * @param keyword 검색어
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<SearchVideoResponseDto> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
+	@Operation(summary = "비디오 검색")
 	@GetMapping(value = "/searchVideo")
 	public ResponseEntity<SearchVideoResponseDto> searchVideo(
 			@RequestParam(PARAM_KEYWORD) String keyword,
@@ -139,6 +144,7 @@ public class SearchController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchTvDto> 애니 정보 응답 오브젝트
 	 */
+	@Operation(summary = "애니메이션 검색")
 	@GetMapping(value = "/searchAni")
 	public ResponseEntity<SearchTvResponseDto> searchAni(
 			@RequestParam(PARAM_KEYWORD) String keyword,
@@ -167,6 +173,7 @@ public class SearchController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchTvDto> 애니 제외한 TV 시리즈 정보 응답 오브젝트
 	 */
+	@Operation(summary = "애니메이션 제외한 TV 시리즈 검색")
 	@GetMapping(value = "/searchTvExceptAni")
 	public ResponseEntity<SearchTvResponseDto> searchTvExceptAni(
 			@RequestParam(PARAM_KEYWORD) String keyword,
@@ -195,6 +202,7 @@ public class SearchController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<TmdbSearchMovieDto> 영화 정보 응답 오브젝트
 	 */
+	@Operation(summary = "영화 정보 검색")
 	@GetMapping(value = "/searchMovie")
 	public ResponseEntity<SearchMovieResponseDto> searchMovie(
 			@RequestParam(PARAM_KEYWORD) String keyword, 
@@ -223,6 +231,7 @@ public class SearchController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<SearchComicsResponseDto> 만화 정보 응답 오브젝트
 	 */
+	@Operation(summary = "만화 정보 검색")
 	@GetMapping(value = "/searchComics")
 	public ResponseEntity<SearchComicsResponseDto> searchComics(
 			@RequestParam(PARAM_KEYWORD) String keyword, 

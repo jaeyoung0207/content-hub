@@ -21,7 +21,7 @@ import {
   useProviderStore,
   useUserStore,
 } from '@/components/common/store/globalStateStore';
-import { Detail } from '@/api/Detail';
+import { DetailCommentsApi } from '@/api/DetailCommentsApi';
 import {
   useInfiniteQuery,
   useMutation,
@@ -33,7 +33,10 @@ import { useNavigate } from 'react-router-dom';
 import { DetailResponseType } from '../../useDetail';
 import { handleUnExceptedError } from '@/components/common/utils/errorUtil';
 import { detailQueryKeys } from '../../queryKeys/detailQueryKeys';
-import { INFINITE_SCROLL_THROTTLE_DELAY, ONE_MINUTE } from '@/components/common/constants/constants';
+import {
+  INFINITE_SCROLL_THROTTLE_DELAY,
+  ONE_MINUTE,
+} from '@/components/common/constants/constants';
 import { throttle } from 'lodash-es';
 import { isDetailTvType } from '@/components/common/utils/typeGuardUtil';
 import { loginConfirmDialog } from '@/components/common/utils/loginUtil';
@@ -175,7 +178,7 @@ export const useDetailComments = (
   // 쿼리 클라이언트 훅
   const queryClient = useQueryClient();
   // API 인스턴스 생성
-  const detailApi = new Detail();
+  const detailCommentsApi = new DetailCommentsApi();
 
   // API ID
   const apiId = detailResult.id!.toString();
@@ -208,7 +211,7 @@ export const useDetailComments = (
     // 쿼리가 데이터를 요청하는 데 사용할 함수/API 지정
     queryFn: async ({ pageParam = 0 }) => {
       const response = (
-        await detailApi.getCommentList({
+        await detailCommentsApi.getCommentList({
           api_id: apiId,
           content_media_type: contentMediaType,
           page: pageParam,
@@ -292,7 +295,7 @@ export const useDetailComments = (
         starRating: data.starRating,
       } as DetailCommentsSaveRequestDto;
       // 코멘트 저장 API 호출
-      return (await detailApi.saveComent(requestData)).data;
+      return (await detailCommentsApi.saveComent(requestData)).data;
     },
     // 성공 후 처리
     onSuccess: () => {
@@ -340,7 +343,7 @@ export const useDetailComments = (
         starRating: data.starRating,
       } as DetailCommentsUpdateRequestDto;
       // 코멘트 수정 API 호출
-      return (await detailApi.updateComent(requestData)).data;
+      return (await detailCommentsApi.updateComent(requestData)).data;
     },
     // 성공 후 처리
     onSuccess: () => {
@@ -375,7 +378,8 @@ export const useDetailComments = (
       // 코멘트 삭제 중 상태 설정
       setIsDeleting(true);
       // 코멘트 삭제 API 호출
-      return (await detailApi.deleteComment({ comment_id: commentId })).data;
+      return (await detailCommentsApi.deleteComment({ comment_id: commentId }))
+        .data;
     },
     // 성공 후 처리
     onSuccess: () => {

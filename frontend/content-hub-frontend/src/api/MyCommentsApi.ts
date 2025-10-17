@@ -10,28 +10,31 @@
  * ---------------------------------------------------------------
  */
 
-import { HomeRankingListResponseDto } from './data-contracts';
+import { MyCommentsResponseDto } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
-export class Home<
+export class MyCommentsApi<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags home-controller
-   * @name GetContentRankings
-   * @request GET:/home/rankings
+   * @tags my-comments-api
+   * @name GetMyCommentList
+   * @summary 나의 코멘트 리스트 조회
+   * @request GET:/api/my/comments/getMyCommentList
    */
-  getContentRankings = (
-    query?: {
+  getMyCommentList = (
+    query: {
       /** @format int64 */
-      user_id?: number;
+      user_id: number;
+      /** @format int32 */
+      page_no: number;
     },
     params: RequestParams = {}
   ) =>
-    this.request<HomeRankingListResponseDto, any>({
-      path: `/home/rankings`,
+    this.request<MyCommentsResponseDto, any>({
+      path: `/api/my/comments/getMyCommentList`,
       method: 'GET',
       query: query,
       ...params,

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
@@ -17,6 +17,8 @@ import com.cjy.contenthub.common.controller.dto.CommonDisplayMediaTypeDto;
 import com.cjy.contenthub.common.controller.dto.CommonMediaTypeResponseDto;
 import com.cjy.contenthub.common.util.SessionUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * 공통 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "common-api", description = "Common APIs")
+@ApiController
 @RequestMapping("/common")
 @RequiredArgsConstructor
 public class CommonController {
@@ -38,6 +41,7 @@ public class CommonController {
 	 * 
 	 * @return 처리 결과
 	 */
+	@Operation(summary = "CSRF 토큰 조회")
     @GetMapping("/getCsrfToken")
     public CsrfToken getCsrfToken(@Nullable CsrfToken token) {
         return token;
@@ -48,6 +52,7 @@ public class CommonController {
 	 * 
 	 * @return Map<String, String> 미디어 타입 맵
 	 */
+	@Operation(summary = "공통 미디어 타입 조회")
     @GetMapping("/getMediaTypes")
     public CommonMediaTypeResponseDto getMediaTypes() {
     	// 컨텐츠 미디어 타입 DTO 생성
@@ -86,6 +91,7 @@ public class CommonController {
 	 * 
 	 * @return ResponseEntity<Boolean> 처리 결과
 	 */
+	@Operation(summary = "성인 여부 플래그 조회")
 	@PostMapping("/setAdultFlg")
 	public ResponseEntity<Void> setAdultFlg(@RequestParam(CommonConstants.ADULT_FLG) boolean adultFlg) {
 		
@@ -103,6 +109,7 @@ public class CommonController {
 	 * 
 	 * @return ResponseEntity<Boolean> 처리 결과
 	 */
+	@Operation(summary = "성인 여부 플래그 클리어")
 	@PostMapping("/clearAdultFlg")
 	public ResponseEntity<Void> clearAdultFlg() {
 		

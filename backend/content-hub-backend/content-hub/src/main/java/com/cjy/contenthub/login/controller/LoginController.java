@@ -9,9 +9,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.api.dto.kakao.KakaoIssueTokenDto;
 import com.cjy.contenthub.common.api.dto.kakao.KakaoUserInfoDto;
 import com.cjy.contenthub.common.api.dto.naver.NaverDeleteTokenDto;
@@ -26,13 +26,16 @@ import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.helper.LoginHelper;
 import com.cjy.contenthub.login.service.LoginService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 로그인 API 컨트롤러 클래스
  */
-@RestController
+@Tag(name = "login-api", description = "Login APIs")
+@ApiController
 @RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
@@ -84,6 +87,7 @@ public class LoginController {
 	 * @param state 인증 상태
 	 * @return Mono<ResponseEntity<LoginUserResponseDto>>
 	 */
+	@Operation(summary = "네이버 로그인 정보 조회")
 	@GetMapping("/getNaverLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> getNaverLoginInfo(HttpServletRequest request, @RequestParam(PARAM_CODE) String code, @RequestParam(PARAM_STATE) String state) {
 
@@ -111,6 +115,7 @@ public class LoginController {
 	 * @param request HttpServletRequest
 	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
+	@Operation(summary = "네이버 로그인 정보 갱신")
 	@GetMapping("/updateNaverLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> updateNaverLoginInfo(HttpServletRequest request) {
 
@@ -137,6 +142,7 @@ public class LoginController {
 	 * @param expiresIn 토큰 만료까지의 시간(초)
 	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
+	@Operation(summary = "네이버 유저 정보 조회")
 	@GetMapping("/getNaverUserInfo")
 	public ResponseEntity<LoginUserResponseDto> getNaverUserInfo(
 			HttpServletRequest request, 
@@ -156,6 +162,7 @@ public class LoginController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
+	@Operation(summary = "네이버 토큰 삭제")
 	@GetMapping("/deleteNaverToken")
 	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
 			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
@@ -195,6 +202,7 @@ public class LoginController {
 	 * @param code 인증 코드
 	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
+	@Operation(summary = "카카오 로그인 정보 조회")
 	@GetMapping("/getKakaoLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> getKakaoLoginInfo(
 			HttpServletRequest request, 
@@ -224,6 +232,7 @@ public class LoginController {
 	 * @param clientId 클라이언트 ID
 	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
+	@Operation(summary = "카카오 로그인 정보 갱신")
 	@GetMapping("/updateKakaoLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> updateKakaoLoginInfo(
 			HttpServletRequest request, 
@@ -249,8 +258,6 @@ public class LoginController {
 		}
 		// 유저 정보 가져오기 API 조회
 		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
-
-
 	}
 
 	/**
@@ -261,6 +268,7 @@ public class LoginController {
 	 * @param expiresIn 토큰 만료까지의 시간(초 단위)
 	 * @return ResponseEntity<LoginUserResponseDto>
 	 */
+	@Operation(summary = "카카오 유저 정보 조회")
 	@GetMapping("/getKakaoUserInfo")
 	public ResponseEntity<LoginUserResponseDto> getKakaoUserInfo(
 			HttpServletRequest request, 
@@ -281,6 +289,7 @@ public class LoginController {
 	 * @param userId 유저 테이블 ID
 	 * @return ResponseEntity<KakaoUserInfoDto>
 	 */
+	@Operation(summary = "카카오 토큰 삭제")
 	@GetMapping("/deleteKakaoToken")
 	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
