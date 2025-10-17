@@ -81,11 +81,11 @@ export const DisplayComicsCredits = ({
       </div>
       <div className="flex flex-wrap items-start mt-5">
         {creditsList &&
-          creditsList.map((items) => {
+          creditsList.map((items, index) => {
             const creditsInfo = items?.node;
             const role = items?.role;
             return (
-              <div key={items?.id}>
+              <div key={items?.id + '_' + index}>
                 {creditsInfo && (
                   <div
                     className={`ml-1 mr-1 w-[220px]`}

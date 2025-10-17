@@ -114,7 +114,7 @@ export const DisplaySearchResults = ({
 
             return (
               <ul
-                key={items.id}
+                key={items.id + '_' + index}
                 className={
                   `${HIGHLIGHT_HOVER_COLOR} ml-1 cursor-pointer ` +
                   (displayMediaType === getDisplayMediaType().comicsCode
