@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.common.annotation.ApiController;
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.SessionUtil;
+import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
@@ -106,7 +106,7 @@ public class SearchController {
 	@Operation(summary = "검색어 리스트 조회")
 	@GetMapping(value = "/searchKeyword")
 	public ResponseEntity<List<String>> searchKeyword(@RequestParam(PARAM_KEYWORD) String keyword) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		return ResponseEntity.ok(searchService.searchKeyword(keyword, isAdult));
 	}
 
@@ -123,7 +123,7 @@ public class SearchController {
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchVideoResponseDto cachedResponse = searchService.searchVideo(keyword, isAdult, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -151,7 +151,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -181,7 +181,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -209,7 +209,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -239,7 +239,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_IS_MAIN_PAGE) boolean isMainPage,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
-		boolean isAdult = session.getSessionBooleanValue(CommonConstants.ADULT_FLG);
+		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage, userId);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)

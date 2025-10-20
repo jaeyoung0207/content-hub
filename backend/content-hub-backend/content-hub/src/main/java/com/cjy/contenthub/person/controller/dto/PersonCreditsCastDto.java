@@ -1,6 +1,6 @@
 package com.cjy.contenthub.person.controller.dto;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonCreditsCastDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonCreditsCastDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

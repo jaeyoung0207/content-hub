@@ -388,8 +388,8 @@ export interface KakaoProfileDto {
   nickname?: string;
   thumbnailImageUrl?: string;
   profileImageUrl?: string;
-  defaultNickname?: boolean;
   defaultImage?: boolean;
+  defaultNickname?: boolean;
 }
 
 export interface KakaoUserInfoDto {
@@ -740,8 +740,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -790,7 +790,7 @@ export interface DetailCommentsGetResponseDto {
   responseList?: DetailCommentsGetDataDto[];
 }
 
-export interface CommonContentMediaTypeDto {
+export interface AppContentMediaTypeDto {
   aniCode: string;
   dramaCode: string;
   documentaryCode: string;
@@ -802,7 +802,7 @@ export interface CommonContentMediaTypeDto {
   comicsCode: string;
 }
 
-export interface CommonDisplayMediaTypeDto {
+export interface AppDisplayMediaTypeDto {
   aniCode: string;
   dramaCode: string;
   documentaryCode: string;
@@ -814,9 +814,9 @@ export interface CommonDisplayMediaTypeDto {
   comicsCode: string;
 }
 
-export interface CommonMediaTypeResponseDto {
-  contentMediaTypeDto: CommonContentMediaTypeDto;
-  displayMediaTypeDto: CommonDisplayMediaTypeDto;
+export interface AppMediaTypeResponseDto {
+  contentMediaTypeDto: AppContentMediaTypeDto;
+  displayMediaTypeDto: AppDisplayMediaTypeDto;
 }
 
 export interface CsrfToken {

@@ -2,8 +2,8 @@ package com.cjy.contenthub.character.service;
 
 import java.io.IOException;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
 
 /**
  * 캐릭터 서비스 인터페이스

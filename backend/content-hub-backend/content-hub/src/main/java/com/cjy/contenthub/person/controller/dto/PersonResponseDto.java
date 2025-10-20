@@ -2,7 +2,7 @@ package com.cjy.contenthub.person.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonDetailsDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

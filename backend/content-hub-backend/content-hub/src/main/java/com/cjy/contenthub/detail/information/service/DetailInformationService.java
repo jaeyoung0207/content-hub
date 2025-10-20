@@ -2,8 +2,8 @@ package com.cjy.contenthub.detail.information.service;
 
 import java.io.IOException;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailTvResponseDto;

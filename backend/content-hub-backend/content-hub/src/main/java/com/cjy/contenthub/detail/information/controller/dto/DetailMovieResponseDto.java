@@ -3,7 +3,7 @@ package com.cjy.contenthub.detail.information.controller.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbMovieDetailsDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

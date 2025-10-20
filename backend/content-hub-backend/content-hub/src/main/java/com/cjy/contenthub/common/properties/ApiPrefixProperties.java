@@ -3,8 +3,8 @@ package com.cjy.contenthub.common.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.util.PathUtil;
+import com.cjy.contenthub.common.constants.CommonConstants;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

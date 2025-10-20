@@ -3,8 +3,8 @@ package com.cjy.contenthub.login.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.cjy.contenthub.common.api.dto.naver.NaverProfileDataDto;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.common.integration.naver.dto.NaverProfileDataDto;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
 import com.cjy.contenthub.login.controller.dto.LoginUserInfoDto;
 import com.cjy.contenthub.login.service.dto.LoginUserServiceDto;
 

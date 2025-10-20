@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailTvResponseDto;

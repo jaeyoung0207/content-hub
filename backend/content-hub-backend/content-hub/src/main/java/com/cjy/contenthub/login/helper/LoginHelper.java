@@ -9,12 +9,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
-import com.cjy.contenthub.common.repository.UserRepository;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
+import com.cjy.contenthub.core.repository.UserRepository;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,12 +49,12 @@ public class LoginHelper {
 			List<Cookie> cookieList = new ArrayList<>();
 			if (Arrays.stream(cookies)
 					.anyMatch(c -> 
-					StringUtils.equals(c.getName(), CommonConstants.PROVIDER) && // 쿠키 이름이 PROVIDER이고
+					StringUtils.equals(c.getName(), DomainConstants.PROVIDER) && // 쿠키 이름이 PROVIDER이고
 					StringUtils.equals(c.getValue(), provider)) // 쿠키 값이 provider 파라미터 값과 일치하는 경우
 					) {
 				// 쿠키이름이 리프레시 토큰인 쿠키 추출
 				cookieList = Arrays.stream(cookies)
-						.filter(c -> StringUtils.equals(c.getName(), CommonConstants.REFRESH_TOKEN))
+						.filter(c -> StringUtils.equals(c.getName(), DomainConstants.REFRESH_TOKEN))
 						.toList();
 			}
 			// 쿠키가 존재하는 경우
@@ -81,7 +81,7 @@ public class LoginHelper {
 		// 유저 정보가 존재하지 않는 경우 예외 처리
 		if (!userInfo.isPresent()) {
 			throw new CommonBusinessException(
-					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
+					messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
 		}
 		
 		// 유저 상태를 LOGOUT으로 변경

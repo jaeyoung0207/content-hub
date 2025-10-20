@@ -7,15 +7,15 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonCreditsCastDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonCreditsCrewDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsCastDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsCrewDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsCastDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsCrewDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.util.GenreUtil;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonCreditsCastDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonCreditsCrewDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonMovieCreditsCastDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonMovieCreditsCrewDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonTvCreditsCastDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonTvCreditsCrewDto;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.shared.service.GenreSharedService;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonResponseDto;
@@ -32,6 +32,9 @@ public class PersonHelper {
 
 	/** 인물 정보 매퍼 */
 	private final PersonMapper mapper;
+	
+	/** 장르 공유 서비스 */
+	private final GenreSharedService genreSharedService;
 
 	/**
 	 * TMDB API 인물 출연작 정보 설정
@@ -63,7 +66,7 @@ public class PersonHelper {
 				cast.setReleaseDate(tvCast.getFirstCreditAirDate());
 				cast.setEpisodeCount(tvCast.getEpisodeCount());
 				cast.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
-				cast.setContentMediaType(GenreUtil.getContentMediaTypeByGenre(genreMap, genreIds));
+				cast.setContentMediaType(genreSharedService.getContentMediaTypeByGenre(genreMap, genreIds));
 			} 
 			// 영화 출연작인 경우
 			else {
@@ -115,7 +118,7 @@ public class PersonHelper {
 				crew.setReleaseDate(tvCrew.getFirstCreditAirDate());
 				crew.setEpisodeCount(tvCrew.getEpisodeCount());
 				crew.setContentMediaTypeName(ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeValue().toUpperCase());
-				crew.setContentMediaType(GenreUtil.getContentMediaTypeByGenre(genreMap, genreIds));
+				crew.setContentMediaType(genreSharedService.getContentMediaTypeByGenre(genreMap, genreIds));
 			} 
 			// 영화 출연작인 경우
 			else {

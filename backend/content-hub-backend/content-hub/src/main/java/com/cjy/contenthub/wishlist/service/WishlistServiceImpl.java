@@ -8,16 +8,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
-import com.cjy.contenthub.common.repository.ContentRepository;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
-import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DisplayMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
+import com.cjy.contenthub.core.repository.ContentRepository;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
+import com.cjy.contenthub.core.shared.service.ContentSharedService;
 import com.cjy.contenthub.wishlist.mapper.WishlistMapper;
 import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 import com.cjy.contenthub.wishlist.repository.entity.WishlistEntity;
@@ -46,8 +46,8 @@ public class WishlistServiceImpl implements WishlistService {
 	/** 위시리스트 매퍼 */
 	private final WishlistMapper wishlistMapper;
 	
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 콘텐츠 공유 서비스 */
+	private final ContentSharedService contentSharedService;
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
@@ -65,7 +65,7 @@ public class WishlistServiceImpl implements WishlistService {
 	public boolean addToWishlist(WishlistServiceDto saveServiceDto) {
 		
 		// Content 조회 또는 생성
-		ContentEntity content = businessUtil.getContentEntity(
+		ContentEntity content = contentSharedService.getContentEntity(
 				saveServiceDto.getContentMediaType(), saveServiceDto.getApiId(),
 				saveServiceDto.getTitle(), saveServiceDto.getThumbnailImageUrl(),
 				saveServiceDto.getGenreIds(), saveServiceDto.getDisplayMediaType());
@@ -83,7 +83,7 @@ public class WishlistServiceImpl implements WishlistService {
 		} else {
 			Object[] messageParams = { saveServiceDto.getUserId(), saveServiceDto.getContentMediaType(), saveServiceDto.getApiId() };
 			log.warn(messageUtil.getMessageKO(
-					MessagesWarnEnum.WARN_WISHLIST_WISHLIST_ALREADY_EXISTS.getMessageCode(), messageParams));
+					DomainMessagesWarnEnum.WARN_WISHLIST_WISHLIST_ALREADY_EXISTS.getMessageCode(), messageParams));
 			return false;
 		}
 	}
@@ -104,7 +104,7 @@ public class WishlistServiceImpl implements WishlistService {
 		if (content == null) {
 			Object[] messageParams = { saveServiceDto.getContentMediaType(), saveServiceDto.getApiId() };
 			throw new CommonBusinessException(
-					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTENT_NOT_FOUND.getMessageCode(), messageParams));
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTENT_NOT_FOUND.getMessageCode(), messageParams));
 		}
 		// 위시리스트에서 해당 항목 조회
 		List<WishlistEntity> wishlistList = wishlistRepository.findByUser_UserIdAndContent_ContentId(saveServiceDto.getUserId(), content.getContentId());
@@ -115,7 +115,7 @@ public class WishlistServiceImpl implements WishlistService {
 			return true;
 		} else {
 			Object[] messageParams = { saveServiceDto.getUserId(), saveServiceDto.getContentMediaType(), saveServiceDto.getApiId() };
-			log.warn(messageUtil.getMessageKO(MessagesWarnEnum.WARN_WISHLIST_WISHLIST_NOT_FOUND.getMessageCode(), messageParams));
+			log.warn(messageUtil.getMessageKO(DomainMessagesWarnEnum.WARN_WISHLIST_WISHLIST_NOT_FOUND.getMessageCode(), messageParams));
 			return false;
 		}
 	}

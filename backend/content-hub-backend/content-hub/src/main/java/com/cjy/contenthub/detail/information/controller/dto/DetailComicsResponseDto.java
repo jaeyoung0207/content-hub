@@ -2,9 +2,9 @@ package com.cjy.contenthub.detail.information.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbVideoDetailsDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbVideoDetailsDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

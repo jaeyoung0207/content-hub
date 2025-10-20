@@ -17,19 +17,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListPageInfoDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMultiResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
-import com.cjy.contenthub.common.constants.AniListParamConstants;
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.ApiUtil;
+import com.cjy.contenthub.common.integration.anilist.constants.AniListParamConstants;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListPageInfoDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMovieDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMovieResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.facade.ApiFacade;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -63,7 +63,7 @@ public class SearchServiceImpl implements SearchService {
 	private final WebClient anilistWebClient;
 
 	/** 공통 API 유틸 클래스 */
-	private final ApiUtil apiUtil;
+	private final ApiFacade apiUtil;
 
 	/** 검색 헬퍼 클래스 */
 	private final SearchHelper helper;
@@ -174,7 +174,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 애니, 드라마 정보 조회
 			Mono<SearchTvResponseDto> tvResponseMono = Flux
-					.range(CommonConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(DomainConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -245,7 +245,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 영화 정보 조회
 			Mono<SearchMovieResponseDto> movieResponseMono = Flux
-					.range(CommonConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(DomainConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -462,7 +462,7 @@ public class SearchServiceImpl implements SearchService {
 		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;
 
 		// 한글 검색어 -> 일본어로 번역후(DeepL API), AniList API 조회
-		return apiUtil.getTranslationText(keyword, CommonConstants.API_LANGUAGE_JAPANESE, CommonConstants.API_LANGUAGE_KOREAN).flatMap(jaKeyword -> {
+		return apiUtil.getTranslationText(keyword, DomainConstants.API_LANGUAGE_JAPANESE, DomainConstants.API_LANGUAGE_KOREAN).flatMap(jaKeyword -> {
 			try {
 				// graphql 쿼리 파일 불러오기
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");

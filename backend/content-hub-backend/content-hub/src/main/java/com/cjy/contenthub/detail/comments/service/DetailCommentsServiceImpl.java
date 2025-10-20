@@ -15,13 +15,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
-import com.cjy.contenthub.common.repository.UserRepository;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
-import com.cjy.contenthub.common.util.BusinessUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
+import com.cjy.contenthub.core.repository.UserRepository;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
+import com.cjy.contenthub.core.shared.service.ContentSharedService;
 import com.cjy.contenthub.detail.comments.helper.DetailCommentsHelper;
 import com.cjy.contenthub.detail.comments.mapper.DetailCommentsMapper;
 import com.cjy.contenthub.detail.comments.repository.DetailCommentsRepository;
@@ -58,8 +58,8 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 	/** 상세 페이지 매퍼 */
 	private final DetailCommentsMapper commentsMapper;
 	
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 콘텐츠 공유 서비스 */
+	private final ContentSharedService contentSharedService;
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
@@ -85,13 +85,13 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 		// 유저 엔티티가 존재하지 않는 경우 예외 처리
 		if (ObjectUtils.isEmpty(user)) {
 			throw new CommonBusinessException(
-					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
+					messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
 		}
 		// 유저 ID 설정
 		comment.setUserEntity(user);
 		
 		// 콘텐츠 엔티티 조회
-		ContentEntity content = businessUtil.getContentEntity(
+		ContentEntity content = contentSharedService.getContentEntity(
 				commentParam.getContentMediaType(), commentParam.getApiId(),
 				commentParam.getTitle(), commentParam.getThumbnailImageUrl(), commentParam.getGenreIds(), null);
 		// 콘텐츠 ID 설정
@@ -122,7 +122,7 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 		// 코멘트가 존재하지 않는 경우 예외 처리
 		if (!selectedComment.isPresent()) {
 			throw new CommonBusinessException(
-					messageUtil.getMessageKO(MessagesErrorEnum.ERROR_DETAIL_COMMENT_COMMENT_NOT_FOUND.getMessageCode()));
+					messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_DETAIL_COMMENT_COMMENT_NOT_FOUND.getMessageCode()));
 		}
 		// 코멘트 및 별점 설정
 		selectedComment.get().setCommentAndStarRating(commentParam.getComment(), commentParam.getStarRating());

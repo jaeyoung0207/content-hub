@@ -6,8 +6,8 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchMovieResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMovieResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;

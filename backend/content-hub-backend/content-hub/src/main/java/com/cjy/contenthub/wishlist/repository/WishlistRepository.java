@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
 import com.cjy.contenthub.wishlist.repository.entity.WishlistEntity;
 
 

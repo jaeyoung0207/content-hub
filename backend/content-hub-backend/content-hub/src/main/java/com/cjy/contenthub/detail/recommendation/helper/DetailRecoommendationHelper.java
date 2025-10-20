@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCoverImageDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaRecommendationDetailDto;
-import com.cjy.contenthub.common.constants.CommonEnum.AniListMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.BusinessUtil;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCoverImageDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListMediaDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListMediaRecommendationDetailDto;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.AniListMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.TmdbGenreEnum;
+import com.cjy.contenthub.core.shared.service.GenreSharedService;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsTvResultsDto;
 
@@ -32,8 +32,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DetailRecoommendationHelper {
 	
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 장르 공유 서비스 */
+	private final GenreSharedService genreSharedService;
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
@@ -129,7 +129,7 @@ public class DetailRecoommendationHelper {
 					.backdropPath(node.getCoverImage().getLarge())
 					.posterPath(node.getCoverImage().getExtraLarge())
 					.contentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
-					.genreIds(businessUtil.genreMappingFromAniListToTmdb(node.getGenres()))
+					.genreIds(genreSharedService.genreMappingFromAniListToTmdb(node.getGenres()))
 					.build()));
 		}
 	}
@@ -164,7 +164,7 @@ public class DetailRecoommendationHelper {
 						.backdropPath(backdropPath)
 						.posterPath(posterPath)
 						.contentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
-						.genreIds(businessUtil.genreMappingFromAniListToTmdb(recommendationDetail.getGenres()))
+						.genreIds(genreSharedService.genreMappingFromAniListToTmdb(recommendationDetail.getGenres()))
 						.build());
 			});
 		}

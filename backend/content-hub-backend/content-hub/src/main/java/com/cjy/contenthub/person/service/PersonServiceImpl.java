@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonMovieCreditsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonTvCreditsDto;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenderEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.ApiUtil;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonMovieCreditsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonTvCreditsDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.TmdbGenderEnum;
+import com.cjy.contenthub.core.facade.ApiFacade;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonDto;
@@ -43,7 +43,7 @@ public class PersonServiceImpl implements PersonService {
 	private final WebClient tmdbWebClient;
 	
 	/** 공통 유틸리티 */
-	private final ApiUtil apiUtil;
+	private final ApiFacade apiUtil;
 	
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
@@ -100,7 +100,7 @@ public class PersonServiceImpl implements PersonService {
 								&& response.getMovieCredits() == null) {
 							Object[] messageParams = { personId };
 							log.warn(messageUtil.getMessageKO(
-									MessagesWarnEnum.WARN_PERSON_PERSON_NOT_FOUND.getMessageCode(), messageParams));
+									DomainMessagesWarnEnum.WARN_PERSON_PERSON_NOT_FOUND.getMessageCode(), messageParams));
 							return personResponse;
 						}
 

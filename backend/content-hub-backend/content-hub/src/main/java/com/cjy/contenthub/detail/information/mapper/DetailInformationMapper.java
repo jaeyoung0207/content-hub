@@ -3,8 +3,8 @@ package com.cjy.contenthub.detail.information.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbTvDetailsDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailTvResponseDto;

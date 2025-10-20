@@ -1,6 +1,6 @@
 package com.cjy.contenthub.detail.recommendation.controller.dto;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsCommonResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsCommonResultsDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

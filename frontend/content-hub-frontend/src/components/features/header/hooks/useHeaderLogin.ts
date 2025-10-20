@@ -22,7 +22,7 @@ import {
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
-import { CommonApi } from '@/api/CommonApi';
+import { AppApi } from '@/api/AppApi';
 import { settings } from '@/components/common/config/settings';
 import { LoginUserInfoDto, LoginUserResponseDto } from '@/api/data-contracts';
 
@@ -69,7 +69,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   const queryClient = useQueryClient();
 
   // 공통 API 인스턴스 생성
-  const commonApi = new CommonApi();
+  const appApi = new AppApi();
   // 로그인 API 인스턴스 생성
   const loginApi = new LoginApi();
 
@@ -120,7 +120,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     queryClient.fetchQuery({
       queryKey: headerQueryKeys.getCsrfToken(),
       queryFn: async () => {
-        return await commonApi.getCsrfToken();
+        return await appApi.getCsrfToken();
       },
     });
     // 재로그인 처리

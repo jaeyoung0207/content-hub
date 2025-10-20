@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
-import { CommonApi } from '@/api/CommonApi';
+import { AppApi } from '@/api/AppApi';
 import {
   useContentMediaTypeMapStore,
   useDisplayMediaTypeMapStore,
@@ -21,7 +21,7 @@ export const useHeaderInitialize = () => {
   const queryClient = useQueryClient();
 
   // 공통 API 인스턴스 생성
-  const commonApi = new CommonApi();
+  const appApi = new AppApi();
 
   /**
    * CSRF 토큰 초기화 함수
@@ -31,7 +31,7 @@ export const useHeaderInitialize = () => {
     queryClient.fetchQuery({
       queryKey: headerQueryKeys.getCsrfToken(),
       queryFn: async () => {
-        return await commonApi.getCsrfToken();
+        return await appApi.getCsrfToken();
       },
     });
   };
@@ -43,7 +43,7 @@ export const useHeaderInitialize = () => {
     queryClient.fetchQuery({
       queryKey: headerQueryKeys.getMediaTypes(),
       queryFn: async () => {
-        const mediaTypes = (await commonApi.getMediaTypes()).data;
+        const mediaTypes = (await appApi.getMediaTypes()).data;
         setContentMediaType(mediaTypes.contentMediaTypeDto, true);
         setDisplayMediaType(mediaTypes.displayMediaTypeDto, true);
         return mediaTypes;

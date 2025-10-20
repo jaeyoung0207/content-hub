@@ -10,7 +10,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/components/common/hooks/useDebounce';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { CommonApi } from '@/api/CommonApi';
+import { AppApi } from '@/api/AppApi';
 import { SearchApi } from '@/api/SearchApi';
 import {
   ARROW_DOWN_KEY,
@@ -127,7 +127,7 @@ export const useHeaderSearch = ({
   // react query 클라이언트 훅
   const queryClient = useQueryClient();
   // 공통 API 인스턴스 생성
-  const commonApi = new CommonApi();
+  const appApi = new AppApi();
   // 검색 API 인스턴스 생성
   const searchApi = new SearchApi();
 
@@ -136,8 +136,7 @@ export const useHeaderSearch = ({
    */
   const setAdultFlgMutation = useMutation({
     mutationKey: headerQueryKeys.setAdultFlg(),
-    mutationFn: async () =>
-      await commonApi.setAdultFlg({ adult_flg: adultFlg! }),
+    mutationFn: async () => await appApi.setAdultFlg({ adult_flg: adultFlg! }),
   });
 
   /**
@@ -145,7 +144,7 @@ export const useHeaderSearch = ({
    */
   const clearAdultFlgMutation = useMutation({
     mutationKey: headerQueryKeys.clearAdultFlg(),
-    mutationFn: async () => await commonApi.clearAdultFlg(),
+    mutationFn: async () => await appApi.clearAdultFlg(),
   });
 
   // ================================================================================================== function

@@ -1,22 +1,28 @@
 package com.cjy.contenthub.login.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.cjy.contenthub.common.api.dto.kakao.KakaoIssueTokenDto;
-import com.cjy.contenthub.common.api.dto.kakao.KakaoUserInfoDto;
-import com.cjy.contenthub.common.api.dto.naver.NaverDeleteTokenDto;
-import com.cjy.contenthub.common.api.dto.naver.NaverIssueTokenDto;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.LoginStatusEmum;
-import com.cjy.contenthub.common.repository.UserRepository;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
+import com.cjy.contenthub.common.integration.kakao.dto.KakaoIssueTokenDto;
+import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
+import com.cjy.contenthub.common.integration.naver.dto.NaverDeleteTokenDto;
+import com.cjy.contenthub.common.integration.naver.dto.NaverIssueTokenDto;
+import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.common.util.RedisUtil;
+import com.cjy.contenthub.common.util.RedisUtil.ProviderInfo;
+import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.LoginStatusEnum;
+import com.cjy.contenthub.core.repository.UserRepository;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
 import com.cjy.contenthub.login.helper.LoginHelper;
 import com.cjy.contenthub.login.mapper.LoginMapper;
 import com.cjy.contenthub.login.service.dto.LoginUserServiceDto;
@@ -39,6 +45,12 @@ public class LoginServiceImpl implements LoginService {
 
 	/** 로그인 매퍼 */
 	private final LoginMapper loginMapper;
+	
+	/** Redis 유틸리티 클래스 */
+	private final RedisUtil redisUtil;
+	
+	/** 메시지 유틸리티 클래스 */
+	private final MessageUtil messageUtil;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -146,7 +158,7 @@ public class LoginServiceImpl implements LoginService {
 		// 유저 정보가 등록되어 있는 경우
 		else {
 			// 유저 상태를 LOGIN으로 변경
-			loginHelper.updateUserStatus(userInfo.getUserId(), LoginStatusEmum.LOGIN.getLoginStatus());
+			loginHelper.updateUserStatus(userInfo.getUserId(), LoginStatusEnum.LOGIN.getLoginStatus());
 		}
 		// UserEntity -> LoginUserServiceDto 매핑 후 리턴
 		return loginMapper.userEntityToUserServiceDto(userInfo);
@@ -187,6 +199,20 @@ public class LoginServiceImpl implements LoginService {
 	 */
 	@Override
 	public NaverIssueTokenDto getNaverUpdateToken(String refreshToken) {
+		
+		// 제공자 정보 조회
+		ProviderInfo providerInfo = redisUtil.getProviderInfoByRefreshToken(refreshToken);
+		
+		// 제공자 정보가 없는 경우 예외 처리
+		if (providerInfo == null) {
+            throw new AccountExpiredException(
+                messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+        }
+		// 리프레시 토큰 검증
+		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken)) {
+			throw new AccountExpiredException(
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+		}
 
 		// 네이버 토큰 갱신 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -208,14 +234,21 @@ public class LoginServiceImpl implements LoginService {
 	 * 네이버 로그인 토큰 삭제
 	 *
 	 * @param accessToken 액세스 토큰
+	 * @param targetId    타겟 ID (제공자 ID)
 	 * @param userId      유저 테이블 ID
 	 * @return NaverDeleteTokenDto
 	 */
 	@Override
-	public NaverDeleteTokenDto deleteNaverToken(String accessToken, Long userId) {
+	public NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken) {
+		
+		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
+		if (StringUtils.isNotEmpty(refreshToken)) {
+			redisUtil.deleteRefreshToken(LoginProviderEnum.NAVER.getProvider(), targetId);
+			redisUtil.deleteProviderInfoByRefreshToken(refreshToken);
+		}
 		
 		// 유저 상태를 LOGOUT으로 변경
-		loginHelper.updateUserStatus(userId, LoginStatusEmum.LOGOUT.getLoginStatus());
+		loginHelper.updateUserStatus(userId, LoginStatusEnum.LOGOUT.getLoginStatus());
 
 		// 네이버 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -266,17 +299,31 @@ public class LoginServiceImpl implements LoginService {
 	 * 카카오 로그인 토큰 갱신
 	 *
 	 * @param clientId               클라이언트 ID
-	 * @param refreshTokenFromCookie 리프레시 토큰
+	 * @param refreshToken 리프레시 토큰
 	 * @return 카카오 토큰 발행 DTO
 	 */
 	@Override
-	public KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshTokenFromCookie) {
+	public KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken) {
+		
+		// 제공자 정보 조회
+		ProviderInfo providerInfo = redisUtil.getProviderInfoByRefreshToken(refreshToken);
+		
+		// 제공자 정보가 없는 경우 예외 처리
+		if (providerInfo == null) {
+			throw new AccountExpiredException(
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+		}
+		// 리프레시 토큰 검증
+		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken)) {
+			throw new AccountExpiredException(
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+		}
 
 		// 카카오 토큰 갱신 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(kakaoTokenIssueUrl)
 				.queryParam(PARAM_GRANT_TYPE, GRANT_TYPE_REFRESH_TOKEN)
 				.queryParam(PARAM_CLIENT_ID, clientId)
-				.queryParam(PARAM_REFRESH_TOKEN, refreshTokenFromCookie)
+				.queryParam(PARAM_REFRESH_TOKEN, refreshToken)
 				.queryParam(PARAM_CLIENT_SECRET, kakaoClientSecret)
 				.toUriString();
 
@@ -292,15 +339,21 @@ public class LoginServiceImpl implements LoginService {
 	 * 카카오 로그인 토큰 삭제
 	 *
 	 * @param accessToken 액세스 토큰
-	 * @param targetId    대상 ID (유저 ID)
+	 * @param targetId    대상 ID (제공자 ID)
 	 * @param userId      유저 테이블 ID
 	 * @return KakaoUserInfoDto
 	 */
 	@Override
-	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId) {
+	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken) {
+		
+		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
+		if (StringUtils.isNotEmpty(refreshToken)) {
+			redisUtil.deleteRefreshToken(LoginProviderEnum.KAKAO.getProvider(), targetId);
+			redisUtil.deleteProviderInfoByRefreshToken(refreshToken);
+		}
 		
 		// 유저 상태를 LOGOUT으로 변경
-		loginHelper.updateUserStatus(userId, LoginStatusEmum.LOGOUT.getLoginStatus());
+		loginHelper.updateUserStatus(userId, LoginStatusEnum.LOGOUT.getLoginStatus());
 
 		// 카카오 토큰 삭제 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(kakaoLogoutUrl)

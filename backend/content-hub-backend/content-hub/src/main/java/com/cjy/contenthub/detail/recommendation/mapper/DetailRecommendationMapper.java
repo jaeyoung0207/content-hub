@@ -6,8 +6,8 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieResultsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsMovieResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsTvResultsDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsMovieResultsDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsTvResultsDto;

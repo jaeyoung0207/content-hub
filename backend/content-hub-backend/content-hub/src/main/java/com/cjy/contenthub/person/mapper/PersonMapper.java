@@ -3,8 +3,8 @@ package com.cjy.contenthub.person.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonCreditsCastDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbPersonCreditsCrewDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonCreditsCastDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCastDto;
 import com.cjy.contenthub.person.controller.dto.PersonCreditsCrewDto;
 import com.cjy.contenthub.person.controller.dto.PersonDto;

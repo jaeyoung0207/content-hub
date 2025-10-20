@@ -22,19 +22,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cjy.contenthub.common.api.dto.kakao.KakaoProfileDto;
-import com.cjy.contenthub.common.api.dto.kakao.KakaoUserDetails;
-import com.cjy.contenthub.common.api.dto.kakao.KakaoUserInfoDto;
-import com.cjy.contenthub.common.api.dto.naver.NaverProfileDataDto;
-import com.cjy.contenthub.common.api.dto.naver.NaverProfileResultDto;
-import com.cjy.contenthub.common.api.dto.naver.NaverUserDetails;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.LoginProviderEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.NaverProfileErrorEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
+import com.cjy.contenthub.common.integration.kakao.dto.KakaoProfileDto;
+import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserDetails;
+import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
+import com.cjy.contenthub.common.integration.naver.dto.NaverProfileDataDto;
+import com.cjy.contenthub.common.integration.naver.dto.NaverProfileResultDto;
+import com.cjy.contenthub.common.integration.naver.dto.NaverUserDetails;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.login.controller.dto.LoginUserInfoDto;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.mapper.LoginMapper;
@@ -62,6 +64,12 @@ public class LoginClient {
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
+	
+	/** 로그인 서비스 */
+	private final LoginService service;
+
+	/** JWT 유틸리티 */
+	private final JwtUtil jwtUtil;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -79,12 +87,6 @@ public class LoginClient {
 	@Value("${login.kakao.url.userInfoUrl}")
 	private String kakaoUserInfoUrl;
 
-	/** 로그인 서비스 */
-	private final LoginService service;
-
-	/** JWT 유틸리티 */
-	private final JwtUtil jwtUtil;
-
 	/** 네이버 API 클라이언트 ID */
 	@Value("${login.naver.api.clientId}")
 	private String naverClientId;
@@ -92,6 +94,14 @@ public class LoginClient {
 	/** 네이버 API 클라이언트 시크릿 */
 	@Value("${login.naver.api.clientSecret}")
 	private String naverClientSecret;
+	
+	/** 네이버 리프레시 토큰 만료 시간 (일) */
+	@Value("${login.naver.custom.refreshTokenExpiresIn}")
+	private long naverExpiresIn;
+	
+	/** 네이버 리프레시 토큰 만료 시간 (일) */
+	@Value("${login.kakao.custom.refreshTokenExpiresIn}")
+	private long kakaoExpiresIn;
 
 	/** 유저 정보 조회 API 응답 성공 결과 코드 */
 	private static final String PROFILE_API_SUCCESS = "00";
@@ -168,7 +178,7 @@ public class LoginClient {
 									jwt = jwtUtil.createToken(profile.getId(), provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException(
-											messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
+											messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
 								}
 
 								// 만료시각 변환(Date -> String)
@@ -195,13 +205,13 @@ public class LoginClient {
 								if (StringUtils.isNotEmpty(refreshToken)) {
 									// refresh token을 redis에 저장
 									redisUtil.saveRefreshToken(provider, profile.getId(),
-											refreshToken);
+											refreshToken, naverExpiresIn);
 									// 리프레시 토큰 쿠키
-									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
+									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
 											.path("/")
 											.build();
 									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, provider)
+									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
 											.path("/")
 											.build();
 									// 쿠키 배열 생성
@@ -251,7 +261,7 @@ public class LoginClient {
 					if (ObjectUtils.isEmpty(response.getKakaoAccount())
 							|| ObjectUtils.isEmpty(response.getKakaoAccount().getProfile())) {
 						throw new ResponseStatusException(
-								HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_PROFILE.getMessageCode()));
+								HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_PROFILE.getMessageCode()));
 					}
 
 					// 카카오 프로필
@@ -297,7 +307,7 @@ public class LoginClient {
 									jwt = jwtUtil.createToken(providerId, provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException(
-											messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
+											messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
 								}
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()
@@ -325,13 +335,13 @@ public class LoginClient {
 								if (StringUtils.isNotEmpty(refreshToken)) {
 									// refresh token을 redis에 저장
 									redisUtil.saveRefreshToken(provider, providerId,
-											refreshToken);
+											refreshToken, kakaoExpiresIn);
 									// 리프레시 토큰 쿠키
-									ResponseCookie refreshTokenCookie = ResponseCookie.from(CommonConstants.REFRESH_TOKEN, refreshToken)
+									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
 											.path("/")
 											.build();
 									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(CommonConstants.PROVIDER, provider)
+									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
 											.path("/")
 											.build();
 									// 쿠키 배열 생성

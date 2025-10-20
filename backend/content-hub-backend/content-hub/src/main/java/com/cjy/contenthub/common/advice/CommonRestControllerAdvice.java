@@ -19,7 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.util.MessageUtil;
 
@@ -85,7 +85,7 @@ public class CommonRestControllerAdvice {
 				.build();
 		Object[] messageParams = {AUTHENTICATION_AUTHORIZATION_ERROR, path, statusCode, 
 				ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -145,7 +145,7 @@ public class CommonRestControllerAdvice {
 				.name(VALIDATION_ERROR)
 				.build();
 		Object[] messageParams = {VALIDATION_ERROR, path, statusCode, message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
@@ -177,7 +177,7 @@ public class CommonRestControllerAdvice {
 				.name(errorName)
 				.build();
 		Object[] messageParams = {errorName, path, statusCode, message, body};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_2.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_2.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -200,7 +200,7 @@ public class CommonRestControllerAdvice {
 				.name(BUSINESS_ERROR)
 				.build();
 		Object[] messageParams = {BUSINESS_ERROR, path, statusCode, message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 
@@ -223,7 +223,7 @@ public class CommonRestControllerAdvice {
 				.name(BUSINESS_ERROR)
 				.build();
 		Object[] messageParams = {BUSINESS_ERROR.concat(" (StatusException)"), path, statusCode, message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 	
@@ -246,7 +246,7 @@ public class CommonRestControllerAdvice {
 	        .name(TIMEOUT_ERROR)
 	        .build();
 	    Object[] messageParams = {TIMEOUT_ERROR, path, statusCode, message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 	    return new ResponseEntity<>(errorResponse, HttpStatus.GATEWAY_TIMEOUT);
 	}
 
@@ -269,7 +269,7 @@ public class CommonRestControllerAdvice {
 				.name(SERVER_ERROR)
 				.build();
 		Object[] messageParams = {SERVER_ERROR, path, statusCode, message};
-		log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

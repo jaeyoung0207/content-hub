@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자는 protected로 설정하여 외부에서 직접 생성하지 못하도록 함
 @AllArgsConstructor
 @Table(
-		schema = CommonConstants.SCHEMA_NAME_CONTENT,
+		schema = DomainConstants.SCHEMA_NAME_CONTENT,
 		name = "comment",
 		indexes = {@Index(name = "idx_content_id", columnList = "content_id"), @Index(name = "idx_user_id", columnList = "user_id"),
 				@Index(name = "idx_create_time", columnList = "create_time"), @Index(name = "idx_star_rating", columnList = "star_rating")}

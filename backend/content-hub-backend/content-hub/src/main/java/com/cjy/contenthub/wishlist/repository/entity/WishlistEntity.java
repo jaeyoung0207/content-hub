@@ -3,9 +3,9 @@ package com.cjy.contenthub.wishlist.repository.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
-import com.cjy.contenthub.common.repository.entity.UserEntity;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(
-		schema = CommonConstants.SCHEMA_NAME_CONTENT, 
+		schema = DomainConstants.SCHEMA_NAME_CONTENT, 
 		name = "wishlist",
 		uniqueConstraints = @UniqueConstraint(name = "wishlist_unique", columnNames = {"user_id", "content_id"}),
 		indexes = {

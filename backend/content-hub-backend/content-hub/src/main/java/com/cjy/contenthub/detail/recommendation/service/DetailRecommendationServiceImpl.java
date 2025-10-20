@@ -18,18 +18,18 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsMovieDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbRecommendationsTvDto;
-import com.cjy.contenthub.common.constants.AniListParamConstants;
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.ApiUtil;
-import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.integration.anilist.constants.AniListParamConstants;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListMediaDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsMovieDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsTvDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
+import com.cjy.contenthub.core.facade.ApiFacade;
+import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResponseDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsMovieDto;
@@ -69,7 +69,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	private final WebClient anilistWebClient;
 
 	/** API 유틸리티 클래스 */
-	private final ApiUtil apiUtil;
+	private final ApiFacade apiUtil;
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tvRecommendationsPath}")
@@ -130,7 +130,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 				String apiName = "TMDB TV Recommendations";
 				Object[] messageParams = { apiName, seriesId };
 				log.warn(messageUtil.getMessageKO(
-						MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
+						DomainMessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
 						messageParams));
 				// 영어로 재시도
 				return tmdbWebClient.get()
@@ -141,7 +141,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 							// 404의 경우는 무시하고 빈 응답 반환
 							if (response.statusCode() == HttpStatus.NOT_FOUND) {
 								log.warn(messageUtil.getMessageKO(
-										MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+										DomainMessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
 										messageParams));
 								return Mono.empty(); 
 							}
@@ -203,7 +203,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						String apiName = "TMDB Movie Recommendations";
 						Object[] messageParams = { apiName, movieId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
+								DomainMessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND_THEN_RETRY.getMessageCode(), 
 								messageParams));
 						// 영어로 재시도
 						return tmdbWebClient.get()
@@ -214,7 +214,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 									// 404의 경우는 무시하고 빈 응답 반환
 									if (response.statusCode() == HttpStatus.NOT_FOUND) {
 										log.warn(messageUtil.getMessageKO(
-												MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+												DomainMessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
 												messageParams));
 										return Mono.empty();
 									}
@@ -271,7 +271,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
 				AniListParamConstants.PARAM_MEDIA_ID, mediaId,
-				AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(DomainConstants.FIRST_PAGE_NO),
 				AniListParamConstants.PARAM_PER_PAGE, anilistPerMorePage
 				));
 		// graphql 쿼리에 리퀘스트 파라미터 적용
@@ -287,7 +287,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						String apiName = "AniList Comics Recommendations";
 						Object[] messageParams = { apiName, mediaId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
+								DomainMessagesWarnEnum.WARN_DETAIL_RECOMMENDATION_RECOMMENDATION_NOT_FOUND.getMessageCode(), 
 								messageParams));
 						return Mono.empty(); 
 					}
@@ -308,7 +308,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 						AniListMediaDto media =  response.getData().getMedia();
 
 						// 첫번째 페이지인 경우, 관련 작품 노드 리스트를 추가
-						if (page == CommonConstants.FIRST_PAGE_NO) {
+						if (page == DomainConstants.FIRST_PAGE_NO) {
 							recommendationHelper.getComicsRelations(media, results);
 						}
 						// 추천 작품 설정

@@ -11,8 +11,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.character.service.CharacterService;
 import com.cjy.contenthub.common.annotation.ApiController;
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

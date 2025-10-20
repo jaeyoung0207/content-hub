@@ -10,7 +10,7 @@ import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -86,12 +86,12 @@ public class JwtUtil {
 			return JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode();
 		} catch (ExpiredJwtException ex) {
 			// 토큰이 만료된 경우 로그 출력
-			log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_EXPIRED.getMessageCode()), ex);
+			log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_EXPIRED.getMessageCode()), ex);
 			// 만료된 토큰의 경우 만료된 토큰 코드를 반환
 			return JwtValidateResultEnum.EXPIRED_TOKEN.getJwtValidateResultCode();
 	    } catch (JwtException | IllegalArgumentException ex) {
 	    	// 토큰이 유효하지 않거나 파싱 중 오류가 발생한 경우 로그 출력
-	    	log.error(messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_INVALID.getMessageCode()), ex);
+	    	log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_INVALID.getMessageCode()), ex);
 	    	// 유효하지 않은 토큰의 경우 유효하지 않은 토큰 코드를 반환
 	    	return JwtValidateResultEnum.INVALID_TOKEN.getJwtValidateResultCode();
 	    }

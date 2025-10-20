@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesWarnEnum;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class SessionUtil {
 		if (session == null) {
 			Object[] messageParams = { key };
 			log.warn(messageUtil.getMessageKO(
-					MessagesWarnEnum.WARN_COMMON_SESSION_NOT_FOUND.getMessageCode(), messageParams));
+					CommonMessagesWarnEnum.WARN_COMMON_SESSION_NOT_FOUND.getMessageCode(), messageParams));
 			return false;
 		}
 		// 세션에서 지정된 키에 해당하는 값을 Optional로 감싸고, 값이 없으면 false를 반환

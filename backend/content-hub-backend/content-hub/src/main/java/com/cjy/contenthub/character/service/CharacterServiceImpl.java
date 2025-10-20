@@ -8,13 +8,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersNodeDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffNodeDto;
-import com.cjy.contenthub.common.constants.AniListParamConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
-import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.integration.anilist.constants.AniListParamConstants;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
+import com.cjy.contenthub.common.util.GraphqlUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class CharacterServiceImpl implements CharacterService {
 							|| response.getData().getCharacter() == null) {
 						Object[] messageParams = { characterId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_CHARACTER_CHARACTER_NOT_FOUND.getMessageCode(), messageParams));
+								DomainMessagesWarnEnum.WARN_CHARACTER_CHARACTER_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListCharactersNodeDto();
 					}
 					// 응답 데이터가 있는 경우 캐릭터 정보 반환
@@ -110,7 +110,7 @@ public class CharacterServiceImpl implements CharacterService {
 							|| response.getData().getStaff() == null) {
 						Object[] messageParams = { staffId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_CHARACTER_STAFF_NOT_FOUND.getMessageCode(), messageParams));
+								DomainMessagesWarnEnum.WARN_CHARACTER_STAFF_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListStaffNodeDto();
 					}
 					// 응답 데이터가 있는 경우 스태프 정보 반환

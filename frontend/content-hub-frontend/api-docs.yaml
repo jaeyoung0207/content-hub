@@ -22,12 +22,12 @@ tags:
     description: Login APIs
   - name: person-api
     description: Person APIs
-  - name: common-api
-    description: Common APIs
   - name: search-api
     description: Search APIs
   - name: home-api
     description: Home APIs
+  - name: app-api
+    description: App APIs
 paths:
   /api/detail/comments/updateComment:
     put:
@@ -106,10 +106,10 @@ paths:
             '*/*':
               schema:
                 type: boolean
-  /api/common/setAdultFlg:
+  /api/app/setAdultFlg:
     post:
       tags:
-        - common-api
+        - app-api
       summary: 성인 여부 플래그 조회
       operationId: setAdultFlg
       parameters:
@@ -121,10 +121,10 @@ paths:
       responses:
         '200':
           description: OK
-  /api/common/clearAdultFlg:
+  /api/app/clearAdultFlg:
     post:
       tags:
-        - common-api
+        - app-api
       summary: 성인 여부 플래그 클리어
       operationId: clearAdultFlg
       responses:
@@ -901,38 +901,6 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/DetailCommentsGetResponseDto'
-  /api/common/getMediaTypes:
-    get:
-      tags:
-        - common-api
-      summary: 공통 미디어 타입 조회
-      operationId: getMediaTypes
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CommonMediaTypeResponseDto'
-  /api/common/getCsrfToken:
-    get:
-      tags:
-        - common-api
-      summary: CSRF 토큰 조회
-      operationId: getCsrfToken
-      parameters:
-        - name: token
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/CsrfToken'
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CsrfToken'
   /api/character/getStaff:
     get:
       tags:
@@ -973,6 +941,38 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AniListCharactersNodeDto'
+  /api/app/getMediaTypes:
+    get:
+      tags:
+        - app-api
+      summary: 공통 미디어 타입 조회
+      operationId: getMediaTypes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AppMediaTypeResponseDto'
+  /api/app/getCsrfToken:
+    get:
+      tags:
+        - app-api
+      summary: CSRF 토큰 조회
+      operationId: getCsrfToken
+      parameters:
+        - name: token
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CsrfToken'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
   /api/wishlist/deleteWishlist:
     delete:
       tags:
@@ -1763,9 +1763,9 @@ components:
           type: string
         profileImageUrl:
           type: string
-        defaultNickname:
-          type: boolean
         defaultImage:
+          type: boolean
+        defaultNickname:
           type: boolean
     KakaoUserInfoDto:
       type: object
@@ -2407,9 +2407,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favouriteBlocked:
-          type: boolean
         favourite:
+          type: boolean
+        favouriteBlocked:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2496,7 +2496,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DetailCommentsGetDataDto'
-    CommonContentMediaTypeDto:
+    AppContentMediaTypeDto:
       required:
         - aniCode
         - comicsCode
@@ -2527,7 +2527,7 @@ components:
           type: string
         comicsCode:
           type: string
-    CommonDisplayMediaTypeDto:
+    AppDisplayMediaTypeDto:
       required:
         - aniCode
         - comicsCode
@@ -2558,16 +2558,16 @@ components:
           type: string
         comicsCode:
           type: string
-    CommonMediaTypeResponseDto:
+    AppMediaTypeResponseDto:
       required:
         - contentMediaTypeDto
         - displayMediaTypeDto
       type: object
       properties:
         contentMediaTypeDto:
-          $ref: '#/components/schemas/CommonContentMediaTypeDto'
+          $ref: '#/components/schemas/AppContentMediaTypeDto'
         displayMediaTypeDto:
-          $ref: '#/components/schemas/CommonDisplayMediaTypeDto'
+          $ref: '#/components/schemas/AppDisplayMediaTypeDto'
     CsrfToken:
       type: object
       properties:

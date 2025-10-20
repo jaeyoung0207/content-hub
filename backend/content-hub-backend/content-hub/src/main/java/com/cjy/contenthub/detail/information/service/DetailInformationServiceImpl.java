@@ -13,22 +13,22 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListCharactersDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListResponseDto;
-import com.cjy.contenthub.common.api.dto.aniist.AniListStaffDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbGenreDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbMovieDetailsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbTvDetailsDto;
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbWatchProvidersDto;
-import com.cjy.contenthub.common.constants.AniListParamConstants;
-import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.SortEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.BusinessUtil;
+import com.cjy.contenthub.common.integration.anilist.constants.AniListParamConstants;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListMediaDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbGenreDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbMovieDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbTvDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbWatchProvidersDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.DomainConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.SortEnum;
+import com.cjy.contenthub.core.shared.service.GenreSharedService;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailMovieResponseDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailTvResponseDto;
@@ -49,8 +49,8 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	/** 상세 매퍼 */
 	private final DetailInformationMapper detailInformationMapper;
 	
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 장르 공유 서비스 */
+	private final GenreSharedService genreSharedService;
 	
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
@@ -231,9 +231,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
 				AniListParamConstants.PARAM_MEDIA_ID, comicsId,
-				AniListParamConstants.PARAM_PAGE, CommonConstants.FIRST_PAGE_NO,
+				AniListParamConstants.PARAM_PAGE, DomainConstants.FIRST_PAGE_NO,
 				AniListParamConstants.PARAM_PER_PAGE, anilistPerCharacterPage,
-				AniListParamConstants.PARAM_STAFF_PAGE, CommonConstants.FIRST_PAGE_NO,
+				AniListParamConstants.PARAM_STAFF_PAGE, DomainConstants.FIRST_PAGE_NO,
 				AniListParamConstants.PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
 				AniListParamConstants.PARAM_SORT, List.of(SortEnum.ID),
 				AniListParamConstants.PARAM_STAFF_SORT, List.of(SortEnum.ID)
@@ -251,7 +251,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 					if (response == null || response.getData() == null || response.getData().getMedia() == null) {
 						Object[] messageParams = { comicsId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_DETAIL_INFORMATION_COMICS_NOT_FOUND.getMessageCode(), messageParams));
+								DomainMessagesWarnEnum.WARN_DETAIL_INFORMATION_COMICS_NOT_FOUND.getMessageCode(), messageParams));
 						return new DetailComicsResponseDto();
 					}
 					// 응답 데이터 재분배
@@ -268,7 +268,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 							.id(media.getId())
 							.overview(media.getDescription())
 							.comicsGenres(media.getGenres())
-							.genreIds(businessUtil.genreMappingFromAniListToTmdb(media.getGenres()))
+							.genreIds(genreSharedService.genreMappingFromAniListToTmdb(media.getGenres()))
 							.adult(media.isAdult())
 							.volumes(media.getVolumes())
 							.chapters(media.getChapters())
@@ -306,7 +306,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
 				AniListParamConstants.PARAM_MEDIA_ID, comicsId,
-				AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AniListParamConstants.PARAM_PAGE, Optional.ofNullable(page).orElse(DomainConstants.FIRST_PAGE_NO),
 				AniListParamConstants.PARAM_PER_PAGE, anilistPerCharacterPage,
 				AniListParamConstants.PARAM_SORT, List.of(SortEnum.ID)
 				));
@@ -323,7 +323,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 					if (reponse == null || reponse.getData() == null || reponse.getData().getMedia() == null) {
 						Object[] messageParams = { comicsId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_DETAIL_INFORMATION_CHARACTERS_NOT_FOUND.getMessageCode(), messageParams));
+								DomainMessagesWarnEnum.WARN_DETAIL_INFORMATION_CHARACTERS_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListCharactersDto();
 					}
 					// 응답 데이터 재분배
@@ -352,7 +352,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 		// 리퀘스트 파라미터 작성
 		Map<String, Object> variables = new HashMap<>(Map.of(
 				AniListParamConstants.PARAM_MEDIA_ID, comicsId,
-				AniListParamConstants.PARAM_STAFF_PAGE, Optional.ofNullable(page).orElse(CommonConstants.FIRST_PAGE_NO),
+				AniListParamConstants.PARAM_STAFF_PAGE, Optional.ofNullable(page).orElse(DomainConstants.FIRST_PAGE_NO),
 				AniListParamConstants.PARAM_STAFF_PERPAGE, anilistPerCharacterPage,
 				AniListParamConstants.PARAM_STAFF_SORT, List.of(SortEnum.ID)
 				));
@@ -369,7 +369,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 					if (reponse == null || reponse.getData() == null || reponse.getData().getMedia() == null) {
 						Object[] messageParams = { comicsId };
 						log.warn(messageUtil.getMessageKO(
-								MessagesWarnEnum.WARN_DETAIL_INFORMATION_STAFF_NOT_FOUND.getMessageCode(), messageParams));
+								DomainMessagesWarnEnum.WARN_DETAIL_INFORMATION_STAFF_NOT_FOUND.getMessageCode(), messageParams));
 						return new AniListStaffDto();
 					}
 					// 응답 데이터 재분배

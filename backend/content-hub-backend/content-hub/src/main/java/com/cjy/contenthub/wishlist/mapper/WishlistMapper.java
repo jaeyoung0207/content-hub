@@ -6,7 +6,7 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
-import com.cjy.contenthub.common.repository.entity.ContentEntity;
+import com.cjy.contenthub.core.repository.entity.ContentEntity;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistCheckResultResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistRequestDto;

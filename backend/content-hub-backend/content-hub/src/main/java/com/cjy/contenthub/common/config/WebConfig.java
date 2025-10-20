@@ -8,10 +8,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.interceptor.ApiRateLimitInterceptor;
 import com.cjy.contenthub.common.interceptor.CommonInterceptor;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
+import com.cjy.contenthub.common.constants.CommonConstants;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,10 +67,10 @@ public class WebConfig implements WebMvcConfigurer {
 		String fullPrefix = apiPrefixProperties.getFullPrefix();
 		// 인터셉터 등록
 		registry.addInterceptor(commonInterceptor)
-		.addPathPatterns(fullPrefix.concat("/search/*"), fullPrefix.concat("/detail/*"), fullPrefix.concat("/common/*")); // 이 경로에서만 적용
+		.addPathPatterns(fullPrefix.concat("/search/*"), fullPrefix.concat("/detail/*"), fullPrefix.concat("/app/*")); // 이 경로에서만 적용
 		registry.addInterceptor(apiRateLimitInterceptor)
 		.addPathPatterns("/**") // 모든 경로에서 적용
-		.excludePathPatterns(fullPrefix.concat("/common/**"), fullPrefix.concat("/error")); // 이 경로에서는 제외
+		.excludePathPatterns(fullPrefix.concat("/app/**"), fullPrefix.concat("/error")); // 이 경로에서는 제외
 		
 	}
 

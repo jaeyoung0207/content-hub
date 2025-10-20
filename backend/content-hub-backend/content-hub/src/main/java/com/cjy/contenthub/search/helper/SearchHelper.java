@@ -12,12 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.cjy.contenthub.common.api.dto.aniist.AniListMediaDto;
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.TmdbGenreEnum;
-import com.cjy.contenthub.common.constants.TmdbParamConstants;
-import com.cjy.contenthub.common.util.BusinessUtil;
-import com.cjy.contenthub.common.util.GenreUtil;
+import com.cjy.contenthub.common.integration.anilist.dto.AniListMediaDto;
+import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.TmdbGenreEnum;
+import com.cjy.contenthub.core.shared.service.GenreSharedService;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResultsDto;
@@ -34,8 +33,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SearchHelper {
 
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 장르 공유 서비스 */
+	private final GenreSharedService genreSharedService;
 
 	/** TMDB API 페이지당 작품 표시 개수 */
 	@Value("${tmdb.custom.perMainPage}")
@@ -237,7 +236,7 @@ public class SearchHelper {
 			Map<String, Integer> tvGenreMap) {
 		List<SearchTvResultsDto> dramaList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> GenreUtil.isDramaGenre(tvGenreMap, result.getGenreIds()))
+		.filter(result -> genreSharedService.isDramaGenre(tvGenreMap, result.getGenreIds()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
 			dramaList.add(result);
@@ -296,7 +295,7 @@ public class SearchHelper {
 		List<SearchTvResultsDto> varietyList = new ArrayList<>();
 		resultList.stream()
 		.filter(result -> result.getGenreIds() != null && result.getGenreIds().isEmpty() 
-		|| GenreUtil.isVarietyGenre(tvGenreMap, result.getGenreIds()))
+		|| genreSharedService.isVarietyGenre(tvGenreMap, result.getGenreIds()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
 			varietyList.add(result);
@@ -317,7 +316,7 @@ public class SearchHelper {
 			Map<String, Integer> tvGenreMap, String targetGenreName, String contentMediaType) {
 		List<SearchTvResultsDto> tvList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> GenreUtil.isTargetGenre(tvGenreMap, result.getGenreIds(), targetGenreName))
+		.filter(result -> genreSharedService.isTargetGenre(tvGenreMap, result.getGenreIds(), targetGenreName))
 		.forEach(result -> {
 			result.setContentMediaType(contentMediaType);
 			tvList.add(result);
@@ -365,7 +364,7 @@ public class SearchHelper {
 			Map<String, Integer> movieGenreMap) {
 		List<SearchTvResultsDto> aniMovieList = new ArrayList<>();
 		resultList.stream()
-		.filter(result -> GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
+		.filter(result -> genreSharedService.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 		.forEach(result -> 
 		aniMovieList.add(convertMovieToAni(result))
 				);
@@ -384,7 +383,7 @@ public class SearchHelper {
 		List<SearchMovieResultsDto> movieList = new ArrayList<>();
 		resultList.stream()
 		.filter(result -> result.getGenreIds() != null)
-		.filter(result -> !GenreUtil.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
+		.filter(result -> !genreSharedService.isTargetGenre(movieGenreMap, result.getGenreIds(), TmdbGenreEnum.GENRE_ANI.getGenreEnglish()))
 		.forEach(result -> {
 			result.setContentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode());
 			movieList.add(result);
@@ -410,7 +409,7 @@ public class SearchHelper {
 					.backdropPath(mediaLargeImage)
 					.posterPath(mediaExtraLargeImage)
 					.contentMediaType(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
-					.genreIds(businessUtil.genreMappingFromAniListToTmdb(result.getGenres()))
+					.genreIds(genreSharedService.genreMappingFromAniListToTmdb(result.getGenres()))
 					.build();
 			comicsList.add(mediaResult);
 		}

@@ -119,7 +119,7 @@ export const DisplayVideoCredits = ({
                   : items.character;
               return (
                 <div
-                  key={items.id + "_" + index}
+                  key={items.id + '_' + index}
                   className={`ml-1 mr-1 w-[390px]`}
                   style={{ height: `${heightStyle}px` }}
                   onClick={() => checkPersonId(items.id)}

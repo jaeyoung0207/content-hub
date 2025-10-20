@@ -17,7 +17,10 @@ export const freshOnMountOptions = {
   refetchOnMount: 'always', // 마운트 때는 항상 재조회
   refetchOnWindowFocus: false, // window focus 시 재조회 안함
   placeholderData: keepPreviousData, // 이전 데이터 유지로 깜빡임 최소화
-} satisfies Omit<UseQueryOptions<unknown, unknown, unknown, QueryKey>, 'queryKey' | 'queryFn'>;
+} satisfies Omit<
+  UseQueryOptions<unknown, unknown, unknown, QueryKey>,
+  'queryKey' | 'queryFn'
+>;
 
 /**
  * 일반 리스트/상세에 무난한 캐시형 프리셋
@@ -30,7 +33,10 @@ export const cachedListOptions = {
   refetchOnMount: false,
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
-} satisfies Omit<UseQueryOptions<unknown, unknown, unknown, QueryKey>, 'queryKey' | 'queryFn'>;
+} satisfies Omit<
+  UseQueryOptions<unknown, unknown, unknown, QueryKey>,
+  'queryKey' | 'queryFn'
+>;
 
 /**
  * 무한 스크롤용 프리셋

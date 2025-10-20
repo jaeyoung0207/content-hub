@@ -164,16 +164,16 @@ app:
       seconds: 60
     rules:
       # common
-      - path: "/common/getCsrfToken"
+      - path: "/app/getCsrfToken"
         max-request-count: 20
         seconds: 60
-      - path: "/common/getMediaTypes"
+      - path: "/app/getMediaTypes"
         max-request-count: 20
         seconds: 60
-      - path: "/common/setAdultFlg"
+      - path: "/app/setAdultFlg"
         max-request-count: 20
         seconds: 60
-      - path: "/common/clearAdultFlg"
+      - path: "/app/clearAdultFlg"
         max-request-count: 20
         seconds: 60
       # character

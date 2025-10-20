@@ -7,17 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesErrorEnum;
-import com.cjy.contenthub.common.repository.UserRepository;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.common.util.RedisUtil;
-import com.cjy.contenthub.login.helper.LoginHelper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -28,9 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 공통 로그인 체크 필터 클래스 
- * 모든 요청에 대해 실행되며 OncePerRequestFilter를 상속받아 HTTP 요청에 대해 JWT 토큰의 유효성을 검사하고,
- * 유저 인증 상태를 확인하는 필터
+ * 공통 로그인 체크 필터 클래스
+ * JWT 토큰을 검증하고, 유효한 경우 인증 정보를 SecurityContext에 설정
  * 
  * @see OncePerRequestFilter
  */
@@ -39,15 +34,6 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
-	
-	/** Redis 유틸리티 클래스 */
-	private final RedisUtil redisUtil;
-	
-	/** User 리포지토리 */
-	private final UserRepository userRepository;
-	
-	/** 로그인 헬퍼 */
-	private final LoginHelper loginHelper;
 	
 	/** 메시지 유틸리티 클래스 */
 	private final MessageUtil messageUtil;
@@ -87,37 +73,19 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 				}
 			} catch (JwtException ex) {
 				throw new AccountExpiredException(
-						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_PARSING.getMessageCode()), ex);
+						messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_PARSING.getMessageCode()), ex);
 			}
 
-			// 토큰에서 id와 provider를 추출하여 user테이블에 존재하는지 확인
 			// JWT에서 클레임 추출
 			Claims claims = jwtUtil.parseClaims(jwt);
 			// 클레임에서 providerId와 provider 추출
 			String providerId = claims.getSubject();
-			String provider = (String) claims.get("provider");
 			
-			// 쿠키에서 리프레시 토큰 추출
-			String refreshToken = loginHelper.getRefreshToken(request, provider);
-			// 리프레시 토큰 검증
-			if (!redisUtil.validateRefreshToken(provider, providerId, refreshToken)) {
-				throw new AccountExpiredException(
-						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
-			}
-			
-			// user 테이블에 등록되어 있는지 확인
-			boolean isSaved = userRepository.existsByProviderAndProviderId(provider, providerId);
-			// 유저가 존재하지 않는 경우, 예외를 발생시킴
-			if(isSaved) {
-				// 인증 객체 생성
-			    UsernamePasswordAuthenticationToken authentication =
-			        new UsernamePasswordAuthenticationToken(providerId, null, Collections.emptyList());
-			    // SecurityContext에 인증 객체 세팅
-			    SecurityContextHolder.getContext().setAuthentication(authentication);
-			} else {
-				throw new UsernameNotFoundException(
-						messageUtil.getMessageKO(MessagesErrorEnum.ERROR_LOGIN_NOT_FOUND_USER.getMessageCode()));
-			}
+			// 인증 객체 생성
+			UsernamePasswordAuthenticationToken authentication =
+					new UsernamePasswordAuthenticationToken(providerId, null, Collections.emptyList());
+			// SecurityContext에 인증 객체 세팅
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 		// 필터 체인을 계속 진행
 		filterChain.doFilter(request, response);

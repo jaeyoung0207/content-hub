@@ -12,15 +12,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.filter.CommonAuthenticationEntryPoint;
 import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
-import com.cjy.contenthub.common.repository.UserRepository;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.common.util.RedisUtil;
-import com.cjy.contenthub.login.helper.LoginHelper;
+import com.cjy.contenthub.common.constants.CommonConstants;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,15 +32,6 @@ public class SecurityConfig {
 
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
-	
-	/** Redis 유틸리티 클래스 */
-	private final RedisUtil redisUtil;
-	
-	/** User 리포지토리 */
-	private final UserRepository userRepository;
-	
-	/** 로그인 헬퍼 */
-	private final LoginHelper loginHelper;
 	
 	/** 메시지 유틸리티 클래스 */
 	private final MessageUtil messageUtil;
@@ -90,7 +78,7 @@ public class SecurityConfig {
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
-		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, redisUtil, userRepository, loginHelper, messageUtil), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, messageUtil), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 
 		// HTTP 보안 설정을 빌드하여 반환

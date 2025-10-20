@@ -12,8 +12,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesDebugEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.MessagesWarnEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesDebugEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesWarnEnum;
 import com.cjy.contenthub.common.ratelimit.service.ApiRateLimitService;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
@@ -82,7 +82,7 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 		
 		Object[] logParams = { ip, uri, key, count, maxRequestCount };
 		log.debug(messageUtil.getMessageKO(
-				MessagesDebugEnum.DEBUG_COMMON_API_RATE_LIMIT_CHECK.getMessageCode(), logParams));
+				CommonMessagesDebugEnum.DEBUG_COMMON_API_RATE_LIMIT_CHECK.getMessageCode(), logParams));
 		
 		// 요청 횟수가 허용된 최대치를 초과하는 경우
 		if (count > maxRequestCount) {
@@ -109,7 +109,7 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 			response.getWriter().write(jsonResponse);
 			Object[] messageParams = { ip, uri, count, ttl };
 			log.warn(messageUtil.getMessageKO(
-					MessagesWarnEnum.WARN_COMMON_API_RATE_LIMIT_EXCEEDED.getMessageCode(), messageParams));
+					CommonMessagesWarnEnum.WARN_COMMON_API_RATE_LIMIT_EXCEEDED.getMessageCode(), messageParams));
 			return false;
 		}
 		// 요청이 허용된 경우 true 반환

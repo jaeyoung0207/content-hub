@@ -2,7 +2,7 @@ package com.cjy.contenthub.search.controller.dto;
 
 import java.util.List;
 
-import com.cjy.contenthub.common.api.dto.tmdb.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

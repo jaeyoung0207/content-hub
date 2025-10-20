@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cjy.contenthub.common.constants.CommonEnum.ContentMediaTypeEnum;
-import com.cjy.contenthub.common.constants.CommonEnum.DisplayMediaTypeEnum;
-import com.cjy.contenthub.common.util.BusinessUtil;
+import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DisplayMediaTypeEnum;
+import com.cjy.contenthub.core.shared.service.WishlistSharedService;
 import com.cjy.contenthub.home.mapper.HomeMapper;
 import com.cjy.contenthub.home.repository.HomeRankingViewRepository;
 import com.cjy.contenthub.home.repository.entity.HomeRankingViewEntity;
@@ -34,8 +34,8 @@ public class HomeServiceImpl implements HomeService {
 	/** 위시리스트 리포지토리 */
 	private final WishlistRepository wishlistRepository;
 
-	/** 비즈니스 유틸리티 */
-	private final BusinessUtil businessUtil;
+	/** 위시리스트 플래그 공유 서비스 */
+	private final WishlistSharedService wishlistFlagSharedService;
 
 	/**
 	 * 콘텐츠 랭킹 정보를 조회
@@ -75,7 +75,7 @@ public class HomeServiceImpl implements HomeService {
 
 		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
 		if (userId != null) {
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					aniRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode(), 
 							ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode()),
@@ -83,44 +83,44 @@ public class HomeServiceImpl implements HomeService {
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					dramaRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode()), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					documentaryRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode()), 
 					userId, dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted, wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					kidsRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode()), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted, wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					newsRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode()), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted, wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					varietyRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode()),
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted, wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					movieRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode()), 
 					userId, 
 					dto -> dto.getApiId(),
 					HomeRankingServiceDto::setWishlisted,
 					wishlistRepository);
-			businessUtil.setWishlisted(
+			wishlistFlagSharedService.setWishlisted(
 					comicsRankingList, 
 					List.of(ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode()), 
 					userId, 

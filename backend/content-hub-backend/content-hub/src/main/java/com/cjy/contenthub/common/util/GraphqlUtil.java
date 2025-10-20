@@ -20,6 +20,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GraphqlUtil {
 	
+	/** ObjectMapper 클래스 */
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+	
 	/**
 	 * 지정된 파일 이름에 해당하는 GraphQL 쿼리를 클래스패스에서 로드하여 문자열로 반환
 	 * 
@@ -44,8 +47,6 @@ public class GraphqlUtil {
 	 */
 	public static String buildRequestBody(String query, Map<String, Object> parameterMap) throws JsonProcessingException {
 		// Jackson ObjectMapper를 이용하여 java Object -> json 형식의 문자열로 변환
-		// ObjectMapper를 사용하여 Map을 JSON 문자열로 변환하여 반환
-		ObjectMapper objectMapper = new ObjectMapper();
 		// 쿼리와 파라미터 맵을 포함하는 맵 생성
 		Map<String, Object> queryMap = new HashMap<>();
 		// 쿼리와 파라미터 맵을 queryMap에 추가
