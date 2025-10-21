@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class WebClientConfig {
 
 	/** WebClient 최대 메모리 크기 설정 */
-	@Value("${app.webClient.maxInMemorySize}")
+	@Value("${app.web-client.max-in-memory-size}")
 	private int maxInMemorySize;
 
 	/** TMDB API 인증 토큰 */
@@ -42,47 +42,47 @@ public class WebClientConfig {
 	private String tmdbApiAccessToken;
 
 	/** TMDB API 기본 URL */
-	@Value("${tmdb.url.baseUrl}")
+	@Value("${tmdb.url.base-url}")
 	private String tmdbBaseUrl;
 
 	/** TMDB API ConnectionRequestTimeout */
-	@Value("${tmdb.custom.connectionRequestTimeout}")
+	@Value("${tmdb.custom.connection-request-timeout}")
 	private int tmdbConnectionRequestTimeout;
 
 	/** TMDB API ResponseTimeout */
-	@Value("${tmdb.custom.responseTimeout}")
+	@Value("${tmdb.custom.response-timeout}")
 	private int tmdbResponseTimeout;
 	
 	/** TMDB API 최대 커넥션 수 */
-	@Value("${tmdb.custom.maxConnTotal}")
+	@Value("${tmdb.custom.max-conn-total}")
 	private int tmdbMaxConnTotal;
 	
 	/** TMDB API 라우트당 최대 커넥션 수 */
-	@Value("${tmdb.custom.maxConnPerRoute}")
+	@Value("${tmdb.custom.max-conn-per-route}")
 	private int tmdbMaxConnPerRoute;
 
 	/** AniList API 기본 URL */
-	@Value("${anilist.url.baseUrl}")
+	@Value("${anilist.url.base-url}")
 	private String anilistBaseUrl;
 
 	/** AniList API ConnectionRequestTimeout */
-	@Value("${anilist.custom.connectionRequestTimeout}")
+	@Value("${anilist.custom.connection-request-timeout}")
 	private int anilistConnectionRequestTimeout;
 
 	/** AniList API ResponseTimeout */
-	@Value("${anilist.custom.responseTimeout}")
+	@Value("${anilist.custom.response-timeout}")
 	private int anilistResponseTimeout;
 	
 	/** AniList API 최대 커넥션 수 */
-	@Value("${anilist.custom.maxConnTotal}")
+	@Value("${anilist.custom.max-conn-total}")
 	private int anilistMaxConnTotal;
 	
 	/** AniList API 라우트당 최대 커넥션 수 */
-	@Value("${anilist.custom.maxConnPerRoute}")
+	@Value("${anilist.custom.max-conn-per-route}")
 	private int anilistMaxConnPerRoute;
 
 	/** DeepL API 기본 URL */
-	@Value("${deepl.url.baseUrl}")
+	@Value("${deepl.url.base-url}")
 	private String deeplBaseUrl;
 
 	/** DeepL API 인증 키 */
@@ -90,51 +90,51 @@ public class WebClientConfig {
 	private String deeplApiKey;
 
 	/** DeepL API ConnectionRequestTimeout */
-	@Value("${deepl.custom.connectionRequestTimeout}")
+	@Value("${deepl.custom.connection-request-timeout}")
 	private int deeplConnectionRequestTimeout;
 
 	/** DeepL API ResponseTimeout */
-	@Value("${deepl.custom.responseTimeout}")
+	@Value("${deepl.custom.response-timeout}")
 	private int deeplResponseTimeout;
 	
 	/** DeepL API 최대 커넥션 수 */
-	@Value("${deepl.custom.maxConnTotal}")
+	@Value("${deepl.custom.max-conn-total}")
 	private int deeplMaxConnTotal;
 	
 	/** DeepL API 라우트당 최대 커넥션 수 */
-	@Value("${deepl.custom.maxConnPerRoute}")
+	@Value("${deepl.custom.max-conn-per-route}")
 	private int deeplMaxConnPerRoute;
 
 	/** NAVER API ConnectionRequestTimeout */
-	@Value("${login.naver.custom.connectionRequestTimeout}")
+	@Value("${login.naver.custom.connection-request-timeout}")
 	private int naverConnectionRequestTimeout;
 
 	/** NAVER API ResponseTimeout */
-	@Value("${login.naver.custom.responseTimeout}")
+	@Value("${login.naver.custom.response-timeout}")
 	private int naverResponseTimeout;
 	
 	/** NAVER API 최대 커넥션 수 */
-	@Value("${login.naver.custom.maxConnTotal}")
+	@Value("${login.naver.custom.max-conn-total}")
 	private int naverMaxConnTotal;
 	
 	/** NAVER API 라우트당 최대 커넥션 수 */
-	@Value("${login.naver.custom.maxConnPerRoute}")
+	@Value("${login.naver.custom.max-conn-per-route}")
 	private int naverMaxConnPerRoute;
 
 	/** KAKAO API ConnectionRequestTimeout */
-	@Value("${login.kakao.custom.connectionRequestTimeout}")
+	@Value("${login.kakao.custom.connection-request-timeout}")
 	private int kakaoConnectionRequestTimeout;
 
 	/** KAKAO API ResponseTimeout */
-	@Value("${login.kakao.custom.responseTimeout}")
+	@Value("${login.kakao.custom.response-timeout}")
 	private int kakaoResponseTimeout;
 	
 	/** KAKAO API 최대 커넥션 수 */
-	@Value("${login.kakao.custom.maxConnTotal}")
+	@Value("${login.kakao.custom.max-conn-total}")
 	private int kakaoMaxConnTotal;
 	
 	/** KAKAO API 라우트당 최대 커넥션 수 */
-	@Value("${login.kakao.custom.maxConnPerRoute}")
+	@Value("${login.kakao.custom.max-conn-per-route}")
 	private int kakaoMaxConnPerRoute;
 
 	/**

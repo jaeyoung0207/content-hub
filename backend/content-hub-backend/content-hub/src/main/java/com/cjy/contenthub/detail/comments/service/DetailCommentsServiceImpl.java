@@ -65,7 +65,7 @@ public class DetailCommentsServiceImpl implements DetailCommentsService {
 	private final MessageUtil messageUtil;
 	
 	/** 페이지당 코멘트 수 */
-	@Value("${app.comment.perPage}")
+	@Value("${app.comment.per-page}")
 	private int commentPerPage;
 
 	/**

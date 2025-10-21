@@ -72,27 +72,27 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	private final ApiFacade apiUtil;
 
 	/** TMDB API TV 추천 작품 API 패스 */
-	@Value("${tmdb.url.tvRecommendationsPath}")
+	@Value("${tmdb.url.tv-recommendations-path}")
 	private String tvRecommendationsPath;
 
 	/** TMDB API Movie 추천 작품 API 패스 */
-	@Value("${tmdb.url.movieRecommendationsPath}")
+	@Value("${tmdb.url.movie-recommendations-path}")
 	private String movieRecommendationsPath;
 
 	/** TMDB API TV 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.tvSimilarPath}")
+	@Value("${tmdb.url.tv-similar-path}")
 	private String tvSimilarPath;
 
 	/** TMDB API Movie 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.movieSimilarPath}")
+	@Value("${tmdb.url.movie-similar-path}")
 	private String movieSimilarPath;
 
 	/** AniList API 전체보기화면 작품 표시 개수 */
-	@Value("${anilist.custom.perMorePage}")
+	@Value("${anilist.custom.per-more-page}")
 	private int anilistPerMorePage;
 
 	/** AniList API 상세화면 캐릭터 표시 개수 */
-	@Value("${anilist.custom.perCharacterPage}")
+	@Value("${anilist.custom.per-character-page}")
 	private int anilistPerCharacterPage;
 
 	/** TMDB TV API Error */

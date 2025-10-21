@@ -17,7 +17,6 @@ import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverDeleteTokenDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverIssueTokenDto;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;

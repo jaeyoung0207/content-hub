@@ -37,7 +37,7 @@ public class SearchHelper {
 	private final GenreSharedService genreSharedService;
 
 	/** TMDB API 페이지당 작품 표시 개수 */
-	@Value("${tmdb.custom.perMainPage}")
+	@Value("${tmdb.custom.per-main-page}")
 	private int tmdbPerMainPage;
 
 	/** 리퀘스트 파라미터 키 : 검색어 */

@@ -59,27 +59,27 @@ public class SearchController {
 	private final WebClient deeplWebClient;
 
 	/** TMDB API TV시리즈 검색 API 패스 */
-	@Value("${tmdb.url.tvSearchPath}")
+	@Value("${tmdb.url.tv-search-path}")
 	private String tvSearchPath;
 
 	/** TMDB API 영화 검색 API 패스 */
-	@Value("${tmdb.url.movieSearchPath}")
+	@Value("${tmdb.url.movie-search-path}")
 	private String movieSearchPath;
 
 	/** TMDB API 멀티(TV, 영화, 인물) 검색 API 패스 */
-	@Value("${tmdb.url.multiSearchPath}")
+	@Value("${tmdb.url.multi-search-path}")
 	private String multiSearchPath;
 
 	/** TMDB API 자동완성 표시 개수 */
-	@Value("${tmdb.custom.autoCompleteCount}")
+	@Value("${tmdb.custom.auto-complete-count}")
 	private int autoCompleteCount;
 
 	/** AniList API 메인화면 작품 표시 개수 */
-	@Value("${anilist.custom.perMainPage}")
+	@Value("${anilist.custom.per-main-page}")
 	private int anilistPerMainPage;
 
 	/** AniList API 전체보기화면 작품 표시 개수 */
-	@Value("${anilist.custom.perMorePage}")
+	@Value("${anilist.custom.per-more-page}")
 	private int anilistPerMorePage;
 
 	/** 리퀘스트 파라미터 키 : 검색어 */

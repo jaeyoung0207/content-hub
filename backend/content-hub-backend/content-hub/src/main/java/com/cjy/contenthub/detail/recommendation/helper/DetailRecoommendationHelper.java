@@ -36,11 +36,11 @@ public class DetailRecoommendationHelper {
 	private final GenreSharedService genreSharedService;
 
 	/** TMDB API TV 추천 작품 API 패스 */
-	@Value("${tmdb.url.tvRecommendationsPath}")
+	@Value("${tmdb.url.tv-recommendations-path}")
 	private String tvRecommendationsPath;
 
 	/** TMDB API Movie 추천 작품 API 패스 */
-	@Value("${tmdb.url.movieRecommendationsPath}")
+	@Value("${tmdb.url.movie-recommendations-path}")
 	private String movieRecommendationsPath;
 
 	/**

@@ -36,7 +36,7 @@ public class DeepLApiClient {
 	private final WebClient deeplWebClient;
 
 	/** DeepL 번역 API 경로 */
-	@Value("${deepl.url.translatePath}")
+	@Value("${deepl.url.translate-path}")
 	private String translatePath;
 
 	/**

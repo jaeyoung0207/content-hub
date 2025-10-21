@@ -26,11 +26,11 @@ public class TmdbApiGenreClient {
 	private final WebClient tmdbWebClient;
 	
 	/** TMDB TV 장르 정보 취득 경로 */
-	@Value("${tmdb.url.tvGenrePath}")
+	@Value("${tmdb.url.tv-genre-path}")
 	private String tvGenrePath;
 
 	/** TMDB 영화 장르 정보 취득 경로 */
-	@Value("${tmdb.url.movieGenrePath}")
+	@Value("${tmdb.url.movie-genre-path}")
 	private String movieGenrePath;
 
 	/** 리퀘스트 파라미터 키 : 언어 */

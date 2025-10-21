@@ -35,7 +35,7 @@ public class JwtUtil {
 	private final MessageUtil messageUtil;
 
 	/** JWT 서명에 사용할 비밀 키 */
-	@Value("${login.jwt.secretKey}")
+	@Value("${login.jwt.secret-key}")
 	private String jwtScretKey;
 
 	/**

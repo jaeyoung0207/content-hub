@@ -55,7 +55,7 @@ public class PersonServiceImpl implements PersonService {
 	private final PersonHelper helper;
 
 	/** TMDB API Person Detail API 패스 */
-	@Value("${tmdb.url.personDetailPath}")
+	@Value("${tmdb.url.person-detail-path}")
 	private String personDetailPath;
 
 	/**

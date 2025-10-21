@@ -52,7 +52,7 @@ public class WishlistServiceImpl implements WishlistService {
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
 	
-	@Value("${app.wishlist.maxRegistrationSize}")
+	@Value("${app.wishlist.max-registration-size}")
 	private int maxWishlistEntries;
 	
 	/**

@@ -33,7 +33,7 @@ public class PersonController {
 	private final WebClient tmdbWebClient;
 	
 	/** TMDB API Person Detail API 패스 */
-	@Value("${tmdb.url.personDetailPath}")
+	@Value("${tmdb.url.person-detail-path}")
 	private String personDetailPath;
 	
 	/** 리퀘스트 파라미터 키 : 인물 ID */

@@ -68,43 +68,43 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	private final WebClient deeplWebClient;
 
 	/** TMDB API TV Detail API 패스 */
-	@Value("${tmdb.url.tvDetailPath}")
+	@Value("${tmdb.url.tv-detail-path}")
 	private String tvDetailPath;
 
 	/** TMDB API Movie Detail API 패스 */
-	@Value("${tmdb.url.movieDetailPath}")
+	@Value("${tmdb.url.movie-detail-path}")
 	private String movieDetailPath;
 
 	/** TMDB API TV Watch Providers API 패스 */
-	@Value("${tmdb.url.tvWatchProvidersPath}")
+	@Value("${tmdb.url.tv-watch-providers-path}")
 	private String tvWatchProvidersPath;
 
 	/** TMDB API Movie Watch Providers API 패스 */
-	@Value("${tmdb.url.movieWatchProvidersPath}")
+	@Value("${tmdb.url.movie-watch-providers-path}")
 	private String movieWatchProvidersPath;
 
 	/** TMDB API TV 추천 작품 API 패스 */
-	@Value("${tmdb.url.tvRecommendationsPath}")
+	@Value("${tmdb.url.tv-recommendations-path}")
 	private String tvRecommendationsPath;
 
 	/** TMDB API Movie 추천 작품 API 패스 */
-	@Value("${tmdb.url.movieRecommendationsPath}")
+	@Value("${tmdb.url.movie-recommendations-path}")
 	private String movieRecommendationsPath;
 
 	/** TMDB API TV 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.tvSimilarPath}")
+	@Value("${tmdb.url.tv-similar-path}")
 	private String tvSimilarPath;
 
 	/** TMDB API Movie 비슷한 작품 API 패스 */
-	@Value("${tmdb.url.movieSimilarPath}")
+	@Value("${tmdb.url.movie-similar-path}")
 	private String movieSimilarPath;
 
 	/** AniList API 전체보기화면 작품 표시 개수 */
-	@Value("${anilist.custom.perMorePage}")
+	@Value("${anilist.custom.per-more-page}")
 	private int anilistPerMorePage;
 
 	/** AniList API 상세화면 캐릭터 표시 개수 */
-	@Value("${anilist.custom.perCharacterPage}")
+	@Value("${anilist.custom.per-character-page}")
 	private int anilistPerCharacterPage;
 
 	/**

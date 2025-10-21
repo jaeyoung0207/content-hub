@@ -61,35 +61,35 @@ public class LoginServiceImpl implements LoginService {
 	private final WebClient kakaoWebClient;
 
 	/** 네이버 클라이언트 ID */
-	@Value("${login.naver.api.clientId}")
+	@Value("${login.naver.api.client-id}")
 	private String naverClientId;
 
 	/** 네이버 클라이언트 시크릿 */
-	@Value("${login.naver.api.clientSecret}")
+	@Value("${login.naver.api.client-secret}")
 	private String naverClientSecret;
 	
 	/** 카카오 클라이언트 시크릿 */
-	@Value("${login.kakao.api.clientSecret}")
+	@Value("${login.kakao.api.client-secret}")
 	private String kakaoClientSecret;
 
 	/** 네이버 API 토큰 발행 URL */
-	@Value("${login.naver.url.tokenIssueUrl}")
+	@Value("${login.naver.url.token-issue-url}")
 	private String naverTokenIssueUrl;
 
 	/** 네이버 API 유저 정보 URL */
-	@Value("${login.kakao.url.userInfoUrl}")
+	@Value("${login.kakao.url.user-info-url}")
 	private String kakaoOidcUserInfoUrl;
 
 	/** 카카오 API 토큰 발행 URL */
-	@Value("${login.kakao.url.tokenIssueUrl}")
+	@Value("${login.kakao.url.token-issue-url}")
 	private String kakaoTokenIssueUrl;
 
 	/** 카카오 API 유저 정보 URL */
-	@Value("${login.kakao.url.userInfoUrl}")
+	@Value("${login.kakao.url.user-info-url}")
 	private String kakaoUserInfoUrl;
 
 	/** 카카오 API 로그아웃 URL */
-	@Value("${login.kakao.url.logoutUrl}")
+	@Value("${login.kakao.url.logout-url}")
 	private String kakaoLogoutUrl;
 
 	/** 파라미터 : 권한 종별 */

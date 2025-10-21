@@ -59,89 +59,89 @@ tmdb:
     key: ${TMDB_API_KEY}
     token: ${TMDB_API_TOKEN}
   url: 
-    baseUrl: https://api.themoviedb.org
-    tvSearchPath: /3/search/tv
-    movieSearchPath: /3/search/movie
-    multiSearchPath: /3/search/multi
-    tvGenrePath: /3/genre/tv/list
-    movieGenrePath: /3/genre/movie/list
-    tvCreditsPath: /3/tv/%s/credits
-    movieCreditsPath: /3/movie/%s/credits
-    tvDetailPath: /3/tv/%s
-    movieDetailPath: /3/movie/%s
-    personDetailPath: /3/person/%s
-    tvWatchProvidersPath: /3/tv/%s/watch/providers
-    movieWatchProvidersPath: /3/movie/%s/watch/providers
-    tvRecommendationsPath: /3/tv/%s/recommendations
-    movieRecommendationsPath: /3/movie/%s/recommendations
-    tvSimilarPath: /3/tv/%s/similar
-    movieSimilarPath: /3/movie/%s/similar
+    base-url: https://api.themoviedb.org
+    tv-search-path: /3/search/tv
+    movie-search-path: /3/search/movie
+    multi-search-path: /3/search/multi
+    tv-genre-path: /3/genre/tv/list
+    movie-genre-path: /3/genre/movie/list
+    tv-credits-path: /3/tv/%s/credits
+    movie-credits-path: /3/movie/%s/credits
+    tv-detail-path: /3/tv/%s
+    movie-detail-path: /3/movie/%s
+    person-detail-path: /3/person/%s
+    tv-watch-providers-path: /3/tv/%s/watch/providers
+    movie-watch-providers-path: /3/movie/%s/watch/providers
+    tv-recommendations-path: /3/tv/%s/recommendations
+    movie-recommendations-path: /3/movie/%s/recommendations
+    tv-similar-path: /3/tv/%s/similar
+    movie-similar-path: /3/movie/%s/similar
   custom:
-    perMainPage: 8
-    autoCompleteCount: 15
-    retryCount: 2
-    connectionRequestTimeout: 10 # 초 단위
-    responseTimeout: 15 # 초 단위
-    maxConnTotal: 80
-    maxConnPerRoute: 20
+    per-main-page: 8
+    auto-complete-count: 15
+    retry-count: 2
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 80
+    max-conn-per-route: 20
 
 #Anilist API Config
 anilist:
   url:
-    baseUrl: https://graphql.anilist.co
+    base-url: https://graphql.anilist.co
   custom:
-    perMainPage: 12
-    perMorePage: 18
-    perCharacterPage: 25
-    connectionRequestTimeout: 10 # 초 단위
-    responseTimeout: 15 # 초 단위
-    maxConnTotal: 80
-    maxConnPerRoute: 20
+    per-main-page: 12
+    per-more-page: 18
+    per-character-page: 25
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 80
+    max-conn-per-route: 20
 
 #DeepL API Config
 deepl:
   api:
     key: ${DEEPL_API_KEY}
   url:
-    baseUrl: https://api-free.deepl.com/v2
-    translatePath: /translate
+    base-url: https://api-free.deepl.com/v2
+    translate-path: /translate
   custom:
-    connectionRequestTimeout: 10 # 초 단위
-    responseTimeout: 15 # 초 단위
-    maxConnTotal: 100
-    maxConnPerRoute: 30
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 100
+    max-conn-per-route: 30
 
 #Login Config
 login:
   jwt:
-    secretKey: ${JWT_SECRET_KEY}
+    secret-key: ${JWT_SECRET_KEY}
   naver:
     api:
-      clientId: ${NAVER_CLIENT_ID}
-      clientSecret: ${NAVER_CLIENT_SECRET}
+      client-id: ${NAVER_CLIENT_ID}
+      client-secret: ${NAVER_CLIENT_SECRET}
     url:
-      tokenIssueUrl: https://nid.naver.com/oauth2.0/token
-      userInfoUrl: https://openapi.naver.com/v1/nid/me
+      token-issue-url: https://nid.naver.com/oauth2.0/token
+      user-info-url: https://openapi.naver.com/v1/nid/me
     custom:
-      refreshTokenExpiresIn: 365 # 일 단위
-      connectionRequestTimeout: 5 # 초 단위
-      responseTimeout: 10 # 초 단위
-      maxConnTotal: 20
-      maxConnPerRoute: 10
+      refresh-token-expires-in: 365 # 일 단위
+      connection-request-timeout: 5 # 초 단위
+      response-timeout: 10 # 초 단위
+      max-conn-total: 20
+      max-conn-per-route: 10
   kakao:
     api:
-      clientSecret: ${KAKAO_CLIENT_SECRET}
+      client-secret: ${KAKAO_CLIENT_SECRET}
     url:
-      tokenIssueUrl: https://kauth.kakao.com/oauth/token
-      oidcUserInfoUrl: https://kapi.kakao.com/v1/oidc/userinfo
-      userInfoUrl: https://kapi.kakao.com/v2/user/me
-      logoutUrl: https://kapi.kakao.com/v1/user/logout
+      token-issue-url: https://kauth.kakao.com/oauth/token
+      oidc-user-info-url: https://kapi.kakao.com/v1/oidc/userinfo
+      user-info-url: https://kapi.kakao.com/v2/user/me
+      logout-url: https://kapi.kakao.com/v1/user/logout
     custom:
-      refreshTokenExpiresIn: 60 # 일 단위
-      connectionRequestTimeout: 5 # 초 단위
-      responseTimeout: 10 # 초 단위
-      maxConnTotal: 20
-      maxConnPerRoute: 10
+      refresh-token-expires-in: 60 # 일 단위
+      connection-request-timeout: 5 # 초 단위
+      response-timeout: 10 # 초 단위
+      max-conn-total: 20
+      max-conn-per-route: 10
 
 #Application Config
 app:
@@ -150,14 +150,14 @@ app:
   version: "" # 필요 시 "/v1"로 변경
   maintenance:
     mode: ${MAINTENANCE_MODE:false}
-  webClient:
-    maxInMemorySize: 10 # MB
+  web-client:
+    max-in-memory-size: 10 # MB
   comment:
-    perPage: 20
-  myComments:
-    perPage: 10
+    per-page: 20
+  my-comments:
+    per-page: 10
   wishlist:
-    maxRegistrationSize: 500
+    max-registration-size: 500
   rate-limit:
     defaults:
       max-request-count: 60

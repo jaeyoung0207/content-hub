@@ -80,27 +80,27 @@ public class LoginClient {
 	private final WebClient kakaoWebClient;
 
 	/** 네이버 API 유저 정보 조회 URL */
-	@Value("${login.naver.url.userInfoUrl}")
+	@Value("${login.naver.url.user-info-url}")
 	private String naverUserInfoUrl;
 
 	/** 카카오 API 유저 정보 조회 URL */
-	@Value("${login.kakao.url.userInfoUrl}")
+	@Value("${login.kakao.url.user-info-url}")
 	private String kakaoUserInfoUrl;
 
 	/** 네이버 API 클라이언트 ID */
-	@Value("${login.naver.api.clientId}")
+	@Value("${login.naver.api.client-id}")
 	private String naverClientId;
 
 	/** 네이버 API 클라이언트 시크릿 */
-	@Value("${login.naver.api.clientSecret}")
+	@Value("${login.naver.api.client-secret}")
 	private String naverClientSecret;
 	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.naver.custom.refreshTokenExpiresIn}")
+	@Value("${login.naver.custom.refresh-token-expires-in}")
 	private long naverExpiresIn;
 	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.kakao.custom.refreshTokenExpiresIn}")
+	@Value("${login.kakao.custom.refresh-token-expires-in}")
 	private long kakaoExpiresIn;
 
 	/** 유저 정보 조회 API 응답 성공 결과 코드 */

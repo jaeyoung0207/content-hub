@@ -36,11 +36,11 @@ public class RedisUtil {
 	private final MessageUtil messageUtil;
 	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.naver.custom.refreshTokenExpiresIn}")
+	@Value("${login.naver.custom.refresh-token-expires-in}")
 	private long naverExpiresIn;
 	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.kakao.custom.refreshTokenExpiresIn}")
+	@Value("${login.kakao.custom.refresh-token-expires-in}")
 	private long kakaoExpiresIn;
 	
 	/** 리프레시 토큰 키 접두사 */

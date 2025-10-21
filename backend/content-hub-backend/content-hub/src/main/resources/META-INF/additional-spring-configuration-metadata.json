@@ -10,124 +10,124 @@
     "description": "A description for 'tmdb.read.token'"
   },
   {
-    "name": "tmdb.url.baseUrl",
+    "name": "tmdb.url.base-url",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.baseUrl'"
+    "description": "A description for 'tmdb.url.base-url'"
   },
   {
-    "name": "tmdb.url.tvSearchPath",
+    "name": "tmdb.url.tv-search-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvSearchPath'"
+    "description": "A description for 'tmdb.url.tv-search-path'"
   },
   {
-    "name": "tmdb.url.tvGenrePath",
+    "name": "tmdb.url.tv-genre-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvGenrePath'"
+    "description": "A description for 'tmdb.url.tv-genre-path'"
   },
   {
-    "name": "tmdb.url.movieGenrePath",
+    "name": "tmdb.url.movie-genre-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieGenrePath'"
+    "description": "A description for 'tmdb.url.movie-genre-path'"
   },
   {
-    "name": "tmdb.url.movieSearchPath",
+    "name": "tmdb.url.movie-search-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieSearchPath'"
+    "description": "A description for 'tmdb.url.movie-search-path'"
   },
   {
-    "name": "tmdb.url.multiSearchPath",
+    "name": "tmdb.url.multi-search-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.multiSearchPath'"
+    "description": "A description for 'tmdb.url.multi-search-path'"
   },
   {
-    "name": "tmdb.url.tvCreditsPath",
+    "name": "tmdb.url.tv-credits-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvCreditsPath'"
+    "description": "A description for 'tmdb.url.tv-credits-path'"
   },
   {
-    "name": "tmdb.url.movieCreditsPath",
+    "name": "tmdb.url.movie-credits-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieCreditsPath'"
+    "description": "A description for 'tmdb.url.movie-credits-path'"
   },
   {
-    "name": "tmdb.url.tvDetailPath",
+    "name": "tmdb.url.tv-detail-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvDetailPath'"
+    "description": "A description for 'tmdb.url.tv-detail-path'"
   },
   {
-    "name": "tmdb.url.movieDetailPath",
+    "name": "tmdb.url.movie-detail-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieDetailPath'"
+    "description": "A description for 'tmdb.url.movie-detail-path'"
   },
   {
-    "name": "tmdb.url.personDetailPath",
+    "name": "tmdb.url.person-detail-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.personDetailPath'"
+    "description": "A description for 'tmdb.url.person-detail-path'"
   },
   {
-    "name": "tmdb.url.tvWatchProvidersPath",
+    "name": "tmdb.url.tv-watch-providers-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvWatchProvidersPath'"
+    "description": "A description for 'tmdb.url.tv-watch-providers-path'"
   },
   {
-    "name": "tmdb.url.movieWatchProvidersPath",
+    "name": "tmdb.url.movie-watch-providers-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieWatchProvidersPath'"
+    "description": "A description for 'tmdb.url.movie-watch-providers-path'"
   },
   {
-    "name": "tmdb.url.tvRecommendationsPath",
+    "name": "tmdb.url.tv-recommendations-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvRecommendationsPath'"
+    "description": "A description for 'tmdb.url.tv-recommendations-path'"
   },
   {
-    "name": "tmdb.url.movieRecommendationsPath",
+    "name": "tmdb.url.movie-recommendations-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieRecommendationsPath'"
+    "description": "A description for 'tmdb.url.movie-recommendations-path'"
   },
   {
-    "name": "tmdb.url.tvSimilarPath",
+    "name": "tmdb.url.tv-similar-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.tvSimilarPath'"
+    "description": "A description for 'tmdb.url.tv-similar-path'"
   },
   {
-    "name": "tmdb.url.movieSimilarPath",
+    "name": "tmdb.url.movie-similar-path",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.url.movieSimilarPath'"
+    "description": "A description for 'tmdb.url.movie-similar-path'"
   },
   {
-    "name": "tmdb.custom.perMainPage",
+    "name": "tmdb.custom.per-main-page",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.perMainPage'"
+    "description": "A description for 'tmdb.custom.per-main-page'"
   },
   {
-    "name": "tmdb.custom.autoCompleteCount",
+    "name": "tmdb.custom.auto-complete-count",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.autoCompleteCount'"
+    "description": "A description for 'tmdb.custom.auto-complete-count'"
   },
   {
-    "name": "tmdb.custom.retryCount",
+    "name": "tmdb.custom.retry-count",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.retryCount'"
+    "description": "A description for 'tmdb.custom.retry-count'"
   },
   {
-    "name": "tmdb.custom.connectionRequestTimeout",
+    "name": "tmdb.custom.connection-request-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.connectionRequestTimeout'"
+    "description": "A description for 'tmdb.custom.connection-request-timeout'"
   },
   {
-    "name": "tmdb.custom.responseTimeout",
+    "name": "tmdb.custom.response-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.responseTimeout'"
+    "description": "A description for 'tmdb.custom.response-timeout'"
   },
   {
-    "name": "tmdb.custom.maxConnTotal",
+    "name": "tmdb.custom.max-conn-total",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.maxConnTotal'"
+    "description": "A description for 'tmdb.custom.max-conn-total'"
   },
   {
-    "name": "tmdb.custom.maxConnPerRoute",
+    "name": "tmdb.custom.max-conn-per-route",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.maxConnPerRoute'"
+    "description": "A description for 'tmdb.custom.max-conn-per-route'"
   },
   {
     "name": "anilist.url.base-url",
@@ -135,39 +135,39 @@
     "description": "A description for 'anilist.url.base-url'"
   },
   {
-    "name": "anilist.custom.perMainPage",
+    "name": "anilist.custom.per-main-page",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.perMainPage'"
+    "description": "A description for 'anilist.custom.per-main-page'"
   },
   {
-    "name": "anilist.custom.perMorePage",
+    "name": "anilist.custom.per-more-page",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.perMorePage'"
+    "description": "A description for 'anilist.custom.per-more-page'"
   },
   {
-    "name": "anilist.custom.perCharacterPage",
+    "name": "anilist.custom.per-character-page",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.perCharacterPage'"
+    "description": "A description for 'anilist.custom.per-character-page'"
   },
   {
-    "name": "anilist.custom.connectionRequestTimeout",
+    "name": "anilist.custom.connection-request-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.connectionRequestTimeout'"
+    "description": "A description for 'anilist.custom.connection-request-timeout'"
   },
   {
-    "name": "anilist.custom.responseTimeout",
+    "name": "anilist.custom.response-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.responseTimeout'"
+    "description": "A description for 'anilist.custom.response-timeout'"
   },
   {
-    "name": "anilist.custom.maxConnPerRoute",
+    "name": "anilist.custom.max-conn-per-route",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.maxConnPerRoute'"
+    "description": "A description for 'anilist.custom.max-conn-per-route'"
   },
   {
-    "name": "anilist.custom.maxConnTotal",
+    "name": "anilist.custom.max-conn-total",
     "type": "java.lang.String",
-    "description": "A description for 'anilist.custom.maxConnTotal'"
+    "description": "A description for 'anilist.custom.max-conn-total'"
   },
   {
     "name": "deepl.api.key",
@@ -175,54 +175,54 @@
     "description": "A description for 'deepl.api.key'"
   },
   {
-    "name": "deepl.url.baseUrl",
+    "name": "deepl.url.base-url",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.url.baseUrl'"
+    "description": "A description for 'deepl.url.base-url'"
   },
   {
-    "name": "deepl.url.translatePath",
+    "name": "deepl.url.translate-path",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.url.translatePath'"
+    "description": "A description for 'deepl.url.translate-path'"
   },
   {
-    "name": "deepl.custom.connectionRequestTimeout",
+    "name": "deepl.custom.connection-request-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.custom.connectionRequestTimeout'"
+    "description": "A description for 'deepl.custom.connection-request-timeout'"
   },
   {
-    "name": "deepl.custom.responseTimeout",
+    "name": "deepl.custom.response-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.custom.responseTimeout'"
+    "description": "A description for 'deepl.custom.response-timeout'"
   },
   {
-    "name": "deepl.custom.maxConnTotal",
+    "name": "deepl.custom.max-conn-total",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.custom.maxConnTotal'"
+    "description": "A description for 'deepl.custom.max-conn-total'"
   },
   {
-    "name": "deepl.custom.maxConnPerRoute",
+    "name": "deepl.custom.max-conn-per-route",
     "type": "java.lang.String",
-    "description": "A description for 'deepl.custom.maxConnPerRoute'"
+    "description": "A description for 'deepl.custom.max-conn-per-route'"
   },
   {
-    "name": "login.jwt.secretKey",
+    "name": "login.jwt.secret-key",
     "type": "java.lang.String",
-    "description": "A description for 'login.jwt.secretKey'"
+    "description": "A description for 'login.jwt.secret-key'"
   },
   {
-    "name": "login.naver.api.clientId",
+    "name": "login.naver.api.client-id",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.api.clientId'"
+    "description": "A description for 'login.naver.api.client-id'"
   },
   {
-    "name": "login.naver.api.clientSecret",
+    "name": "login.naver.api.client-secret",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.api.clientSecret'"
+    "description": "A description for 'login.naver.api.client-secret'"
   },
   {
-    "name": "login.naver.url.tokenIssueUrl",
+    "name": "login.naver.url.token-issue-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.url.tokenIssueUrl'"
+    "description": "A description for 'login.naver.url.token-issue-url'"
   },
   {
     "name": "login.naver.url.redirectUri",
@@ -230,84 +230,84 @@
     "description": "A description for 'login.naver.url.redirectUri'"
   },
   {
-    "name": "login.naver.url.userInfoUrl",
+    "name": "login.naver.url.user-info-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.url.userInfoUrl'"
+    "description": "A description for 'login.naver.url.user-info-url'"
   },
   {
-    "name": "login.naver.custom.refreshTokenExpiresIn",
+    "name": "login.naver.custom.refresh-token-expires-in",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.refreshTokenExpiresIn'"
+    "description": "A description for 'login.naver.custom.refresh-token-expires-in'"
   },
   {
-    "name": "login.naver.custom.connectionRequestTimeout",
+    "name": "login.naver.custom.connection-request-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.connectionRequestTimeout'"
+    "description": "A description for 'login.naver.custom.connection-request-timeout'"
   },
   {
-    "name": "login.naver.custom.responseTimeout",
+    "name": "login.naver.custom.response-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.responseTimeout'"
+    "description": "A description for 'login.naver.custom.response-timeout'"
   },
   {
-    "name": "login.naver.custom.maxConnPerRoute",
+    "name": "login.naver.custom.max-conn-per-route",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.maxConnPerRoute'"
+    "description": "A description for 'login.naver.custom.max-conn-per-route'"
   },
   {
-    "name": "login.naver.custom.maxConnTotal",
+    "name": "login.naver.custom.max-conn-total",
     "type": "java.lang.String",
-    "description": "A description for 'login.naver.custom.maxConnTotal'"
+    "description": "A description for 'login.naver.custom.max-conn-total'"
   },
   {
-    "name": "login.kakao.api.clientSecret",
+    "name": "login.kakao.api.client-secret",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.api.clientSecret'"
+    "description": "A description for 'login.kakao.api.client-secret'"
   },
   {
-    "name": "login.kakao.url.tokenIssueUrl",
+    "name": "login.kakao.url.token-issue-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.url.tokenIssueUrl'"
+    "description": "A description for 'login.kakao.url.token-issue-url'"
   },
   {
-    "name": "login.kakao.url.oidcUserInfoUrl",
+    "name": "login.kakao.url.oidc-user-info-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.url.oidcUserInfoUrl'"
+    "description": "A description for 'login.kakao.url.oidc-user-info-url'"
   },
   {
-    "name": "login.kakao.url.userInfoUrl",
+    "name": "login.kakao.url.user-info-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.url.userInfoUrl'"
+    "description": "A description for 'login.kakao.url.user-info-url'"
   },
   {
-    "name": "login.kakao.url.logoutUrl",
+    "name": "login.kakao.url.logout-url",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.url.logoutUrl'"
+    "description": "A description for 'login.kakao.url.logout-url'"
   },
   {
-    "name": "login.kakao.custom.refreshTokenExpiresIn",
+    "name": "login.kakao.custom.refresh-token-expires-in",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.refreshTokenExpiresIn'"
+    "description": "A description for 'login.kakao.custom.refresh-token-expires-in'"
   },
   {
-    "name": "login.kakao.custom.connectionRequestTimeout",
+    "name": "login.kakao.custom.connection-request-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.connectionRequestTimeout'"
+    "description": "A description for 'login.kakao.custom.connection-request-timeout'"
   },
   {
-    "name": "login.kakao.custom.responseTimeout",
+    "name": "login.kakao.custom.response-timeout",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.responseTimeout'"
+    "description": "A description for 'login.kakao.custom.response-timeout'"
   },
   {
-    "name": "login.kakao.custom.maxConnPerRoute",
+    "name": "login.kakao.custom.max-conn-per-route",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.maxConnPerRoute'"
+    "description": "A description for 'login.kakao.custom.max-conn-per-route'"
   },
   {
-    "name": "login.kakao.custom.maxConnTotal",
+    "name": "login.kakao.custom.max-conn-total",
     "type": "java.lang.String",
-    "description": "A description for 'login.kakao.custom.maxConnTotal'"
+    "description": "A description for 'login.kakao.custom.max-conn-total'"
   },
   {
     "name": "app.url",
@@ -330,24 +330,24 @@
     "description": "A description for 'app.maintenance.mode'"
   },
   {
-    "name": "app.webClient.maxInMemorySize",
+    "name": "app.web-client.max-in-memory-size",
     "type": "java.lang.String",
-    "description": "A description for 'app.webClient.maxInMemorySize'"
+    "description": "A description for 'app.web-client.max-in-memory-size'"
   },
   {
-    "name": "app.comment.perPage",
+    "name": "app.comment.per-page",
     "type": "java.lang.String",
-    "description": "A description for 'app.comment.perPage'"
+    "description": "A description for 'app.comment.per-page'"
   },
   {
-    "name": "app.myComments.perPage",
+    "name": "app.my-comments.per-page",
     "type": "java.lang.String",
-    "description": "A description for 'app.myComments.perPage'"
+    "description": "A description for 'app.my-comments.per-page'"
   },
   {
-    "name": "app.wishlist.maxRegistrationSize",
+    "name": "app.wishlist.max-registration-size",
     "type": "java.lang.String",
-    "description": "A description for 'app.wishlist.maxRegistrationSize'"
+    "description": "A description for 'app.wishlist.max-registration-size'"
   },
   {
     "name": "app.rate-limit.defaults.max-request-count",

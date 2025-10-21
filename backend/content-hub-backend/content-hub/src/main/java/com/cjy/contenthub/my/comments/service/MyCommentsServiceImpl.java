@@ -36,7 +36,7 @@ public class MyCommentsServiceImpl implements MyCommentsService {
 	private final MyCommentsMapper myCommentsMapper;
 
 	/** 페이지당 항목 수 설정값 */
-	@Value("${app.myComments.perPage}")
+	@Value("${app.my-comments.per-page}")
 	private int perPage;
 
 	/**
