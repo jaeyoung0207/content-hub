@@ -9,6 +9,7 @@ import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
 import { LoadingUi } from '@/components/ui/LoadingUi';
 import { ErrorBoundary } from '@sentry/react';
+import { ProtectedRoute } from '@/components/features/common/ProtectedRoute';
 
 // lazy loading
 const Home = lazy(() => import('@/components/features/home/Home'));
@@ -76,8 +77,8 @@ const AppRouter = () => {
                   path="/character/:comicsCreditsType/:creditsId"
                   element={<Character />}
                 />
-                <Route path="/wishlist/:userId" element={<Wishlist />} />
-                <Route path="/my/comments/:userId" element={<MyComments />} />
+                <Route path="/wishlist/:userId" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+                <Route path="/my/comments/:userId" element={<ProtectedRoute><MyComments /></ProtectedRoute>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/naver" element={<NaverLogin />} />
                 <Route path="/login/kakao" element={<KakaoLogin />} />

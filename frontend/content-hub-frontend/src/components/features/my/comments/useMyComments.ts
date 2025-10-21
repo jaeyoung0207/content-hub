@@ -76,10 +76,10 @@ export const useMyComments = (): UseMyCommentsReturnType => {
 
   // 나의 코멘트 목록 조회
   const { data, isLoading } = useQuery({
-    queryKey: myCommentsQueryKeys.page(user!.userId!, currentPage),
+    queryKey: myCommentsQueryKeys.page(user?.userId!, currentPage),
     queryFn: async () => {
       const response = await myCommentsApi.getMyCommentList({
-        user_id: user!.userId!,
+        user_id: user?.userId!,
         page_no: currentPage,
       });
       setTotalPages(response.data.totalPages!);
