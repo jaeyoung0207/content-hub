@@ -1,0 +1,36 @@
+@layer base {
+  :root {
+    --color-primary: #5b7cfa;
+    --color-secondary: #eef2ff;
+    --color-danger: #ef4444;
+    --color-foreground: #0f172a;
+    --color-muted: #f3f4f6;
+  }
+}
+
+/* 색상/텍스트 유틸 */
+@utility bg-primary {
+  background-color: var(--color-primary);
+}
+@utility bg-secondary {
+  background-color: var(--color-secondary);
+}
+@utility bg-danger {
+  background-color: var(--color-danger);
+}
+@utility text-foreground {
+  color: var(--color-foreground);
+}
+@utility text-muted-foreground {
+  color: #6b7280;
+}
+
+/* 커스텀 accent-color */
+@utility accent-primary {
+  accent-color: var(--color-primary);
+}
+
+/* 배경만 정의해두고, 사용할 때 hover:bg-muted로 변형을 붙여 사용 */
+@utility bg-muted {
+  background-color: var(--color-muted);
+}

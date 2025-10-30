@@ -30,7 +30,7 @@ export const ErrorMessageUi = ({
       toast.error(errorMsg, { toastId: errorToastId, autoClose: false });
     }
     // toast 메시지 제거
-    if (!errorMsg && isOnlyToast) {
+    else if (!errorMsg && isOnlyToast) {
       toast.dismiss(errorToastId);
     }
     // 컴포넌트 언마운트 시 toast 메시지 제거
@@ -41,7 +41,13 @@ export const ErrorMessageUi = ({
     <>
       {/* 에러 메시지를 일반적으로 표시 */}
       {errorMsg && !isOnlyToast && (
-        <div className="text-lg text-red-500">{errorMsg}</div>
+        <div
+          role="alert"
+          aria-live="polite"
+          className="text-danger mt-2 text-base"
+        >
+          {errorMsg}
+        </div>
       )}
     </>
   );

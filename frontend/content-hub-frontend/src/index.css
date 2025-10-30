@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tailwind-scrollbar-hide/v4';
+@import './styles/token.css';
 
 @layer base {
   html {

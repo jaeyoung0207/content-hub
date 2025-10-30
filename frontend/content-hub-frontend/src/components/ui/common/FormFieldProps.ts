@@ -23,4 +23,5 @@ export type FormFieldProps<T extends FieldValues> = {
   defaultChecked?: boolean; // 기본 체크 상태
   deleteValue?: () => void; // 값 삭제 함수
   disabled?: boolean; // 비활성화 상태
+  className?: string; // 추가적인 CSS 클래스
 };
