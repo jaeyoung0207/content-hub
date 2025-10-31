@@ -12,7 +12,7 @@ import {
   isDetailMovieType,
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { NoDataMessageUi } from '@/components/ui/common';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 /**
@@ -45,14 +45,8 @@ export const DetailCrewInformation = memo(
       detailResult.staff.edges &&
       detailResult.staff.edges.length !== 0;
     return (
-      <div className="ml-5 mr-5">
-        {(contentMediaType === getContentMediaType().aniCode ||
-          contentMediaType === getContentMediaType().dramaCode ||
-          contentMediaType === getContentMediaType().movieCode ||
-          contentMediaType === getContentMediaType().documentaryCode ||
-          contentMediaType === getContentMediaType().kidsCode ||
-          contentMediaType === getContentMediaType().newsCode ||
-          contentMediaType === getContentMediaType().varietyCode) &&
+      <div className="lg:px-8">
+        {contentMediaType !== getContentMediaType().comicsCode &&
           (isVideoCrew ? (
             <>
               <DisplayVideoCredits
@@ -65,7 +59,7 @@ export const DetailCrewInformation = memo(
               <div ref={(el) => setObserveTarget!(el)} />
             </>
           ) : (
-            <NodataMessageUi message={t('warn.noStaffInfo')} />
+            <NoDataMessageUi message={t('warn.noStaffInfo')} />
           ))}
         {contentMediaType === getContentMediaType().comicsCode &&
           (isComicsStaff ? (
@@ -75,7 +69,7 @@ export const DetailCrewInformation = memo(
               creditsType={COMICS_CREDITS_TYPE.STAFF}
             />
           ) : (
-            <NodataMessageUi message={t('warn.noStaffInfo')} />
+            <NoDataMessageUi message={t('warn.noStaffInfo')} />
           ))}
       </div>
     );

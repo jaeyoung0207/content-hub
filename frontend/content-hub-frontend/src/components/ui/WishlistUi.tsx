@@ -1,23 +1,25 @@
 import { RiHeartLine, RiHeartFill } from 'react-icons/ri';
 import { useWishlistUi } from './hooks/useWishlistUi';
-import { useState } from 'react';
+import { cn } from '@/lib/cn';
 
 /**
  * 위시리스트 UI 컴포넌트 Props 타입
  */
 export type WishlistUiPropsType = {
-  isWishlisted: boolean;
-  userId?: number;
-  contentMediaType: string;
-  apiId: number;
-  title: string;
-  thumbnailImageUrl?: string;
-  genreIds?: number[];
-  displayMediaType?: string;
+  isWishlisted: boolean; // 위시리스트 등록 여부
+  userId?: number; // 사용자 ID
+  contentMediaType: string; // 콘텐츠 미디어 타입
+  apiId: number; // 콘텐츠 API ID
+  title: string; // 콘텐츠 제목
+  thumbnailImageUrl?: string; // 썸네일 이미지 URL
+  genreIds?: number[]; // 장르 ID 목록
+  displayMediaType?: string; // 표시할 미디어 타입
+  className?: string; // 추가적인 클래스 이름
 };
 
 /**
  * 위시리스트 UI 컴포넌트
+ * @param WishlistUiPropsType
  */
 export const WishlistUi = ({
   isWishlisted,
@@ -28,9 +30,10 @@ export const WishlistUi = ({
   thumbnailImageUrl,
   genreIds,
   displayMediaType,
+  className,
 }: WishlistUiPropsType) => {
   // 위시리스트 훅
-  const { addToWishlist, handleOnClickHeart, isExecuting } = useWishlistUi({
+  const { handleOnClickHeart, isExecuting } = useWishlistUi({
     isWishlisted,
     userId,
     contentMediaType,
@@ -40,53 +43,35 @@ export const WishlistUi = ({
     genreIds,
     displayMediaType,
   });
+  // 접근성 라벨
+  const ariaLabel = isWishlisted ? '위시리스트에서 제거' : '위시리스트에 추가';
 
-  // 하트 아이콘 hover 상태
-  const [hover, setHover] = useState<boolean>(false);
-  // 버튼 스타일
-  const buttonStyle =
-    'flex justify-center items-center w-8 h-8 border-0 text-red-500 cursor-pointer';
-  // 아이콘 색상
-  const iconStyle = 'text-red-500';
-  // 아이콘 크기
-  const iconSize = 30;
   return (
-    <div>
-      {addToWishlist ? (
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // 클릭 이벤트 전파 방지
-            handleOnClickHeart();
-          }}
-          className={buttonStyle}
-          disabled={isExecuting}
-          onMouseEnter={() => setHover(addToWishlist ? true : false)}
-          onMouseLeave={() => setHover(addToWishlist ? false : true)}
-        >
-          {hover ? (
-            <RiHeartLine className={iconStyle} size={iconSize} />
-          ) : (
-            <RiHeartFill className={iconStyle} size={iconSize} />
-          )}
-        </button>
-      ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // 클릭 이벤트 전파 방지
-            handleOnClickHeart();
-          }}
-          className={buttonStyle}
-          disabled={isExecuting}
-          onMouseEnter={() => setHover(addToWishlist ? false : true)}
-          onMouseLeave={() => setHover(addToWishlist ? true : false)}
-        >
-          {hover ? (
-            <RiHeartFill className={iconStyle} size={iconSize} />
-          ) : (
-            <RiHeartLine className={iconStyle} size={iconSize} />
-          )}
-        </button>
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      aria-pressed={isWishlisted}
+      aria-busy={isExecuting}
+      disabled={isExecuting}
+      className={cn(
+        // 버튼 레이아웃
+        'inline-flex size-8 items-center justify-center rounded-full',
+        // 색/상태
+        'text-red-500 disabled:opacity-50',
+        // 포커스/인터랙션
+        'focus-visible:ring-primary transition-transform focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95',
+        className
       )}
-    </div>
+      onClick={(e) => {
+        e.stopPropagation(); // 클릭 이벤트 전파 방지
+        handleOnClickHeart();
+      }}
+    >
+      {isWishlisted ? (
+        <RiHeartFill className="h-6 w-6" />
+      ) : (
+        <RiHeartLine className="h-6 w-6" />
+      )}
+    </button>
   );
 };

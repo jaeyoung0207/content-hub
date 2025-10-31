@@ -1,5 +1,7 @@
 package com.cjy.contenthub.common.integration.anilist.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -23,5 +25,11 @@ public class AniListNameDto {
 
 	/** 캐릭터 유저 선호 이름 */
 	private String userPreferred;
+	
+	/** 캐릭터 대체 이름 */
+	private List<String> alternative;
+	
+	/** 캐릭터 스포일러 대체 이름 */
+	private List<String> alternativeSpoiler;
 
 }

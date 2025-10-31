@@ -3,6 +3,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -34,6 +35,7 @@ type UseSearchConentModalReturnType = {
   isFetchingNextPage: boolean;
   setObserveTarget: Dispatch<SetStateAction<HTMLDivElement | null>>;
   handleModalClose: () => void;
+  onOverlayClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 /**
@@ -66,6 +68,8 @@ export const useSearchMore = (
   const [observeTarget, setObserveTarget] = useState<HTMLDivElement | null>(
     null
   );
+  // IntersectionObserver를 ref로 관리
+  const observerRef = useRef<IntersectionObserver | null>(null);
   // 전체 페이지 수를 저장하는 ref
   const totalPagesRef = useRef<number | undefined>(0);
 
@@ -204,9 +208,11 @@ export const useSearchMore = (
   /**
    * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
    */
-  const throttledFetchNextPage = throttle(() => {
-    fetchNextPage();
-  }, INFINITE_SCROLL_THROTTLE_DELAY);
+  const throttledFetchNextPage = useMemo(() => {
+    return throttle(() => {
+      fetchNextPage();
+    }, INFINITE_SCROLL_THROTTLE_DELAY);
+  }, [fetchNextPage]);
 
   /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
@@ -235,6 +241,17 @@ export const useSearchMore = (
     setSearchParams(searchParams); //  URL이 바뀌면 React Router가 감지해서 리렌더링 발생
   }, [searchParams, setSearchParams]);
 
+  /**
+   * 오버레이(모달 바깥 영역) 클릭 시 모달 닫기
+   */
+  const onOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      // 바깥 영역 클릭 시 닫기
+      if (e.currentTarget === e.target) handleModalClose();
+    },
+    [handleModalClose]
+  );
+
   // ================================================================================================== useEffect
 
   /**
@@ -247,20 +264,36 @@ export const useSearchMore = (
       return;
     }
 
+    // 기존 옵저버 정리 후 새로 생성
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
     // 새로운 IntersectionObserver를 생성
     // observerCallback을 사용하여 observeTarget이 화면에 나타날 때 fetchNextPage를 호출
-    const observer = new IntersectionObserver(observerCallback, {
+    observerRef.current = new IntersectionObserver(observerCallback, {
       threshold: 0.1,
     });
 
     // observeTarget이 화면에 보이면 관찰을 시작
-    observer.observe(observeTarget);
+    observerRef.current.observe(observeTarget);
 
-    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
+    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지하고 옵저버를 정리
     return () => {
-      observer.unobserve(observeTarget);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, [observeTarget, hasNextPage, isFetchingNextPage, observerCallback]);
+
+  /**
+   * 컴포넌트 언마운트 시에 throttledFetchNextPage의 잔여 작업을 정리
+   */
+  useEffect(() => {
+    return () => {
+      throttledFetchNextPage.cancel();
+    };
+  }, [throttledFetchNextPage]);
 
   /**
    * 이벤트 리스너를 설정하는 useEffect
@@ -319,5 +352,6 @@ export const useSearchMore = (
     hasNextPage: hasNextPage,
     isFetchingNextPage: isFetchingNextPage,
     handleModalClose: handleModalClose,
+    onOverlayClick: onOverlayClick,
   };
 };

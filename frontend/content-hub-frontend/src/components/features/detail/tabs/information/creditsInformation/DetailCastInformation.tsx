@@ -12,7 +12,7 @@ import {
   isDetailMovieType,
   isDetailTvType,
 } from '@/components/common/utils/typeGuardUtil';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { NoDataMessageUi } from '@/components/ui/common/NoDataMessageUi';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
 
 /**
@@ -47,14 +47,8 @@ export const DetailCastInformation = memo(
       detailResult.characters.edges &&
       detailResult.characters.edges.length !== 0;
     return (
-      <div className="ml-5 mr-5">
-        {(contentMediaType === getContentMediaType().aniCode ||
-          contentMediaType === getContentMediaType().dramaCode ||
-          contentMediaType === getContentMediaType().movieCode ||
-          contentMediaType === getContentMediaType().documentaryCode ||
-          contentMediaType === getContentMediaType().kidsCode ||
-          contentMediaType === getContentMediaType().newsCode ||
-          contentMediaType === getContentMediaType().varietyCode) &&
+      <div className="lg:px-8">
+        {contentMediaType !== getContentMediaType().comicsCode &&
           (isVideoCast ? (
             <>
               <DisplayVideoCredits
@@ -64,10 +58,10 @@ export const DetailCastInformation = memo(
                 isOmit={false}
                 displayCount={displayCount}
               />
-              <div ref={(el) => setObserveTarget!(el)} />
+              <div ref={(el) => setObserveTarget!(el)} aria-hidden="true" />
             </>
           ) : (
-            <NodataMessageUi message={t('warn.noCastInfo')} />
+            <NoDataMessageUi message={t('warn.noCastInfo')} />
           ))}
         {contentMediaType === getContentMediaType().comicsCode &&
           (isComicsCharacter ? (
@@ -77,7 +71,7 @@ export const DetailCastInformation = memo(
               creditsType={COMICS_CREDITS_TYPE.CHARACTER}
             />
           ) : (
-            <NodataMessageUi message={t('warn.noCharacterInfo')} />
+            <NoDataMessageUi message={t('warn.noCharacterInfo')} />
           ))}
       </div>
     );

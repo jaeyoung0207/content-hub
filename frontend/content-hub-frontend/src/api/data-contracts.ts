@@ -375,9 +375,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  emailVerified?: boolean;
   emailValid?: boolean;
   leapMonth?: boolean;
-  emailVerified?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -666,6 +666,8 @@ export interface AniListDateDto {
 export interface AniListNameDto {
   full?: string;
   userPreferred?: string;
+  alternative?: string[];
+  alternativeSpoiler?: string[];
   native?: string;
 }
 

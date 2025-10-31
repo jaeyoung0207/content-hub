@@ -6,8 +6,11 @@
 import NoImageThumbnailFile from '@assets/images/no_image_available.svg';
 import i18n from '@/i18n';
 
+// 모바일 화면 너비 기준
+export const MOBILE_WIDTH = 768;
+
 // 모바일 사이즈 판단
-export const IS_MOBILE = window.innerWidth < 768;
+// export const IS_MOBILE = window.innerWidth < 768;
 
 // TMDB API 이미지 불러오기용 URL ("https://image.tmdb.org/t/p/<이미지 사이즈>/<이미지 파일명>" 형식으로 사용)
 // 이미지 사이즈 예시 : w300, w500, original 등
@@ -42,6 +45,18 @@ export const ARROW_DOWN_KEY = 'ArrowDown';
 
 // 위 화살표 키
 export const ARROW_UP_KEY = 'ArrowUp';
+
+// 왼쪽 화살표 키
+export const ARROW_LEFT_KEY = 'ArrowLeft';
+
+// 오른쪽 화살표 키
+export const ARROW_RIGHT_KEY = 'ArrowRight';
+
+// 홈 키
+export const HOME_KEY = 'Home';
+
+// 엔드 키
+export const END_KEY = 'End';
 
 // 구분자 슬래시
 export const SEPERATE_SLASH = ' / ';

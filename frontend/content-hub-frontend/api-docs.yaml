@@ -1743,11 +1743,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        emailVerified:
+          type: boolean
         emailValid:
           type: boolean
         leapMonth:
-          type: boolean
-        emailVerified:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -2283,6 +2283,14 @@ components:
           type: string
         userPreferred:
           type: string
+        alternative:
+          type: array
+          items:
+            type: string
+        alternativeSpoiler:
+          type: array
+          items:
+            type: string
         native:
           type: string
     AniListPageInfoDto:

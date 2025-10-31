@@ -18,12 +18,12 @@ export const ErrorPageWithHalfScreen = () => {
   console.error(`Error ${status}: ${message}`);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <div className="text-center">
         {/* 에러 상태 코드 */}
-        <h1 className="text-6xl font-bold text-red-600 mb-4">{status}</h1>
+        <h1 className="mb-4 text-6xl font-bold text-red-600">{status}</h1>
         {/* 에러 메시지 */}
-        <p className="text-xl text-gray-700 mb-6">{message}</p>
+        <p className="mb-6 text-xl text-gray-700">{message}</p>
       </div>
     </div>
   );

@@ -6,24 +6,24 @@ import {
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_300,
 } from '@/components/common/constants/constants';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { BsStarFill } from 'react-icons/bs';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { checkApiId } from '@/components/common/utils/checkUtil';
 import { useNavigate } from 'react-router-dom';
 import { detailUrlQuery } from '@/components/common/utils/urlUtil';
-import {
-  HIGHLIGHT_HOVER_COLOR,
-  OVERFLOW_AUTO_STYLE,
-} from '@/components/common/constants/tailwindStyles';
+import { LazyImage, NoDataMessageUi } from '@/components/ui/common';
+import { HIGHLIGHT_HOVER_COLOR } from '@/components/common/constants/tailwindStyles';
 import { WishlistUi } from '@/components/ui/WishlistUi';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 import {
   useContentMediaTypeMapStore,
   useDisplayMediaTypeMapStore,
 } from '@/components/common/store/globalStateStore';
 
+/**
+ * 각 랭킹 표시 컴포넌트 props 타입
+ */
 type DisplayRankingsProps = {
   title: string;
   items: HomeRankingReponseDto[];
@@ -87,45 +87,43 @@ export const Home = () => {
   );
 
   return (
-    <div className="w-sm lg:w-7xl">
-      <div className="mt-30">
-        {
-          // 콘텐츠 미디어 타입 및 화면 표시용 미디어 타입이 초기화 되었을 때만 렌더링
-          isContentMediaTypeInitialized && isDisplayMediaTypeInitialized ? (
-            <>
-              {isLoading ? (
-                <LoadingUi />
-              ) : (
-                data && (
-                  <>
-                    <div className="text-4xl font-bold mb-10">
-                      {t('info.rankingTitle')}
-                    </div>
-                    {contentRankings.map(
-                      (ranking, index) =>
-                        ranking.items.length > 0 && (
-                          <DisplayRankings
-                            key={index}
-                            title={ranking.title}
-                            items={ranking.items}
-                            user={user}
-                          />
-                        )
-                    )}
-                  </>
-                )
-              )}
-              {!isLoading && isDataEmpty && (
-                <div className="text-2xl">
-                  <NodataMessageUi message={t('warn.noRankingData')} />
+    <div className="pt-16 sm:pt-20">
+      {
+        // 콘텐츠 미디어 타입 및 화면 표시용 미디어 타입이 초기화 되었을 때만 렌더링
+        isContentMediaTypeInitialized && isDisplayMediaTypeInitialized ? (
+          <>
+            {isLoading ? (
+              <LoadingUi />
+            ) : (
+              data && (
+                <div className="space-y-10">
+                  <div className="text-2xl font-bold sm:text-3xl">
+                    {t('info.rankingTitle')}
+                  </div>
+                  {contentRankings.map(
+                    (ranking, index) =>
+                      ranking.items.length > 0 && (
+                        <DisplayRankings
+                          key={index}
+                          title={ranking.title}
+                          items={ranking.items}
+                          user={user}
+                        />
+                      )
+                  )}
                 </div>
-              )}
-            </>
-          ) : (
-            <LoadingUi />
-          )
-        }
-      </div>
+              )
+            )}
+            {!isLoading && isDataEmpty && (
+              <div className="text-2xl">
+                <NoDataMessageUi message={t('warn.noRankingData')} />
+              </div>
+            )}
+          </>
+        ) : (
+          <LoadingUi />
+        )
+      }
     </div>
   );
 };
@@ -142,33 +140,40 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
   const navigate = useNavigate();
   // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
+
+  // 섹션 내 미디어 타입(코믹스 여부)
+  const isComics =
+    items[0]?.displayMediaType === getDisplayMediaType().comicsCode;
+  // 그리드 컬럼 클래스
+  const gridCols =
+    'grid gap-x-3 gap-y-5 ' +
+    (isComics
+      ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
+      : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5');
+  // 썸네일 컨테이너 비율 클래스
+  const aspectClass = isComics ? 'aspect-[2/3]' : 'aspect-[16/9]';
+  // 하트 위치 클래스
+  const heartClass = 'absolute z-10 bottom-2 right-2';
+
   return (
-    <div className="block mb-10">
+    <section>
       {/* 각 랭킹 타이틀 */}
-      <div className="flex items-start text-3xl font-bold mb-5">{title}</div>
-      <div className={`whitespace-nowrap flex ${OVERFLOW_AUTO_STYLE}`}>
+      <h2 className="mb-4 text-xl font-bold sm:text-2xl">{title}</h2>
+
+      {/* 랭킹 아이템 리스트 */}
+      <div className={gridCols}>
         {items.map((items, index) => {
           // 썸네일 이미지
-          const thumbnailImageUrl =
-            items.displayMediaType === getDisplayMediaType().comicsCode
-              ? items.thumbnailImageUrl
-              : thumbnailImagePath + items.thumbnailImageUrl;
-          const widthStyle =
-            items.displayMediaType === getDisplayMediaType().comicsCode
-              ? 'w-[195px]'
-              : 'w-[300px]';
-          const heightStyle =
-            items.displayMediaType === getDisplayMediaType().comicsCode
-              ? 'h-[270px]'
-              : 'h-[180px]';
-          const heartStyle =
-            items.displayMediaType === getDisplayMediaType().comicsCode
-              ? 'z-1 relative top-28 left-16'
-              : 'z-1 relative top-15 left-30';
+          const isComics =
+            items.displayMediaType === getDisplayMediaType().comicsCode;
+          const thumbnailImageUrl = isComics
+            ? items.thumbnailImageUrl
+            : thumbnailImagePath + items.thumbnailImageUrl;
+
           return (
-            <ul
+            <div
               key={index}
-              className={`ml-1 mr-1 block ${HIGHLIGHT_HOVER_COLOR} cursor-pointer ${widthStyle}`}
+              className={`${HIGHLIGHT_HOVER_COLOR} cursor-pointer ${aspectClass}`}
               onClick={commonErrorHandler(() => {
                 // apiId 체크
                 checkApiId(Number(items.apiId));
@@ -182,21 +187,23 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                 navigate(detailUrl);
               })}
             >
-              <li className="mb-1 flex justify-center text-lg font-bold">{`TOP ${items.rowNum}`}</li>
-              <li
-                className={`relative flex justify-center items-center ${widthStyle} ${heightStyle}`}
+              {/* 순위 */}
+              <div className="mb-1 flex justify-center text-sm font-bold sm:text-base">{`TOP ${items.rowNum}`}</div>
+              {/* 썸네일 이미지 */}
+              <div
+                className={`relative max-w-full overflow-hidden ${aspectClass} bg-white`}
               >
-                <img
-                  src={thumbnailImageUrl}
-                  alt={items.title}
-                  className={
-                    'z-0 absolute max-w-full max-h-full object-scale-down rounded-2xl'
-                  }
-                  onError={(e) => {
-                    e.currentTarget.src = COMMON_IMAGES.NO_IMAGE;
-                  }}
-                />
-                <div className={heartStyle}>
+                <div
+                  className={`relative flex max-h-full max-w-full justify-center rounded-2xl ${aspectClass}`}
+                >
+                  <LazyImage
+                    src={thumbnailImageUrl || COMMON_IMAGES.NO_IMAGE}
+                    alt={items.title}
+                    className={`inset-0 h-full w-full rounded-2xl object-cover`}
+                  />
+                </div>
+                {/* 위시리스트 버튼 */}
+                <div className={heartClass}>
                   <WishlistUi
                     contentMediaType={items.contentMediaType!}
                     apiId={Number(items.apiId)}
@@ -207,18 +214,23 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                     displayMediaType={items.displayMediaType}
                   />
                 </div>
-              </li>
-              <li className="flex items-center text-lg">
-                <BsStarFill className={'text-red-500 mr-2'} />
+              </div>
+              {/* 평점 */}
+              <div className="mt-1 flex items-center text-sm sm:text-base">
+                <BsStarFill className={'mr-2 text-red-500'} />
                 {`${items.starRatingAverage?.toFixed(1)} ${items.starRatingCount ? ' (' + (items.starRatingCount > 9999 ? '9999+' : items.starRatingCount) + ')' : ''}`}
-              </li>
-              <li className="ml-1 mr-1 mb-4 text-lg whitespace-break-spaces">
+              </div>
+              {/* 제목 */}
+              <div
+                className="relative mr-1 mb-4 ml-1 line-clamp-2 text-base sm:text-lg"
+                title={items.title}
+              >
                 {items.title}
-              </li>
-            </ul>
+              </div>
+            </div>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

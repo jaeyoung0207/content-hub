@@ -36,6 +36,13 @@ export type DisplaySearchResultsPropsType = {
 
 /**
  * 각 미디어 검색결과 컴포넌트
+ * @param mediaName 미디어 이름
+ * @param results 검색 결과 리스트
+ * @param isViewMore 전체보기 여부
+ * @param displayMediaType 화면 표시용 미디어 타입
+ * @param keyword 검색어
+ * @param isAdult 성인물 포함 여부
+ * @param searchScreenType 검색 화면 타입
  */
 export const DisplaySearchResults = ({
   mediaName,
@@ -54,13 +61,25 @@ export const DisplaySearchResults = ({
   const { user } = useUserStore();
   // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
+  // 만화일 경우
+  const isComics = displayMediaType === getDisplayMediaType().comicsCode;
+  // 카드 그리드: 데스크톱 5열, 태블릿 3~4열, 모바일 2열
+  const gridCols =
+    'grid gap-x-3 gap-y-5 ' +
+    (isComics
+      ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
+      : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5');
+  // 썸네일 비율 클래스
+  const aspectClass = isComics ? 'aspect-[2/3]' : 'aspect-[16/9]';
+  // 하트 아이콘 style
+  const heartClass = 'absolute z-10 bottom-2 right-2';
 
   return (
-    <div>
+    <section>
       {searchScreenType === SEARCH_SCREEN_TYPE.MAIN && (
         // 미디어 이름
-        <div className="ml-6 mt-6 flex justify-between items-center">
-          <div className="text-4xl font-bold">{mediaName}</div>
+        <div className="mt-6 flex items-center justify-between">
+          <h2 className="text-2xl font-bold sm:text-3xl">{mediaName}</h2>
           {
             // 전체보기 링크
             isViewMore && (
@@ -81,14 +100,13 @@ export const DisplaySearchResults = ({
       )}
       {searchScreenType === SEARCH_SCREEN_TYPE.VIEW_MORE && (
         // 키워드 미디어 검색 결과
-        <div className="text-3xl font-bold ml-5">
+        <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
           "{keyword}" {mediaName} {t('info.searchResults')}
-        </div>
+        </h2>
       )}
+
       {/* 검색 결과 */}
-      <div
-        className={`w-full flex flex-wrap items-start mt-6 ${searchScreenType === SEARCH_SCREEN_TYPE.MAIN ? 'ml-5' : ''}`}
-      >
+      <div className={`mt-6 ${gridCols}`}>
         {results.length !== 0 &&
           results.map((items, index) => {
             // 썸네일 이미지 경로
@@ -99,8 +117,6 @@ export const DisplaySearchResults = ({
               : items.posterPath
                 ? thumbnailImagePath + items.posterPath
                 : COMMON_IMAGES.NO_IMAGE;
-            // 하트 아이콘 style
-            const heartStyle = 'z-1 absolute bottom-2 right-3';
             // 제목
             const title =
               isSearchTvType(items, displayMediaType) ||
@@ -113,14 +129,9 @@ export const DisplaySearchResults = ({
             }
 
             return (
-              <ul
+              <div
                 key={items.id + '_' + index}
-                className={
-                  `${HIGHLIGHT_HOVER_COLOR} ml-1 cursor-pointer ` +
-                  (displayMediaType === getDisplayMediaType().comicsCode
-                    ? ' mr-1 w-[195px] h-full'
-                    : ' mr-3 w-[290px] h-full')
-                }
+                className={`${HIGHLIGHT_HOVER_COLOR} cursor-pointer`}
                 onClick={commonErrorHandler(() => {
                   // apiId 체크
                   checkApiId(items.id);
@@ -135,45 +146,43 @@ export const DisplaySearchResults = ({
                 })}
               >
                 {/* 썸네일 */}
-                <li
-                  key={'poster_path' + index}
-                  className="relative flex justify-center items-center"
-                >
-                  <LazyImage
-                    src={thumbnail}
-                    alt={'Thumbnail Image'}
-                    className={
-                      (displayMediaType === getDisplayMediaType().comicsCode
-                        ? 'max-w-full h-[270px]'
-                        : 'max-w-full h-[180px]') + ' object-cover rounded-2xl'
-                    }
-                  />
-                  <div className={heartStyle}>
-                    <WishlistUi
-                      contentMediaType={items.contentMediaType!}
-                      apiId={Number(items.id)}
-                      title={title!}
-                      userId={user?.userId}
-                      isWishlisted={items.wishlisted!}
-                      thumbnailImageUrl={
-                        items.backdropPath ?? items.posterPath ?? ''
-                      }
-                      genreIds={items.genreIds ?? []}
+                <div className={`overflow-hidden`}>
+                  <div
+                    className={`relative flex h-full w-full justify-center ${aspectClass}`}
+                  >
+                    <LazyImage
+                      src={thumbnail}
+                      alt={title || 'Thumbnail Image'}
+                      className={`h-full w-full rounded-2xl object-cover`}
                     />
+                    <div className={heartClass}>
+                      <WishlistUi
+                        contentMediaType={items.contentMediaType!}
+                        apiId={Number(items.id)}
+                        title={title!}
+                        userId={user?.userId}
+                        isWishlisted={items.wishlisted!}
+                        thumbnailImageUrl={
+                          items.backdropPath ?? items.posterPath ?? ''
+                        }
+                        genreIds={items.genreIds ?? []}
+                      />
+                    </div>
                   </div>
-                </li>
+                </div>
                 {/* 제목 */}
-                <li
+                <div
                   key={'title_' + index}
-                  className="ml-1 mr-1 mt-1 mb-4 text-lg"
+                  className="relative mt-2 line-clamp-2 px-1 text-base sm:text-lg"
+                  title={title || ''} // 툴팁용 title 속성
                 >
                   {title}
-                </li>
-              </ul>
+                </div>
+              </div>
             );
           })}
       </div>
-    </div>
+    </section>
   );
 };
 

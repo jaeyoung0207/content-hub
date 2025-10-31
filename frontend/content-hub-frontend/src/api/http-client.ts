@@ -125,11 +125,12 @@ export class HttpClient<SecurityDataType = unknown> {
           // 접근토큰 갱신 API 조회
           let res;
           if (provider === LOGIN_PROVIDER.NAVER) {
-            res = (await axios.get(`${backendUrl}/login/updateNaverLoginInfo`))
-              .data as LoginProfileResultDto;
+            res = (
+              await axios.get(`${backendUrl}/api/login/updateNaverLoginInfo`)
+            ).data as LoginProfileResultDto;
           } else if (provider === LOGIN_PROVIDER.KAKAO) {
             res = (
-              await axios.get(`${backendUrl}/login/updateKakaoLoginInfo`, {
+              await axios.get(`${backendUrl}/api/login/updateKakaoLoginInfo`, {
                 params: {
                   clientId: settings.kakaoClientId,
                 },

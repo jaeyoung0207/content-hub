@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useCharacter } from './useCharacter';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { useTranslation } from 'react-i18next';
 import { COMMON_IMAGES } from '@/components/common/constants/constants';
 import { convertDate } from '@/components/common/utils/convertUtil';
@@ -18,15 +18,14 @@ export const Character = memo(() => {
   const { t } = useTranslation();
 
   // useCharacter 훅을 사용하여 캐릭터 정보 조회
-  const { data, isLoading, isError } = useCharacter(
-    comicsCreditsType!,
-    creditsId!
-  );
+  const { data, isLoading, isError, isSpoilerName, toggleSpoilerName } =
+    useCharacter(comicsCreditsType!, creditsId!);
 
   // 캐릭터 정보 스타일
-  const characterInfoStyle = 'flex text-xl mb-2 mr-3 break-all';
+  const characterInfoStyle =
+    'mb-2 flex break-all text-sm md:text-base lg:text-lg';
   // 소제목 스타일
-  const subTitleStyle = 'mr-2 whitespace-nowrap';
+  const subTitleStyle = 'mr-2 whitespace-nowrap font-medium text-foreground';
   // 생년월일
   const birthday =
     data && data.dateOfBirth
@@ -54,8 +53,17 @@ export const Character = memo(() => {
   const homeTown =
     data && isStaffType(data) && data.homeTown ? data.homeTown : '';
 
+  // 캐릭터 설명 (HTML 태그 변환)
+  const characterDescription =
+    data?.description &&
+    data.description
+      .replace(/:__/g, ':</b>') // 볼드 태그 변환
+      .replace(/__/g, '<b>') // 볼드 태그 변환
+      .replace(/~!/g, '<span class="text-white bg-gray-50">') // 회색 배경 텍스트 변환
+      .replace(/!~/g, '</span>'); // 회색 배경 텍스트 변환
+
   return (
-    <div className="block mt-30 mb-10">
+    <div className="px-4 pt-16 pb-10 sm:px-6 sm:pt-20 lg:px-8">
       {
         // 로딩 중이면 로딩 UI 표시, 에러가 발생하면 에러 메시지 표시
         isLoading ? (
@@ -67,23 +75,62 @@ export const Character = memo(() => {
       {/* 캐릭터 정보 */}
       {data && (
         <>
-          <div className="flex justify-center m-5">
+          <div className="mt-2 grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* 캐릭터 이미지 */}
-            <div className="flex justify-center items-center mb-4 w-[30%]">
-              <LazyImage
-                src={
-                  data.image?.large ? data.image.large : COMMON_IMAGES.NO_IMAGE
-                }
-                alt={data.name?.full}
-                className="rounded-xl"
-              />
+            <div className="md:col-span-1">
+              <div className="relative mx-auto aspect-[2/3] w-3/4 md:w-full lg:w-4/5 xl:w-2/3 2xl:w-1/2">
+                <LazyImage
+                  src={
+                    data.image?.large
+                      ? data.image.large
+                      : COMMON_IMAGES.NO_IMAGE
+                  }
+                  alt={data.name?.full || 'Character'}
+                  className="h-full w-full rounded-2xl object-cover"
+                />
+              </div>
             </div>
             {/* 캐릭터 정보 */}
-            <div className="w-[70%] block">
+            <div className="md:col-span-2">
               {/* 이름 */}
-              <div className="text-3xl mb-3 mr-3">{data.name?.full}</div>
+              <div className="mb-4 text-2xl font-bold sm:text-3xl">
+                {data.name?.full}
+              </div>
+              <ul className="mt-2">
+                {/* 다른 이름 */}
+                {data.name?.alternative &&
+                  data.name?.alternative?.length > 0 && (
+                    <li className={characterInfoStyle}>
+                      <div className={subTitleStyle}>
+                        {t('info.alternativeName') + t('info.colon')}
+                      </div>
+                      <div>
+                        {data.name.alternative.join(', ')}
+                        {data.name.alternativeSpoiler &&
+                          data.name.alternativeSpoiler.length > 0 &&
+                          (isSpoilerName ? (
+                            <button
+                              onClick={toggleSpoilerName}
+                              className="ml-2 cursor-pointer text-blue-500 hover:underline"
+                            >
+                              {'(' +
+                                data.name.alternativeSpoiler.join(', ') +
+                                ')'}
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={toggleSpoilerName}
+                                className="ml-2 cursor-pointer text-blue-500 hover:underline"
+                              >
+                                {t('info.showSpoilerName')}
+                              </button>
+                            </>
+                          ))}
+                      </div>
+                    </li>
+                  )}
 
-              <ul className="mt-5">
                 {/* 성별 */}
                 {data.gender && (
                   <li className={characterInfoStyle}>
@@ -156,6 +203,7 @@ export const Character = memo(() => {
                     <a
                       href={data.siteUrl}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-blue-500 hover:underline"
                     >
                       {data.siteUrl}
@@ -167,14 +215,15 @@ export const Character = memo(() => {
           </div>
           {/* 캐릭터 설명 */}
           {data.description && (
-            <div className="text-2xl mb-5 mr-3">
-              <div className="text-3xl font-bold mb-3">
+            <section className="mt-8">
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                 {t('info.description')}
-              </div>
-              <div className="text-lg whitespace-pre-wrap ml-5">
-                {data.description}
-              </div>
-            </div>
+              </h2>
+              <p
+                className="text-base leading-relaxed whitespace-pre-wrap sm:text-lg"
+                dangerouslySetInnerHTML={{ __html: characterDescription! }}
+              />
+            </section>
           )}
         </>
       )}

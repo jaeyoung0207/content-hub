@@ -3,11 +3,10 @@ import { CloseButtonUi } from '@/components/ui/common/CloseButtonUi';
 import { useSearchMore } from './useSearchMore';
 import { useTranslation } from 'react-i18next';
 import { memo } from 'react';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { SearchPropsType } from '../SearchPage';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
-import { OVERFLOW_AUTO_STYLE } from '@/components/common/constants/tailwindStyles';
 
 /**
  * 전체보기 모달화면 컴포넌트
@@ -29,6 +28,7 @@ export const SearchMore = memo(
       hasNextPage,
       isFetchingNextPage,
       handleModalClose,
+      onOverlayClick,
     } = useSearchMore(keyword, adultFlag, displayMediaType!);
 
     // 각 미디어 이름을 가져오는 함수
@@ -57,13 +57,22 @@ export const SearchMore = memo(
     return (
       <>
         {
-          <div className="flex justify-center items-center fixed top-0 left-0 w-full h-full bg-black/30 z-50">
+          <div
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-3 backdrop-blur-sm sm:p-6"
+            onClick={onOverlayClick}
+          >
             <div
-              className={`w-full max-w-md md:max-w-4xl lg:max-w-7xl h-11/12 bg-white rounded-xl mt-10 mx-auto ${OVERFLOW_AUTO_STYLE}`}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t(getMediaName())}
+              className="relative h-[calc(100vh-1.5rem)] w-full max-w-screen-2xl overflow-y-auto rounded-xl bg-white shadow-2xl sm:h-[calc(100vh-3rem)]"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-5 p-4">
+              <div className="px-4 py-4 sm:px-6 lg:px-8">
                 {/* 닫기 버튼 */}
-                <CloseButtonUi modalClose={handleModalClose} />
+                <div className="mb-4">
+                  <CloseButtonUi modalClose={handleModalClose} />
+                </div>
                 {data ? (
                   <div>
                     {/* 각 미디어 검색결과 컴포넌트 */}
@@ -77,12 +86,19 @@ export const SearchMore = memo(
                     />
                     {
                       // 다음 페이지 로딩 중인 경우 로딩 UI 표시
-                      isFetchingNextPage && <LoadingUi />
+                      isFetchingNextPage && (
+                        <div className="py-6">
+                          <LoadingUi />
+                        </div>
+                      )
                     }
                     {
                       // 다음 페이지가 있는 경우 무한 스크롤을 위한 div 태그
                       hasNextPage && (
-                        <div ref={(el) => setObserveTarget(el)}></div>
+                        <div
+                          ref={(el) => setObserveTarget(el)}
+                          className="h-1"
+                        ></div>
                       ) // ref를 함수 형태로 지정 -> DOM이 생기거나 없어질 때마다 실행되면서 setObserveTarget을 호출
                     }
                   </div>

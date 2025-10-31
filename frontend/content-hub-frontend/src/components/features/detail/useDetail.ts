@@ -257,7 +257,7 @@ export const useDetail = (
 
     // castObserveTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
     return () => {
-      observer.unobserve(castObserveTarget);
+      observer.disconnect();
     };
   }, [castObserveTarget, castObserverCallback]);
 
@@ -281,7 +281,7 @@ export const useDetail = (
 
     // crewObserveTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
     return () => {
-      observer.unobserve(crewObserveTarget);
+      observer.disconnect();
     };
   }, [crewObserveTarget, crewObserverCallback]);
 

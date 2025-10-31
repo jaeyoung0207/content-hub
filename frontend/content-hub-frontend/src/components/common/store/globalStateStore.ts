@@ -1,6 +1,6 @@
 import {
-  CommonContentMediaTypeDto,
-  CommonDisplayMediaTypeDto,
+  AppContentMediaTypeDto,
+  AppDisplayMediaTypeDto,
   LoginUserInfoDto,
 } from '@/api/data-contracts';
 import { create } from 'zustand';
@@ -52,6 +52,8 @@ type UseConfirmDialogStoreType = {
   setOnOk: (onOk: () => void) => void;
   onCancel: () => void;
   setOnCancel: (onCancel: () => void) => void;
+  title: string;
+  setTitle: (title: string) => void;
   confirmMsg: string;
   setConfirmMsg: (confirmMsg: string) => void;
 };
@@ -113,10 +115,10 @@ type UseTooltipStoreType = {
  * 컨텐츠 미디어 타입 맵 상태관리 타입
  */
 type UseContentMediaTypeMapStoreType = {
-  contentMediaType: CommonContentMediaTypeDto | undefined;
+  contentMediaType: AppContentMediaTypeDto | undefined;
   isContentMediaTypeInitialized: boolean;
   setContentMediaType: (
-    contentMediaType: CommonContentMediaTypeDto,
+    contentMediaType: AppContentMediaTypeDto,
     isContentMediaTypeInitialized: boolean
   ) => void;
   clearContentMediaType: () => void;
@@ -126,10 +128,10 @@ type UseContentMediaTypeMapStoreType = {
  * 화면 표시용 미디어 타입 맵 상태관리 타입
  */
 type UseDisplayMediaTypeMapStoreType = {
-  displayMediaType: CommonDisplayMediaTypeDto | undefined;
+  displayMediaType: AppDisplayMediaTypeDto | undefined;
   isDisplayMediaTypeInitialized: boolean;
   setDisplayMediaType: (
-    displayMediaType: CommonDisplayMediaTypeDto,
+    displayMediaType: AppDisplayMediaTypeDto,
     isDisplayMediaTypeInitialized: boolean
   ) => void;
   clearDisplayMediaType: () => void;
@@ -225,6 +227,8 @@ export const useConfirmDialogStore = create<UseConfirmDialogStoreType>(
     setOnOk: (onOk) => set(() => ({ onOk })),
     onCancel: () => {},
     setOnCancel: (onCancel) => set(() => ({ onCancel })),
+    title: '',
+    setTitle: (title) => set(() => ({ title })),
     confirmMsg: '',
     setConfirmMsg: (confirmMsg) => set(() => ({ confirmMsg })),
   })

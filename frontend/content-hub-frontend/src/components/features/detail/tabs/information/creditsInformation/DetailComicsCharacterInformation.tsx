@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { DetailResponseType } from '../../../useDetail';
 import { useDetailComicsCharacterInformation } from './useDetailComicsCharacterInformation';
-import { LoadingUi } from '@/components/ui/LoadingUi';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
+import { NoDataMessageUi } from '@/components/ui/common';
 import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
+import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
 
 /**
  * 만화 캐릭터/제작진 정보 컴포넌트 props 타입
@@ -36,7 +37,7 @@ export const DetailComicsCharacterInformation = ({
     );
 
   return (
-    <div className="ml-5 mr-5">
+    <div className="lg:px-8">
       {data && data.pages.length > 0 ? (
         <>
           <DisplayComicsCredits
@@ -48,12 +49,19 @@ export const DetailComicsCharacterInformation = ({
           />
           {
             // 다음 페이지 로딩 중인 경우 로딩 UI 표시
-            isFetchingNextPage && <LoadingUi />
+            isFetchingNextPage && (
+              <div className="py-4">
+                <LoadingUi />
+              </div>
+            )
           }
           {
             // 다음 페이지가 있는 경우 무한 스크롤을 위한 div 태그
             hasNextPage && (
-              <div ref={(el) => setObserveTarget && setObserveTarget(el)}></div>
+              <div
+                ref={(el) => setObserveTarget && setObserveTarget(el)}
+                aria-hidden="true"
+              ></div>
             )
           }
         </>
@@ -63,7 +71,13 @@ export const DetailComicsCharacterInformation = ({
       {
         // 데이터가 없을 때 표시할 메시지
         data && data.pages[0]?.length === 0 && (
-          <NodataMessageUi message={t('warn.noCharacterInfo')} />
+          <NoDataMessageUi
+            message={
+              creditsType === COMICS_CREDITS_TYPE.CHARACTER
+                ? t('warn.noCharacterInfo')
+                : t('warn.noStaffInfo')
+            }
+          />
         )
       }
     </div>

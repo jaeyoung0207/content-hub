@@ -1,5 +1,6 @@
 import { Controller, FieldValues } from 'react-hook-form';
 import { FormFieldProps } from './common/FormFieldProps';
+import { cn } from '@/lib/cn';
 
 /**
  * 라디오 버튼 Props 타입
@@ -42,43 +43,71 @@ export const RadioButtonGroupUi = <T extends FieldValues>({
   defaultChecked,
   defaultValue,
 }: RadioButtonGroupUiProps<T>) => {
+  // 접근성: 라벨과 그룹을 연결
+  const groupLabelId = String(name);
+  // 디스플레이 스타일에 따른 클래스 설정
+  const groupClass =
+    displayStyle === 'flex'
+      ? 'flex flex-wrap items-center gap-3'
+      : 'grid gap-1';
+
   return (
     <>
       <div>
-        {label && <div className="text-md font-bold mb-1">{label}</div>}
+        {label && (
+          <div
+            id={groupLabelId}
+            className="mb-1 text-sm font-semibold md:text-base"
+          >
+            {label}
+          </div>
+        )}
         <Controller
           name={name}
           control={control}
           render={({ field: { onChange, value } }) => {
             return (
-              <div className={displayStyle}>
+              <div
+                role="radiogroup"
+                aria-labelledby={label ? groupLabelId : undefined}
+                className={groupClass}
+              >
                 {/* 라디오 버튼 */}
-                {radioButtonList.map((items) => (
-                  <div
-                    key={items.value}
-                    className="flex items-center me-2 mb-1"
-                  >
-                    <input
-                      id={`${name}-${items.value}`}
-                      className="w-4 h-4 text-blue-600 bg-white border-gray-300 focus:ring-blue-500"
-                      type="radio"
-                      onChange={() => {
-                        onClickRadioButton?.(items.value);
-                        onChange(items.value);
-                      }}
-                      value={items.value}
-                      checked={value === items.value}
-                      defaultValue={defaultValue}
-                      defaultChecked={defaultChecked}
-                    />
+                {radioButtonList.map((items) => {
+                  const id = `${String(name)}-${items.value}`;
+                  const checked = value === items.value;
+                  return (
                     <label
-                      htmlFor={`${name}-${items.value}`}
-                      className="px-2 text-black text-xs lg:text-lg font-normal font-['Inter']"
+                      key={items.value}
+                      htmlFor={id}
+                      className={cn(
+                        'inline-flex cursor-pointer items-center gap-2 select-none'
+                      )}
                     >
-                      {items.label}
+                      <input
+                        id={id}
+                        type="radio"
+                        onChange={() => {
+                          onClickRadioButton?.(items.value);
+                          onChange(items.value);
+                        }}
+                        value={items.value}
+                        checked={checked}
+                        defaultValue={defaultValue}
+                        defaultChecked={defaultChecked}
+                        className={cn(
+                          'h-5 w-5 sm:h-4 sm:w-4',
+                          'rounded-full border border-black/20',
+                          'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                          'accent-primary'
+                        )}
+                      />
+                      <span className="text-foreground text-sm md:text-base">
+                        {items.label}
+                      </span>
                     </label>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             );
           }}

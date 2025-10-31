@@ -5,15 +5,12 @@ import { useHeader } from './hooks/useHeader';
 import { CheckBoxUi } from '@/components/ui/CheckBoxUi';
 import { BsFilterSquare, BsFilterSquareFill } from 'react-icons/bs';
 import { FieldValues, Path } from 'react-hook-form';
-import { FormFieldProps } from '@/components/ui/common/FormFieldProps';
 import {
-  IS_MOBILE,
   OMISSION_TEXT,
   SEARCH_TYPE,
   SELECT_TYPE,
   TOOLTIP_CLOSE_STATE,
 } from '@/components/common/constants/constants';
-import { CheckBoxUiM } from '@/components/ui/CheckBoxUiM';
 import { memo, RefObject } from 'react';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
 import { settings } from '@/components/common/config/settings';
@@ -187,58 +184,65 @@ export const Header = () => {
   const WISHLIST_TOOLTIP_OPEN_STATE = 3;
 
   return (
-    <div className="relative z-50 flex">
-      <div className="fixed bg-white">
-        <div className="flex w-sm lg:w-7xl lg:mt-5 px-3 ">
-          <div className="w-[58%] flex items-center mr-5">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/10 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-14 items-center gap-3 sm:h-16">
+          {/* 좌측: 아이콘들 */}
+          <div className="flex items-center gap-4 sm:gap-6">
             {/* 홈 아이콘 */}
-            <div className="mr-8">
+            <button
+              type="button"
+              aria-label={t('info.home') || 'Home'}
+              className="relative inline-flex cursor-pointer items-center justify-center"
+              onClick={commonErrorHandler(handleHomeOnClick)}
+              onMouseEnter={() => setIsTooltipOpen(HOME_TOOLTIP_OPEN_STATE)}
+              onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+            >
               <img
                 src={homeIcon}
-                className="w-12 h-12 cursor-pointer"
-                alt="Home"
-                onClick={commonErrorHandler(() => {
-                  handleHomeOnClick();
-                })}
-                onMouseEnter={() => setIsTooltipOpen(HOME_TOOLTIP_OPEN_STATE)}
-                onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+                className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                alt=""
               />
               {/* 홈 툴팁 */}
               {isTooltipOpen === HOME_TOOLTIP_OPEN_STATE && (
-                <TooltipUi text={t('info.home')} style={'left-4 mt-2 w-10'} />
+                <TooltipUi text={t('info.home')} />
               )}
-            </div>
+            </button>
             {/* 위시리스트 아이콘 */}
-            <div className="mr-8">
-              <FaHeart
-                className="w-12 h-12 cursor-pointer"
-                onClick={commonErrorHandler(handleWishlistOnClick)}
-                onMouseEnter={() =>
-                  setIsTooltipOpen(WISHLIST_TOOLTIP_OPEN_STATE)
-                }
-                onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
-              />
+            <button
+              type="button"
+              aria-label={t('info.wishlist') || 'Wishlist'}
+              className="relative inline-flex cursor-pointer items-center justify-center"
+              onClick={commonErrorHandler(handleWishlistOnClick)}
+              onMouseEnter={() => setIsTooltipOpen(WISHLIST_TOOLTIP_OPEN_STATE)}
+              onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+            >
+              <FaHeart className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
               {/* 위시리스트 툴팁 */}
               {isTooltipOpen === WISHLIST_TOOLTIP_OPEN_STATE && (
-                <TooltipUi
-                  text={t('info.wishlist')}
-                  style={'left-18 mt-2 w-22'}
-                />
+                <TooltipUi text={t('info.wishlist')} className="w-22" />
               )}
-            </div>
+            </button>
           </div>
-          <div className="w-[42%] flex items-center">
-            <div className="relative block" ref={autoCompleteRef}>
-              {/* 검색창 */}
-              <SearchTextUi
-                control={control}
-                name="keyword"
-                onClick={commonErrorHandler(handleSearchOnClick)}
-                onMouseDown={handleKeywordOnKeyDown}
-                onKeyDown={handleKeywordOnKeyDownEvent}
-                isFocusedRef={isFocusedRef}
-                deleteValue={handleDeleteKeyword}
-              />
+
+          {/* 우측: 검색창 및 필터 아이콘 */}
+          <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+            <div
+              className="relative w-40 sm:w-60 md:w-80 lg:w-96"
+              ref={autoCompleteRef}
+            >
+              <div className="w-40 sm:w-60 md:w-80 lg:w-96">
+                {/* 검색창 */}
+                <SearchTextUi
+                  control={control}
+                  name="keyword"
+                  onClick={commonErrorHandler(handleSearchOnClick)}
+                  onMouseDown={handleKeywordOnKeyDown}
+                  onKeyDown={handleKeywordOnKeyDownEvent}
+                  isFocusedRef={isFocusedRef}
+                  deleteValue={handleDeleteKeyword}
+                />
+              </div>
               {/* 자동완성창 */}
               <AutoCompleteBox
                 autoCompleteList={autoCompleteList}
@@ -254,40 +258,40 @@ export const Header = () => {
               />
             </div>
             {/* 필터 아이콘 */}
-            <div className="ml-3">
-              <div className="relative" ref={filterRef}>
-                {isFilterOpen ? (
-                  <>
-                    {/* 검은색 필터 아이콘 */}
-                    <BsFilterSquareFill
-                      className="w-9 h-9 mr-1 cursor-pointer"
-                      onClick={commonErrorHandler(handleFilterIconOnClick)}
-                    />
-                    {/* 필터 팝업 */}
-                    <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-2xl z-50 p-4 space-y-4">
-                      {/* 검색 종류 */}
-                      <div className="text-xl font-bold mb-2">
-                        {t('info.searchType')}
-                      </div>
-                      <div className="flex mb-2">
-                        {/* 검색 종류 선택 방식 라디오 버튼 그룹 */}
-                        <RadioButtonGroupUi
-                          name="selectType"
-                          control={control}
-                          radioButtonList={radioButtonList}
-                          displayStyle="flex"
-                          onClickRadioButton={commonErrorHandler(
-                            handleOnClickSelectTypeRadioButton
-                          )}
-                        />
-                      </div>
-                      <div className="block mb-2">
-                        {selectType === radioButtonList[0].value ? (
-                          // 검색 종류 체크박스
-                          searchTypeList.map((items) => {
+            <div className="relative" ref={filterRef}>
+              {isFilterOpen ? (
+                <>
+                  {/* 검은색 필터 아이콘 */}
+                  <BsFilterSquareFill
+                    className="h-7 w-7 cursor-pointer sm:h-8 sm:w-8 lg:h-9 lg:w-9"
+                    onClick={commonErrorHandler(handleFilterIconOnClick)}
+                  />
+                  {/* 필터 팝업 */}
+                  <div className="absolute right-0 z-50 mt-2 w-64 rounded border bg-white p-4 shadow-2xl">
+                    {/* 검색 종류 */}
+                    <div className="text-lg font-bold sm:text-xl">
+                      {t('info.searchType')}
+                    </div>
+                    <div className="mt-3">
+                      {/* 검색 종류 선택 방식 라디오 버튼 그룹 */}
+                      <RadioButtonGroupUi
+                        name="selectType"
+                        control={control}
+                        radioButtonList={radioButtonList}
+                        displayStyle="flex"
+                        onClickRadioButton={commonErrorHandler(
+                          handleOnClickSelectTypeRadioButton
+                        )}
+                      />
+                    </div>
+                    <div className="mt-3">
+                      {selectType === radioButtonList[0].value ? (
+                        // 검색 종류 체크박스
+                        <div className="mb-2">
+                          {searchTypeList.map((items) => {
                             return (
-                              <div key={items.value} className="mb-1">
-                                <CheckBoxAndLabel<HeaderType>
+                              <div key={items.value}>
+                                <CheckBoxUi
                                   label={t(items.label)}
                                   name={items.name}
                                   control={control}
@@ -295,28 +299,30 @@ export const Header = () => {
                                 />
                               </div>
                             );
-                          })
-                        ) : (
-                          // 단일 선택시 검색 종류 라디오 버튼 그룹
-                          <RadioButtonGroupUi
-                            name="searchType"
-                            control={control}
-                            radioButtonList={searchTypeList.map((item) => ({
-                              label: t(item.label),
-                              value: item.value,
-                            }))}
-                            displayStyle="block"
-                            onClickRadioButton={commonErrorHandler(
-                              handleOnClickSearchTypeRadioButton
-                            )}
-                          />
-                        )}
-                      </div>
-                      {/* 성인물 포함 체크박스 */}
-                      <div>
-                        <div className="text-xl font-bold mb-2">
-                          {t('info.searchAdultContent')}
+                          })}
                         </div>
+                      ) : (
+                        // 단일 선택시 검색 종류 라디오 버튼 그룹
+                        <RadioButtonGroupUi
+                          name="searchType"
+                          control={control}
+                          radioButtonList={searchTypeList.map((item) => ({
+                            label: t(item.label),
+                            value: item.value,
+                          }))}
+                          displayStyle="block"
+                          onClickRadioButton={commonErrorHandler(
+                            handleOnClickSearchTypeRadioButton
+                          )}
+                        />
+                      )}
+                    </div>
+                    {/* 성인물 포함 체크박스 */}
+                    <div className="mt-4">
+                      <div className="text-xl font-bold">
+                        {t('info.searchAdultContent')}
+                      </div>
+                      <div className="mt-2">
                         <CheckBoxUi
                           label={t('info.include')}
                           name={'adultFlg'}
@@ -326,127 +332,88 @@ export const Header = () => {
                         />
                       </div>
                     </div>
-                  </>
-                ) : (
-                  // 하얀색 필터 아이콘
-                  <BsFilterSquare
-                    className="w-9 h-9 mr-1 cursor-pointer"
-                    onClick={commonErrorHandler(handleFilterIconOnClick)}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="ml-3">
-              {user ? (
-                <div className="block w-24" ref={userOptionRef}>
-                  {/* 유저 닉네임 */}
-                  <div
-                    className="text-lg text-yellow-600 cursor-pointer"
-                    onClick={handleUserOptionToggle}
-                    onMouseEnter={() =>
-                      isHideNickname &&
-                      setIsTooltipOpen(NICKNAME_TOOLTIP_OPEN_STATE)
-                    }
-                    onMouseLeave={() =>
-                      isHideNickname && setIsTooltipOpen(TOOLTIP_CLOSE_STATE)
-                    }
-                  >
-                    {isHideNickname
-                      ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
-                      : userNickname}
                   </div>
+                </>
+              ) : (
+                // 하얀색 필터 아이콘
+                <BsFilterSquare
+                  className="h-7 w-7 cursor-pointer sm:h-8 sm:w-8 lg:h-9 lg:w-9"
+                  onClick={commonErrorHandler(handleFilterIconOnClick)}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 유저/로그인 */}
+          <div>
+            {user ? (
+              <div className="relative" ref={userOptionRef}>
+                {/* 유저 닉네임 */}
+                <div
+                  className="cursor-pointer text-base text-yellow-600 sm:text-lg"
+                  onClick={handleUserOptionToggle}
+                  onMouseEnter={() =>
+                    isHideNickname &&
+                    setIsTooltipOpen(NICKNAME_TOOLTIP_OPEN_STATE)
+                  }
+                  onMouseLeave={() =>
+                    isHideNickname && setIsTooltipOpen(TOOLTIP_CLOSE_STATE)
+                  }
+                >
+                  {isHideNickname
+                    ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
+                    : userNickname}
                   {/* 유저 닉네임 툴팁 */}
                   {isTooltipOpen === NICKNAME_TOOLTIP_OPEN_STATE && (
                     <TooltipUi
                       text={userNickname}
-                      style={'right-0 mt-2 w-32'}
+                      className="top-full right-0 mt-2 w-40"
                     />
                   )}
-                  {/* 유저 옵션 팝업 */}
-                  {userOptionIsOpen && (
-                    <div className="absolute right-0 mt-2 w-30 bg-white border rounded shadow-2xl z-50 p-1">
-                      <div>
-                        {/* 마이페이지(코멘트 관리) */}
-                        <div
-                          className="flex justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
-                          onClick={commonErrorHandler(() => {
-                            const myCommentsUrl = myCommentsUrlQuery({
-                              userId: user.userId,
-                            });
-                            setUserOptionIsOpen(false);
-                            navigate(myCommentsUrl);
-                          })}
-                        >
-                          {t('info.myComments')}
-                        </div>
-                      </div>
-                      {/* 로그아웃 */}
+                </div>
+                {/* 유저 옵션 팝업 */}
+                {userOptionIsOpen && (
+                  <div className="absolute right-0 z-50 mt-2 w-36 rounded border bg-white p-1 shadow-2xl">
+                    <div>
+                      {/* 마이페이지(코멘트 관리) */}
                       <div
-                        className="flex justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
-                        onClick={commonErrorHandler(handleLogoutOnClick)}
+                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                        onClick={commonErrorHandler(() => {
+                          const myCommentsUrl = myCommentsUrlQuery({
+                            userId: user.userId,
+                          });
+                          setUserOptionIsOpen(false);
+                          navigate(myCommentsUrl);
+                        })}
                       >
-                        {t('info.logout')}
+                        {t('info.myComments')}
                       </div>
                     </div>
-                  )}
-                </div>
-              ) : (
-                // 로그인 버튼
-                <div
-                  className="right-full text-black text-2xl font-normal font-['Inter'] hover:text-shadow-md cursor-pointer"
-                  onClick={commonErrorHandler(() => handleLoginOnClick())}
-                >
-                  {t('info.login')}
-                </div>
-              )}
-            </div>
+                    {/* 로그아웃 */}
+                    <div
+                      className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                      onClick={commonErrorHandler(handleLogoutOnClick)}
+                    >
+                      {t('info.logout')}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // 로그인 버튼
+              <div
+                className="text-foreground cursor-pointer text-base hover:opacity-80 sm:text-lg lg:text-2xl"
+                onClick={commonErrorHandler(() => handleLoginOnClick())}
+              >
+                {t('info.login')}
+              </div>
+            )}
           </div>
         </div>
-        <div className="mt-4 border-b border-gray-300" />
       </div>
-    </div>
+    </header>
   );
 };
-
-/**
- * 체크박스와 라벨 컴포넌트
- * @param label 라벨 텍스트
- * @param name 체크박스 이름
- * @param control react-hook-form의 control 객체
- * @param defaultChecked 기본 체크 상태
- */
-const CheckBoxAndLabelInner = <T extends FieldValues>({
-  label,
-  name,
-  control,
-  defaultChecked,
-}: FormFieldProps<T>) => {
-  return (
-    <>
-      {
-        // IS_MOBILE이 true이면 CheckBoxUiM 컴포넌트 사용, false이면 CheckBoxUi 컴포넌트 사용
-        IS_MOBILE ? (
-          <CheckBoxUiM label={label ?? ''} name={name} control={control} />
-        ) : (
-          <CheckBoxUi
-            label={label ?? ''}
-            name={name}
-            control={control}
-            defaultChecked={defaultChecked}
-          />
-        )
-      }
-    </>
-  );
-};
-
-/**
- * 체크박스와 라벨 컴포넌트
- * 제네릭 타입 보존하면서 memo 적용
- */
-export const CheckBoxAndLabel = memo(
-  CheckBoxAndLabelInner
-) as typeof CheckBoxAndLabelInner;
 
 /**
  * 자동완성 박스 컴포넌트
@@ -466,15 +433,17 @@ const AutoCompleteBox = memo(
   }: autoCompletePropsType) => {
     // i18n 훅
     const { t } = useTranslation();
-
-    const boxHeight = autoCompleteList?.length;
+    // 강조 표시 스타일
     const highLightStyle = 'font-black text-blue-600';
+    // 탭 문자
     const tab = '\\t';
+
     return (
       <>
         {autoCompleteList && autoCompleteList.length !== 0 && (
           <div
-            className={`absolute lg:w-sm w-xs h-[${boxHeight}] right-0 mt-1 bg-white border rounded shadow-2xl z-50 p-2 `}
+            className="absolute inset-x-0 z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white p-2 shadow-2xl"
+            role="listbox"
           >
             {autoCompleteList.map((item, index) => {
               // 자동완성 리스트에서 검색어를 기준으로 배열화
@@ -487,16 +456,19 @@ const AutoCompleteBox = memo(
                       )
                       .split(tab)
                   : [item];
+              // 현재 인덱스와 비교하여 활성화 상태 결정
+              const isActive = index === currentIndex;
+
               return (
                 <ul
                   key={index}
-                  className={`mb-1 ${index === currentIndex ? 'bg-gray-200 hover:bg-gray-200' : ''} ${searchHistoryisOpen ? 'flex justify-between' : ''}`}
+                  className={`mb-1 ${isActive ? 'bg-gray-200 hover:bg-gray-200' : ''} ${searchHistoryisOpen ? 'flex justify-between' : ''}`}
                   onMouseEnter={() => handleSetCurrentIndex(index)} // 현재 인덱스 설정
                   onMouseLeave={() => handleSetCurrentIndex(-1)} // 현재 인덱스 초기화
                 >
                   <li
-                    className="w-[92%] cursor-pointer"
-                    ref={index === currentIndex ? selectRef : null}
+                    className="w-[85%] cursor-pointer"
+                    ref={isActive ? selectRef : null}
                     onClick={commonErrorHandler(() =>
                       handleKeywordListOnClick(item)
                     )}
@@ -524,9 +496,9 @@ const AutoCompleteBox = memo(
                   {
                     // 검색 기록이 표시된 상태에서 삭제 버튼 표시
                     searchHistoryisOpen && (
-                      <li className="w-[8%] flex justify-end">
+                      <li className="flex w-[15%] justify-end">
                         <button
-                          className="text-xs underline text-gray-400 cursor-pointer"
+                          className="cursor-pointer text-xs text-gray-400 underline"
                           onClick={commonErrorHandler(() =>
                             handleRemoveSearchHistory(index)
                           )}

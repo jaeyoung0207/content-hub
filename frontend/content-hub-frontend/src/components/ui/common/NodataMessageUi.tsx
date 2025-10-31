@@ -1,19 +1,31 @@
 /**
- * 데이터가 없음을 표시하는 UI 컴포넌트 props 타입
+ * NoDataMessageUiProps 타입
  */
-type NodataMessageUiPropsType = {
-  message: string; // 표시할 메시지
+type NoDataMessageUiProps = {
+  message?: string; // 메세지 텍스트
+  description?: string; // 설명 텍스트
+  action?: React.ReactNode; // 추가 액션 컴포넌트
 };
 
 /**
- * 데이터가 없음을 표시하는 UI 컴포넌트
- * @param message 표시할 메시지
- * @returns
+ * NoDataMessageUi 컴포넌트
+ * 데이터가 없을 때 표시되는 안내 UI
+ * @param message 메세지 텍스트
+ * @param description 설명 텍스트
+ * @param action 추가 액션 컴포넌트
  */
-export const NodataMessageUi = ({ message }: NodataMessageUiPropsType) => {
+export const NoDataMessageUi = ({
+  message = '데이터가 없습니다.',
+  description,
+  action,
+}: NoDataMessageUiProps) => {
   return (
-    <>
-      <div className="flex justify-center mt-25 text-3xl">{message}</div>
-    </>
+    <div className="text-muted-foreground flex flex-col items-center justify-center py-16 text-center">
+      <div className="text-foreground mb-3 text-xl font-semibold">
+        {message}
+      </div>
+      {description && <p className="mb-6 max-w-md">{description}</p>}
+      {action}
+    </div>
   );
 };

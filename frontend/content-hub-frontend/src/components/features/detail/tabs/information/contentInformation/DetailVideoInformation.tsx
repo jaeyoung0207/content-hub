@@ -7,6 +7,7 @@ import {
 } from '@/components/common/utils/typeGuardUtil';
 import DisplayVideoCredits from '@/components/ui/DisplayVideoCreditsUi';
 import { Dispatch, SetStateAction } from 'react';
+import { useIsMobile } from '@/components/common/hooks/useIsMobile';
 
 /**
  * 비디오 정보 컴포넌트 props 타입
@@ -29,49 +30,60 @@ export const DetailVideoInformation = ({
 }: DetailVideoInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
+  // 모바일 여부 훅
+  const isMobile = useIsMobile();
+
+  // 공통 클래스
+  const commonClass = 'flex items-center';
+
   return (
-    <div className="ml-5 mr-5">
+    <div className="lg:px-8">
       {detailResult.overview && (
         <>
           {/* 개요 */}
-          <div className="text-3xl font-bold mb-5">{t('info.overview')}</div>
-          <div className="mb-10">{detailResult.overview}</div>
+          <div className="mb-3 text-2xl font-bold sm:text-3xl">
+            {t('info.overview')}
+          </div>
+          <div className="mb-8 text-sm leading-relaxed whitespace-pre-line sm:text-base">
+            {detailResult.overview}
+          </div>
         </>
       )}
 
       {
         // 상세 정보 결과의 타입이 TV 또는 MOVIE인 경우
-        (isDetailTvType(detailResult, contentMediaType) ||
-          isDetailMovieType(detailResult, contentMediaType)) && (
-          <>
-            {detailResult.credits &&
-              detailResult.credits.cast &&
-              detailResult.credits.cast.length !== 0 && (
-                <div className="flex items-center">
-                  {/* 출연진 */}
-                  <DisplayVideoCredits
-                    detailResult={detailResult}
-                    contentMediaType={contentMediaType}
-                    creditsType={VIDEO_CREDITS_TYPE.CAST}
-                    isOmit={true}
-                  />
-                </div>
-              )}
-            {detailResult.credits &&
-              detailResult.credits.crew &&
-              detailResult.credits.crew.length !== 0 && (
-                <div className="flex items-center">
-                  {/* 제작진 */}
-                  <DisplayVideoCredits
-                    detailResult={detailResult}
-                    contentMediaType={contentMediaType}
-                    creditsType={VIDEO_CREDITS_TYPE.CREW}
-                    isOmit={true}
-                  />
-                </div>
-              )}
-          </>
-        )
+        !isMobile &&
+          (isDetailTvType(detailResult, contentMediaType) ||
+            isDetailMovieType(detailResult, contentMediaType)) && (
+            <>
+              {detailResult.credits &&
+                detailResult.credits.cast &&
+                detailResult.credits.cast.length !== 0 && (
+                  <div className={commonClass}>
+                    {/* 출연진 */}
+                    <DisplayVideoCredits
+                      detailResult={detailResult}
+                      contentMediaType={contentMediaType}
+                      creditsType={VIDEO_CREDITS_TYPE.CAST}
+                      isOmit={true}
+                    />
+                  </div>
+                )}
+              {detailResult.credits &&
+                detailResult.credits.crew &&
+                detailResult.credits.crew.length !== 0 && (
+                  <div className={commonClass}>
+                    {/* 제작진 */}
+                    <DisplayVideoCredits
+                      detailResult={detailResult}
+                      contentMediaType={contentMediaType}
+                      creditsType={VIDEO_CREDITS_TYPE.CREW}
+                      isOmit={true}
+                    />
+                  </div>
+                )}
+            </>
+          )
       }
     </div>
   );

@@ -57,6 +57,9 @@ export const useMyComments = (): UseMyCommentsReturnType => {
   // 유저 정보 전역 상태 저장 훅
   const { user } = useUserStore();
 
+  // 유저ID
+  const userId = user!.userId!;
+
   // =================================================================================================== react hook form
 
   // 폼 기본값
@@ -76,10 +79,10 @@ export const useMyComments = (): UseMyCommentsReturnType => {
 
   // 나의 코멘트 목록 조회
   const { data, isLoading } = useQuery({
-    queryKey: myCommentsQueryKeys.page(user?.userId!, currentPage),
+    queryKey: myCommentsQueryKeys.page(userId, currentPage),
     queryFn: async () => {
       const response = await myCommentsApi.getMyCommentList({
-        user_id: user?.userId!,
+        user_id: userId,
         page_no: currentPage,
       });
       setTotalPages(response.data.totalPages!);
@@ -87,7 +90,7 @@ export const useMyComments = (): UseMyCommentsReturnType => {
       return response.data.myCommentList;
     },
     maxPages: totalPages,
-    enabled: !!user?.userId,
+    enabled: !!userId,
     ...freshOnMountOptions, // 쿼리 공통 옵션 적용
   });
 

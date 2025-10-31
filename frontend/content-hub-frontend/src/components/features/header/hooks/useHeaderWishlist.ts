@@ -1,3 +1,4 @@
+import { REDIRECT_URL } from '@/components/common/constants/constants';
 import { useConfirmDialogStore } from '@/components/common/store/globalStateStore';
 import { wishlistUrlQuery } from '@/components/common/utils/urlUtil';
 import { useCallback } from 'react';
@@ -28,8 +29,13 @@ export const useHeaderWishlist = (
   // ================================================================================================== zustand
 
   // confirm dialog 상태 훅
-  const { setIsConfirmDialogOpen, setOnOk, setOnCancel, setConfirmMsg } =
-    useConfirmDialogStore();
+  const {
+    setIsConfirmDialogOpen,
+    setOnOk,
+    setOnCancel,
+    setTitle,
+    setConfirmMsg,
+  } = useConfirmDialogStore();
 
   // ================================================================================================== function
 
@@ -38,6 +44,10 @@ export const useHeaderWishlist = (
    */
   const handleConfirmOk = useCallback(() => {
     setIsConfirmDialogOpen(false);
+    // URL 생성
+    const searchUrl = location.pathname + location.search;
+    // URL 저장
+    sessionStorage.setItem(REDIRECT_URL, searchUrl);
     navigate('/login');
   }, [navigate, setIsConfirmDialogOpen]);
 
@@ -56,6 +66,7 @@ export const useHeaderWishlist = (
       setIsConfirmDialogOpen(true);
       setOnOk(handleConfirmOk);
       setOnCancel(handleConfirmCancel);
+      setTitle(t('info.requiredLoginConfirmTitle'));
       setConfirmMsg(t('info.loginConfirmMsg2'));
       return;
     } else {
@@ -68,6 +79,7 @@ export const useHeaderWishlist = (
     setIsConfirmDialogOpen,
     setOnOk,
     setOnCancel,
+    setTitle,
     setConfirmMsg,
     t,
     handleConfirmOk,

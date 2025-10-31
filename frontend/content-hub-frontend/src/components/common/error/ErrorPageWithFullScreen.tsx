@@ -26,15 +26,15 @@ export const ErrorPageWithFullScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <div className="text-center">
         {/* 에러 상태 코드 */}
-        <h1 className="text-6xl font-bold text-red-600 mb-4">{status}</h1>
+        <h1 className="mb-4 text-6xl font-bold text-red-600">{status}</h1>
         {/* 에러 메시지 */}
-        <p className="text-xl text-gray-700 mb-6">{message}</p>
+        <p className="mb-6 text-xl text-gray-700">{message}</p>
         {/* 홈으로 돌아가기 버튼 */}
         <button
-          className="mt-4 px-6 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition cursor-pointer"
+          className="mt-4 cursor-pointer rounded-xl bg-black px-6 py-2 text-white transition hover:bg-gray-800"
           onClick={commonErrorHandler(handleReload)}
         >
           {t('info.toHome')}

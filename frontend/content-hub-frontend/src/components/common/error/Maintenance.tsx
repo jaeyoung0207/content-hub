@@ -14,21 +14,21 @@ export const Maintenance = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 text-center">
-      <h1 className="text-5xl font-bold text-gray-800 mb-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 text-center">
+      <h1 className="mb-6 text-5xl font-bold text-gray-800">
         {t('info.maintenanceTitle')}
       </h1>
-      <p className="text-lg text-gray-600 mb-6">
+      <p className="mb-6 text-lg text-gray-600">
         <Trans i18nKey="info.maintenanceMessage" />
       </p>
-      <div className="flex flex-col items-center text-sm text-gray-500 mb-8">
+      <div className="mb-8 flex flex-col items-center text-sm text-gray-500">
         <div>
           {settings.maintenanceStart} ~ {settings.maintenanceEnd}
         </div>
       </div>
       <button
         onClick={handleReload}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition cursor-pointer"
+        className="cursor-pointer rounded-xl bg-blue-600 px-6 py-3 text-white shadow-md transition hover:bg-blue-700"
       >
         {t('info.refresh')}
       </button>

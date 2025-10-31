@@ -1,11 +1,12 @@
-import Modal from 'react-modal';
 import { commonErrorHandler } from '../common/utils/errorUtil';
+import { ButtonUi, ModalUi } from './common';
 
 export type ConfirmModalUiProps = {
   isOpen: boolean;
   onOk: () => void;
   onCancel: () => void;
   confirmMsg: string;
+  title: string;
 };
 
 /**
@@ -20,26 +21,14 @@ export const ConfirmModalUi = ({
   isOpen,
   onOk,
   onCancel,
+  title,
   confirmMsg,
 }: ConfirmModalUiProps) => {
   return (
     <>
       {/* 모달 컴포넌트 */}
-      <Modal
-        className="block w-100 h-50 shadow-xl bg-white rounded-xl p-4 mx-auto mt-120"
-        isOpen={isOpen}
-        ariaHideApp={false}
-        style={{
-          overlay: {
-            display: 'fixed',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1000,
-          },
-        }}
-      >
-        <div className="mt-10">
+      <ModalUi open={isOpen} onClose={onCancel} title={title}>
+        <div>
           <div
             className="flex justify-center text-gray-800"
             style={{ whiteSpace: 'pre-line' }}
@@ -48,22 +37,22 @@ export const ConfirmModalUi = ({
           </div>
           <div className="mt-8 flex justify-center gap-4">
             {/* OK 버튼 */}
-            <button
-              className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 cursor-pointer"
+            <ButtonUi
+              className="cursor-pointer rounded bg-blue-500 px-4 py-1 text-white hover:bg-blue-600"
               onClick={commonErrorHandler(onOk)}
             >
               OK
-            </button>
+            </ButtonUi>
             {/* Cancel 버튼 */}
-            <button
-              className="bg-gray-300 text-gray-800 px-4 py-1 rounded hover:bg-gray-400 cursor-pointer"
+            <ButtonUi
+              className="cursor-pointer rounded bg-gray-300 px-4 py-1 text-gray-800 hover:bg-gray-400"
               onClick={commonErrorHandler(onCancel)}
             >
               Cancel
-            </button>
+            </ButtonUi>
           </div>
         </div>
-      </Modal>
+      </ModalUi>
     </>
   );
 };

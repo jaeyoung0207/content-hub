@@ -14,6 +14,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -128,6 +129,8 @@ export const useDetailComments = (
   const [isDeleting, setIsDeleting] = useState(false);
   // 코멘트 생략 처리 상태
   const [isOmitComment, setIsOmitComment] = useState<boolean[]>([]);
+  // IntersectionObserver를 ref로 관리
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // ================================================================================================== zustand
 
@@ -280,7 +283,8 @@ export const useDetailComments = (
       const requestData = {
         contentMediaType: contentMediaType,
         apiId: apiId,
-        genreIds: detailResult.genreIds,
+        genreIds:
+          detailResult.genreIds?.length === 0 ? [0] : detailResult.genreIds,
         title: isDetailTvType(detailResult, contentMediaType)
           ? detailResult.name
           : detailResult.title,
@@ -307,6 +311,8 @@ export const useDetailComments = (
       });
       // 코멘트 저장 후 최신 데이터 조회
       mutationOnSuccess();
+      // 코멘트 작성 후 폼 초기화
+      reset();
     },
     // 성공/실패 여부와 관계없이 실행되는 콜백 함수
     onSettled: () => {
@@ -355,6 +361,8 @@ export const useDetailComments = (
       });
       // 코멘트 수정 후 최신 데이터 조회
       mutationOnSuccess();
+      // 코멘트 수정 후 폼 초기화
+      reset();
     },
     // 성공/실패 여부와 관계없이 실행되는 콜백 함수
     onSettled: () => {
@@ -391,6 +399,8 @@ export const useDetailComments = (
       });
       // 코멘트 삭제 후 최신 데이터 조회
       mutationOnSuccess();
+      // 코멘트 삭제 후 폼 초기화
+      reset();
     },
     // 성공/실패 여부와 관계없이 실행되는 콜백 함수
     onSettled: () => {
@@ -417,8 +427,6 @@ export const useDetailComments = (
     try {
       // 코멘트 저장 mutation 호출
       await saveComentMutation.mutateAsync(data);
-      // 코멘트 작성 후 폼 초기화
-      reset();
     } finally {
       setIsLoading(false);
     }
@@ -440,8 +448,6 @@ export const useDetailComments = (
     try {
       // 코멘트 수정 mutation 호출
       await updateCommentMutation.mutateAsync(data);
-      // 코멘트 수정 후 폼 초기화
-      reset();
     } finally {
       setIsLoading(false);
     }
@@ -614,9 +620,11 @@ export const useDetailComments = (
   /**
    * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
    */
-  const throttledFetchNextPage = throttle(() => {
-    fetchNextPage();
-  }, INFINITE_SCROLL_THROTTLE_DELAY);
+  const throttledFetchNextPage = useMemo(() => {
+    return throttle(() => {
+      fetchNextPage();
+    }, INFINITE_SCROLL_THROTTLE_DELAY);
+  }, [fetchNextPage]);
 
   /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
@@ -661,20 +669,37 @@ export const useDetailComments = (
     if (!observeTarget || !hasNextPage || isFetchingNextPage) {
       return;
     }
+
+    // 기존 옵저버 정리 후 새로 생성
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
     // 새로운 IntersectionObserver를 생성
     // observerCallback을 사용하여 observeTarget이 화면에 나타날 때 fetchNextPage를 호출
-    const observer = new IntersectionObserver(observerCallback, {
+    observerRef.current = new IntersectionObserver(observerCallback, {
       threshold: 0.1,
     });
 
     // observeTarget이 화면에 보이면 관찰을 시작
-    observer.observe(observeTarget);
+    observerRef.current.observe(observeTarget);
 
-    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
+    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지하고 옵저버를 정리
     return () => {
-      observer.unobserve(observeTarget);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, [observeTarget, hasNextPage, isFetchingNextPage, observerCallback]);
+
+  /**
+   * 컴포넌트 언마운트 시에 throttledFetchNextPage의 잔여 작업을 정리
+   */
+  useEffect(() => {
+    return () => {
+      throttledFetchNextPage.cancel();
+    };
+  }, [throttledFetchNextPage]);
 
   /**
    * 컴포넌트가 마운트되면, 유저가 로그인한 경우에만 코멘트 작성란에 포커스를 주도록 설정

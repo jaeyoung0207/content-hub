@@ -4,8 +4,8 @@ import {
   MEDIA_TYPE_KIND,
   SEARCH_SCREEN_TYPE,
 } from '@/components/common/constants/constants';
-import { LoadingUi } from '@/components/ui/LoadingUi';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
+import { NoDataMessageUi } from '@/components/ui/common';
 import { useTranslation } from 'react-i18next';
 import { memo } from 'react';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
@@ -41,14 +41,16 @@ export const RecommendationContent = memo(
       useRecommendationContent(detailResult, displayMediaType);
 
     return (
-      <>
+      <section className="lg:px-8">
+        <h2 className="mb-4 text-xl font-bold sm:text-2xl">
+          {t('info.recommend')}
+        </h2>
         {data ? (
           <div>
             {/* 추천 콘텐츠 결과 표시 */}
             <DisplaySearchResults
               mediaName={t('info.recommendation')}
               results={data.pages.flat()}
-              isViewMore={hasNextPage}
               displayMediaType={displayMediaType}
               keyword={''}
               isAdult={'false'}
@@ -60,19 +62,27 @@ export const RecommendationContent = memo(
             }
             {
               // 다음 페이지가 있는 경우 무한 스크롤을 위한 div 태그
-              hasNextPage && <div ref={(el) => setObserveTarget(el)}></div> // ref를 함수 형태로 지정 -> DOM이 생기거나 없어질 때마다 실행되면서 setObserveTarget을 호출
+              hasNextPage && (
+                <div
+                  ref={(el) => setObserveTarget(el)}
+                  className="h-1"
+                  aria-hidden="true"
+                />
+              ) // ref를 함수 형태로 지정 -> DOM이 생기거나 없어질 때마다 실행되면서 setObserveTarget을 호출
             }
           </div>
         ) : (
-          <LoadingUi />
+          <div className="py-6">
+            <LoadingUi />
+          </div>
         )}
         {
           // 추천 콘텐츠 데이터가 없을 때 표시할 메시지
           data && data.pages[0]?.length === 0 && (
-            <NodataMessageUi message={t('warn.noRecommendationInfo')} />
+            <NoDataMessageUi message={t('warn.noRecommendationInfo')} />
           )
         }
-      </>
+      </section>
     );
   }
 );

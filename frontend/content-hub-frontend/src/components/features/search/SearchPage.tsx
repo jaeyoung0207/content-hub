@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 
 const Search = lazy(() => import('./Search'));
 const SearchMore = lazy(() => import('./modal/SearchMore'));

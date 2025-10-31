@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '@components/features/header/Header';
 import { Suspense } from 'react';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 
 /**
  * 레이아웃 컴포넌트

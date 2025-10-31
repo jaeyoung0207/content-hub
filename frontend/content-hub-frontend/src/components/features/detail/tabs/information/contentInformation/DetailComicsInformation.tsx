@@ -4,6 +4,7 @@ import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../../useDetail';
 import { isDetailComicsType } from '@/components/common/utils/typeGuardUtil';
 import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
+import { useIsMobile } from '@/components/common/hooks/useIsMobile';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -24,6 +25,8 @@ export const DetailComicsInformation = ({
 }: DetailComicsInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
+  // 모바일 여부 훅
+  const isMobile = useIsMobile();
 
   const characterList = isDetailComicsType(detailResult, contentMediaType)
     ? (detailResult.characters?.edges ?? [])
@@ -38,51 +41,48 @@ export const DetailComicsInformation = ({
   const overview =
     detailResult.overview && DOMPurify.sanitize(detailResult.overview);
 
+  const isCharacters = !isMobile && characterList.length > 0;
+  const isStaff = !isMobile && staffList.length > 0;
+
   return (
-    <div className="ml-5 mr-5">
+    <div className="lg:px-8">
       {overview && (
         <>
           {/* 개요 */}
-          <div className="text-3xl font-bold mb-5">{t('info.overview')}</div>
-          <div className="mb-10">
+          <div className="mb-3 text-2xl font-bold sm:text-3xl">
+            {t('info.overview')}
+          </div>
+          <div className="mb-8 text-sm leading-relaxed whitespace-pre-line sm:text-base">
             <div dangerouslySetInnerHTML={{ __html: overview }}></div>
           </div>
         </>
       )}
 
-      {detailResult &&
-        isDetailComicsType(detailResult, contentMediaType) &&
-        detailResult.characters &&
-        detailResult.characters.edges &&
-        detailResult.characters.edges.length > 0 && (
-          <>
-            {/* 캐릭터 */}
-            <DisplayComicsCredits
-              apiId={detailResult.id!}
-              creditsAllList={characterList}
-              contentMediaType={contentMediaType}
-              creditsType={COMICS_CREDITS_TYPE.CHARACTER}
-              isOmit={true}
-            />
-          </>
-        )}
+      {isCharacters && (
+        <>
+          {/* 캐릭터 */}
+          <DisplayComicsCredits
+            apiId={detailResult.id!}
+            creditsAllList={characterList}
+            contentMediaType={contentMediaType}
+            creditsType={COMICS_CREDITS_TYPE.CHARACTER}
+            isOmit={true}
+          />
+        </>
+      )}
 
-      {detailResult &&
-        isDetailComicsType(detailResult, contentMediaType) &&
-        detailResult.staff &&
-        detailResult.staff.edges &&
-        detailResult.staff.edges.length > 0 && (
-          <>
-            {/* 제작진 */}
-            <DisplayComicsCredits
-              apiId={detailResult.id!}
-              creditsAllList={staffList}
-              contentMediaType={contentMediaType}
-              creditsType={COMICS_CREDITS_TYPE.STAFF}
-              isOmit={true}
-            />
-          </>
-        )}
+      {isStaff && (
+        <>
+          {/* 제작진 */}
+          <DisplayComicsCredits
+            apiId={detailResult.id!}
+            creditsAllList={staffList}
+            contentMediaType={contentMediaType}
+            creditsType={COMICS_CREDITS_TYPE.STAFF}
+            isOmit={true}
+          />
+        </>
+      )}
     </div>
   );
 };

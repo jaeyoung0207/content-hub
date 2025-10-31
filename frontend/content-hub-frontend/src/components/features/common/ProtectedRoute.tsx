@@ -1,13 +1,13 @@
-import { REDIRECT_URL } from "@/components/common/constants/constants";
-import { useUserStore } from "@/components/common/store/globalStateStore";
-import { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { REDIRECT_URL } from '@/components/common/constants/constants';
+import { useUserStore } from '@/components/common/store/globalStateStore';
+import { ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 /**
  * ProtectedRouteProps 타입 정의
  */
-type ProtectedRoutePropsType = { 
-    children: ReactNode 
+type ProtectedRoutePropsType = {
+  children: ReactNode;
 };
 
 /**

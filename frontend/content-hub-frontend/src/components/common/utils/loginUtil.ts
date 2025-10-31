@@ -52,6 +52,10 @@ export const loginConfirmDialog = (
     .setOnCancel(() =>
       useConfirmDialogStore.getState().setIsConfirmDialogOpen(false)
     );
+  // 타이틀 설정
+  useConfirmDialogStore
+    .getState()
+    .setTitle(i18n.t('info.requiredLoginConfirmTitle'));
   // 메시지 설정
   useConfirmDialogStore.getState().setConfirmMsg(i18n.t(message));
 };

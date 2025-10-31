@@ -4,9 +4,9 @@ import {
   SEARCH_SCREEN_TYPE,
 } from '@/components/common/constants/constants';
 import { useSearchTypeStore } from '@/components/common/store/globalStateStore';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { SearchPropsType } from './SearchPage';
-import { NodataMessageUi } from '@/components/ui/common/NodataMessageUi';
+import { NoDataMessageUi } from '@/components/ui/common';
 import DisplaySearchResults from '@/components/ui/DisplaySearchResultsUi';
 import { getDisplayMediaType } from '@/components/common/utils/convertUtil';
 import { useVideoSearch } from './useVideoSearch';
@@ -150,10 +150,11 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
 
   return (
     <>
-      <div className="mt-28 w-sm lg:w-7xl">
-        {/* 검색 결과 */}
-        {
-          dataList.map((items) => {
+      <div className="pt-16 sm:pt-20">
+        {/* 섹션 간 간격 */}
+        <div className="space-y-10 pb-10">
+          {/* 검색 결과 */}
+          {dataList.map((items) => {
             return (
               <div key={items.mediaName}>
                 {items.displayFlg &&
@@ -173,17 +174,16 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
                   )}
               </div>
             );
-          })
-          // )
-        }
+          })}
+        </div>
         {/* 로딩 중 메시지 */}
         {(isVideoLoading || isComicsLoading) && (
-          <>
+          <div className="mt-10">
             <LoadingUi />
-            <div className="mt-25 lg:mt-60 flex justify-center items-center text-black text-xl lg:text-2xl font-normal font-['Inter']">
+            <div className="mt-6 text-center text-base sm:text-lg">
               {t('info.beforeSearchMessage', { mediaTypes: mediaTypes })}
             </div>
-          </>
+          </div>
         )}
         {/* 검색 결과가 없을 때 표시할 메시지 */}
         {!isVideoLoading &&
@@ -191,8 +191,8 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
           (isSearchResultEmpty ||
             isSelectedSearchTypeEmpty ||
             isOneSelectedAndNoResult) && (
-            <div className="mt-60">
-              <NodataMessageUi message={t('warn.noSearchData')} />
+            <div className="mt-20">
+              <NoDataMessageUi message={t('warn.noSearchData')} />
             </div>
           )}
       </div>

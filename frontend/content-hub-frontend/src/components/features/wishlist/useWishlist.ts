@@ -55,7 +55,7 @@ type UseWishlistReturnType = {
  * 위시리스트 조회 훅
  * @param userId 유저 id
  */
-export const useWishlist = (userId: number): UseWishlistReturnType => {
+export const useWishlist = (): UseWishlistReturnType => {
   // ================================================================================================== react hook
 
   // navigate 훅
@@ -107,6 +107,9 @@ export const useWishlist = (userId: number): UseWishlistReturnType => {
 
   // 위시리스트 API 인스턴스
   const wishlistApi = new WishlistApi();
+
+  // 유저ID
+  const userId = user!.userId!;
 
   // 위시리스트 조회
   const { data, isLoading } = useQuery<WishlistListResponseDto>({

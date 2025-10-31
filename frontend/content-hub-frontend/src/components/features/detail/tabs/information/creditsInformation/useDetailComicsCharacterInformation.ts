@@ -4,6 +4,8 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 import { DetailResponseType } from '../../../useDetail';
@@ -53,6 +55,8 @@ export const useDetailComicsCharacterInformation = (
   const [observeTarget, setObserveTarget] = useState<HTMLDivElement | null>(
     null
   );
+  // IntersectionObserver를 ref로 관리
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // ================================================================================================== react query
 
@@ -109,9 +113,11 @@ export const useDetailComicsCharacterInformation = (
   /**
    * 다음 페이지를 가져오는 함수를 스로틀하여 호출 빈도를 조절
    */
-  const throttledFetchNextPage = throttle(() => {
-    fetchNextPage();
-  }, INFINITE_SCROLL_THROTTLE_DELAY);
+  const throttledFetchNextPage = useMemo(() => {
+    return throttle(() => {
+      fetchNextPage();
+    }, INFINITE_SCROLL_THROTTLE_DELAY);
+  }, [fetchNextPage]);
 
   /**
    * 무한 스크롤 기능을 구현하기 위한 IntersectionObserver 콜백 함수
@@ -142,20 +148,36 @@ export const useDetailComicsCharacterInformation = (
       return;
     }
 
+    // 기존 옵저버 정리 후 새로 생성
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
     // 새로운 IntersectionObserver를 생성
     // observerCallback을 사용하여 observeTarget이 화면에 나타날 때 fetchNextPage를 호출
-    const observer = new IntersectionObserver(observerCallback, {
+    observerRef.current = new IntersectionObserver(observerCallback, {
       threshold: 0.1,
     });
 
     // observeTarget이 화면에 보이면 관찰을 시작
-    observer.observe(observeTarget);
+    observerRef.current.observe(observeTarget);
 
-    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지
+    // observeTarget이 변경되면 이전에 관찰하던 타겟은 관찰을 중지하고 옵저버를 정리
     return () => {
-      observer.unobserve(observeTarget);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, [observeTarget, hasNextPage, isFetchingNextPage, observerCallback]);
+
+  /**
+   * 컴포넌트 언마운트 시에 throttledFetchNextPage의 잔여 작업을 정리
+   */
+  useEffect(() => {
+    return () => {
+      throttledFetchNextPage.cancel();
+    };
+  }, [throttledFetchNextPage]);
 
   // ================================================================================================== return
 

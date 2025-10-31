@@ -76,36 +76,36 @@ export const DisplayVideoCredits = ({
     creditsType === VIDEO_CREDITS_TYPE.CAST
       ? DETAIL_TAB_ID.cast
       : DETAIL_TAB_ID.crew;
-  // 높이 스타일
-  const heightStyle = 190;
   return (
-    <div className="mb-8">
+    <>
       {creditsList && (
-        <>
+        <div className="mb-8">
           {/* 출연진 or 제작진 */}
-          <div className="flex justify-between mt-5 mb-5">
-            <div className="text-3xl font-bold">
+          <div className="mt-5 mb-5 flex items-center justify-between">
+            <div className="text-2xl font-bold sm:text-3xl">
               {creditsType === VIDEO_CREDITS_TYPE.CREW
                 ? t('info.crew')
                 : t('info.cast')}
             </div>
             {/* 더보기 링크 */}
-            <div className="text-lx">
-              {isOmit && creditsAll.length > settings.detailVideoCount && (
+            {isOmit && creditsAll.length > settings.detailVideoCount && (
+              <div className="text-lx">
                 <Link
                   to={detailUrlQuery({
                     contentMediaType: contentMediaType,
                     apiId: String(detailResult.id),
                     tabNo: tabNo,
                   })}
-                  className={`ml-5 ${HIGHLIGHT_HOVER_COLOR}`}
+                  className={`${HIGHLIGHT_HOVER_COLOR}`}
                 >
-                  {t('info.seeMore') + ' >'}
+                  {t('info.seeMore')} &gt;
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-          <div className="flex flex-wrap items-start mt-5">
+
+          {/* 출연진 or 제작진 리스트 */}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3 lg:gap-y-5">
             {creditsList.map((items, index) => {
               // 역할
               const role = isDetailCreditsCrewType(items)
@@ -117,54 +117,48 @@ export const DisplayVideoCredits = ({
                       ?.map((role) => role.character)
                       .join(SEPERATE_SLASH)
                   : items.character;
+
               return (
-                <div
+                <Link
                   key={items.id + '_' + index}
-                  className={`ml-1 mr-1 w-[390px]`}
-                  style={{ height: `${heightStyle}px` }}
+                  to={items.id ? personUrlQuery({ personId: items.id }) : '#'}
+                  className={`${HIGHLIGHT_HOVER_COLOR} block cursor-pointer`}
                   onClick={() => checkPersonId(items.id)}
                 >
-                  <Link
-                    to={items.id ? personUrlQuery({ personId: items.id }) : '#'}
-                  >
-                    <ul
-                      className={`flex justify-center items-center ${HIGHLIGHT_HOVER_COLOR} w-full h-full`}
-                    >
-                      {/* 이미지 */}
-                      <li className="max-w-[30%]">
-                        <LazyImage
-                          src={
-                            items.profilePath
-                              ? thumbnailImagePath + items.profilePath
-                              : COMMON_IMAGES.NO_IMAGE
-                          }
-                          alt={items.name}
-                          className="rounded-2xl"
-                        />
-                      </li>
-                      {/* 이름 & 역할 */}
-                      <li className="ml-4 mr-1 text-lg w-[70%] break-words">
-                        <div
-                          className={`flex items-center-safe ${OVERFLOW_AUTO_STYLE}`}
-                          style={{ height: `${heightStyle - 15}px` }}
-                        >
-                          <div>
-                            <div className="mr-1">{items.name!}</div>
-                            <div className="flex items-center">
-                              {role && '(' + role + ')'}
-                            </div>
+                  <div className="flex h-[140px] w-full items-center rounded-2xl border border-black/5 p-2 sm:p-3 lg:h-[180px]">
+                    {/* 이미지 */}
+                    <div className="relative flex h-full max-w-[30%] shrink-0 basis-[30%] items-center">
+                      <LazyImage
+                        src={
+                          items.profilePath
+                            ? thumbnailImagePath + items.profilePath
+                            : COMMON_IMAGES.NO_IMAGE
+                        }
+                        alt={items.name}
+                        className="rounded-2xl"
+                      />
+                    </div>
+                    {/* 이름 & 역할 */}
+                    <div className="ml-3 flex h-full max-w-[70%] basis-[70%] flex-col">
+                      <div
+                        className={`grow rounded-md bg-white/0 p-1 text-base md:text-lg ${OVERFLOW_AUTO_STYLE}`}
+                      >
+                        <div className="font-medium">{items.name!}</div>
+                        {role && (
+                          <div className="mt-1 text-sm text-gray-600">
+                            {role}
                           </div>
-                        </div>
-                      </li>
-                    </ul>
-                  </Link>
-                </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

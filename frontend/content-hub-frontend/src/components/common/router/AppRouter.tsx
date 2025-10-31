@@ -7,7 +7,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientConfig } from '../config/queryClientConfig';
 import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { ErrorBoundary } from '@sentry/react';
 import { ProtectedRoute } from '@/components/features/common/ProtectedRoute';
 
@@ -77,8 +77,22 @@ const AppRouter = () => {
                   path="/character/:comicsCreditsType/:creditsId"
                   element={<Character />}
                 />
-                <Route path="/wishlist/:userId" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
-                <Route path="/my/comments/:userId" element={<ProtectedRoute><MyComments /></ProtectedRoute>} />
+                <Route
+                  path="/wishlist/:userId"
+                  element={
+                    <ProtectedRoute>
+                      <Wishlist />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my/comments/:userId"
+                  element={
+                    <ProtectedRoute>
+                      <MyComments />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/naver" element={<NaverLogin />} />
                 <Route path="/login/kakao" element={<KakaoLogin />} />

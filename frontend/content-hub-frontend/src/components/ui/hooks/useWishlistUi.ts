@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { WishlistUiPropsType } from '../WishlistUi';
 import { WishlistApi } from '@/api/WishlistApi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -22,7 +22,6 @@ import { homeQueryKeys } from '@/components/features/home/queryKeys/homeQueryKey
  * 위시리스트 훅 반환 타입
  */
 type UseWishlistReturnType = {
-  addToWishlist: boolean;
   handleOnClickHeart: () => void;
   isExecuting: boolean;
 };
@@ -54,8 +53,8 @@ export const useWishlistUi = ({
   // Wishlist API 인스턴스
   const wishlistApi = new WishlistApi();
 
-  // 위시리스트 여부 상태
-  const [addToWishlist, setAddToWishlist] = useState<boolean>(isWishlisted);
+  // 최신 isWishlisted를 읽기 위한 ref (throttle 클로저 최신값 보장)
+  const isWishlistedRef = useRef<boolean>(isWishlisted);
 
   // 실행 중 상태
   const [isExecuting, setIsExecuting] = useState(false);
@@ -63,8 +62,13 @@ export const useWishlistUi = ({
   // ================================================================================================== zustand
 
   // 확인 다이얼로그 상태 관리 훅
-  const { setIsConfirmDialogOpen, setConfirmMsg, setOnOk, setOnCancel } =
-    useConfirmDialogStore();
+  const {
+    setIsConfirmDialogOpen,
+    setConfirmMsg,
+    setOnOk,
+    setTitle,
+    setOnCancel,
+  } = useConfirmDialogStore();
 
   // ================================================================================================== mutation
 
@@ -86,7 +90,6 @@ export const useWishlistUi = ({
         })
       ).data,
     onSuccess: (res) => {
-      setAddToWishlist(true);
       if (res) {
         toast.success(t('info.addedToWishlist', { title: title }), {
           autoClose: 1000,
@@ -126,7 +129,6 @@ export const useWishlistUi = ({
         })
       ).data,
     onSuccess: (res) => {
-      setAddToWishlist(false);
       if (res) {
         toast.success(t('info.removedFromWishlist', { title: title }), {
           autoClose: 1000,
@@ -201,6 +203,8 @@ export const useWishlistUi = ({
   /**
    * 하트 아이콘 클릭 핸들러
    * 스로틀을 적용하여 중복 클릭 방지
+   * - 표시 상태는 상위 isWishlisted만 사용
+   * - 최신 isWishlisted는 ref에서 읽음(스로틀 클로저 신선도 보장)
    */
   const handleOnClickHeart = throttle(() => {
     if (!userId) {
@@ -208,11 +212,14 @@ export const useWishlistUi = ({
       loginConfirmDialog('info.loginConfirmMsg2', navigate);
       return;
     }
+    // 이미 실행 중인 경우 처리 중지
     if (isExecuting) {
       return;
     }
+    // 실행 중 상태 설정
     setIsExecuting(true);
-    if (addToWishlist) {
+    // 위시리스트 참조값에 따른 처리
+    if (isWishlistedRef.current) {
       deleteWishlistMutation.mutate();
     } else {
       checkWishlist().then((res) => {
@@ -249,6 +256,8 @@ export const useWishlistUi = ({
             '에도 등록하시겠습니까?';
           // 확인 다이얼로그 표시
           setIsConfirmDialogOpen(true);
+          // 확인 다이얼로그 타이틀 설정
+          setTitle(t('info.wishlistAddConfirmTitle'));
           // 확인 다이얼로그 메시지 설정
           setConfirmMsg(dialogMessage);
           // 확인 다이얼로그 확인 버튼 핸들러 설정
@@ -261,8 +270,9 @@ export const useWishlistUi = ({
             setIsConfirmDialogOpen(false);
             setIsExecuting(false);
           });
-        } else {
-          // 위시리스트에 없는 경우 바로 추가
+        }
+        // 위시리스트에 없는 경우 바로 추가
+        else {
           addWishlistMutation.mutate();
         }
       });
@@ -272,21 +282,25 @@ export const useWishlistUi = ({
   // ================================================================================================== useEffect
 
   /**
-   * isWishlisted prop이 변경될 때 addToWishlist 상태를 동기화
+   * isWishlisted prop이 변경될 때 참조값을 동기화
    */
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
-    if (addToWishlist !== isWishlisted) {
-      setAddToWishlist(isWishlisted);
-    }
-  }, [isWishlisted, userId, addToWishlist]);
+    isWishlistedRef.current = isWishlisted;
+  }, [isWishlisted]);
+
+  /**
+   * 컴포넌트 언마운트 시에 handleOnClickHeart 잔여 작업을 정리
+   * - 스로틀 타이머 클리어(타이머/지연 호출이 누적되는 문제 방지)
+   */
+  useEffect(() => {
+    return () => {
+      handleOnClickHeart.cancel();
+    };
+  }, [handleOnClickHeart]);
 
   // ================================================================================================== return
 
   return {
-    addToWishlist: addToWishlist,
     handleOnClickHeart: handleOnClickHeart,
     isExecuting: isExecuting,
   };

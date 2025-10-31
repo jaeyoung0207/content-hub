@@ -1,10 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { usePerson } from './usePerson';
-import { LoadingUi } from '@/components/ui/LoadingUi';
+import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { useTranslation } from 'react-i18next';
 import {
   COMMON_IMAGES,
-  IS_MOBILE,
   TMDB_API_IMAGE_DOMAIN,
   WIDTH_185,
   WIDTH_300,
@@ -18,6 +17,8 @@ import {
 import { memo } from 'react';
 import { isPersonCreditsCastType } from '@/components/common/utils/typeGuardUtil';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
+import { useIsMobile } from '@/components/common/hooks/useIsMobile';
+import { NoDataMessageUi } from '@/components/ui/common';
 
 export type PersonCredits = PersonCreditsCastDto | PersonCreditsCrewDto;
 
@@ -33,51 +34,54 @@ export const Person = memo(() => {
   const { t } = useTranslation();
   // URL 파라미터에서 personId 추출
   const { personId } = useParams<string>();
+  // 모바일 여부 훅
+  const isMobile = useIsMobile();
 
   // 인물 정보 가져오기 훅
   const { data, isLoading, isError } = usePerson(personId!);
 
   // 인물 정보 스타일
-  const personInfoStyle = 'flex text-lg mb-2 mr-3 break-all';
+  const personInfoStyle = 'mb-2 flex break-all text-sm md:text-base lg:text-lg';
   // 소제목 스타일
-  const subTitleStyle = 'mr-2 whitespace-nowrap';
+  const subTitleStyle = 'mr-2 whitespace-nowrap font-medium text-foreground';
 
   return (
-    <div className="block mt-30 mb-10">
+    <div className="px-4 pt-16 pb-10 sm:px-6 sm:pt-20 lg:px-8">
       {
         // 로딩 중이면 로딩 UI 표시, 에러가 발생하면 에러 메시지 표시
         isLoading ? (
           <LoadingUi />
         ) : (
-          isError && <div className="mt-60 text-3xl">{t('warn.noData')}</div>
+          isError && <NoDataMessageUi message={t('warn.noData')} />
         )
       }
       {/* 인물 정보 */}
       {data && (
         <>
-          <div className="flex justify-center m-5">
+          <div className="mt-2 grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* 인물 이미지 */}
-            <div className="flex justify-center items-center mb-4 w-[30%]">
-              <LazyImage
-                src={
-                  data?.profilePath
-                    ? TMDB_API_IMAGE_DOMAIN +
-                      (IS_MOBILE ? WIDTH_185 : WIDTH_300) +
-                      data?.profilePath
-                    : COMMON_IMAGES.NO_IMAGE
-                }
-                className={
-                  (IS_MOBILE ? 'w-[200px]' : 'w-[300px]') +
-                  ' h-full rounded-2xl'
-                }
-                alt={data.name}
-              />
+            <div className="md:col-span-1">
+              <div className="relative mx-auto aspect-[2/3] w-3/4 md:w-full lg:w-4/5 xl:w-2/3 2xl:w-1/2">
+                <LazyImage
+                  src={
+                    data?.profilePath
+                      ? TMDB_API_IMAGE_DOMAIN +
+                        (isMobile ? WIDTH_185 : WIDTH_300) +
+                        data?.profilePath
+                      : COMMON_IMAGES.NO_IMAGE
+                  }
+                  className="h-full w-full rounded-2xl object-cover"
+                  alt={data.name}
+                />
+              </div>
             </div>
             {/* 인물 신상 정보 */}
-            <div className="w-[70%] block">
+            <div className="md:col-span-2">
               {/* 이름 */}
-              <div className="text-3xl mb-3 mr-3">{data.name}</div>
-              <ul className="mt-5">
+              <div className="mb-4 text-2xl font-bold sm:text-3xl">
+                {data.name}
+              </div>
+              <ul className="mt-2">
                 {/* 다른 이름 */}
                 {data.alsoKnownAs && data.alsoKnownAs.length > 0 && (
                   <li className={personInfoStyle}>
@@ -88,12 +92,14 @@ export const Person = memo(() => {
                   </li>
                 )}
                 {/* 성별 */}
-                <li className={personInfoStyle}>
-                  <div className={subTitleStyle}>
-                    {t('info.gender') + t('info.colon')}
-                  </div>
-                  <div>{data.genderValue}</div>
-                </li>
+                {data.genderValue && (
+                  <li className={personInfoStyle}>
+                    <div className={subTitleStyle}>
+                      {t('info.gender') + t('info.colon')}
+                    </div>
+                    <div>{data.genderValue}</div>
+                  </li>
+                )}
                 {/* 출생지 */}
                 {data.placeOfBirth && (
                   <li className={personInfoStyle}>
@@ -173,36 +179,32 @@ export const Person = memo(() => {
           </div>
           {/* 약력 */}
           {data.biography && (
-            <div className="text-2xl mb-5 mr-3">
-              <div className="text-3xl font-bold mb-3">
+            <section className="mt-8">
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                 {t('info.biography')}
-              </div>
-              <div className="text-lg whitespace-pre-wrap ml-5">
+              </h2>
+              <p className="text-base leading-relaxed whitespace-pre-wrap sm:text-lg">
                 {data.biography}
-              </div>
-            </div>
+              </p>
+            </section>
           )}
           {/* 출연작 */}
           {data.cast && data.cast.length !== 0 && (
-            <>
-              <div className="text-3xl font-bold mt-5 mb-5">
+            <section className="mt-8">
+              <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
                 {t('info.singleCast')}
-              </div>
-              <div className="mt-3 p-2">
-                <DisplayPersonCredits credits={data.cast} />
-              </div>
-            </>
+              </h2>
+              <DisplayPersonCredits credits={data.cast} />
+            </section>
           )}
           {/* 제작 참여작 */}
           {data.crew && data.crew.length !== 0 && (
-            <>
-              <div className="text-3xl font-bold mt-5 mb-5">
+            <section className="mt-8">
+              <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
                 {t('info.singleCrew')}
-              </div>
-              <div className="mt-3 p-2">
-                <DisplayPersonCredits credits={data.crew} />
-              </div>
-            </>
+              </h2>
+              <DisplayPersonCredits credits={data.crew} />
+            </section>
           )}
         </>
       )}
@@ -218,30 +220,35 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
   return (
-    <div>
+    <div className="divide-y divide-black/5">
       {credits.map((items, index) => {
         // 캐스트인지 타입 확인
         const isCast = isPersonCreditsCastType(items);
         // 캐스트인 경우 캐릭터, 크루인 경우 작업 역할 표시
         const role = isCast ? items.character : items.job;
+        // 연도 라벨(이전 항목과 동일하면 빈 문자열)
+        const prevYear =
+          index > 0 ? credits[index - 1]?.releaseYear : undefined;
+        const yearLabel = items.releaseYear
+          ? prevYear === items.releaseYear
+            ? ''
+            : items.releaseYear
+          : t('info.unknown');
+
         return (
-          <div className="flex mb-1" key={index}>
-            <div
-              className={`w-full h-full grid grid-rows-[${role ? 2 : 1}] grid-cols-[0.1fr_0.1fr_1.8fr] gap-1`}
-            >
+          <div className="py-2" key={items.id + '_' + index}>
+            <div className="grid grid-cols-[40px_60px_1fr] items-start gap-1 md:grid-cols-[60px_90px_1fr]">
               {/* 작업 연도 */}
-              <div className="flex justify-center pt-1 row-span-2">
-                {items.releaseYear
-                  ? index !== 0
-                    ? credits[index - 1].releaseYear === items.releaseYear
-                      ? ''
-                      : items.releaseYear
-                    : (items.releaseYear ?? t('info.unknown'))
-                  : t('info.unknown')}
+              <div
+                className={`${role ? 'row-span-2' : ''} flex justify-center pt-1 text-base text-gray-700 md:text-lg`}
+              >
+                {yearLabel}
               </div>
               {/* 미디어 타입 */}
-              <div className="flex justify-center pt-1">
-                {items.contentMediaTypeName}
+              <div className="flex justify-center">
+                <div className="pt-1 text-base text-gray-700 md:text-lg">
+                  {items.contentMediaTypeName}
+                </div>
               </div>
               {/* 작품 링크 */}
               <Link
@@ -250,13 +257,13 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
                   apiId: String(items.id),
                   tabNo: 0,
                 })}
-                className="pl-1 text-lg font-bold hover:underline"
+                className="pl-1 text-base font-bold hover:underline sm:text-lg"
               >
                 {items.title}
               </Link>
               {/* 역할 */}
               {role && (
-                <div className="pl-1 col-start-3">
+                <div className="col-start-3 pl-1 text-sm text-gray-700">
                   {role}
                   {isCast && t('info.role')}
                 </div>

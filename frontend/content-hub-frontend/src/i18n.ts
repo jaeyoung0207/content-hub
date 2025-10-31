@@ -30,6 +30,7 @@ const resources = {
         notExist: '없음',
         description: '설명',
         colon: ' : ',
+        deleteConfirmTitle: '삭제 확인',
         /* 마이페이지 화면 */
         myComments: '나의 코멘트',
         totalComments: '총 {{totalElements}}개의 코멘트가 있습니다.',
@@ -41,6 +42,8 @@ const resources = {
         home: '홈',
         rankingTitle: '실시간 순위',
         top10: 'TOP 10',
+        /* 로그인 */
+        requiredLoginConfirmTitle: '로그인 확인',
         /* 위시리스트 화면 */
         wishlistKorean: '찜 목록',
         wishlist: '위시리스트',
@@ -52,11 +55,12 @@ const resources = {
         failedToRemoveWishlist:
           '위시리스트 제거에 실패했습니다. \r\n : {{title}}',
         noWishlist: '위시리스트가 없습니다.',
+        wishlistAddConfirmTitle: '위시리스트 추가 확인',
         /* 전체보기 */
         searchResults: '검색 결과',
         /* 상세 화면 */
         mediaInfo: '작품 정보',
-        review: '평가&리뷰',
+        review: '평가',
         recommend: '비슷한 작품',
         starRating: '별점 선택',
         overview: '개요',
@@ -139,6 +143,8 @@ const resources = {
         bloodType: '혈액형',
         yearsActive: '활동 시작 연도',
         homeTown: '출생지',
+        alternativeName: '다른 이름',
+        showSpoilerName: '스포일러 이름 표시',
         /* 점검 화면 */
         maintenanceTitle: '서비스 점검 중입니다.',
         maintenanceMessage:
