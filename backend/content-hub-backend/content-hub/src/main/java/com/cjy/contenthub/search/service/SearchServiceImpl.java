@@ -87,9 +87,9 @@ public class SearchServiceImpl implements SearchService {
 	@Value("${tmdb.custom.auto-complete-count}")
 	private int autoCompleteCount;
 
-	/** TMDB API 재시도 횟수 */
-	@Value("${tmdb.custom.retry-count}")
-	private int tmdbRetryCount;
+	/** TMDB API 병렬로 호출할 페이지 수 */
+	@Value("${tmdb.custom.parallel-pages}")
+	private int tmdbParallelPages;
 
 	/** AniList API 메인화면 작품 표시 개수 */
 	@Value("${anilist.custom.per-main-page}")
@@ -106,7 +106,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 검색어 리스트
 	 */
 	@Override
-	@Cacheable(value = "searchKeyword", key = "#keyword + '_' + #isAdult", unless = "#result == null")
+	@Cacheable(value = "searchKeyword", key = "#keyword + '-' + #isAdult", unless = "#result == null")
 	public List<String> searchKeyword(String keyword, boolean isAdult) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
@@ -159,11 +159,12 @@ public class SearchServiceImpl implements SearchService {
 	 * TV 시리즈 및 영화 검색 API
 	 * 
 	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
 	 * @return 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchVideo", key = "#keyword + '_' + #isAdult + '_' + #userId", unless = "#result == null")
-	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult, Long userId) {
+	@Cacheable(value = "searchVideo", key = "#keyword + '-' + #isAdult", unless = "#result == null")
+	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
 		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
@@ -174,7 +175,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 애니, 드라마 정보 조회
 			Mono<SearchTvResponseDto> tvResponseMono = Flux
-					.range(DomainConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(DomainConstants.FIRST_PAGE_NO, tmdbParallelPages) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -209,7 +210,7 @@ public class SearchServiceImpl implements SearchService {
 										.totalPages(response.getTotalPages())
 										.totalResults(response.getTotalResults())
 										.build();
-							}), tmdbRetryCount) // 병렬로 동시에 호출할 최대 페이지 수
+							}), tmdbParallelPages)
 					.collectList() // 모든 페이지의 결과를 리스트로 모음
 					.map(resultList -> {
 						// 검색 결과가 없는 경우 빈 응답 반환
@@ -245,7 +246,7 @@ public class SearchServiceImpl implements SearchService {
 
 			// 영화 정보 조회
 			Mono<SearchMovieResponseDto> movieResponseMono = Flux
-					.range(DomainConstants.FIRST_PAGE_NO, tmdbRetryCount) // 한꺼번에 검색할 페이지 번호 생성
+					.range(DomainConstants.FIRST_PAGE_NO, tmdbParallelPages) // 한꺼번에 검색할 페이지 번호 생성
 					.flatMap(
 							// 설정한 페이지 수 만큼 TMDB API 호출
 							page -> tmdbWebClient.get()
@@ -263,7 +264,7 @@ public class SearchServiceImpl implements SearchService {
 										.totalResults(response.getTotalResults())
 										.build();
 							})
-							, tmdbRetryCount) // 병렬로 동시에 호출할 최대 페이지 수
+							, tmdbParallelPages)
 					.collectList() // 모든 페이지의 결과를 리스트로 모음
 					.map(resultList -> {
 						// 검색 결과가 없는 경우 빈 응답 반환
@@ -302,12 +303,13 @@ public class SearchServiceImpl implements SearchService {
 	 * 애니 검색 데이터 조회
 	 * 
 	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
 	 * @param page 페이지
 	 * @return 애니 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchAni", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
-	public SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page, Long userId) {
+	@Cacheable(value = "searchAni", key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
+	public SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page) {
 
 		int currentPage = Optional.ofNullable(page).orElse(1);
 
@@ -382,12 +384,11 @@ public class SearchServiceImpl implements SearchService {
 	 * @param isAdult 성인물 포함 여부
 	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @param page 페이지
-	 * @param userId 유저 테이블 ID
 	 * @return 드라마 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchTvExceptAni", key = "#keyword + '_' + #isAdult + '_' + #contentMediaType + '_' + #page + '_' + #userId", unless = "#result == null")
-	public SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page, Long userId) {
+	@Cacheable(value = "searchTvExceptAni", key = "#keyword + '-' + #isAdult + '-' + #contentMediaType + '-' + #page", unless = "#result == null")
+	public SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page) {
 
 		// 드라마 장르 정보 조회
 		return apiUtil.getTvGenres().flatMap(tvGenreMap -> 
@@ -416,12 +417,13 @@ public class SearchServiceImpl implements SearchService {
 	 * 영화 검색 데이터 조회
 	 * 
 	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
 	 * @param page 페이지
 	 * @return 영화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchMovie", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #userId", unless = "#result == null")
-	public SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page, Long userId) {
+	@Cacheable(value = "searchMovie", key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
+	public SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page) {
 
 		// 영화 장르 정보 조회
 		return apiUtil.getMovieGenres().flatMap(movieGenreMap -> 
@@ -451,12 +453,13 @@ public class SearchServiceImpl implements SearchService {
 	 * 만화 검색 데이터 조회
 	 * 
 	 * @param keyword 검색어
+	 * @param isAdult 성인물 포함 여부
 	 * @param page 페이지
 	 * @return 만화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchComics", key = "#keyword + '_' + #isAdult + '_' + #page + '_' + #isMainPage + '_' + #userId", unless = "#result == null")
-	public SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage, Long userId) {
+	@Cacheable(value = "searchComics", key = "#keyword + '-' + #isAdult + '-' + #page + '-' + #isMainPage", unless = "#result == null")
+	public SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage) {
 
 		// API를 어디서 불렀는지에 따라 표시 건수를 다르게 설정
 		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;

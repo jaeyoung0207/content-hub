@@ -53,6 +53,80 @@ logging:
     name: logs/app.log
     #org.springframework.security: DEBUG
 
+#Cache Config
+cache:
+  default-cache:
+    expire-after-write: 15
+    maximum-size: 1000
+  individuals:
+    # common
+    translate:
+      expire-after-write: 60
+      maximum-size: 2000
+    # core
+    tvGenre:
+      expire-after-write: 1440
+      maximum-size: 100
+    movieGenre:
+      expire-after-write: 1440
+      maximum-size: 100
+    # character
+    character:
+      expire-after-write: 720
+      maximum-size: 1000
+    staff:
+      expire-after-write: 720
+      maximum-size: 1000
+    # detail/information
+    tvDetailCache:
+      expire-after-write: 180
+      maximum-size: 1000
+    movieDetailCache:
+      expire-after-write: 180
+      maximum-size: 1000
+    comicsDetailCache:
+      expire-after-write: 180
+      maximum-size: 1000
+    comicsCharacterListCache:
+      expire-after-write: 720
+      maximum-size: 1000
+    comicsStaffListCache:
+      expire-after-write: 720
+      maximum-size: 1000
+    # detail/recommendation
+    tmdbTvRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    tmdbMovieRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    anilistComicsRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    # person
+    personDetails:
+      expire-after-write: 180
+      maximum-size: 1000
+    # search 
+    searchKeyword:
+      expire-after-write: 10
+      maximum-size: 2000
+    searchVideo:
+      expire-after-write: 15
+      maximum-size: 1500
+    searchAni:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchTvExceptAni:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchMovie:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchComics:
+      expire-after-write: 15
+      maximum-size: 2000
+
 #TMDB API Config
 tmdb:
   api:
@@ -77,9 +151,9 @@ tmdb:
     tv-similar-path: /3/tv/%s/similar
     movie-similar-path: /3/movie/%s/similar
   custom:
-    per-main-page: 8
+    per-main-page: 10
     auto-complete-count: 15
-    retry-count: 2
+    parallel-pages: 2
     connection-request-timeout: 10 # 초 단위
     response-timeout: 15 # 초 단위
     max-conn-total: 80

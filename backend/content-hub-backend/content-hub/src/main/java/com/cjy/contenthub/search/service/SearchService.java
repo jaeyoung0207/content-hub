@@ -28,7 +28,7 @@ public interface SearchService {
 	 * @param isAdult 성인물 포함 여부
 	 * @return 검색 결과 DTO
 	 */
-	SearchVideoResponseDto searchVideo(String keyword, boolean isAdult, Long userId);
+	SearchVideoResponseDto searchVideo(String keyword, boolean isAdult);
 	
 	/**
 	 * 애니 검색 데이터 조회
@@ -38,7 +38,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 애니 검색 결과 DTO
 	 */
-	SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page, Long userId);
+	SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page);
 	
 	/**
 	 * TV 시리즈 검색 데이터 조회(애니 제외)
@@ -49,7 +49,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 드라마 검색 결과 DTO
 	 */
-	SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page, Long userId);
+	SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page);
 	
 	/**
 	 * 영화 검색 데이터 조회
@@ -59,7 +59,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 영화 검색 결과 DTO
 	 */
-	SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page, Long userId);
+	SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page);
 	
 	/**
 	 * 만화 검색 데이터 조회
@@ -70,5 +70,5 @@ public interface SearchService {
 	 * @param isMainPage 메인 페이지 여부
 	 * @return 만화 검색 결과 DTO
 	 */
-	SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage, Long userId);
+	SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage);
 }

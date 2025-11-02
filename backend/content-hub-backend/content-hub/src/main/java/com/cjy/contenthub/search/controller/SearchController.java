@@ -115,7 +115,7 @@ public class SearchController {
 	 * 
 	 * @param keyword 검색어
 	 * @param userId 유저 테이블 ID
-	 * @return ResponseEntity<SearchVideoResponseDto> 애니메이션/드라마/영화 검색 결과 응답 오브젝트
+	 * @return ResponseEntity<SearchVideoResponseDto> 비디오 검색 결과 응답 오브젝트
 	 */
 	@Operation(summary = "비디오 검색")
 	@GetMapping(value = "/searchVideo")
@@ -124,7 +124,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchVideoResponseDto cachedResponse = searchService.searchVideo(keyword, isAdult, userId);
+		SearchVideoResponseDto cachedResponse = searchService.searchVideo(keyword, isAdult);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchVideoResponseDto newResponse = searchMapper.deepCopyForVideoResponse(cachedResponse);
@@ -152,7 +152,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page, userId);
+		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
@@ -182,7 +182,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page, userId);
+		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
@@ -210,7 +210,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page, userId);
+		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchMovieResponseDto newResponse = searchMapper.deepCopyForMovieResponse(cachedResponse);
@@ -240,7 +240,7 @@ public class SearchController {
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage, userId);
+		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage);
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
 		SearchComicsResponseDto newResponse = searchMapper.deepCopyForComicsResponse(cachedResponse);

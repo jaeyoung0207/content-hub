@@ -105,9 +105,9 @@
     "description": "A description for 'tmdb.custom.auto-complete-count'"
   },
   {
-    "name": "tmdb.custom.retry-count",
+    "name": "tmdb.custom.parallel-pages",
     "type": "java.lang.String",
-    "description": "A description for 'tmdb.custom.retry-count'"
+    "description": "A description for 'tmdb.custom.parallel-pages'"
   },
   {
     "name": "tmdb.custom.connection-request-timeout",
@@ -363,5 +363,215 @@
     "name": "app.rate-limit.rules",
     "type": "java.util.List",
     "description": "A description for 'app.rate-limit.rules'"
+  },
+  {
+    "name": "cache.default-cache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.default-cache.expire-after-write'"
+  },
+  {
+    "name": "cache.default-cache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.default-cache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.search-keyword.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.search-keyword.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.search-keyword.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.search-keyword.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchVideo.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchVideo.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchVideo.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchVideo.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.searchAni.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchAni.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchAni.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchAni.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.searchTvExceptAni.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchTvExceptAni.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchTvExceptAni.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchTvExceptAni.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.searchMovie.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchMovie.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchMovie.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchMovie.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.searchComics.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchComics.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.searchComics.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.searchComics.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.personDetails.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.personDetails.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.personDetails.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.personDetails.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.anilistComicsRecommendations.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.anilistComicsRecommendations.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.anilistComicsRecommendations.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.anilistComicsRecommendations.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.tmdbMovieRecommendations.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tmdbMovieRecommendations.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.tmdbMovieRecommendations.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tmdbMovieRecommendations.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.tmdbTvRecommendations.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tmdbTvRecommendations.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.tmdbTvRecommendations.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tmdbTvRecommendations.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.comicsStaffListCache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsStaffListCache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.comicsStaffListCache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsStaffListCache.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.comicsCharacterListCache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsCharacterListCache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.comicsCharacterListCache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsCharacterListCache.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.comicsDetailCache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsDetailCache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.comicsDetailCache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.comicsDetailCache.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.movieDetailCache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.movieDetailCache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.movieDetailCache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.movieDetailCache.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.tvDetailCache.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tvDetailCache.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.tvDetailCache.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tvDetailCache.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.staff.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.staff.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.staff.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.staff.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.character.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.character.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.character.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.character.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.movieGenre.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.movieGenre.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.movieGenre.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.movieGenre.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.tvGenre.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tvGenre.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.tvGenre.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.tvGenre.expire-after-write'"
+  },
+  {
+    "name": "cache.individuals.translate.maximum-size",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.translate.maximum-size'"
+  },
+  {
+    "name": "cache.individuals.translate.expire-after-write",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.individuals.translate.expire-after-write'"
   }
 ]}
