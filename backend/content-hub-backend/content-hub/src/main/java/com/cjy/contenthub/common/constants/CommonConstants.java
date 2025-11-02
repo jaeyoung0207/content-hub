@@ -9,15 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonConstants {
 
-	/** TV 장르명 */
-	public static final String API_TV_GENRE_NAME = "tvGenre";
-	
-	/** 영화 장르명 */
-    public static final String API_MOVIE_GENRE_NAME = "movieGenre";
-    
-    /** 번역 API 이름 */
-    public static final String API_TRANSLATE_NAME = "translate";
-    
     /** 인증 토큰 접두어 */
     public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
     

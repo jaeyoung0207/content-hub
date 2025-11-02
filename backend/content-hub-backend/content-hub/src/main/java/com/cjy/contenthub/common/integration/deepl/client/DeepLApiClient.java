@@ -2,7 +2,6 @@ package com.cjy.contenthub.common.integration.deepl.client;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,7 +9,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,7 +48,6 @@ public class DeepLApiClient {
 	 * @param sourceLang 원본 언어 (예: "KO", "JA")
 	 * @return 번역된 문자열
 	 */
-	@Cacheable(value = CommonConstants.API_TRANSLATE_NAME)
 	public String translateText(String text, String targetLang, String sourceLang) {
 		try {
 			// 파라미터 맵 생성

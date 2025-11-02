@@ -25,6 +25,7 @@ import com.cjy.contenthub.common.integration.tmdb.dto.TmdbTvDetailsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbWatchProvidersDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.SortEnum;
@@ -116,7 +117,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @return TV 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tvDetailCache", key = "#seriesId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.TV_DETAIL, key = "#seriesId + '-' + #contentMediaType", unless = "#result == null")
 	public DetailTvResponseDto getTvDetail(Integer seriesId, String contentMediaType) {
 
 		// TMDB TV 상세 조회
@@ -169,7 +170,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "movieDetailCache", key = "#movieId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.MOVIE_DETAIL, key = "#movieId + '-' + #contentMediaType", unless = "#result == null")
 	public DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType) {
 
 		// TMDB 영화 상세 조회
@@ -223,7 +224,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsDetailCache", key = "#comicsId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_DETAIL, key = "#comicsId + '-' + #contentMediaType", unless = "#result == null")
 	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -298,7 +299,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsCharacterListCache", key = "'character_' + #comicsId + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_CHARACTER_LIST, key = "'character_' + #comicsId + '-' + #page", unless = "#result == null")
 	public AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -344,7 +345,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "comicsStaffListCache", key = "'staff_' + #comicsId + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_STAFF_LIST, key = "'staff_' + #comicsId + '-' + #page", unless = "#result == null")
 	public AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기

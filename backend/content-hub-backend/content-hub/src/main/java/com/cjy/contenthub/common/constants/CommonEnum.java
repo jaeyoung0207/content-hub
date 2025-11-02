@@ -11,60 +11,6 @@ import lombok.Getter;
 public class CommonEnum {
 
 	/**
-	 * 캐시 타입 정의 enum
-	 */
-	@AllArgsConstructor
-	@Getter
-	public enum CacheTypeEnum {
-
-		/** TV 장르 캐시 */
-		API_TV_GENRE(CommonConstants.API_TV_GENRE_NAME),
-		/** 영화 장르 캐시 */
-		API_MOVIE_GENRE(CommonConstants.API_MOVIE_GENRE_NAME),
-		/** 번역 API 캐시 */
-		API_TRANSLATE_NAME(CommonConstants.API_TRANSLATE_NAME);
-
-		/** 캐시 이름 */
-		private String cacheName;
-		
-		/** 캐시 만료 시간(초) */
-		private int expireAfterWrite;
-		
-		/** 캐시 최대 크기 */
-		private int maximumSize;
-
-		/**
-		 * 캐시 타입 생성자
-		 * 
-		 * @param cacheName 캐시 이름
-		 */
-		CacheTypeEnum(String cacheName) {
-			this.cacheName = cacheName;
-			this.expireAfterWrite = EXPIRE_AFTER_WRITE; // 기본 만료 시간 설정
-			this.maximumSize = MAXIMUM_SIZE; // 기본 최대 크기 설정
-		}
-
-		/** 캐시 만료 시간(분) */
-		public static final int EXPIRE_AFTER_WRITE = 60;
-		
-		/** 캐시 최대 크기 */
-		public static final int MAXIMUM_SIZE = 1000;
-
-		/**
-		 * 캐시 이름으로부터 CacheTypeEnum을 반환
-		 * 
-		 * @param name 캐시 이름
-		 * @return CacheTypeEnum
-		 */
-		public static CacheTypeEnum getCacheType(String name) {
-			return Arrays.stream(values())
-					.filter(e -> e.cacheName.equals(name)) // 캐시 이름이 일치하는지 확인
-					.findFirst() // 첫 번째 일치하는 캐시 타입을 찾음
-					.orElseThrow(() -> new IllegalArgumentException("Unknown cache name: " + name)); // 예외 처리
-		}
-	}
-	
-	/**
 	 * JWT Validate 결과값 enum
 	 */
 	@AllArgsConstructor

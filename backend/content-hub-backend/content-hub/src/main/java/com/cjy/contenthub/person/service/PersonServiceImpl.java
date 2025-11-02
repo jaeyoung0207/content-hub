@@ -16,6 +16,7 @@ import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonMovieCreditsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbPersonTvCreditsDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.TmdbGenderEnum;
 import com.cjy.contenthub.core.facade.ApiFacade;
@@ -65,7 +66,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @return 인물 상세 정보 DTO
 	 */
 	@Override
-	@Cacheable(value = "personDetails", key = "#personId", unless = "#result == null")
+	@Cacheable(value = CacheNames.PERSON_DETAILS, key = "#personId", unless = "#result == null")
 	public PersonResponseDto getPersonDetails(int personId) {
 
 		// 장르 맵 조회

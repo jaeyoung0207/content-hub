@@ -27,6 +27,7 @@ import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.core.facade.ApiFacade;
@@ -106,7 +107,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 검색어 리스트
 	 */
 	@Override
-	@Cacheable(value = "searchKeyword", key = "#keyword + '-' + #isAdult", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_KEYWORD, key = "#keyword + '-' + #isAdult", unless = "#result == null")
 	public List<String> searchKeyword(String keyword, boolean isAdult) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
@@ -163,7 +164,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 애니메이션/드라마/영화 검색 결과 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchVideo", key = "#keyword + '-' + #isAdult", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_VIDEO, key = "#keyword + '-' + #isAdult", unless = "#result == null")
 	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult) {
 
 		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
@@ -308,7 +309,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 애니 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchAni", key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_ANI, key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
 	public SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page) {
 
 		int currentPage = Optional.ofNullable(page).orElse(1);
@@ -387,7 +388,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 드라마 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchTvExceptAni", key = "#keyword + '-' + #isAdult + '-' + #contentMediaType + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_TV_EXCEPT_ANI, key = "#keyword + '-' + #isAdult + '-' + #contentMediaType + '-' + #page", unless = "#result == null")
 	public SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page) {
 
 		// 드라마 장르 정보 조회
@@ -422,7 +423,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 영화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchMovie", key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_MOVIE, key = "#keyword + '-' + #isAdult + '-' + #page", unless = "#result == null")
 	public SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page) {
 
 		// 영화 장르 정보 조회
@@ -458,7 +459,7 @@ public class SearchServiceImpl implements SearchService {
 	 * @return 만화 정보 응답 오브젝트
 	 */
 	@Override
-	@Cacheable(value = "searchComics", key = "#keyword + '-' + #isAdult + '-' + #page + '-' + #isMainPage", unless = "#result == null")
+	@Cacheable(value = CacheNames.SEARCH_COMICS, key = "#keyword + '-' + #isAdult + '-' + #page + '-' + #isMainPage", unless = "#result == null")
 	public SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage) {
 
 		// API를 어디서 불렀는지에 따라 표시 건수를 다르게 설정

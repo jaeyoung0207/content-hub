@@ -13,6 +13,7 @@ import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDt
 import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 
@@ -46,7 +47,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "character", key = "#characterId", unless = "#result == null")
+	@Cacheable(value = CacheNames.CHARACTER, key = "#characterId", unless = "#result == null")
 	public AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -87,7 +88,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = "staff", key = "#staffId", unless = "#result == null")
+	@Cacheable(value = CacheNames.STAFF, key = "#staffId", unless = "#result == null")
 	public AniListStaffNodeDto getStaff(Integer staffId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기

@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesWarnEnum;
 import com.cjy.contenthub.common.integration.tmdb.client.TmdbApiGenreClient;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbGenreDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainEnum.TmdbGenreEnum;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class TmdbGenreService {
 	 * 
 	 * @return TV 장르 정보 Map
 	 */
-	@Cacheable(cacheNames = CommonConstants.API_TV_GENRE_NAME, unless = "#result == null || #result.isEmpty()")
+	@Cacheable(cacheNames = CacheNames.TV_GENRE, unless = "#result == null || #result.isEmpty()")
 	public Map<String, Integer> getTvGenres() {
 		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbTvGenres().block();
 		return getGenreMap(genreList);
@@ -53,7 +53,7 @@ public class TmdbGenreService {
 	 * 
 	 * @return 영화 장르 정보 Map
 	 */
-	@Cacheable(cacheNames = CommonConstants.API_MOVIE_GENRE_NAME, unless = "#result == null || #result.isEmpty()")
+	@Cacheable(cacheNames = CacheNames.MOVIE_GENRE, unless = "#result == null || #result.isEmpty()")
 	public Map<String, Integer> getMovieGenres() {
 		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbMovieGenres().block();
 		return getGenreMap(genreList);

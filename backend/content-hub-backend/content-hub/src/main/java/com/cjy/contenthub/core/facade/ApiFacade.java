@@ -6,7 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.cjy.contenthub.common.integration.deepl.client.DeepLApiClient;
+import com.cjy.contenthub.core.integration.deepl.service.DeepLService;
 import com.cjy.contenthub.core.integration.tmdb.service.TmdbGenreService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class ApiFacade {
 
-	/** DeepL API 번역 WebClient 클래스 */
-	private final DeepLApiClient deeplApiClient;
+	/** DeepL 서비스 클래스 */
+	private final DeepLService deeplService;
 
 	/** TMDB 장르 서비스 클래스 */
 	private final TmdbGenreService tmdbGenreService;
@@ -68,7 +68,7 @@ public class ApiFacade {
 	 */
 	public Mono<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
 		return Mono.fromCallable(() -> 
-		deeplApiClient.translateText(keyword, targetLang, sourceLang))
+		deeplService.translateText(keyword, targetLang, sourceLang))
 				.subscribeOn(Schedulers.boundedElastic())
 				.onErrorResume(ex -> Mono.just(""));
 	}

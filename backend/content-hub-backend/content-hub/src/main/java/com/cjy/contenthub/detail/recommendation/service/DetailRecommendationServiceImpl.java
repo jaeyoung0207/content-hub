@@ -25,6 +25,7 @@ import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsMovieDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsTvDto;
 import com.cjy.contenthub.common.util.MessageUtil;
+import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
@@ -113,7 +114,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tmdbTvRecommendations", key = "#seriesId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.TMDB_TV_RECOMMENDATIONS, key = "#seriesId + '-' + #page + '-' + #userId", unless = "#result == null")
 	public DetailRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page, Long userId) {
 
 		// TMDB 장르 정보 조회
@@ -188,7 +189,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return ResponseEntity<TmdbRecommendationsMovieDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "tmdbMovieRecommendations", key = "#movieId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.TMDB_MOVIE_RECOMMENDATIONS, key = "#movieId + '-' + #page + '-' + #userId", unless = "#result == null")
 	public DetailRecommendationsMovieDto getMovieRecommendations(Integer movieId, Integer page, Long userId) {
 
 		// TMDB 영화 추천 작품 조회
@@ -263,7 +264,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return ResponseEntity<DetailComicsRecommendationsResponseDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = "anilistComicsRecommendations", key = "#mediaId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.ANILIST_COMICS_RECOMMENDATIONS, key = "#mediaId + '-' + #page + '-' + #userId", unless = "#result == null")
 	public DetailRecommendationsComicsResponseDto getComicsRecommendations(Integer mediaId, Integer page, Long userId) throws IOException {
 
 		// graphql 쿼리 파일 불러오기
