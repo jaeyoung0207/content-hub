@@ -1,0 +1,85 @@
+# Development Environment
+
+# Spring Config
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/content_hub
+    username: myuser
+    password: mypassword
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  security:
+    user: 
+      name: actuator
+      password: "{noop}password" # 실제로는 password 를 입력
+      roles: ACTUATOR
+
+# Security Config
+security:
+  csrf:
+    cookie:
+      http-only: false
+      secure: false
+      same-site: Lax
+      domain: ''
+      path: /
+
+# Server Config
+server:
+  servlet:
+    session:
+      cookie: # JSESSIONID 쿠키 설정
+        http-only: true
+        secure: false
+        same-site: lax
+#  port: 8080
+  address: 0.0.0.0 # 모든 네트워크 인터페이스에서 외부 접속을 허용
+
+# Log Config
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        security: DEBUG
+    com:
+      cjy:
+        contenthub: DEBUG
+
+# Actuator Config
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+#        include: "*" # 모든 엔드포인트를 웹에 노출
+        include: info, health, beans, conditions, metrics, env
+  endpoint:
+    health:
+      show-details: always
+
+# info
+info:
+  app:
+    environment: dev
+
+# Login Config
+login:
+  cookie:
+    http-only: true
+    secure: false
+    same-site: Lax
+    domain: ''
+    path: /
+
+# Application Config
+app:
+  url: http://192.168.219.101:3000 # 프론트엔드 로컬IP:PORT번호
+  cors:
+    enabled: true

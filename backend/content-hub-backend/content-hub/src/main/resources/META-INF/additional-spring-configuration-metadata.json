@@ -1,5 +1,30 @@
 {"properties": [
   {
+    "name": "security.csrf.cookie.http-only",
+    "type": "java.lang.String",
+    "description": "A description for 'security.csrf.cookie.http-only'"
+  },
+  {
+    "name": "security.csrf.cookie.path",
+    "type": "java.lang.String",
+    "description": "A description for 'security.csrf.cookie.path'"
+  },
+  {
+    "name": "security.csrf.cookie.domain",
+    "type": "java.lang.String",
+    "description": "A description for 'security.csrf.cookie.domain'"
+  },
+  {
+    "name": "security.csrf.cookie.same-site",
+    "type": "java.lang.String",
+    "description": "A description for 'security.csrf.cookie.same-site'"
+  },
+  {
+    "name": "security.csrf.cookie.secure",
+    "type": "java.lang.String",
+    "description": "A description for 'security.csrf.cookie.secure'"
+  },
+  {
     "name": "tmdb.api.key",
     "type": "java.lang.String",
     "description": "A description for 'tmdb.api.key'"
@@ -205,6 +230,31 @@
     "description": "A description for 'deepl.custom.max-conn-per-route'"
   },
   {
+    "name": "login.cookie.http-only",
+    "type": "java.lang.String",
+    "description": "A description for 'login.cookie.http-only'"
+  },
+  {
+    "name": "login.cookie.path",
+    "type": "java.lang.String",
+    "description": "A description for 'login.cookie.path'"
+  },
+  {
+    "name": "login.cookie.domain",
+    "type": "java.lang.String",
+    "description": "A description for 'login.cookie.domain'"
+  },
+  {
+    "name": "login.cookie.same-site",
+    "type": "java.lang.String",
+    "description": "A description for 'login.cookie.same-site'"
+  },
+  {
+    "name": "login.cookie.secure",
+    "type": "java.lang.String",
+    "description": "A description for 'login.cookie.secure'"
+  },
+  {
     "name": "login.jwt.secret-key",
     "type": "java.lang.String",
     "description": "A description for 'login.jwt.secret-key'"
@@ -313,6 +363,11 @@
     "name": "app.url",
     "type": "java.lang.String",
     "description": "A description for 'app.url'"
+  },
+  {
+    "name": "app.cors.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'app.cors.enabled'"
   },
   {
     "name": "app.prefix",

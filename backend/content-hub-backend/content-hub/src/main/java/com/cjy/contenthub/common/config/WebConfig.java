@@ -32,7 +32,11 @@ public class WebConfig implements WebMvcConfigurer {
 	/** 어플리케이션 URL(프론트엔드) */
 	@Value("${app.url}")
 	private String appUrl;
-	
+
+	/** CORS 활성화 여부 */
+	@Value("${app.cors.enabled:true}")
+	private boolean isCorsEnabled;
+
 	/** API 접두사 및 버전 설정 */
 	private final ApiPrefixProperties apiPrefixProperties;
 
@@ -45,14 +49,17 @@ public class WebConfig implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**") // CORS를 적용할 URL 패턴을 정의
-		.allowedOrigins(appUrl) // resources를 공유할 URL을 지정(IP주소:포트번호)
-		.allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), 
-				HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()) // 허용할 HTTP method를 지정
-		.allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER) // 클라이언트 측의 CORS 요청에 허용되는 헤더를 지정
-		.exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER, HttpHeaders.RETRY_AFTER) // 클라이언트 측에서 접근할 수 있는 응답 헤더를 지정
-		.allowCredentials(true) // 클라이언트 측에 대한 응답에 credentials(쿠키, 인증 헤더)를 포함할 수 있는지 여부를 지정(true 설정시, allowedOrigins에 와일드카드(*) 설정 불가)
-		.maxAge(3600); // 지정한 시간만큼 preflight 리퀘스트(정식 요청처리 전에 OPTIONS 메소드로 사전에 CORS위반을 확인하기 위한 요청 처리)를 캐싱
+		// CORS 활성화가 설정된 경우에만 CORS 설정 적용
+		if (isCorsEnabled) {
+			registry.addMapping("/**") // CORS를 적용할 URL 패턴을 정의
+			.allowedOrigins(appUrl) // resources를 공유할 URL을 지정(IP주소:포트번호)
+			.allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), 
+					HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()) // 허용할 HTTP method를 지정
+			.allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER) // 클라이언트 측의 CORS 요청에 허용되는 헤더를 지정
+			.exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, CommonConstants.CSRF_TOKEN_HEADER, HttpHeaders.RETRY_AFTER) // 클라이언트 측에서 접근할 수 있는 응답 헤더를 지정
+			.allowCredentials(true) // 클라이언트 측에 대한 응답에 credentials(쿠키, 인증 헤더)를 포함할 수 있는지 여부를 지정(true 설정시, allowedOrigins에 와일드카드(*) 설정 불가)
+			.maxAge(3600); // 지정한 시간만큼 preflight 리퀘스트(정식 요청처리 전에 OPTIONS 메소드로 사전에 CORS위반을 확인하기 위한 요청 처리)를 캐싱
+		}
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addInterceptor(apiRateLimitInterceptor)
 		.addPathPatterns("/**") // 모든 경로에서 적용
 		.excludePathPatterns(fullPrefix.concat("/app/**"), fullPrefix.concat("/error")); // 이 경로에서는 제외
-		
+
 	}
 
 }

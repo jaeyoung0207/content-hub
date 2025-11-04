@@ -1,19 +1,17 @@
-#spring.application.name=content-hub
+# Common Environment
 
+# Spring Config
 spring:
   application:
     name: content-hub
+  config:
+    import:
+    - classpath:environment/application-dev.yml
+    - classpath:environment/application-prod.yml
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev} # 환경변수 - 개발환경: dev / 운영환경: prod
   jackson:
-    #property-naming-strategy: SNAKE_CASE
     property-naming-strategy: LOWER_CAMEL_CASE
-  graphql:
-    graphiql:
-      enabled: true
-  datasource:
-    url: jdbc:postgresql://localhost:5432/content_hub
-    username: myuser
-    password: mypassword
-    # driver-class-name: org.postgresql.Driver # spring boot가 datasource.url의 값을 해석하여 알아서 설정해주기 때문에 지정해주지 않아도 된다
   jpa:
     hibernate:
       ddl-auto: update  # create, update, validate, none 중 선택/ update: DB 테이블과 엔티티 매핑정보를 비교해 변경 사항만 수정,추가
@@ -22,48 +20,68 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true  # SQL 로그 출력
     open-in-view: false # true로 설정하면 View 렌더링 중에도 데이터베이스 쿼리가 실행될 수 있음
+  graphql:
+    graphiql:
+      enabled: true
   data:
     redis:
       host: localhost
       port: 6379
-      # 필요시 password: yourpassword
-      # database: 0
   messages:
     basename: messages
     encoding: UTF-8
     fallback-to-system-locale: false
 
-#Server Config
-server:
-  servlet:
-    session:
-      cookie: # JSESSIONID 쿠키 설정
-        http-only: true # true의 경우, javascript에서 접근 불가
-        secure: false # 로컬 개발환경에선 false 가능 (https 아니면 true 쓰면 안 됨)
-        same-site: lax # 운영환경에서는 strict
-
-#Log Config
+# Log Config
 logging:
-  level:
-    root: INFO
-    com:
-      cjy:
-        contenthub: INFO
   file:
     name: logs/app.log
-    #org.springframework.security: DEBUG
 
-#Cache Config
+# Actuator Config
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: info, health
+  endpoint:
+    info:
+      access: read-only
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  info:
+    defaults:
+      enabled: true
+    env:
+      enabled: true # info.app 이하 정의 노출
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true
+    git:
+      mode: simple
+
+# App Information
+info:
+  app:
+    name: content-hub
+    description: Content Hub backend service
+    version: 1.0.0
+
+# Cache Config
 cache:
   default-cache:
     expire-after-write: 15
     maximum-size: 1000
   individuals:
-    # common
+    # core
     translate:
       expire-after-write: 60
       maximum-size: 2000
-    # core
     tvGenre:
       expire-after-write: 1440
       maximum-size: 100
@@ -127,7 +145,7 @@ cache:
       expire-after-write: 15
       maximum-size: 2000
 
-#TMDB API Config
+# TMDB API Config
 tmdb:
   api:
     key: ${TMDB_API_KEY}
@@ -159,7 +177,7 @@ tmdb:
     max-conn-total: 80
     max-conn-per-route: 20
 
-#Anilist API Config
+# Anilist API Config
 anilist:
   url:
     base-url: https://graphql.anilist.co
@@ -172,7 +190,7 @@ anilist:
     max-conn-total: 80
     max-conn-per-route: 20
 
-#DeepL API Config
+# DeepL API Config
 deepl:
   api:
     key: ${DEEPL_API_KEY}
@@ -185,7 +203,7 @@ deepl:
     max-conn-total: 100
     max-conn-per-route: 30
 
-#Login Config
+# Login Config
 login:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
@@ -217,9 +235,8 @@ login:
       max-conn-total: 20
       max-conn-per-route: 10
 
-#Application Config
+# Application Config
 app:
-  url: http://192.168.219.101:3000
   prefix: /api
   version: "" # 필요 시 "/v1"로 변경
   maintenance:

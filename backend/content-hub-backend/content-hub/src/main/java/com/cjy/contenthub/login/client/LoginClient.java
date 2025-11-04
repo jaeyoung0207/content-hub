@@ -78,6 +78,26 @@ public class LoginClient {
 	/** 카카오 API WebClient */
 	@Qualifier("kakaoWebClient")
 	private final WebClient kakaoWebClient;
+	
+	/** 로그인 쿠키 설정 - HttpOnly */
+	@Value("${login.cookie.http-only}")
+	private boolean loginCookieHttpOnly;
+	
+	/** 로그인 쿠키 설정 - Secure */
+	@Value("${login.cookie.secure}")
+	private boolean loginCookieSecure;
+	
+	/** 로그인 쿠키 설정 - SameSite */
+	@Value("${login.cookie.same-site}")
+	private String loginCookieSameSite;
+	
+	/** 로그인 쿠키 설정 - Domain */
+	@Value("${login.cookie.domain}")
+	private String loginCookieDomain;
+	
+	/** 로그인 쿠키 설정 - Path */
+	@Value("${login.cookie.path}")
+	private String loginCookiePath;
 
 	/** 네이버 API 유저 정보 조회 URL */
 	@Value("${login.naver.url.user-info-url}")
@@ -208,11 +228,21 @@ public class LoginClient {
 											refreshToken, naverExpiresIn);
 									// 리프레시 토큰 쿠키
 									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
-											.path("/")
+											.httpOnly(loginCookieHttpOnly)
+											.secure(loginCookieSecure)
+											.sameSite(loginCookieSameSite)
+											.domain(loginCookieDomain)
+											.path(loginCookiePath)
+											.maxAge(expiresIn)
 											.build();
 									// provider 쿠키
 									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
-											.path("/")
+											.httpOnly(loginCookieHttpOnly)
+											.secure(loginCookieSecure)
+											.sameSite(loginCookieSameSite)
+											.domain(loginCookieDomain)
+											.path(loginCookiePath)
+											.maxAge(expiresIn)
 											.build();
 									// 쿠키 배열 생성
 									String[] cookieArray = new String[] {
@@ -338,11 +368,21 @@ public class LoginClient {
 											refreshToken, kakaoExpiresIn);
 									// 리프레시 토큰 쿠키
 									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
-											.path("/")
+											.httpOnly(loginCookieHttpOnly)
+											.secure(loginCookieSecure)
+											.sameSite(loginCookieSameSite)
+											.domain(loginCookieDomain)
+											.path(loginCookiePath)
+											.maxAge(expiresIn)
 											.build();
 									// provider 쿠키
 									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
-											.path("/")
+											.httpOnly(loginCookieHttpOnly)
+											.secure(loginCookieSecure)
+											.sameSite(loginCookieSameSite)
+											.domain(loginCookieDomain)
+											.path(loginCookiePath)
+											.maxAge(expiresIn)
 											.build();
 									// 쿠키 배열 생성
 									String[] cookieArray = new String[] {

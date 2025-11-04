@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import com.cjy.contenthub.common.cache.CommonCacheManager;
 import com.cjy.contenthub.common.properties.CacheProperties;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,6 +22,9 @@ public class CacheConfig {
 	/** 캐시 설정 프로퍼티 */
 	private final CacheProperties cacheProperties;
 	
+	/** 메트릭 레지스트리 */
+	private final MeterRegistry meterRegistry;
+	
 	/**
 	 * CacheManager 빈 생성
 	 * 
@@ -28,7 +32,7 @@ public class CacheConfig {
 	 */
 	@Bean
 	CacheManager cacheManager() {
-		return new CommonCacheManager(cacheProperties);
+		return new CommonCacheManager(cacheProperties, meterRegistry);
 	}
 	
 }
