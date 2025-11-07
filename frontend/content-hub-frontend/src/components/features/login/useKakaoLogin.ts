@@ -7,7 +7,8 @@ import {
   setLoginInfo,
 } from '@/components/common/utils/loginUtil';
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 /**
@@ -19,8 +20,16 @@ import { toast } from 'react-toastify';
 export const useKakaoLogin = () => {
   // 네비게이션 훅
   const navigate = useNavigate();
-  // URL 쿼리 파라미터 훅
-  const [searchParams] = useSearchParams();
+
+  // 다국어 번역 훅
+  const { t } = useTranslation();
+
+  // 네비게이션 훅
+  const location = useLocation();
+  // state 값 가져오기
+  const stateData = location.state as { code: string };
+  const code = stateData.code;
+
   // 유저 정보 전역 상태 저장 훅
   const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
@@ -47,17 +56,19 @@ export const useKakaoLogin = () => {
   /* eslint-disable react-hooks/exhaustive-deps */
   // 최초 한번만 실행돼야 하므로 의존성 배열 미지정
   useEffect(() => {
-    // URL에서 인증 코드를 가져옴
-    const code = searchParams.get('code')!;
-    // 유저정보가 존재하거나, 인증 코드가 없으면 종료
-    if (user || !code) {
+    // 유저 정보가 존재하면 홈으로 이동
+    if (user) {
+      navigate('/');
+    }
+    // 인증 코드가 없으면 로그인 페이지로 이동
+    if (!code) {
       navigate('/login');
       return;
     }
     // 카카오 로그인 인증 및 유저 정보 조회 API 호출
     getKakaoLoginInfo(code).catch((err) => {
       console.error('카카오 로그인 실패', err);
-      toast.error('로그인에 실패했습니다. 다시 시도해주세요.', {
+      toast.error(t('error.loginError'), {
         toastId: 'kakaoLoginError',
       });
       navigate('/login');

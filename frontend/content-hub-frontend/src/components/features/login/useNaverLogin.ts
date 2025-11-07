@@ -1,13 +1,14 @@
 import { LoginApi } from '@/api/LoginApi';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
 import {
   afterLoginRedirect,
   setLoginInfo,
 } from '@/components/common/utils/loginUtil';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Naver 로그인 훅
@@ -18,8 +19,17 @@ import {
 export const useNaverLogin = () => {
   // 네비게이션 훅
   const navigate = useNavigate();
-  // URL 쿼리 파라미터 훅
-  const [searchParams] = useSearchParams();
+
+  // 다국어 번역 훅
+  const { t } = useTranslation();
+
+  // 네비게이션 훅
+  const location = useLocation();
+  // state 값 가져오기
+  const stateData = location.state as { code: string; state: string };
+  const code = stateData.code;
+  const state = stateData.state;
+
   // 유저 정보 전역 상태 저장 훅
   const { user } = useUserStore();
   // 로그인 API 인스턴스 생성
@@ -51,18 +61,19 @@ export const useNaverLogin = () => {
   /* eslint-disable react-hooks/exhaustive-deps */
   // 최초 한번만 실행돼야 하므로 의존성 배열 미지정
   useEffect(() => {
-    // URL에서 인증 코드와 상태를 가져옴
-    const code = searchParams.get('code')!;
-    const state = searchParams.get('state')!;
-    // 유저정보가 존재하거나, 인증 코드와 상태가 없으면 종료
-    if (user || !code || !state) {
+    // 유저 정보가 존재하면 홈으로 이동
+    if (user) {
+      navigate('/');
+    }
+    // 인증 코드와 상태가 없으면 로그인 페이지로 이동
+    if (!code || !state) {
       navigate('/login');
       return;
     }
     // 네이버 로그인 인증 및 유저 정보 조회 API 요청
     getNaverLoginInfo(code, state).catch((err) => {
       console.error('네이버 로그인 실패', err);
-      toast.error('로그인에 실패했습니다. 다시 시도해주세요.', {
+      toast.error(t('error.loginError'), {
         toastId: 'naverLoginError',
       });
       navigate('/login');

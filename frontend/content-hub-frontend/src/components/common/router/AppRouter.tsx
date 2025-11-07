@@ -26,6 +26,7 @@ const MyComments = lazy(
   () => import('@/components/features/my/comments/MyComments')
 );
 const Login = lazy(() => import('@/components/features/login/Login'));
+const LoginPopup = lazy(() => import('@/components/features/login/LoginPopup'));
 const NaverLogin = lazy(() => import('@/components/features/login/NaverLogin'));
 const KakaoLogin = lazy(() => import('@/components/features/login/KakaoLogin'));
 const Logout = lazy(() => import('@/components/features/login/Logout'));
@@ -94,8 +95,9 @@ const AppRouter = () => {
                   }
                 />
                 <Route path="/login" element={<Login />} />
-                <Route path="/login/naver" element={<NaverLogin />} />
-                <Route path="/login/kakao" element={<KakaoLogin />} />
+                <Route path="/login/:provider" element={<LoginPopup />} />
+                <Route path="/naverLogin" element={<NaverLogin />} />
+                <Route path="/kakaoLogin" element={<KakaoLogin />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/error" element={<ErrorPageWithHalfScreen />} />
                 <Route path="*" element={<ErrorPageWithHalfScreen />} />

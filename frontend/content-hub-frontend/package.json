@@ -25,6 +25,7 @@
     "lodash-es": "^4.17.21",
     "react": "^19.0.0",
     "react-cookie": "^8.0.1",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^19.0.0",
     "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.55.0",

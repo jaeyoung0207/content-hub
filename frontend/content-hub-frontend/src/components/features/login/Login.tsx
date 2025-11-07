@@ -3,8 +3,16 @@ import kakaoLoginBtn from '@assets/buttons/kakao_login_large_narrow.png';
 import { settings } from '@/components/common/config/settings';
 import { useEffect, useMemo } from 'react';
 import { useUserStore } from '@/components/common/store/globalStateStore';
-import { useNavigate } from 'react-router-dom';
-import { t } from 'i18next';
+import {
+  NavigateFunction,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
+import { LOGIN_PROVIDER } from '@/components/common/constants/constants';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
+import { isMobile, isTablet } from 'react-device-detect';
+import { TFunction } from 'i18next';
 
 /**
  * 로그인 컴포넌트
@@ -12,6 +20,19 @@ import { t } from 'i18next';
  * 사용자가 버튼을 클릭하면 해당 로그인 서비스의 OAuth 인증 페이지로 리다이렉트
  */
 export const Login = () => {
+  // navigate 훅
+  const navigate = useNavigate();
+
+  // 유저 정보 전역 상태 저장 훅
+  const { user } = useUserStore();
+
+  // 다국어 번역 훅
+  const { t } = useTranslation();
+
+  // URL 쿼리 파라미터 훅
+  const [searchParams] = useSearchParams();
+
+  // STATE, NONCE 값 생성
   const STATE = useMemo(() => Math.random().toString(36).substring(2, 11), []);
   const NONCE = useMemo(() => Math.random().toString(36).substring(2, 11), []);
 
@@ -36,27 +57,63 @@ export const Login = () => {
     return url.toString();
   }, [STATE, NONCE]);
 
+  // 모바일 또는 태블릿 기기 여부
+  const isMobileDevice = isMobile || isTablet;
+
+  // URL 쿼리 파라미터에서 인증 코드 가져오기
+  const codeParam = searchParams.get('code');
+
   /**
    * 로그인 페이지로 리다이렉트 처리
    * @param url 리다이렉트할 URL
    */
-  const redirectLoginPage = (url: string) => {
-    window.location.replace(url);
+  const redirectLoginPage = (url: string, provider: string) => {
+    // STATE 값 세션 스토리지에 저장
+    sessionStorage.setItem(`${provider}_OAUTH_STATE`, STATE);
+    // 모바일 또는 태블릿 환경일 경우
+    if (isMobileDevice) {
+      // 현재 창에서 로그인 페이지로 리다이렉트
+      window.location.replace(url);
+    }
+    // 데스크탑 환경일 경우
+    else {
+      // 팝업 창으로 로그인 페이지 열기
+      const loginPopup = window.open(url, '로그인', 'width=500,height=700');
+      // 팝업이 차단되었을 경우 에러 메시지 출력
+      if (!loginPopup) {
+        toast.warn(t('warn.popupBlocked'), {
+          toastId: 'popupBlocked',
+        });
+      }
+    }
   };
 
-  // navigate 훅
-  const navigate = useNavigate();
-
-  // 유저 정보 전역 상태 저장 훅
-  const { user } = useUserStore();
-
-  // 버튼 클래스명
-  const buttonClassName =
-    'group relative w-full max-w-[240px] overflow-hidden border-black/10 bg-white p-0 transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer';
-  // 이미지 래퍼 클래스명
-  const imgWraperClassName = 'flex h-14 items-center justify-center sm:h-16';
-  // 이미지 클래스명
-  const imgClassName = 'select-none object-contain rounded-lg';
+  /**
+   * 로그인 팝업창에서 메시지 수신 처리
+   */
+  useEffect(() => {
+    // 모바일/태블릿 환경일 경우
+    if (isMobileDevice && codeParam) {
+      // 빈 이벤트 객체 생성
+      const emptyEvent = {} as MessageEvent;
+      // 로그인 OAuth 데이터 체크 후 리다이렉트 처리
+      checkAndRedirectLoginPage(emptyEvent, t, navigate, searchParams);
+      return;
+    }
+    // 모바일/태블릿 이외 환경일 경우
+    const handleLoginMessage = (event: MessageEvent) => {
+      // 메시지의 출처가 현재 도메인과 일치하는지 확인
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      // 로그인 OAuth 데이터 체크 후 리다이렉트 처리
+      checkAndRedirectLoginPage(event, t, navigate, searchParams);
+    };
+    window.addEventListener('message', handleLoginMessage);
+    return () => {
+      window.removeEventListener('message', handleLoginMessage);
+    };
+  }, [navigate, t, isMobileDevice, codeParam, searchParams]);
 
   /**
    * 유저 정보 존재 시 리다이렉트 처리
@@ -68,56 +125,131 @@ export const Login = () => {
     }
   }, [user, navigate]);
 
+  // 버튼 클래스명
+  const buttonClassName =
+    'group relative w-full max-w-[240px] overflow-hidden border-black/10 bg-white p-0 transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer';
+  // 이미지 래퍼 클래스명
+  const imgWraperClassName = 'flex h-14 items-center justify-center sm:h-16';
+  // 이미지 클래스명
+  const imgClassName = 'select-none object-contain rounded-lg';
+
   return (
     <>
-      <div className="min-h-[60vh] px-4 py-26 sm:px-6 lg:px-8">
-        <h1 className="mb-2 w-full text-left text-2xl font-bold sm:text-3xl">
-          {t('info.login')}
-        </h1>
-        <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-8">
-          {/* 네이버 로그인 버튼 */}
-          <button
-            type="button"
-            onClick={() => redirectLoginPage(NAVER_AUTH_URL)}
-            className={buttonClassName}
-            aria-label="네이버로 로그인"
-            title="네이버로 로그인"
-          >
-            <div className={imgWraperClassName}>
-              <img
-                src={naverLoginBtn}
-                alt="네이버 로그인"
-                className={imgClassName}
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-              />
-            </div>
-          </button>
+      {codeParam ? (
+        <></>
+      ) : (
+        <div className="min-h-[60vh] px-4 py-26 sm:px-6 lg:px-8">
+          <h1 className="mb-2 w-full text-left text-2xl font-bold sm:text-3xl">
+            {t('info.login')}
+          </h1>
+          <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-8">
+            {/* 네이버 로그인 버튼 */}
+            <button
+              type="button"
+              onClick={() =>
+                redirectLoginPage(NAVER_AUTH_URL, LOGIN_PROVIDER.NAVER)
+              }
+              className={buttonClassName}
+              aria-label="네이버로 로그인"
+              title="네이버로 로그인"
+            >
+              <div className={imgWraperClassName}>
+                <img
+                  src={naverLoginBtn}
+                  alt="네이버 로그인"
+                  className={imgClassName}
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
+              </div>
+            </button>
 
-          {/* 카카오 로그인 버튼 */}
-          <button
-            type="button"
-            onClick={() => redirectLoginPage(KAKAO_AUTH_URL)}
-            className={buttonClassName}
-            aria-label="카카오로 로그인"
-            title="카카오로 로그인"
-          >
-            <div className={imgWraperClassName}>
-              <img
-                src={kakaoLoginBtn}
-                alt="카카오 로그인"
-                className={imgClassName}
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-              />
-            </div>
-          </button>
+            {/* 카카오 로그인 버튼 */}
+            <button
+              type="button"
+              onClick={() =>
+                redirectLoginPage(KAKAO_AUTH_URL, LOGIN_PROVIDER.KAKAO)
+              }
+              className={buttonClassName}
+              aria-label="카카오로 로그인"
+              title="카카오로 로그인"
+            >
+              <div className={imgWraperClassName}>
+                <img
+                  src={kakaoLoginBtn}
+                  alt="카카오 로그인"
+                  className={imgClassName}
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
+              </div>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
 
 export default Login;
+
+/**
+ * 로그인 OAuth 데이터 체크 후 리다이렉트 처리
+ * @param event 메시지 이벤트
+ * @param t 다국어 번역 함수
+ * @param navigate 네비게이트 함수
+ * @param searchParams URLSearchParams 객체
+ */
+const checkAndRedirectLoginPage = (
+  event: MessageEvent,
+  t: TFunction,
+  navigate: NavigateFunction,
+  searchParams: URLSearchParams
+) => {
+  // 인증 데이터 추출
+  const eventData = event.data || {};
+  const code = eventData.code ?? searchParams.get('code');
+  const state = eventData.state ?? searchParams.get('state');
+  const error = eventData.error ?? searchParams.get('error');
+  const error_description =
+    eventData.error_description ?? searchParams.get('error_description');
+  const provider = eventData.provider ?? searchParams.get('provider');
+  // 에러가 있을 경우 메세지 표시
+  if (error) {
+    // 사용자가 취소한 경우 에러 메시지 표시 안함
+    if (error_description === 'Canceled By User') {
+      return;
+    }
+    console.error('[LOGIN ERROR]: ', error + ' - ' + error_description);
+    toast.error(t('error.loginError'), {
+      toastId: 'loginPopupError',
+    });
+    return;
+  }
+  // 응답 데이터가 모두 존재할 때
+  if (code && state) {
+    // STATE 검증
+    const expectedState = sessionStorage.getItem(`${provider}_OAUTH_STATE`);
+    if (!expectedState || state !== expectedState) {
+      console.error('[LOGIN ERROR]: ', t('error.loginStateError'));
+      toast.error(t('error.loginError'), { toastId: 'loginPopupError' });
+      return;
+    }
+    // 세션 스토리지에서 STATE 값 제거
+    sessionStorage.removeItem(`${provider}_OAUTH_STATE`);
+    // 로그인 처리 페이지 경로 생성
+    const prefixLoginPage = provider.toLowerCase();
+    // 로그인 처리 페이지로 리다이렉트
+    navigate(`/${prefixLoginPage}Login`, {
+      state: { code: code, state: state },
+    });
+  } else {
+    console.error('[LOGIN ERROR]: ', t('error.loginNoOAuthDataError'));
+    toast.error(t('error.loginError'), {
+      toastId: 'loginPopupError',
+    });
+    return;
+  }
+};
