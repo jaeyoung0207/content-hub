@@ -954,6 +954,19 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AppMediaTypeResponseDto'
+  /api/app/getLoginCookies:
+    get:
+      tags:
+        - app-api
+      summary: 로그인 쿠키 조회
+      operationId: getLoginCookies
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AppLoginCookiesResponseDto'
   /api/app/getCsrfToken:
     get:
       tags:
@@ -1743,11 +1756,11 @@ components:
         ciAuthenticatedAt:
           type: string
           format: date-time
+        leapMonth:
+          type: boolean
         emailVerified:
           type: boolean
         emailValid:
-          type: boolean
-        leapMonth:
           type: boolean
     KakaoPartnerDto:
       type: object
@@ -2042,8 +2055,12 @@ components:
             type: string
         lastAirDate:
           type: string
+        lastEpisodeToAir:
+          $ref: '#/components/schemas/TmdbTvEpisodeToAir'
         name:
           type: string
+        nextEpisodeToAir:
+          $ref: '#/components/schemas/TmdbTvEpisodeToAir'
         numberOfEpisodes:
           type: string
         numberOfSeasons:
@@ -2100,6 +2117,41 @@ components:
         character:
           type: string
         episodeCount:
+          type: string
+    TmdbTvEpisodeToAir:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        overview:
+          type: string
+        voteAverage:
+          type: number
+        voteCount:
+          type: integer
+          format: int32
+        airDate:
+          type: string
+        episodeNumber:
+          type: integer
+          format: int32
+        episodeType:
+          type: string
+        productionCode:
+          type: string
+        runTime:
+          type: integer
+          format: int32
+        seasonNumber:
+          type: integer
+          format: int32
+        showId:
+          type: integer
+          format: int32
+        stillPath:
           type: string
     TmdbTvSeasonDto:
       type: object
@@ -2415,9 +2467,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favourite:
-          type: boolean
         favouriteBlocked:
+          type: boolean
+        favourite:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2576,12 +2628,21 @@ components:
           $ref: '#/components/schemas/AppContentMediaTypeDto'
         displayMediaTypeDto:
           $ref: '#/components/schemas/AppDisplayMediaTypeDto'
+    AppLoginCookiesResponseDto:
+      type: object
+      properties:
+        provider:
+          type: string
+        hasRefreshToken:
+          type: boolean
+        deviceId:
+          type: string
     CsrfToken:
       type: object
       properties:
-        token:
-          type: string
         parameterName:
           type: string
         headerName:
+          type: string
+        token:
           type: string

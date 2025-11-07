@@ -82,7 +82,7 @@ public class JwtUtil {
 		try {
 			// JWT 토큰 파싱 및 검증
 			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-			// 토큰이 유효한 경우 Claims 객체 반환
+			// 토큰이 유효한 경우 유효한 토큰 코드를 반환
 			return JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode();
 		} catch (ExpiredJwtException ex) {
 			// 토큰이 만료된 경우 로그 출력

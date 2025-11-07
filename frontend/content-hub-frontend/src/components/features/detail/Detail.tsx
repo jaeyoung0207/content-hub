@@ -141,6 +141,19 @@ export const Detail = memo(() => {
   // 상영 시간
   const movieRuntime =
     isMovieType && data.runtime ? data.runtime + t('info.minutes') : undefined;
+  // 작품 상태
+  const contentStatus =
+    data?.status &&
+    ((isTvType &&
+      (Object.keys(TV_RELEASE_STATUS).find(
+        (key) => key === data.status && key === 'Returning Series'
+      ) && data.nextEpisodeToAir?.airDate
+        ? t('info.onAir')
+        : (TV_RELEASE_STATUS[data.status] ?? t('info.unknown')))) ||
+      (isMovieType &&
+        (MOVIE_RELEASE_STATUS[data.status] ?? t('info.unknown'))) ||
+      (isComicsType &&
+        (COMICS_RELEASE_STATUS[data.status] ?? t('info.unknown'))));
   // 총 권수
   const comicsVolume =
     isComicsType && data.volumes
@@ -365,17 +378,7 @@ export const Detail = memo(() => {
                             (isComicsType && t('info.comicsReleaseStatus'))) +
                             t('info.colon')}
                         </div>
-                        <div>
-                          {(isTvType &&
-                            (TV_RELEASE_STATUS[data.status] ??
-                              t('info.unknown'))) ||
-                            (isMovieType &&
-                              (MOVIE_RELEASE_STATUS[data.status] ??
-                                t('info.unknown'))) ||
-                            (isComicsType &&
-                              (COMICS_RELEASE_STATUS[data.status] ??
-                                t('info.unknown')))}
-                        </div>
+                        <div>{contentStatus}</div>
                       </li>
                     )}
                     {/* 홈페이지 */}

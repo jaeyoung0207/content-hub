@@ -375,9 +375,9 @@ export interface KakaoAccountDto {
   ci?: string;
   /** @format date-time */
   ciAuthenticatedAt?: string;
+  leapMonth?: boolean;
   emailVerified?: boolean;
   emailValid?: boolean;
-  leapMonth?: boolean;
 }
 
 export interface KakaoPartnerDto {
@@ -531,7 +531,9 @@ export interface DetailTvResponseDto {
   firstAirDate?: string;
   languages?: string[];
   lastAirDate?: string;
+  lastEpisodeToAir?: TmdbTvEpisodeToAir;
   name?: string;
+  nextEpisodeToAir?: TmdbTvEpisodeToAir;
   numberOfEpisodes?: string;
   numberOfSeasons?: string;
   originCountry?: string[];
@@ -562,6 +564,28 @@ export interface TmdbRoleDto {
   creditId?: string;
   character?: string;
   episodeCount?: string;
+}
+
+export interface TmdbTvEpisodeToAir {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  overview?: string;
+  voteAverage?: number;
+  /** @format int32 */
+  voteCount?: number;
+  airDate?: string;
+  /** @format int32 */
+  episodeNumber?: number;
+  episodeType?: string;
+  productionCode?: string;
+  /** @format int32 */
+  runTime?: number;
+  /** @format int32 */
+  seasonNumber?: number;
+  /** @format int32 */
+  showId?: number;
+  stillPath?: string;
 }
 
 export interface TmdbTvSeasonDto {
@@ -742,8 +766,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favourite?: boolean;
   favouriteBlocked?: boolean;
+  favourite?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -821,8 +845,14 @@ export interface AppMediaTypeResponseDto {
   displayMediaTypeDto: AppDisplayMediaTypeDto;
 }
 
+export interface AppLoginCookiesResponseDto {
+  provider?: string;
+  hasRefreshToken?: boolean;
+  deviceId?: string;
+}
+
 export interface CsrfToken {
-  token?: string;
   parameterName?: string;
   headerName?: string;
+  token?: string;
 }

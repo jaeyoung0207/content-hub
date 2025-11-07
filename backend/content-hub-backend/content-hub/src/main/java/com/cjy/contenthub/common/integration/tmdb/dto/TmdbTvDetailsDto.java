@@ -36,8 +36,14 @@ public class TmdbTvDetailsDto extends TmdbVideoDetailsDto {
 	/** 마지막 방영일 */
 	private String lastAirDate;
 	
+	/** 마지막 방영 에피소드 */
+	private TmdbTvEpisodeToAir lastEpisodeToAir;
+	
 	/** 작품명 */
 	private String name;
+	
+	/** 다음 방영 에피소드 */
+	private TmdbTvEpisodeToAir nextEpisodeToAir;
 	
 	/** 애파소드 수 */
 	private String numberOfEpisodes;

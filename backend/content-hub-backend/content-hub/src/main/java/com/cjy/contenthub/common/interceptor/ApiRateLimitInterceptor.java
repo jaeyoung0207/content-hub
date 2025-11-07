@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesDebugEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesWarnEnum;
 import com.cjy.contenthub.common.ratelimit.service.ApiRateLimitService;
+import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +40,9 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 	
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
+	
+	/** 쿠키 유틸리티 */
+	private final CookieUtil cookieUtil;
 	
 	/** API Rate Limit 서비스 */
 	private final ApiRateLimitService apiRateLimitService;
@@ -63,7 +68,15 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 		// 클라이언트 IP 주소와 요청 URI를 기반으로 고유 키 생성
 		String ip = request.getRemoteAddr();
 		String uri = request.getRequestURI();
-		String key = "rate_limit:".concat(ip).concat(CommonConstants.COLON).concat(uri);
+		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
+		
+		// 디바이스 ID가 존재유무로 별도 키 생성
+		String key = "";
+		if (StringUtils.isNotEmpty(deviceId)) {
+			key = "rate_limit:device:".concat(deviceId).concat(CommonConstants.COLON).concat(uri);
+		} else {
+			key = "rate_limit:ip:".concat(ip).concat(CommonConstants.COLON).concat(uri);
+		}
 		
 		// 해당 URI에 대한 최대 요청 횟수와 시간(초) 조회
 		int maxRequestCount = apiRateLimitService.getMaxRequestCount(uri);
@@ -80,7 +93,7 @@ public class ApiRateLimitInterceptor implements HandlerInterceptor {
 		// 스크립트 실행
 		Long count = redisUtil.executeScript(script, keyList, args, Long.class);
 		
-		Object[] logParams = { ip, uri, key, count, maxRequestCount };
+		Object[] logParams = { ip, uri, deviceId, key, count, maxRequestCount };
 		log.debug(messageUtil.getMessageKO(
 				CommonMessagesDebugEnum.DEBUG_COMMON_API_RATE_LIMIT_CHECK.getMessageCode(), logParams));
 		

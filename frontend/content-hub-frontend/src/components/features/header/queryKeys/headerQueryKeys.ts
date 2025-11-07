@@ -8,6 +8,8 @@ const headerMainKey = 'header';
 export const headerQueryKeys = {
   // 헤더에서 CSRF 토큰을 가져오기 위한 쿼리 키
   getCsrfToken: () => [headerMainKey, 'getCsrfToken'] as const,
+  // 헤더에서 로그인 쿠키를 가져오기 위한 쿼리 키
+  getLoginCookies: () => [headerMainKey, 'getLoginCookies'] as const,
   // 헤더에서 미디어 타입을 가져오기 위한 쿼리 키
   getMediaTypes: () => [headerMainKey, 'getMediaTypes'] as const,
   // 헤더에서 키워드 리스트를 가져오기 위한 쿼리 키

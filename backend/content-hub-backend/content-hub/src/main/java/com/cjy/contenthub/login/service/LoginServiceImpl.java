@@ -195,13 +195,14 @@ public class LoginServiceImpl implements LoginService {
 	 * 네이버 로그인 토큰 갱신
 	 *
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return NaverIssueTokenDto
 	 */
 	@Override
-	public NaverIssueTokenDto getNaverUpdateToken(String refreshToken) {
+	public NaverIssueTokenDto getNaverUpdateToken(String refreshToken, String deviceId) {
 		
 		// 제공자 정보 조회
-		ProviderInfo providerInfo = redisUtil.getProviderInfoByRefreshToken(refreshToken);
+		ProviderInfo providerInfo = redisUtil.getProviderInfo(refreshToken, deviceId);
 		
 		// 제공자 정보가 없는 경우 예외 처리
 		if (providerInfo == null) {
@@ -209,7 +210,7 @@ public class LoginServiceImpl implements LoginService {
                 messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
         }
 		// 리프레시 토큰 검증
-		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken)) {
+		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken, deviceId)) {
 			throw new AccountExpiredException(
 					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
@@ -236,15 +237,17 @@ public class LoginServiceImpl implements LoginService {
 	 * @param accessToken 액세스 토큰
 	 * @param targetId    타겟 ID (제공자 ID)
 	 * @param userId      유저 테이블 ID
+	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return NaverDeleteTokenDto
 	 */
 	@Override
-	public NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken) {
+	public NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
 		
 		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
 		if (StringUtils.isNotEmpty(refreshToken)) {
-			redisUtil.deleteRefreshToken(LoginProviderEnum.NAVER.getProvider(), targetId);
-			redisUtil.deleteProviderInfoByRefreshToken(refreshToken);
+			redisUtil.deleteRefreshToken(LoginProviderEnum.NAVER.getProvider(), targetId, deviceId);
+			redisUtil.deleteProviderInfo(refreshToken, deviceId);
 		}
 		
 		// 유저 상태를 LOGOUT으로 변경
@@ -298,15 +301,16 @@ public class LoginServiceImpl implements LoginService {
 	/**
 	 * 카카오 로그인 토큰 갱신
 	 *
-	 * @param clientId               클라이언트 ID
+	 * @param clientId     클라이언트 ID
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId     디바이스 ID
 	 * @return 카카오 토큰 발행 DTO
 	 */
 	@Override
-	public KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken) {
+	public KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId) {
 		
 		// 제공자 정보 조회
-		ProviderInfo providerInfo = redisUtil.getProviderInfoByRefreshToken(refreshToken);
+		ProviderInfo providerInfo = redisUtil.getProviderInfo(refreshToken, deviceId);
 		
 		// 제공자 정보가 없는 경우 예외 처리
 		if (providerInfo == null) {
@@ -314,7 +318,7 @@ public class LoginServiceImpl implements LoginService {
 					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
 		// 리프레시 토큰 검증
-		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken)) {
+		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken, deviceId)) {
 			throw new AccountExpiredException(
 					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
@@ -341,15 +345,17 @@ public class LoginServiceImpl implements LoginService {
 	 * @param accessToken 액세스 토큰
 	 * @param targetId    대상 ID (제공자 ID)
 	 * @param userId      유저 테이블 ID
+	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return KakaoUserInfoDto
 	 */
 	@Override
-	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken) {
+	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
 		
 		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
 		if (StringUtils.isNotEmpty(refreshToken)) {
-			redisUtil.deleteRefreshToken(LoginProviderEnum.KAKAO.getProvider(), targetId);
-			redisUtil.deleteProviderInfoByRefreshToken(refreshToken);
+			redisUtil.deleteRefreshToken(LoginProviderEnum.KAKAO.getProvider(), targetId, deviceId);
+			redisUtil.deleteProviderInfo(refreshToken, deviceId);
 		}
 		
 		// 유저 상태를 LOGOUT으로 변경

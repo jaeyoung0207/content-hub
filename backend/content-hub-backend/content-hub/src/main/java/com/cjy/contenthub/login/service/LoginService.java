@@ -31,9 +31,10 @@ public interface LoginService {
 	 * 네이버 로그인 토큰 갱신
 	 *
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return 네이버 토큰 발행 DTO
 	 */
-	NaverIssueTokenDto getNaverUpdateToken(String refreshToken);
+	NaverIssueTokenDto getNaverUpdateToken(String refreshToken, String deviceId);
 	
 	/**
 	 * 네이버 로그인 토큰 삭제
@@ -42,9 +43,10 @@ public interface LoginService {
 	 * @param targetId    타겟 ID
 	 * @param userId      유저 테이블 ID
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return 네이버 토큰 삭제 DTO
 	 */
-	NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken);
+	NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
 	
 	/**
 	 * 카카오 로그인 토큰 발행
@@ -61,9 +63,10 @@ public interface LoginService {
 	 *
 	 * @param clientId 클라이언트 ID
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return 카카오 토큰 발행 DTO
 	 */
-	KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken);
+	KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId);
 	
 	/**
 	 * 카카오 로그인 토큰 삭제
@@ -72,8 +75,9 @@ public interface LoginService {
 	 * @param targetId    타겟 ID
 	 * @param userId      유저 테이블 ID
 	 * @param refreshToken 리프레시 토큰
+	 * @param deviceId 디바이스 ID
 	 * @return 카카오 유저 정보 DTO
 	 */
-	KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken);
+	KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
 
 }

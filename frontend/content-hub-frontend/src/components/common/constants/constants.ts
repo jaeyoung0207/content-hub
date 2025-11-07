@@ -9,9 +9,6 @@ import i18n from '@/i18n';
 // 모바일 화면 너비 기준
 export const MOBILE_WIDTH = 768;
 
-// 모바일 사이즈 판단
-// export const IS_MOBILE = window.innerWidth < 768;
-
 // TMDB API 이미지 불러오기용 URL ("https://image.tmdb.org/t/p/<이미지 사이즈>/<이미지 파일명>" 형식으로 사용)
 // 이미지 사이즈 예시 : w300, w500, original 등
 export const TMDB_API_IMAGE_DOMAIN = 'https://image.tmdb.org/t/p/';
@@ -28,7 +25,7 @@ export const WIDTH_300 = 'w300';
 // width 500 이미지 사이즈
 export const WIDTH_500 = 'w500';
 
-// width 500 이미지 사이즈
+// width 780 이미지 사이즈
 export const WIDTH_780 = 'w780';
 
 // width original 이미지 사이즈
@@ -162,7 +159,7 @@ export const COMMON_IMAGES = {
 
 // TMDB TV 방영 상태
 export const TV_RELEASE_STATUS: Record<string, string> = {
-  'Returning Series': '방영 중',
+  'Returning Series': '다음 시즌 방영 예정',
   Planned: '방영 예정',
   'In Production': '제작 중',
   Ended: '방영 종료',
@@ -227,7 +224,6 @@ export const ERROR_CODE = {
 
 // API 응답 에러 메시지
 export const ERROR_MESSAGE = {
-  // API 응답 에러 메시지
   // 네트워크 에러
   NETWORK_ERROR: {
     name: 'Network Error',
@@ -278,6 +274,7 @@ export const ERROR_MESSAGE = {
     name: 'Timeout Error',
     message: i18n.t('error.timeoutError'),
   },
+  // API 요청 한도 초과 에러
   API_RATE_LIMIT_EXCEEDED_ERROR: {
     name: 'API Rate Limit Exceeded Error',
     message: i18n.t('error.apiRateLimitExceededError'),

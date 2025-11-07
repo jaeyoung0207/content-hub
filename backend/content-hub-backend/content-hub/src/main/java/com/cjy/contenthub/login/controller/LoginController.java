@@ -3,7 +3,6 @@ package com.cjy.contenthub.login.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,17 +11,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoIssueTokenDto;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverDeleteTokenDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverIssueTokenDto;
+import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
+import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
 import com.cjy.contenthub.login.client.LoginClient;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
-import com.cjy.contenthub.login.helper.LoginHelper;
 import com.cjy.contenthub.login.service.LoginService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,11 +45,11 @@ public class LoginController {
 	/** 로그인 클라이언트 */
 	private final LoginClient loginClient;
 	
-	/** 로그인 헬퍼 */
-	private final LoginHelper loginHelper;
-	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
+	
+	/** 쿠키 유틸 */
+	private final CookieUtil cookieUtil;
 
 	/** 파라미터 : 클라이언트 ID */
 	private static final String PARAM_CLIENT_ID = "client_id";
@@ -116,15 +116,18 @@ public class LoginController {
 	public ResponseEntity<LoginUserResponseDto> updateNaverLoginInfo(HttpServletRequest request) {
 
 		// 쿠키에서 리프레시 토큰 추출
-		String refreshToken = loginHelper.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
+		String refreshToken = cookieUtil.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
+		
+		// 쿠키에서 디바이스 ID 추출
+		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
-		// refresh token이 없는 경우 처리 종료
-		if (StringUtils.isEmpty(refreshToken)) {
+		// 리프레시 토큰 또는 디바이스 ID가 없는 경우 처리 종료
+		if (StringUtils.isAnyEmpty(refreshToken, deviceId)) {
 			return ResponseEntity.ok(new LoginUserResponseDto());
 		}
 
 		// 네이버 토큰 갱신 서비스 호출
-		NaverIssueTokenDto tokenResponse = loginService.getNaverUpdateToken(refreshToken);
+		NaverIssueTokenDto tokenResponse = loginService.getNaverUpdateToken(refreshToken, deviceId);
 
 		// 네이버 프로필 조회 처리
 		return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), null).block();
@@ -168,25 +171,20 @@ public class LoginController {
 			) {
 		
 		// 리프레시 토큰 추출
-		String refreshToken = loginHelper.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
+		String refreshToken = cookieUtil.getRefreshToken(request, LoginProviderEnum.NAVER.getProvider());
+		
+		// 쿠키에서 디바이스 ID 추출
+		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
 		// 네이버 토큰 삭제 서비스 호출
-		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken, targetId, userId, refreshToken);
-
-		// 리프레시 토큰 쿠키 삭제
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, "")
-				.path("/")
-				.maxAge(0) // 즉시 만료
-				.build();
-		// provider 쿠키 삭제
-		ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, "")
-				.path("/")
-				.maxAge(0) // 즉시 만료
-				.build();
+		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken, targetId, userId, refreshToken, deviceId);
+		
+		// 로그인 쿠키 삭제
+		LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
 
 		// 쿠키 설정 및 응답 반환
 		return ResponseEntity.ok()
-				.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), providerCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, cookiesInfo.refreshToken(), cookiesInfo.provider())
 				.body(tokenResponse);
 	}
 
@@ -237,15 +235,18 @@ public class LoginController {
 			) {
 
 		// 쿠키에서 리프레시 토큰 추출
-		String refreshToken = loginHelper.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
+		String refreshToken = cookieUtil.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
+		
+		// 쿠키에서 디바이스 ID 추출
+		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
 		// 리프레시 토큰이 없는 경우 처리 종료
-		if (StringUtils.isEmpty(refreshToken)) {
+		if (StringUtils.isAnyEmpty(refreshToken, deviceId)) {
 			return ResponseEntity.ok(new LoginUserResponseDto());
 		}
 
 		// 카카오 토큰 갱신 서비스 호출
-		KakaoIssueTokenDto tokenResponse = loginService.updateKakaoLoginInfo(clientId, refreshToken);
+		KakaoIssueTokenDto tokenResponse = loginService.updateKakaoLoginInfo(clientId, refreshToken, deviceId);
 
 		// idToken 확인
 		String[] idTokenArray = tokenResponse.getIdToken().split("\\.");
@@ -296,25 +297,20 @@ public class LoginController {
 			) {
 		
 		// 리프레시 토큰 추출
-		String refreshToken = loginHelper.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
+		String refreshToken = cookieUtil.getRefreshToken(request, LoginProviderEnum.KAKAO.getProvider());
+		
+		// 쿠키에서 디바이스 ID 추출
+		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
 		// 카카오 토큰 삭제 서비스 호출
-		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId, userId, refreshToken);
+		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId, userId, refreshToken, deviceId);
 		
-		// 리프레시 토큰 쿠키 삭제
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, "")
-				.path("/")
-				.maxAge(0) // 즉시 만료
-				.build();
-		// provider 쿠키 삭제
-		ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, "")
-				.path("/")
-				.maxAge(0) // 즉시 만료
-				.build();
+		// 로그인 쿠키 삭제
+		LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
 		
 		// 쿠키 설정 및 응답 반환
 		return ResponseEntity.ok()
-				.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString(), providerCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, cookiesInfo.refreshToken(), cookiesInfo.provider())
 				.body(useInfo);
 	}
 

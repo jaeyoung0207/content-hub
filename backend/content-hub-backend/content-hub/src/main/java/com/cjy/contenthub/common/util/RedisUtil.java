@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -25,33 +24,25 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {
-	
+
 	/** Redis 템플릿 */
 	private final RedisTemplate<String, Object> redisTemplate;
-	
+
 	/** String Redis 템플릿 */
 	private final StringRedisTemplate stringRedisTemplate;
-	
+
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
-	
-	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.naver.custom.refresh-token-expires-in}")
-	private long naverExpiresIn;
-	
-	/** 네이버 리프레시 토큰 만료 시간 (일) */
-	@Value("${login.kakao.custom.refresh-token-expires-in}")
-	private long kakaoExpiresIn;
-	
+
 	/** 리프레시 토큰 키 접두사 */
 	private static final String KEY_REFRESH_TOKEN = "refreshToken:";
-	
+
 	/** 제공자 정보 키 접두사 */
 	private static final String KEY_PROVIDER_INFO = "providerInfo:";
-	
+
 	/** 제공자 정보 레코드 */
 	public record ProviderInfo(String provider, String providerId) {}
-	
+
 	/**
 	 * 해시 키 변환 메소드
 	 * 
@@ -68,50 +59,53 @@ public class RedisUtil {
 					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONVERT_HASHKEY.getMessageCode()), e);
 		}
 	}
-	
+
 	/**
 	 * 리프레시 토큰 저장 메소드
 	 * 
 	 * @param provider     로그인 제공자
 	 * @param providerId   로그인 제공자의 고유 ID
 	 * @param refreshToken 리프레시 토큰 값
+	 * @param deviceId    디바이스 ID
 	 * @param expiresIn 토큰 만료 시간 (일)
 	 */
-	public void saveRefreshToken(String provider, String providerId, String refreshToken, long expiresIn) {
+	public void saveRefreshToken(String provider, String providerId, String refreshToken, String deviceId, long expiresIn) {
 		// 리프레시 토큰 해시 값 생성
 		String refreshTokenHash = convertHashKey(refreshToken);
-		// 리프레시 토큰 해시를 제공자 정보를 저장할 키로 정의
-		String providerInfoKey = KEY_PROVIDER_INFO.concat(refreshTokenHash);
-		// 제공자 정보를 리프레시 토큰을 저장할 키로 정의
-		String refreshTokenKey = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
+		// 제공자 정보 키 생성
+		String providerInfoKey = createProviderInfoKey(deviceId, refreshToken);
+		// 리프레시 토큰 키 생성
+		String refreshTokenKey = createRefreshTokenKey(deviceId, provider, providerId);
 		// 제공자 정보 키와 사용자 정보 매핑 저장
 		setValue(providerInfoKey, provider.concat(CommonConstants.COLON).concat(providerId), Duration.ofDays(expiresIn));
 		// 리프레시 토큰 키와 리프레시 토큰 매핑 저장
 		setValue(refreshTokenKey, refreshTokenHash, Duration.ofDays(expiresIn));
 	}
-	
+
 	/**
 	 * 리프레시 토큰 유효성 검사 메소드
 	 * 
 	 * @param provider     로그인 제공자
 	 * @param providerId   로그인 제공자의 고유 ID
 	 * @param refreshToken 리프레시 토큰 값
+	 * @param deviceId    디바이스 ID
 	 * @return boolean 유효성 검사 결과 (true: 유효, false: 유효하지 않음)
 	 */
-	public boolean validateRefreshToken(String provider, String providerId, String refreshToken) {
-        String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
-        String redisRefreshTokenHash = (String) getValue(key);
+	public boolean validateRefreshToken(String provider, String providerId, String refreshToken, String deviceId) {
+		String key = createRefreshTokenKey(deviceId, provider, providerId);
+		String redisRefreshTokenHash = (String) getValue(key);
 		return StringUtils.isNotEmpty(redisRefreshTokenHash) && redisRefreshTokenHash.equals(convertHashKey(refreshToken));
 	}
-	
+
 	/**
 	 * 리프레시 토큰으로 제공자 정보 조회 메소드
 	 * 
 	 * @param refreshToken 리프레시 토큰 값
+	 * @param deviceId    디바이스 ID
 	 * @return ProviderInfo 제공자 정보 객체 (null: 정보 없음)
 	 */
-	public ProviderInfo getProviderInfoByRefreshToken(String refreshToken) {
-		String key = KEY_PROVIDER_INFO.concat(convertHashKey(refreshToken));
+	public ProviderInfo getProviderInfo(String refreshToken, String deviceId) {
+		String key = createProviderInfoKey(deviceId, refreshToken);
 		String providerInfoStr = (String) getValue(key);
 		if (StringUtils.isNotEmpty(providerInfoStr)) {
 			String[] providerInfoArray = providerInfoStr.split(CommonConstants.COLON);
@@ -121,32 +115,30 @@ public class RedisUtil {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 리프레시 토큰 삭제 메소드
 	 * 
 	 * @param provider   로그인 제공자
 	 * @param providerId 로그인 제공자의 고유 ID
+	 * @param deviceId  디바이스 ID
 	 */
-	public void deleteRefreshToken(String provider, String providerId) {
-		String key = KEY_REFRESH_TOKEN.concat(provider).concat(CommonConstants.COLON).concat(providerId);
-		if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-			deleteKey(key);
-		}
+	public void deleteRefreshToken(String provider, String providerId, String deviceId) {
+		String key = createRefreshTokenKey(deviceId, provider, providerId);
+		deleteKey(key);
 	}
-	
+
 	/**
 	 * 리프레시 토큰으로 사용자 정보 삭제 메소드
 	 * 
 	 * @param refreshToken 리프레시 토큰 값
+	 * @param deviceId    디바이스 ID
 	 */
-	public void deleteProviderInfoByRefreshToken(String refreshToken) {
-		String key = KEY_PROVIDER_INFO.concat(convertHashKey(refreshToken));
-		if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-			deleteKey(key);
-		}
+	public void deleteProviderInfo(String refreshToken, String deviceId) {
+		String key = createProviderInfoKey(deviceId, refreshToken);
+		deleteKey(key);
 	}
-	
+
 	/**
 	 * 일반 키-값 쌍 저장 메소드
 	 * 
@@ -157,7 +149,7 @@ public class RedisUtil {
 	public void setValue(String key, Object value, Duration duration) {
 		redisTemplate.opsForValue().set(key, value, duration);
 	}
-	
+
 	/**
 	 * 일반 키-값 쌍 조회 메소드
 	 * 
@@ -167,7 +159,7 @@ public class RedisUtil {
 	public Object getValue(String key) {
 		return redisTemplate.opsForValue().get(key);
 	}
-	
+
 	/**
 	 * 일반 키-값 쌍 삭제 메소드
 	 * 
@@ -193,7 +185,7 @@ public class RedisUtil {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * 키 만료 시간 설정 메소드
 	 * 
@@ -204,7 +196,7 @@ public class RedisUtil {
 	public void expire(String key, long timeout, TimeUnit unit) {
 		stringRedisTemplate.expire(key, timeout, unit);
 	}
-	
+
 	/**
 	 * 키 만료 시간 조회 메소드
 	 * 
@@ -229,9 +221,40 @@ public class RedisUtil {
 	 */
 	public <T> T executeScript(String script, List<String> keyList, List<String> args, Class<T> resultType) {
 		return stringRedisTemplate.execute(
-			    new DefaultRedisScript<>(script, resultType),
-			    keyList,
-			    args.toArray());
+				new DefaultRedisScript<>(script, resultType),
+				keyList,
+				args.toArray());
+	}
+	
+	/**
+	 * 리프레시 토큰 키 생성 메소드
+	 * 
+	 * @param deviceId 디바이스 ID
+	 * @param provider 로그인 제공자
+	 * @param providerId 로그인 제공자의 고유 ID
+	 * @return String 리프레시 토큰 키
+	 */
+	private String createRefreshTokenKey(String deviceId, String provider, String providerId) {
+		return KEY_REFRESH_TOKEN
+				.concat(deviceId)
+				.concat(CommonConstants.COLON)
+				.concat(provider)
+				.concat(CommonConstants.COLON)
+				.concat(providerId);
+	}
+	
+	/**
+	 * 제공자 정보 키 생성 메소드
+	 * 
+	 * @param deviceId         디바이스 ID
+	 * @param refreshToken     리프레시 토큰 
+	 * @return String 제공자 정보 키
+	 */
+	private String createProviderInfoKey(String deviceId, String refreshToken) {
+		return KEY_PROVIDER_INFO
+				.concat(deviceId)
+				.concat(CommonConstants.COLON)
+				.concat(convertHashKey(refreshToken)); // 해시 값 사용
 	}
 
 }

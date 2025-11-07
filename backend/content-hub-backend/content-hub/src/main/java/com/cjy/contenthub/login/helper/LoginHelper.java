@@ -1,23 +1,15 @@
 package com.cjy.contenthub.login.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.repository.UserRepository;
 import com.cjy.contenthub.core.repository.entity.UserEntity;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -32,40 +24,6 @@ public class LoginHelper {
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
-
-	/**
-	 * 쿠키에서 로그인 유저의 프로바이더 정보를 추출
-	 *
-	 * @param request HttpServletRequest
-	 * @param provider 로그인 제공자
-	 * @return 리프레시 토큰
-	 */
-	public String getRefreshToken(HttpServletRequest request, String provider) {
-		// 쿠키 추출
-		String refreshToken = null;
-		Cookie[] cookies = request.getCookies();
-		// 쿠키가 존재하는 경우
-		if (cookies != null) {
-			List<Cookie> cookieList = new ArrayList<>();
-			if (Arrays.stream(cookies)
-					.anyMatch(c -> 
-					StringUtils.equals(c.getName(), DomainConstants.PROVIDER) && // 쿠키 이름이 PROVIDER이고
-					StringUtils.equals(c.getValue(), provider)) // 쿠키 값이 provider 파라미터 값과 일치하는 경우
-					) {
-				// 쿠키이름이 리프레시 토큰인 쿠키 추출
-				cookieList = Arrays.stream(cookies)
-						.filter(c -> StringUtils.equals(c.getName(), DomainConstants.REFRESH_TOKEN))
-						.toList();
-			}
-			// 쿠키가 존재하는 경우
-			if (!ObjectUtils.isEmpty(cookieList)) {
-				// 리프레시 토큰 값 추출
-				refreshToken = cookieList.get(0).getValue();
-			}
-		}
-		// 리프레시 토큰 반환
-		return refreshToken;
-	}
 	
 	/**
 	 * 유저 상태 갱신

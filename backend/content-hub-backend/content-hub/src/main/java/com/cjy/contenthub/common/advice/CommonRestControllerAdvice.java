@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,9 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
+import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
+import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,9 @@ public class CommonRestControllerAdvice {
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
+	
+	/** 쿠키 유틸 */
+	private final CookieUtil cookieUtil;
 
 	/** 인증 에러 */
 	private static final String AUTHENTICATION_AUTHORIZATION_ERROR = "Authentication/Authorization Error";
@@ -60,19 +67,20 @@ public class CommonRestControllerAdvice {
 	
 	/** 타임아웃 에러 */
 	private static final String TIMEOUT_ERROR = "Timeout Error";
-
+	
 	/**
 	 * 인증/인가 관련 예외 처리
 	 * 
 	 * @param ex AuthenticationException, AccessDeniedException
 	 * @param request HttpServletRequest
+	 * @param response HttpServletResponse
 	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler({
 		AuthenticationException.class, // 인증 실패
 		AccessDeniedException.class // 인가 실패
 	})
-	public ResponseEntity<CommonErrorResponse> handleAuthException(Exception ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleAuthException(Exception ex, HttpServletRequest request, HttpServletResponse response) {
 		String path = request.getRequestURI();
 		int statusCode = ex instanceof AccessDeniedException
 				? HttpStatus.FORBIDDEN.value() : HttpStatus.UNAUTHORIZED.value();
@@ -86,6 +94,13 @@ public class CommonRestControllerAdvice {
 		Object[] messageParams = {AUTHENTICATION_AUTHORIZATION_ERROR, path, statusCode, 
 				ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message};
 		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
+		
+		// 로그인 쿠키 삭제
+		LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
+		// 쿠키 헤더 추가
+		response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.refreshToken());
+		response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.provider());
+		
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}
 

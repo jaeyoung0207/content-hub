@@ -1,6 +1,11 @@
 package com.cjy.contenthub.app.controller;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.app.controller.dto.AppContentMediaTypeDto;
 import com.cjy.contenthub.app.controller.dto.AppDisplayMediaTypeDto;
+import com.cjy.contenthub.app.controller.dto.AppLoginCookiesResponseDto;
 import com.cjy.contenthub.app.controller.dto.AppMediaTypeResponseDto;
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.constants.CommonConstants;
+import com.cjy.contenthub.common.properties.LoginCookieProperties;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
@@ -20,6 +28,9 @@ import com.cjy.contenthub.core.constants.DomainEnum.DisplayMediaTypeEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +46,9 @@ public class AppController {
 	
 	/** 세션 유틸리티 클래스 */
 	private final SessionUtil sessionUtil;
+	
+	/** 로그인 쿠키 프로퍼티 */
+	private final LoginCookieProperties loginCookieProperties;
 
 	/**
 	 * 첫 로드시 csrf 토큰을 생성하기 위한 API
@@ -47,6 +61,54 @@ public class AppController {
     public CsrfToken getCsrfToken(@Nullable CsrfToken token) {
         return token;
     }
+	
+	/**
+	 * 로그인 쿠키 조회
+	 * 
+	 * @param request HttpServletRequest
+	 * @return AppLoginCookiesResponseDto 로그인 쿠키 응답 DTO
+	 */
+	@Operation(summary = "로그인 쿠키 조회")
+	@GetMapping("/getLoginCookies")
+	public AppLoginCookiesResponseDto getLoginCookies(HttpServletRequest request, HttpServletResponse response) {
+		// 로그인 쿠키 응답 DTO 생성
+		AppLoginCookiesResponseDto cookiesResponse = new AppLoginCookiesResponseDto();
+		// 쿠키 추출
+		Cookie[] cookies = request.getCookies();
+		// 쿠키가 존재하는 경우
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				String cookieName = cookie.getName();
+				// 쿠키 이름에 따라 값 설정
+				if (StringUtils.equals(cookieName, CommonConstants.PROVIDER)) {
+					cookiesResponse.setProvider(cookie.getValue());
+				} else if (StringUtils.equals(cookieName, CommonConstants.REFRESH_TOKEN)) {
+					cookiesResponse.setHasRefreshToken(true);
+				} else if (StringUtils.equals(cookieName, CommonConstants.DEVICE_ID)) {
+					cookiesResponse.setDeviceId(cookie.getValue());
+				}
+			}
+		}
+		// 쿠키에 디바이스 ID가 없는 경우 신규 생성
+		if (StringUtils.isEmpty(cookiesResponse.getDeviceId())) {
+			String deviceId = UUID.randomUUID().toString();
+			// 디바이스 ID 쿠키
+			ResponseCookie deviceIdCookie = ResponseCookie.from(CommonConstants.DEVICE_ID, deviceId)
+					.httpOnly(loginCookieProperties.isHttpOnly())
+					.secure(loginCookieProperties.isSecure())
+					.sameSite(loginCookieProperties.getSameSite())
+					.path("/")
+					.maxAge(60L * 60L * 24L * 365L) // 1년
+					.build();
+			// 디바이스 ID 쿠키 설정
+			response.setHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
+			// 디바이스 ID 응답 DTO 설정
+			cookiesResponse.setDeviceId(deviceId);
+		}
+		
+		// 로그인 쿠키 응답 DTO 반환
+		return cookiesResponse;
+	}
     
 	/**
 	 * 공통 미디어 타입 조회

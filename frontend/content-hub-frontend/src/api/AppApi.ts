@@ -10,7 +10,11 @@
  * ---------------------------------------------------------------
  */
 
-import { AppMediaTypeResponseDto, CsrfToken } from './data-contracts';
+import {
+  AppLoginCookiesResponseDto,
+  AppMediaTypeResponseDto,
+  CsrfToken,
+} from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class AppApi<
@@ -61,6 +65,20 @@ export class AppApi<
   getMediaTypes = (params: RequestParams = {}) =>
     this.request<AppMediaTypeResponseDto, any>({
       path: `/api/app/getMediaTypes`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags app-api
+   * @name GetLoginCookies
+   * @summary 로그인 쿠키 조회
+   * @request GET:/api/app/getLoginCookies
+   */
+  getLoginCookies = (params: RequestParams = {}) =>
+    this.request<AppLoginCookiesResponseDto, any>({
+      path: `/api/app/getLoginCookies`,
       method: 'GET',
       ...params,
     });

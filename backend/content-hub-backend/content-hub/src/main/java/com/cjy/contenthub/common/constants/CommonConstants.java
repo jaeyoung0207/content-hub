@@ -15,6 +15,15 @@ public class CommonConstants {
     /** 인증 헤더 이름 */
     public static final String AUTHORIZATION_HEADER = "Authorization";
     
+    /** 리프레시 토큰 */
+    public static final String REFRESH_TOKEN = "refreshToken";
+    
+    /** 로그인 제공자 */
+    public static final String PROVIDER = "provider";
+    
+    /** 디바이스 ID */
+    public static final String DEVICE_ID = "deviceId";
+    
     /** COMMA */
     public static final String COMMA = ",";
     

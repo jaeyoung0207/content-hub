@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,10 +29,11 @@ import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverProfileDataDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverProfileResultDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverUserDetails;
+import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
+import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.common.util.RedisUtil;
-import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.NaverProfileErrorEnum;
@@ -65,6 +65,9 @@ public class LoginClient {
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
 	
+	/** 쿠키 유틸 */
+	private final CookieUtil cookieUtil;
+	
 	/** 로그인 서비스 */
 	private final LoginService service;
 
@@ -79,26 +82,6 @@ public class LoginClient {
 	@Qualifier("kakaoWebClient")
 	private final WebClient kakaoWebClient;
 	
-	/** 로그인 쿠키 설정 - HttpOnly */
-	@Value("${login.cookie.http-only}")
-	private boolean loginCookieHttpOnly;
-	
-	/** 로그인 쿠키 설정 - Secure */
-	@Value("${login.cookie.secure}")
-	private boolean loginCookieSecure;
-	
-	/** 로그인 쿠키 설정 - SameSite */
-	@Value("${login.cookie.same-site}")
-	private String loginCookieSameSite;
-	
-	/** 로그인 쿠키 설정 - Domain */
-	@Value("${login.cookie.domain}")
-	private String loginCookieDomain;
-	
-	/** 로그인 쿠키 설정 - Path */
-	@Value("${login.cookie.path}")
-	private String loginCookiePath;
-
 	/** 네이버 API 유저 정보 조회 URL */
 	@Value("${login.naver.url.user-info-url}")
 	private String naverUserInfoUrl;
@@ -223,31 +206,17 @@ public class LoginClient {
 
 								// 파라미터에 리프레시 토큰이 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
+									// 디바이스 ID 조회
+									String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 									// refresh token을 redis에 저장
 									redisUtil.saveRefreshToken(provider, profile.getId(),
-											refreshToken, naverExpiresIn);
-									// 리프레시 토큰 쿠키
-									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
-											.httpOnly(loginCookieHttpOnly)
-											.secure(loginCookieSecure)
-											.sameSite(loginCookieSameSite)
-											.domain(loginCookieDomain)
-											.path(loginCookiePath)
-											.maxAge(expiresIn)
-											.build();
-									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
-											.httpOnly(loginCookieHttpOnly)
-											.secure(loginCookieSecure)
-											.sameSite(loginCookieSameSite)
-											.domain(loginCookieDomain)
-											.path(loginCookiePath)
-											.maxAge(expiresIn)
-											.build();
+											refreshToken, deviceId, naverExpiresIn);
+									// 로그인 쿠키 설정
+									LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn);
 									// 쿠키 배열 생성
 									String[] cookieArray = new String[] {
-											refreshTokenCookie.toString(), 
-											providerCookie.toString()
+											loginCookies.refreshToken(), 
+											loginCookies.provider()
 									};
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
 								} 
@@ -363,31 +332,17 @@ public class LoginClient {
 
 								// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
+									// 디바이스 ID 조회
+									String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 									// refresh token을 redis에 저장
 									redisUtil.saveRefreshToken(provider, providerId,
-											refreshToken, kakaoExpiresIn);
-									// 리프레시 토큰 쿠키
-									ResponseCookie refreshTokenCookie = ResponseCookie.from(DomainConstants.REFRESH_TOKEN, refreshToken)
-											.httpOnly(loginCookieHttpOnly)
-											.secure(loginCookieSecure)
-											.sameSite(loginCookieSameSite)
-											.domain(loginCookieDomain)
-											.path(loginCookiePath)
-											.maxAge(expiresIn)
-											.build();
-									// provider 쿠키
-									ResponseCookie providerCookie = ResponseCookie.from(DomainConstants.PROVIDER, provider)
-											.httpOnly(loginCookieHttpOnly)
-											.secure(loginCookieSecure)
-											.sameSite(loginCookieSameSite)
-											.domain(loginCookieDomain)
-											.path(loginCookiePath)
-											.maxAge(expiresIn)
-											.build();
+											refreshToken, deviceId, kakaoExpiresIn);
+									// 로그인 쿠키 설정
+									LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn);
 									// 쿠키 배열 생성
 									String[] cookieArray = new String[] {
-											refreshTokenCookie.toString(),
-											providerCookie.toString() 
+											loginCookies.refreshToken(), 
+											loginCookies.provider()
 									};
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
 								} 

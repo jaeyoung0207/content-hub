@@ -19,7 +19,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
 import { AppApi } from '@/api/AppApi';
@@ -45,16 +44,13 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   // navigate 훅
   const navigate = useNavigate();
 
-  // 쿠키 훅: 리프레시 토큰
-  const [refreshTokenCookie] = useCookies<string>(['refreshToken']);
-  // 쿠키 훅: provider 정보
-  const [providerCookie] = useCookies<string>(['provider']);
-
   // 유저 옵션 열림 상태
   const [userOptionIsOpen, setUserOptionIsOpen] = useState<boolean>(false);
 
   // 유저 옵션 참조
   const userOptionRef = useRef<HTMLDivElement>(null);
+  // 중복 실행 방지 플래그
+  const isExecutingRef = useRef<boolean>(false);
 
   // ================================================================================================== zustand
 
@@ -83,9 +79,11 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     const searchUrl = location.pathname + location.search;
     // URL 저장
     sessionStorage.setItem(REDIRECT_URL, searchUrl);
+    // 유저 옵션 초기화
+    setUserOptionIsOpen(false);
     // 로그인 페이지로 이동
     navigate('/login');
-  }, [navigate]);
+  }, [navigate, setUserOptionIsOpen]);
 
   /**
    * 로그아웃 클릭시 처리
@@ -123,15 +121,46 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
         return await appApi.getCsrfToken();
       },
     });
-    // 재로그인 처리
-    if (refreshTokenCookie.refreshToken) {
-      // 쿠키의 provider가 NAVER인 경우
-      if (providerCookie.provider === LOGIN_PROVIDER.NAVER) {
-        queryClient.fetchQuery({
-          queryKey: headerQueryKeys.login(LOGIN_PROVIDER.NAVER),
+
+    // 로그인 쿠키 정보가 존재하는지 확인 후 유저정보 갱신 처리
+    (async () => {
+      // 중복 실행 방지
+      if (isExecutingRef.current) {
+        return;
+      }
+      // 중복 실행 방지 플래그 설정
+      isExecutingRef.current = true;
+
+      try {
+        // 로그인 쿠키 정보 조회
+        const cookiesResponse = await queryClient.fetchQuery({
+          queryKey: headerQueryKeys.getLoginCookies(),
           queryFn: async () => {
-            // 네이버 로그인 정보 업데이트 API 호출
-            const updateResponse = (await loginApi.updateNaverLoginInfo()).data;
+            return await appApi.getLoginCookies();
+          },
+        });
+        // 로그인 쿠키가 없는 경우 처리 종료
+        if (
+          !cookiesResponse.data.deviceId ||
+          !cookiesResponse.data.provider ||
+          !cookiesResponse.data.hasRefreshToken
+        ) {
+          return;
+        }
+
+        // 제공자 쿠키 정보
+        const providerCookie = cookiesResponse.data.provider;
+        // 쿠키의 provider가 NAVER인 경우
+        if (providerCookie === LOGIN_PROVIDER.NAVER) {
+          try {
+            const updateResponse = await queryClient.fetchQuery({
+              queryKey: headerQueryKeys.login(LOGIN_PROVIDER.NAVER),
+              queryFn: async () => {
+                // 네이버 로그인 정보 업데이트 API 호출
+                return (await loginApi.updateNaverLoginInfo()).data;
+              },
+              retry: 0, // 재시도 없음 명시
+            });
             saveLoginData(
               updateResponse,
               setUser,
@@ -139,20 +168,27 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
               LOGIN_PROVIDER.NAVER
             );
             return updateResponse;
-          },
-        });
-      }
-      // 쿠키의 provider가 KAKAO인 경우
-      else if (providerCookie.provider === LOGIN_PROVIDER.KAKAO) {
-        queryClient.fetchQuery({
-          queryKey: headerQueryKeys.login(LOGIN_PROVIDER.KAKAO),
-          queryFn: async () => {
-            // 카카오 로그인 정보 업데이트 API 호출
-            const updateResponse = (
-              await loginApi.updateKakaoLoginInfo({
-                client_id: settings.kakaoClientId,
-              })
-            ).data;
+          } catch (error) {
+            // 유저 정보 초기화
+            clearUserData();
+            console.error('네이버 로그인 정보 갱신 실패', error);
+          }
+        }
+        // 쿠키의 provider가 KAKAO인 경우
+        else if (providerCookie === LOGIN_PROVIDER.KAKAO) {
+          try {
+            const updateResponse = await queryClient.fetchQuery({
+              queryKey: headerQueryKeys.login(LOGIN_PROVIDER.KAKAO),
+              queryFn: async () => {
+                // 카카오 로그인 정보 업데이트 API 호출
+                return (
+                  await loginApi.updateKakaoLoginInfo({
+                    client_id: settings.kakaoClientId,
+                  })
+                ).data;
+              },
+              retry: 0, // 재시도 없음 명시
+            });
             saveLoginData(
               updateResponse,
               setUser,
@@ -160,10 +196,17 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
               LOGIN_PROVIDER.KAKAO
             );
             return updateResponse;
-          },
-        });
+          } catch (error) {
+            // 유저 정보 초기화
+            clearUserData();
+            console.error('카카오 로그인 정보 갱신 실패', error);
+          }
+        }
+      } finally {
+        // 중복 실행 방지 플래그 해제
+        isExecutingRef.current = false;
       }
-    }
+    })();
   }, []);
 
   /**

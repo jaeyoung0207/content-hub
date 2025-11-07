@@ -24,12 +24,6 @@ public class DomainConstants {
     /** 성인물 플래그 */
     public static final String ADULT_FLG = "adult_flg";
     
-    /** 리프레시 토큰 */
-    public static final String REFRESH_TOKEN = "refreshToken";
-    
-    /** 로그인 제공자 */
-    public static final String PROVIDER = "provider";
-    
     /** 첫번째 페이지 번호 */
 	public static final int FIRST_PAGE_NO = 1;
 	
