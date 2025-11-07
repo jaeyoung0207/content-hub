@@ -165,6 +165,8 @@ const resources = {
           'API 요청 한도를 초과했습니다. {{retryAfter}}초 후 다시 시도해 주세요.',
         tooManyWishlistEntries:
           '등록된 작품이 너무 많습니다. 위시리스트에서 등록된 작품을 제거해 주세요. (최대 {{maxEntries}}개)',
+        popupBlocked:
+          '팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.',
       },
       validation: {
         starRatingError: '별점을 입력해 주세요.',
@@ -188,6 +190,10 @@ const resources = {
         timeoutError: '요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.',
         apiRateLimitExceededError:
           'API 요청 한도를 초과했습니다. \r\n 잠시 후 다시 시도해 주세요.',
+        loginError: '로그인에 실패했습니다. 다시 시도해 주세요.',
+        loginStateError: '로그인 상태값이 유효하지 않습니다.',
+        loginNoOAuthDataError: '로그인 인증 데이터가 없습니다.',
+        loginProviderError: '유효하지 않은 로그인 제공자입니다.',
       },
     },
   },
