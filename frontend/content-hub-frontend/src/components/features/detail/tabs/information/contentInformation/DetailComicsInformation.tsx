@@ -4,7 +4,7 @@ import { COMICS_CREDITS_TYPE } from '@/components/common/constants/constants';
 import { DetailResponseType } from '../../../useDetail';
 import { isDetailComicsType } from '@/components/common/utils/typeGuardUtil';
 import DisplayComicsCredits from '@/components/ui/DisplayComicsCreditsUi';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
+import { isMobileOnly } from 'react-device-detect';
 
 /**
  * 만화 정보 컴포넌트 props 타입
@@ -25,8 +25,6 @@ export const DetailComicsInformation = ({
 }: DetailComicsInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
-  // 모바일 여부 훅
-  const isMobile = useIsMobile();
 
   const characterList = isDetailComicsType(detailResult, contentMediaType)
     ? (detailResult.characters?.edges ?? [])
@@ -41,8 +39,8 @@ export const DetailComicsInformation = ({
   const overview =
     detailResult.overview && DOMPurify.sanitize(detailResult.overview);
 
-  const isCharacters = !isMobile && characterList.length > 0;
-  const isStaff = !isMobile && staffList.length > 0;
+  const isCharacters = !isMobileOnly && characterList.length > 0;
+  const isStaff = !isMobileOnly && staffList.length > 0;
 
   return (
     <div className="lg:px-8">

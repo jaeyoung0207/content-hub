@@ -7,7 +7,7 @@ import {
 } from '@/components/common/utils/typeGuardUtil';
 import DisplayVideoCredits from '@/components/ui/DisplayVideoCreditsUi';
 import { Dispatch, SetStateAction } from 'react';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
+import { isMobileOnly } from 'react-device-detect';
 
 /**
  * 비디오 정보 컴포넌트 props 타입
@@ -30,8 +30,6 @@ export const DetailVideoInformation = ({
 }: DetailVideoInformationPropsType) => {
   // i18n 번역 훅
   const { t } = useTranslation();
-  // 모바일 여부 훅
-  const isMobile = useIsMobile();
 
   // 공통 클래스
   const commonClass = 'flex items-center';
@@ -51,8 +49,8 @@ export const DetailVideoInformation = ({
       )}
 
       {
-        // 상세 정보 결과의 타입이 TV 또는 MOVIE인 경우
-        !isMobile &&
+        // 모바일이 아니고 TV/MOVIE 타입일 때
+        !isMobileOnly &&
           (isDetailTvType(detailResult, contentMediaType) ||
             isDetailMovieType(detailResult, contentMediaType)) && (
             <>

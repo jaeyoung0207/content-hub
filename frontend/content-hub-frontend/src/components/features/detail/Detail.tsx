@@ -25,7 +25,7 @@ import {
   convertDate,
   getContentMediaType,
 } from '@/components/common/utils/convertUtil';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
+import { isMobileOnly } from 'react-device-detect';
 
 // lazy loading
 const DetailVideoInformation = lazy(
@@ -58,9 +58,6 @@ export const Detail = memo(() => {
 
   // URL query string 값을 가져오는 useSearchParams 훅
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // 모바일 여부 훅
-  const isMobile = useIsMobile();
 
   // 탭 번호, 없으면 0으로 초기화
   const tabNo = Number(searchParams.get('tabNo') ?? 0);
@@ -183,7 +180,7 @@ export const Detail = memo(() => {
     ? contentMediaType === getContentMediaType().comicsCode
       ? data.posterPath
       : TMDB_API_IMAGE_DOMAIN +
-        (isMobile ? WIDTH_185 : WIDTH_300) +
+        (isMobileOnly ? WIDTH_185 : WIDTH_300) +
         data.posterPath
     : COMMON_IMAGES.NO_IMAGE;
 
@@ -280,8 +277,8 @@ export const Detail = memo(() => {
 
             {
               // 모바일이 아니거나, 모바일이면서 미디어 정보 탭인 경우에만 작품 기본 정보 표시
-              ((isMobile && tabIndex === DETAIL_TAB_ID.mediaInfo) ||
-                !isMobile) && (
+              ((isMobileOnly && tabIndex === DETAIL_TAB_ID.mediaInfo) ||
+                !isMobileOnly) && (
                 // 작품 기본 정보
                 <div className="md:col-span-2">
                   {/* 제목 */}

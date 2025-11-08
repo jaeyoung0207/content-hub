@@ -12,9 +12,9 @@ import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { useTranslation } from 'react-i18next';
 import { settings } from '@/components/common/config/settings';
 import { StarRatingUi } from '@/components/ui/StarRatingUi';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
 import { ButtonUi, LazyImage } from '@/components/ui/common';
 import { BsStarFill } from 'react-icons/bs';
+import { isMobileOnly } from 'react-device-detect';
 
 /**
  * 나의 코멘트 컴포넌트
@@ -24,8 +24,6 @@ export const MyComments = () => {
   const { t } = useTranslation();
   // navigate 훅
   const navigate = useNavigate();
-  // 모바일 여부 훅
-  const isMobile = useIsMobile();
 
   // 나의 코멘트 훅
   const {
@@ -82,10 +80,10 @@ export const MyComments = () => {
               const comment = !isOmitComment[index]
                 ? isLfOmit
                   ? commentArray.slice(0, isOmitCommentLf).join('\n') +
-                    t('info.omissionString')
+                  t('info.omissionString')
                   : isLengthOmit
                     ? items.comment?.substring(0, isOmitCommentLength) +
-                      t('info.omissionString')
+                    t('info.omissionString')
                     : items.comment
                 : items.comment;
 
@@ -134,7 +132,7 @@ export const MyComments = () => {
                             aria-label={`별점 ${items.starRating}점 / 5점`}
                           >
                             {/* 별점 표시 */}
-                            {isMobile ? (
+                            {isMobileOnly ? (
                               <BsStarFill
                                 className={`mr-2 h-4 w-4 text-yellow-400`}
                                 aria-hidden="true"

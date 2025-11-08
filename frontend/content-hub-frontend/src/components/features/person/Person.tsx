@@ -17,8 +17,8 @@ import {
 import { memo } from 'react';
 import { isPersonCreditsCastType } from '@/components/common/utils/typeGuardUtil';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
 import { NoDataMessageUi } from '@/components/ui/common';
+import { isMobileOnly } from 'react-device-detect';
 
 export type PersonCredits = PersonCreditsCastDto | PersonCreditsCrewDto;
 
@@ -34,8 +34,6 @@ export const Person = memo(() => {
   const { t } = useTranslation();
   // URL 파라미터에서 personId 추출
   const { personId } = useParams<string>();
-  // 모바일 여부 훅
-  const isMobile = useIsMobile();
 
   // 인물 정보 가져오기 훅
   const { data, isLoading, isError } = usePerson(personId!);
@@ -66,7 +64,7 @@ export const Person = memo(() => {
                   src={
                     data?.profilePath
                       ? TMDB_API_IMAGE_DOMAIN +
-                        (isMobile ? WIDTH_185 : WIDTH_300) +
+                        (isMobileOnly ? WIDTH_185 : WIDTH_300) +
                         data?.profilePath
                       : COMMON_IMAGES.NO_IMAGE
                   }

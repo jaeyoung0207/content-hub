@@ -43,10 +43,22 @@ export const settings = {
   commentLengthOmissionLength: Number(
     import.meta.env.VITE_COMMENT_LENGTH_OMISSION_LENGTH || 200
   ),
-  wishlistVideoOmissionLength: Number(
-    import.meta.env.VITE_WISHLIST_VIDEO_OMISSION_LENGTH || 8
+  wishlistVideoOmissionPcLength: Number(
+    import.meta.env.VITE_WISHLIST_VIDEO_OMISSION_PC_LENGTH || 10
   ),
-  wishlistComicsOmissionLength: Number(
-    import.meta.env.VITE_WISHLIST_COMICS_OMISSION_LENGTH || 12
+  wishlistComicsOmissionPcLength: Number(
+    import.meta.env.VITE_WISHLIST_COMICS_OMISSION_PC_LENGTH || 14
+  ),
+  wishlistVideoOmissionTabletLength: Number(
+    import.meta.env.VITE_WISHLIST_VIDEO_OMISSION_TABLET_LENGTH || 8
+  ),
+  wishlistComicsOmissionTabletLength: Number(
+    import.meta.env.VITE_WISHLIST_COMICS_OMISSION_TABLET_LENGTH || 10
+  ),
+  wishlistVideoOmissionMobileLength: Number(
+    import.meta.env.VITE_WISHLIST_VIDEO_OMISSION_MOBILE_LENGTH || 6
+  ),
+  wishlistComicsOmissionMobileLength: Number(
+    import.meta.env.VITE_WISHLIST_COMICS_OMISSION_MOBILE_LENGTH || 6
   ),
 };

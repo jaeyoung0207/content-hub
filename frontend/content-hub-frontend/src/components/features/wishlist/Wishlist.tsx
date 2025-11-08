@@ -17,7 +17,7 @@ import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { RefObject } from 'react';
 import { settings } from '@/components/common/config/settings';
 import { ButtonUi, LazyImage } from '@/components/ui/common';
-import { useIsMobile } from '@/components/common/hooks/useIsMobile';
+import { isMobileOnly, isTablet } from 'react-device-detect';
 
 /**
  * DisplayWishlist 컴포넌트 props 타입
@@ -228,20 +228,22 @@ const DisplayWishlist = ({
   const navigate = useNavigate();
   // i18n
   const { t } = useTranslation();
-  // 모바일 여부 판단 훅
-  const isMobile = useIsMobile();
 
   // 만화일 경우
   const isComics = searchType === SEARCH_TYPE.COMICS;
   // 항목별 남길 개수
   const restCount =
     searchType === SEARCH_TYPE.COMICS
-      ? isMobile
-        ? 6
-        : settings.wishlistComicsOmissionLength
-      : isMobile
-        ? 6
-        : settings.wishlistVideoOmissionLength;
+      ? isMobileOnly
+        ? settings.wishlistComicsOmissionMobileLength
+        : isTablet
+          ? settings.wishlistComicsOmissionTabletLength
+          : settings.wishlistComicsOmissionPcLength
+      : isMobileOnly
+        ? settings.wishlistVideoOmissionMobileLength
+        : isTablet
+          ? settings.wishlistVideoOmissionTabletLength
+          : settings.wishlistVideoOmissionPcLength;
   // 표시할 항목 리스트
   const displayList = isOmit ? filterList(resultList, restCount) : resultList;
   // 썸네일 이미지 경로
