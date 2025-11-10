@@ -87,7 +87,7 @@ export const SearchTextUi = memo(
                     <button
                       type="button"
                       aria-label="입력 지우기"
-                      className="text-foreground/60 hover:text-foreground absolute inset-y-0 right-3 grid place-items-center"
+                      className="text-foreground/60 hover:text-foreground absolute inset-y-0 right-3 grid cursor-pointer place-items-center"
                       onClick={
                         deleteValue
                           ? commonErrorHandler(deleteValue)

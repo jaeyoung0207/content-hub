@@ -33,8 +33,7 @@ export const CommentTextAreaUi = <T extends FieldValues>({
   return (
     <>
       <div className="flex justify-center">
-        {/* 반응형 폭 제어 */}
-        <div className="w-xs md:w-xl lg:w-2xl">
+        <div className="w-88 sm:w-lg md:w-2xl lg:w-3xl">
           <Controller
             name={name}
             render={({ field: { name, onBlur, onChange, value } }) => {

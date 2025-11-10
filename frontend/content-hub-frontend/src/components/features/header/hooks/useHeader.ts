@@ -7,6 +7,7 @@ import {
   useHeaderWishlist,
   UseHeaderWishlistReturnType,
 } from './useHeaderWishlist';
+import { useHeaderMenu, UseHeaderMenuReturnType } from './useHederMenu';
 
 /**
  * 헤더 훅 반환 타입
@@ -14,6 +15,7 @@ import {
 export type UseHeaderReturnType = UseHeaderFormReturnType &
   UseHeaderLoginReturnType &
   UseHeaderSearchReturnType &
+  UseHeaderMenuReturnType &
   UseHeaderHomeReturnType &
   UseHeaderWishlistReturnType;
 
@@ -90,6 +92,9 @@ export const useHeader = (): UseHeaderReturnType => {
     setFocus: setFocus,
   });
 
+  // 헤더 메뉴 훅
+  const { isMenuOpen, menuRef, handleMenuIconOnClick } = useHeaderMenu();
+
   // 헤더 홈 훅
   const { handleHomeOnClick } = useHeaderHome({
     reset: reset,
@@ -147,6 +152,9 @@ export const useHeader = (): UseHeaderReturnType => {
     handleSetCurrentIndex: handleSetCurrentIndex,
     handleDeleteKeyword: handleDeleteKeyword,
     handleFilterIconOnClick: handleFilterIconOnClick,
+    isMenuOpen: isMenuOpen,
+    menuRef: menuRef,
+    handleMenuIconOnClick: handleMenuIconOnClick,
     handleHomeOnClick: handleHomeOnClick,
     handleWishlistOnClick: handleWishlistOnClick,
     userOptionIsOpen: userOptionIsOpen,

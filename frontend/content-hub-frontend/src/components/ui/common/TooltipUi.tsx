@@ -106,7 +106,7 @@ export const TooltipUi = ({
     <div
       role="tooltip"
       className={cn(
-        'text-foreground absolute z-50 rounded border border-black/10 bg-white px-2 py-1 text-sm shadow-lg',
+        'text-foreground absolute z-50 w-auto rounded border border-black/10 bg-white px-2 py-1 text-sm break-words shadow-lg',
         maxWMap[maxW],
         basePos,
         alignPos,

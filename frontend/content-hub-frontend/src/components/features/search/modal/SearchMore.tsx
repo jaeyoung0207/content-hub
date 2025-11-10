@@ -65,7 +65,7 @@ export const SearchMore = memo(
               role="dialog"
               aria-modal="true"
               aria-label={t(getMediaName())}
-              className="relative h-[calc(100vh-1.5rem)] w-full max-w-screen-2xl overflow-y-auto rounded-xl bg-white shadow-2xl sm:h-[calc(100vh-3rem)]"
+              className="relative h-[calc(100vh-6rem)] w-full max-w-screen-2xl overflow-y-auto rounded-xl bg-white shadow-2xl lg:h-[calc(100vh-3rem)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-4 py-4 sm:px-6 lg:px-8">

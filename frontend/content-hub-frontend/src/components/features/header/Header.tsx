@@ -24,20 +24,23 @@ import {
 } from '@/components/ui/RadioButtonGroupUi';
 import { myCommentsUrlQuery } from '@/components/common/utils/urlUtil';
 import { useNavigate } from 'react-router-dom';
+import { TfiMenu } from 'react-icons/tfi';
+import { isMobileOnly } from 'react-device-detect';
 
 /**
  * 자동완성 박스 컴포넌트 props 타입
+ *
  */
-type autoCompletePropsType = {
-  autoCompleteList?: string[];
-  autoCompoleteRef?: RefObject<HTMLDivElement | null>;
-  handleKeywordListOnClick: (item: string) => void;
-  currentIndex: number;
-  selectRef: RefObject<HTMLLIElement | null>;
-  handleRemoveSearchHistory: (index: number) => void;
-  searchHistoryisOpen: boolean;
-  handleSetCurrentIndex: (index: number) => void;
-  savedKeyword: string;
+type AutoCompletePropsType = {
+  autoCompleteList?: string[]; // 자동완성 리스트
+  autoCompoleteRef?: RefObject<HTMLDivElement | null>; // 자동완성 박스 참조
+  handleKeywordListOnClick: (item: string) => void; // 자동완성 리스트 아이템 클릭 핸들러
+  currentIndex: number; // 현재 인덱스
+  selectRef: RefObject<HTMLLIElement | null>; // 자동완성 검색어 선택 참조
+  handleRemoveSearchHistory: (index: number) => void; // 검색 기록 삭제 핸들러
+  searchHistoryisOpen: boolean; // 검색 기록 열림 여부
+  handleSetCurrentIndex: (index: number) => void; // 현재 인덱스 설정 핸들러
+  savedKeyword: string; // 저장된 키워드
 };
 
 /**
@@ -95,6 +98,9 @@ export const Header = () => {
     setUserOptionIsOpen,
     handleOnClickSelectTypeRadioButton,
     handleOnClickSearchTypeRadioButton,
+    isMenuOpen,
+    menuRef,
+    handleMenuIconOnClick,
   } = useHeader();
 
   // 체크박스용 인자 타입 정의
@@ -176,6 +182,10 @@ export const Header = () => {
   // 닉네임이 길이 제한을 초과하는지 여부
   const isHideNickname =
     userNickname && userNickname.length > DISPLAY_LENGTH ? true : false;
+  // 화면에 표시할 닉네임
+  const displayUserNickname = isHideNickname
+    ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
+    : userNickname;
   // 닉네임 툴팁 상태 상수
   const NICKNAME_TOOLTIP_OPEN_STATE = 1;
   // 홈 툴팁 상태 상수
@@ -185,53 +195,96 @@ export const Header = () => {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-black/10 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-3 sm:h-16">
-          {/* 좌측: 아이콘들 */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            {/* 홈 아이콘 */}
-            <button
-              type="button"
-              aria-label={t('info.home') || 'Home'}
-              className="relative inline-flex cursor-pointer items-center justify-center"
-              onClick={commonErrorHandler(handleHomeOnClick)}
-              onMouseEnter={() => setIsTooltipOpen(HOME_TOOLTIP_OPEN_STATE)}
-              onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+          {isMobileOnly ? (
+            // 모바일 화면일 때 메뉴 아이콘
+            <div
+              className="cursor-pointer"
+              ref={menuRef}
+              onClick={commonErrorHandler(handleMenuIconOnClick)}
             >
-              <img
-                src={homeIcon}
-                className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
-                alt=""
-              />
-              {/* 홈 툴팁 */}
-              {isTooltipOpen === HOME_TOOLTIP_OPEN_STATE && (
-                <TooltipUi text={t('info.home')} />
+              {isMenuOpen ? (
+                <div>
+                  <TfiMenu className="h-8 w-8" aria-label='메뉴아이콘 열림' />
+                  <div className="flex justify-center">
+                    {/* 메뉴 열림 상태일 때 표시할 내용 */}
+                    <div
+                      className={`absolute z-50 mt-2 w-auto gap-y-10 rounded border bg-white p-1 shadow-2xl ${isMobileOnly ? 'left-1' : 'left-30'}`}
+                    >
+                      {/* 홈 */}
+                      <div
+                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                        onClick={commonErrorHandler(handleHomeOnClick)}
+                      >
+                        {t('info.home')}
+                      </div>
+                      {/* 위시리스트 */}
+                      <div
+                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                        onClick={commonErrorHandler(handleWishlistOnClick)}
+                      >
+                        {t('info.wishlist')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <TfiMenu className="h-8 w-8" aria-label='메뉴아이콘 닫힘' />
               )}
-            </button>
-            {/* 위시리스트 아이콘 */}
-            <button
-              type="button"
-              aria-label={t('info.wishlist') || 'Wishlist'}
-              className="relative inline-flex cursor-pointer items-center justify-center"
-              onClick={commonErrorHandler(handleWishlistOnClick)}
-              onMouseEnter={() => setIsTooltipOpen(WISHLIST_TOOLTIP_OPEN_STATE)}
-              onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
-            >
-              <FaHeart className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
-              {/* 위시리스트 툴팁 */}
-              {isTooltipOpen === WISHLIST_TOOLTIP_OPEN_STATE && (
-                <TooltipUi text={t('info.wishlist')} className="w-22" />
-              )}
-            </button>
-          </div>
+            </div>
+          ) : (
+            // 데스크탑 화면일 때 아이콘들
+            <>
+              {/* 좌측: 아이콘들 */}
+              <div className="flex items-center gap-4 sm:gap-6">
+                {/* 홈 아이콘 */}
+                <button
+                  type="button"
+                  aria-label={t('info.home') || 'Home'}
+                  className="relative inline-flex cursor-pointer items-center justify-center"
+                  onClick={commonErrorHandler(handleHomeOnClick)}
+                  onMouseEnter={() => setIsTooltipOpen(HOME_TOOLTIP_OPEN_STATE)}
+                  onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+                >
+                  <img
+                    src={homeIcon}
+                    className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                    alt=""
+                  />
+                  {/* 홈 툴팁 */}
+                  {isTooltipOpen === HOME_TOOLTIP_OPEN_STATE && (
+                    <TooltipUi text={t('info.home')} />
+                  )}
+                </button>
+                {/* 위시리스트 아이콘 */}
+                <button
+                  type="button"
+                  aria-label={t('info.wishlist') || 'Wishlist'}
+                  className="relative inline-flex cursor-pointer items-center justify-center"
+                  onClick={commonErrorHandler(handleWishlistOnClick)}
+                  onMouseEnter={() =>
+                    setIsTooltipOpen(WISHLIST_TOOLTIP_OPEN_STATE)
+                  }
+                  onMouseLeave={() => setIsTooltipOpen(TOOLTIP_CLOSE_STATE)}
+                >
+                  <FaHeart className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
+                  {/* 위시리스트 툴팁 */}
+                  {isTooltipOpen === WISHLIST_TOOLTIP_OPEN_STATE && (
+                    <TooltipUi text={t('info.wishlist')} className="w-22" />
+                  )}
+                </button>
+              </div>
+            </>
+          )}
 
           {/* 우측: 검색창 및 필터 아이콘 */}
           <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
             <div
-              className="relative w-40 sm:w-60 md:w-80 lg:w-96"
+              className="relative w-52 sm:w-60 md:w-80 lg:w-96"
               ref={autoCompleteRef}
             >
-              <div className="w-40 sm:w-60 md:w-80 lg:w-96">
+              <div>
                 {/* 검색창 */}
                 <SearchTextUi
                   control={control}
@@ -267,7 +320,7 @@ export const Header = () => {
                     onClick={commonErrorHandler(handleFilterIconOnClick)}
                   />
                   {/* 필터 팝업 */}
-                  <div className="absolute right-0 z-50 mt-2 w-64 rounded border bg-white p-4 shadow-2xl">
+                  <div className="absolute right-0 z-50 mt-2 w-52 rounded border bg-white p-4 shadow-2xl md:w-60">
                     {/* 검색 종류 */}
                     <div className="text-lg font-bold sm:text-xl">
                       {t('info.searchType')}
@@ -345,12 +398,12 @@ export const Header = () => {
           </div>
 
           {/* 유저/로그인 */}
-          <div>
+          <div className="max-w-16 md:max-w-24">
             {user ? (
               <div className="relative" ref={userOptionRef}>
                 {/* 유저 닉네임 */}
                 <div
-                  className="cursor-pointer text-base text-yellow-600 sm:text-lg"
+                  className="flex cursor-pointer items-center text-sm break-words text-yellow-600 md:text-base"
                   onClick={handleUserOptionToggle}
                   onMouseEnter={() =>
                     isHideNickname &&
@@ -360,35 +413,34 @@ export const Header = () => {
                     isHideNickname && setIsTooltipOpen(TOOLTIP_CLOSE_STATE)
                   }
                 >
-                  {isHideNickname
-                    ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
-                    : userNickname}
+                  {displayUserNickname}
                   {/* 유저 닉네임 툴팁 */}
                   {isTooltipOpen === NICKNAME_TOOLTIP_OPEN_STATE && (
                     <TooltipUi
                       text={userNickname}
-                      className="top-full right-0 mt-2 w-40"
+                      align="end"
+                      className="top-full right-0 mt-2"
                     />
                   )}
                 </div>
                 {/* 유저 옵션 팝업 */}
                 {userOptionIsOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-36 rounded border bg-white p-1 shadow-2xl">
-                    <div>
-                      {/* 마이페이지(코멘트 관리) */}
-                      <div
-                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                        onClick={commonErrorHandler(() => {
-                          const myCommentsUrl = myCommentsUrlQuery({
-                            userId: user.userId,
-                          });
-                          setUserOptionIsOpen(false);
-                          navigate(myCommentsUrl);
-                        })}
-                      >
-                        {t('info.myComments')}
-                      </div>
+                  <div className="absolute right-0 z-50 mt-3 w-32 rounded border bg-white p-1 shadow-2xl">
+                    {/* <div> */}
+                    {/* 마이페이지(코멘트 관리) */}
+                    <div
+                      className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                      onClick={commonErrorHandler(() => {
+                        const myCommentsUrl = myCommentsUrlQuery({
+                          userId: user.userId,
+                        });
+                        setUserOptionIsOpen(false);
+                        navigate(myCommentsUrl);
+                      })}
+                    >
+                      {t('info.myComments')}
                     </div>
+                    {/* </div> */}
                     {/* 로그아웃 */}
                     <div
                       className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
@@ -417,7 +469,7 @@ export const Header = () => {
 
 /**
  * 자동완성 박스 컴포넌트
- * @param autoCompletePropsType
+ * @param AutoCompletePropsType
  * @returns 자동완성 박스
  */
 const AutoCompleteBox = memo(
@@ -430,7 +482,7 @@ const AutoCompleteBox = memo(
     searchHistoryisOpen,
     handleSetCurrentIndex,
     savedKeyword,
-  }: autoCompletePropsType) => {
+  }: AutoCompletePropsType) => {
     // i18n 훅
     const { t } = useTranslation();
     // 강조 표시 스타일
@@ -442,7 +494,7 @@ const AutoCompleteBox = memo(
       <>
         {autoCompleteList && autoCompleteList.length !== 0 && (
           <div
-            className="absolute inset-x-0 z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white p-2 shadow-2xl"
+            className={`absolute inset-x-0 z-50 mt-2 h-auto w-full overflow-auto rounded border bg-white p-2 shadow-2xl`}
             role="listbox"
           >
             {autoCompleteList.map((item, index) => {
@@ -467,7 +519,7 @@ const AutoCompleteBox = memo(
                   onMouseLeave={() => handleSetCurrentIndex(-1)} // 현재 인덱스 초기화
                 >
                   <li
-                    className="w-[85%] cursor-pointer"
+                    className={`${searchHistoryisOpen ? 'w-[85%]' : ''} cursor-pointer text-xs md:text-base`}
                     ref={isActive ? selectRef : null}
                     onClick={commonErrorHandler(() =>
                       handleKeywordListOnClick(item)

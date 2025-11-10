@@ -37,7 +37,7 @@ export const DetailComicsCharacterInformation = ({
     );
 
   return (
-    <div className="lg:px-8">
+    <div>
       {data && data.pages.length > 0 ? (
         <>
           <DisplayComicsCredits

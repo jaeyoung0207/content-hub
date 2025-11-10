@@ -60,7 +60,7 @@ export const DetailComments = ({
 
   // 코멘트 작성 버튼 스타일
   const commentButtonStyle =
-    'w-20 h-10 rounded-md bg-blue-600 text-base sm:text-lg disabled:bg-gray-400 text-white cursor-pointer disabled:cursor-not-allowed';
+    'w-20 h-10 rounded-md bg-blue-600 text-base md:text-lg disabled:bg-gray-400 text-white cursor-pointer disabled:cursor-not-allowed';
   // 코멘트 최대 글자 수
   const commentMaxLength = settings.commentMaxLength;
   // 코멘트 생략 처리 기준(개행 문자 수)
@@ -71,14 +71,14 @@ export const DetailComments = ({
   return (
     <>
       {/* 코멘트 작성/수정 영역 */}
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="px-4 md:px-6 lg:px-8">
         {
           // 로그인한 유저가 작성한 코멘트가 존재하지 않거나, 코멘트가 존재하고 코멘트 수정 가능 상태인 경우에만 코멘트 작성/수정 영역을 표시
           typeof isMyComment === 'boolean' &&
             (!isMyComment || (isMyComment && isCommentEditable)) && (
               <section aria-label={t('info.writeComment') || 'Write comment'}>
                 {/* 별점 선택 */}
-                <div className="mb-1 flex justify-center text-xl">
+                <div className="mb-1 flex justify-center text-lg">
                   {t('info.starRating')}
                 </div>
                 {/* 별점 UI */}
@@ -90,6 +90,7 @@ export const DetailComments = ({
                     isCommentEditable ? starRating : undefined
                   }
                   starRatingErrorMsg={starRatingErrorMsg}
+                  starSize="md"
                 />
                 {/* 코멘트 입력 UI */}
                 <div className="flex justify-center">
@@ -150,13 +151,11 @@ export const DetailComments = ({
         />
       )}
       {/* 코멘트 수 */}
-      <div className="md:px-2 lg:px-8">
-        <div className="mb-1 flex justify-items-start border-b border-gray-300 px-1 text-lg font-bold md:px-2 md:text-2xl lg:mx-4">
-          {t('info.totalReviewCount', { count: totalElements })}
-        </div>
+      <div className="flex justify-items-start border-b border-gray-300 px-1 text-lg font-bold md:px-2 md:text-xl lg:px-4">
+        {t('info.totalReviewCount', { count: totalElements })}
       </div>
       {/* 코멘트 목록 */}
-      <div className="md:px-2 lg:px-8">
+      <div className="px-1 md:px-2 lg:px-4">
         {data?.pages.flat().map((items, index) => {
           // items가 없으면 null 반환
           if (!items) {
@@ -182,28 +181,29 @@ export const DetailComments = ({
           return (
             <article
               key={items.commentId}
-              className="py-4 md:px-2 lg:mx-2 lg:px-4"
+              className="py-2"
               aria-label={t('info.userComment') || 'User comment'}
             >
               <div className="flex items-center">
+                {/* 별점 아이콘 */}
                 <StarRatingUi
                   name="starRating"
                   control={control}
                   isStarRatingEditable={false}
                   selectedStarRating={items.starRating}
                 />
-                {/* 별점 표시 */}
-                <div className="ml-2 text-sm">{items.starRating}</div>
+                {/* 별점 숫자 */}
+                <div className="ml-2 text-sm font-bold md:text-base">
+                  {items.starRating}
+                </div>
               </div>
               {/* 헤더 */}
-              <div className="mt-2 flex justify-between">
+              <div className="mt-1 flex justify-between lg:mb-1">
                 <div className="mb-1 flex items-center">
                   {/* 작성자 */}
-                  <div className="mr-3 text-base font-bold sm:text-lg">
-                    {items.nickname}
-                  </div>
+                  <div className="mr-3 text-sm font-bold">{items.nickname}</div>
                   {/* 작성 일자 */}
-                  <time className="text-sm text-gray-500">
+                  <time className="text-xs text-gray-500 md:text-sm">
                     {items.createTime}
                   </time>
                 </div>
@@ -238,7 +238,7 @@ export const DetailComments = ({
               </div>
 
               {/* 코멘트 내용 */}
-              <div className="mr-1 whitespace-pre-line">
+              <div className="mr-1 text-sm whitespace-pre-line">
                 <div>{comment}</div>
                 {(isLfOmit || isLengthOmit) && (
                   <button

@@ -87,7 +87,7 @@ export const Home = () => {
   );
 
   return (
-    <div className="pt-16 sm:pt-20">
+    <div className="pt-20 pb-10 md:pt-24">
       {
         // 콘텐츠 미디어 타입 및 화면 표시용 미디어 타입이 초기화 되었을 때만 렌더링
         isContentMediaTypeInitialized && isDisplayMediaTypeInitialized ? (
@@ -96,8 +96,8 @@ export const Home = () => {
               <LoadingUi />
             ) : (
               data && (
-                <div className="space-y-10">
-                  <div className="text-2xl font-bold sm:text-3xl">
+                <div className="space-y-5">
+                  <div className="text-2xl font-bold md:text-3xl">
                     {t('info.rankingTitle')}
                   </div>
                   {contentRankings.map(

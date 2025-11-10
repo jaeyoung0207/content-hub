@@ -41,7 +41,7 @@ export const RecommendationContent = memo(
       useRecommendationContent(detailResult, displayMediaType);
 
     return (
-      <section className="lg:px-8">
+      <section>
         <h2 className="mb-4 text-xl font-bold sm:text-2xl">
           {t('info.recommend')}
         </h2>

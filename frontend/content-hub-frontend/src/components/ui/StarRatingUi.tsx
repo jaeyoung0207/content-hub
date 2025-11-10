@@ -14,6 +14,8 @@ import {
 } from '../common/constants/constants';
 import { cn } from '@/lib/cn';
 
+type StarSizeType = 'sm' | 'md' | 'lg';
+
 /**
  * 별점 UI 컴포넌트 Props 타입
  * @template T - react-hook-form의 FieldValues 타입
@@ -22,6 +24,7 @@ type StarRatingUiProps<T extends FieldValues> = FormFieldProps<T> & {
   isStarRatingEditable?: boolean; // 별점 수정 가능 여부
   selectedStarRating?: number; // 선택된 별점 (코멘트 목록에서 기존 별점 표시용)
   starRatingErrorMsg?: string; // 별점 관련 에러 메시지
+  starSize?: StarSizeType; // 별점 크기
 };
 
 /**
@@ -36,6 +39,7 @@ export const StarRatingUi = <T extends FieldValues>({
   isStarRatingEditable,
   selectedStarRating,
   starRatingErrorMsg,
+  starSize = 'sm',
 }: StarRatingUiProps<T>) => {
   // 별점 클릭시 고정하기 위한 상태값
   const [isSelected, setIsSelected] = useState(false);
@@ -46,6 +50,19 @@ export const StarRatingUi = <T extends FieldValues>({
   const filledStarColor = 'text-yellow-400';
   // 별점 단위
   const starRatingUnit = 0.5;
+  // 별 크기 래퍼 클래스
+  const starSizeWrapperClass = {
+    sm: 'h-5 w-5',
+    md: 'h-6 w-6',
+    lg: 'h-8 w-8',
+  }[starSize];
+  // 별 크기 클래스
+  const starSizeClass = {
+    sm: 'text-xl',
+    md: 'text-2xl',
+    lg: 'text-3xl',
+  }[starSize];
+
   // 별점 상태를 0.5단위로 배열 생성(각 아이템은 "반 별" + 그 다음 "채워진 별"을 담당)
   const createStarState = () => {
     return Array.from({ length: 5 }, (_, index) => ({
@@ -116,7 +133,7 @@ export const StarRatingUi = <T extends FieldValues>({
         return (
           <div className="block">
             <div
-              className="mb-1 flex justify-center outline-none md:gap-1"
+              className="flex justify-center outline-none md:gap-1"
               role="radiogroup"
               aria-label="별점 선택"
               aria-readonly={!isStarRatingEditable}
@@ -155,7 +172,7 @@ export const StarRatingUi = <T extends FieldValues>({
 
                   return (
                     <div
-                      className="relative h-6 w-6"
+                      className={`relative ${starSizeWrapperClass}`}
                       key={items.starRating + '_' + index}
                       aria-label={`${fillStarRating}점`}
                     >
@@ -184,7 +201,7 @@ export const StarRatingUi = <T extends FieldValues>({
                           // 해당 반 별의 별점 <= 현재 설정된 value값의 경우, 반별 표시
                           halfStarRating <= realValue && (
                             <BsStarHalf
-                              className={`text-2xl ${filledStarColor}`}
+                              className={`${starSizeClass} ${filledStarColor}`}
                             />
                           )
                         }
@@ -193,7 +210,7 @@ export const StarRatingUi = <T extends FieldValues>({
                       {/* 빈 별 */}
                       {/* z-index를 통해 우선순위를 정해서 각 별 아이콘이 겹치지 않도록 함 */}
                       <BsStar
-                        className={`absolute z-0 text-2xl ${emptyStarColor}`}
+                        className={`absolute z-0 ${starSizeClass} ${emptyStarColor}`}
                       />
 
                       {/* 채워진 별 */}
@@ -220,7 +237,7 @@ export const StarRatingUi = <T extends FieldValues>({
                           // 해당 채워진 별의 별점 <= 현재 설정된 value값의 경우, 채워진 별 표시
                           fillStarRating <= realValue && (
                             <BsStarFill
-                              className={`text-2xl ${filledStarColor}`}
+                              className={`${starSizeClass} ${filledStarColor}`}
                             />
                           )
                         }

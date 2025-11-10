@@ -156,12 +156,12 @@ export const Wishlist = () => {
   ];
 
   return (
-    <div className="pt-20">
+    <div className="pt-20 pb-10 md:pt-24">
       {isLoading ? (
         <LoadingUi />
       ) : !isDataEmpty ? (
         <>
-          <div className="mb-10 text-4xl font-bold">{t('info.wishlist')}</div>
+          <div className="mb-5 text-3xl font-bold">{t('info.wishlist')}</div>
           {wishlistItems.map((items) => {
             return (
               items.resultList &&
@@ -259,7 +259,7 @@ const DisplayWishlist = ({
 
   return (
     <div className="mb-10">
-      <div className="text-3xl font-bold">{mediaName}</div>
+      <div className="text-2xl font-bold">{mediaName}</div>
 
       {/* 위시리스트 항목들 */}
       <div className={`mt-6 ${gridCols}`}>
@@ -289,7 +289,6 @@ const DisplayWishlist = ({
               {/* 썸네일 */}
               <div
                 className={`relative w-full overflow-hidden ${aspectClass} bg-white`}
-                // <div className='relative'
                 ref={(el) => {
                   if (el) {
                     // ref 배열에 각 항목의 ref 저장
@@ -325,26 +324,28 @@ const DisplayWishlist = ({
                 {wishlistContentMediaType === items.contentMediaType &&
                   wishlistOptionIndex === index &&
                   wishlistOptionIsOpen && (
-                    <div className="absolute top-10 right-2 z-10 mt-1 flex w-24 justify-center rounded-md border border-gray-300 bg-white p-2 shadow-md">
-                      {/* 삭제 */}
-                      <ButtonUi
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="w-full cursor-pointer hover:bg-gray-200"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isExecuting) {
-                            handleWishlistDeleteOnClick(
-                              Number(items.apiId),
-                              items.contentMediaType!,
-                              items.title || ''
-                            );
-                          }
-                        }}
-                      >
-                        {t('info.delete')}
-                      </ButtonUi>
+                    <div className="flex justify-center">
+                      <div className="absolute top-10 right-2 z-10 mt-1 max-h-full max-w-full rounded-md border border-gray-300 bg-white px-1 shadow-md">
+                        {/* 삭제 */}
+                        <ButtonUi
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="w-full cursor-pointer hover:bg-gray-200"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isExecuting) {
+                              handleWishlistDeleteOnClick(
+                                Number(items.apiId),
+                                items.contentMediaType!,
+                                items.title || ''
+                              );
+                            }
+                          }}
+                        >
+                          {t('info.delete')}
+                        </ButtonUi>
+                      </div>
                     </div>
                   )}
               </div>

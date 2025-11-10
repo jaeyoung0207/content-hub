@@ -45,7 +45,7 @@ export const DetailCrewInformation = memo(
       detailResult.staff.edges &&
       detailResult.staff.edges.length !== 0;
     return (
-      <div className="lg:px-8">
+      <div>
         {contentMediaType !== getContentMediaType().comicsCode &&
           (isVideoCrew ? (
             <>

@@ -78,12 +78,12 @@ export const DisplaySearchResults = ({
     <section>
       {searchScreenType === SEARCH_SCREEN_TYPE.MAIN && (
         // 미디어 이름
-        <div className="mt-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold sm:text-3xl">{mediaName}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold md:text-3xl">{mediaName}</h2>
           {
             // 전체보기 링크
             isViewMore && (
-              <div className={`text-xl ${HIGHLIGHT_HOVER_COLOR}`}>
+              <div className={`text-base md:text-lg ${HIGHLIGHT_HOVER_COLOR}`}>
                 <Link
                   to={viewMoreUrlQuery({
                     keyword: keyword,
@@ -100,7 +100,7 @@ export const DisplaySearchResults = ({
       )}
       {searchScreenType === SEARCH_SCREEN_TYPE.VIEW_MORE && (
         // 키워드 미디어 검색 결과
-        <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
+        <h2 className="mt-2 text-xl font-bold md:text-2xl lg:text-3xl">
           "{keyword}" {mediaName} {t('info.searchResults')}
         </h2>
       )}
@@ -146,7 +146,7 @@ export const DisplaySearchResults = ({
                 })}
               >
                 {/* 썸네일 */}
-                <div className={`overflow-hidden`}>
+                <div className="overflow-hidden">
                   <div
                     className={`relative flex h-full w-full justify-center ${aspectClass}`}
                   >
@@ -172,7 +172,6 @@ export const DisplaySearchResults = ({
                 </div>
                 {/* 제목 */}
                 <div
-                  key={'title_' + index}
                   className="relative mt-2 line-clamp-2 px-1 text-base sm:text-lg"
                   title={title || ''} // 툴팁용 title 속성
                 >

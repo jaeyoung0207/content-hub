@@ -47,7 +47,7 @@ export const DetailCastInformation = memo(
       detailResult.characters.edges &&
       detailResult.characters.edges.length !== 0;
     return (
-      <div className="lg:px-8">
+      <div>
         {contentMediaType !== getContentMediaType().comicsCode &&
           (isVideoCast ? (
             <>

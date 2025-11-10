@@ -14,7 +14,7 @@ export const PageContainer = ({
   children,
 }: PropsWithChildren<{ className?: string }>) => {
   return (
-    <div className={cn('container mx-auto px-4 sm:px-6 lg:px-8', className)}>
+    <div className={cn('container mx-auto px-4 md:px-6 lg:px-8', className)}>
       {children}
     </div>
   );

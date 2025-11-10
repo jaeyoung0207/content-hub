@@ -87,7 +87,7 @@ export const useHeaderSearch = ({
   // navigate 훅
   const navigate = useNavigate();
 
-  // 필터 박스 오픈 판단
+  // 필터 박스 오픈 상태
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   // 자동완성리스트 설정
   const [autoCompleteList, setAutoCompleteList] = useState<string[]>();
@@ -232,8 +232,8 @@ export const useHeaderSearch = ({
     let keywordArray = keywords ? keywords.split('\t') : [];
     // 중복 제거
     keywordArray = keywordArray.filter((k) => k !== selectedKeyword);
-    // 검색 이력 최대 10개 유지
-    if (keywordArray.length >= 9) {
+    // 설정한 개수만큼 검색 이력 유지
+    if (keywordArray.length >= settings.saveKeywordHistoryCount) {
       // 오래된 검색이력부터 제거
       keywordArray.pop();
     }

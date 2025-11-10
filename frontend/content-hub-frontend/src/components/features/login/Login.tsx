@@ -138,8 +138,8 @@ export const Login = () => {
       {codeParam ? (
         <></>
       ) : (
-        <div className="min-h-[60vh] px-4 py-26 sm:px-6 lg:px-8">
-          <h1 className="mb-2 w-full text-left text-2xl font-bold sm:text-3xl">
+        <div className="min-h-[60vh] px-4 pt-20 pb-10 sm:px-6 md:pt-24 lg:px-8">
+          <h1 className="mb-10 w-full text-left text-2xl font-bold sm:text-3xl">
             {t('info.login')}
           </h1>
           <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-8">

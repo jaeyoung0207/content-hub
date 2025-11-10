@@ -150,9 +150,9 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
 
   return (
     <>
-      <div className="pt-16 sm:pt-20">
+      <div className="pt-20 pb-10 sm:pt-24">
         {/* 섹션 간 간격 */}
-        <div className="space-y-10 pb-10">
+        <div className="space-y-10">
           {/* 검색 결과 */}
           {dataList.map((items) => {
             return (

@@ -35,14 +35,14 @@ export const DetailVideoInformation = ({
   const commonClass = 'flex items-center';
 
   return (
-    <div className="lg:px-8">
+    <div>
       {detailResult.overview && (
         <>
           {/* 개요 */}
-          <div className="mb-3 text-2xl font-bold sm:text-3xl">
+          <div className="mb-3 text-2xl font-bold md:text-3xl">
             {t('info.overview')}
           </div>
-          <div className="mb-8 text-sm leading-relaxed whitespace-pre-line sm:text-base">
+          <div className="mb-8 text-sm leading-relaxed whitespace-pre-line md:text-base">
             {detailResult.overview}
           </div>
         </>

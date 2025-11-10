@@ -35,7 +35,7 @@ export const CloseButtonUi = ({
 
   return (
     <div
-      className={cn('mt-1 mr-1 flex justify-end', className)}
+      className={cn('absolute right-2 mt-1 mr-1 flex lg:right-5', className)}
       onClick={handleWrapperClick}
     >
       <button
@@ -44,7 +44,7 @@ export const CloseButtonUi = ({
         disabled={!!disabled}
         onClick={handleClick}
         className={cn(
-          'text-foreground/90 inline-flex items-center justify-center rounded p-1 hover:bg-black/5',
+          'text-foreground/90 inline-flex cursor-pointer items-center justify-center rounded p-1 hover:bg-black/5',
           'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
           disabled && 'pointer-events-none opacity-50'
         )}

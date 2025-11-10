@@ -185,7 +185,7 @@ export const Detail = memo(() => {
     : COMMON_IMAGES.NO_IMAGE;
 
   return (
-    <div className="pt-16 pb-10 sm:pt-20">
+    <div className="pt-16 pb-10 md:pt-20">
       {/* 탭 버튼 */}
       <div
         className="mb-8 flex items-center justify-center"
@@ -207,7 +207,7 @@ export const Detail = memo(() => {
                   aria-selected={isActive}
                   aria-controls={`panel-${tabInfo.id}`}
                   className={
-                    'cursor-pointer text-sm md:text-2xl ' +
+                    'cursor-pointer text-sm md:text-xl lg:text-2xl ' +
                     (isActive ? 'font-bold' : '')
                   }
                   onClick={commonErrorHandler(() => {
@@ -240,12 +240,11 @@ export const Detail = memo(() => {
         )
       }
       {!isLoading && !isError && data && contentMediaType && (
-        <div className="px-2 md:px-6 lg:px-8">
+        <div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* 작품 이미지 */}
             <div className="flex items-center justify-center md:col-span-1">
               <div className="relative aspect-[3/4] w-3/4 md:w-full lg:w-4/5 xl:w-2/3 2xl:w-11/20">
-                {/* <div className="relative mx-auto w-3/4 md:mx-0 md:w-full max-w-[360px] aspect-[2/3]"> */}
                 <LazyImage
                   src={posterSrc}
                   alt={
@@ -282,7 +281,7 @@ export const Detail = memo(() => {
                 // 작품 기본 정보
                 <div className="md:col-span-2">
                   {/* 제목 */}
-                  <h1 className="mb-5 line-clamp-2 text-2xl font-bold sm:text-3xl">
+                  <h1 className="mb-5 line-clamp-2 text-xl font-bold md:text-2xl">
                     {title}
                   </h1>
                   {/* 상세 정보 */}
@@ -433,7 +432,7 @@ export const Detail = memo(() => {
 
       {/* 탭 내용 */}
       {data && contentMediaType && (
-        <div className="mt-4 px-2 md:px-6 lg:mt-10 lg:px-8">
+        <div className="mt-4 lg:mt-10 lg:px-8">
           {tabIndex === DETAIL_TAB_ID.mediaInfo && (
             <Suspense fallback={<LoadingUi />}>
               <div>

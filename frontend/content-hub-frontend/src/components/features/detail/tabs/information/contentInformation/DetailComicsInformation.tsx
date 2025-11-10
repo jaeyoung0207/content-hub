@@ -43,7 +43,7 @@ export const DetailComicsInformation = ({
   const isStaff = !isMobileOnly && staffList.length > 0;
 
   return (
-    <div className="lg:px-8">
+    <div>
       {overview && (
         <>
           {/* 개요 */}

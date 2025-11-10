@@ -45,8 +45,8 @@ export const MyComments = () => {
   // 코멘트 생략 처리 기준(글자 수)
   const isOmitCommentLength = settings.commentLengthOmissionLength;
   return (
-    <div className="px-4 pt-20 pb-10 sm:px-6 lg:px-8">
-      <div className="mb-4 text-2xl font-bold sm:text-3xl">
+    <div className="pt-20 pb-10 md:pt-24">
+      <div className="mb-4 text-2xl font-bold md:text-3xl">
         {t('info.myComments')}
       </div>
       {isLoading ? (
@@ -80,10 +80,10 @@ export const MyComments = () => {
               const comment = !isOmitComment[index]
                 ? isLfOmit
                   ? commentArray.slice(0, isOmitCommentLf).join('\n') +
-                  t('info.omissionString')
+                    t('info.omissionString')
                   : isLengthOmit
                     ? items.comment?.substring(0, isOmitCommentLength) +
-                    t('info.omissionString')
+                      t('info.omissionString')
                     : items.comment
                 : items.comment;
 
@@ -125,7 +125,7 @@ export const MyComments = () => {
                     </div>
 
                     <div className="w-[72%] min-w-0 grow px-2">
-                      <div className="mb-1 flex items-center justify-between gap-2">
+                      <div className="mb-1 flex items-center justify-between">
                         {items.starRating && (
                           <div
                             className="inline-flex items-center px-1.5 py-0.5 text-xs font-medium md:gap-2 md:text-base"
@@ -145,8 +145,8 @@ export const MyComments = () => {
                                 isStarRatingEditable={false}
                               />
                             )}
-                            {/* 별점 수 */}
-                            <span className="text-sm text-gray-700 md:text-base">
+                            {/* 별점 숫자 */}
+                            <span className="text-sm font-bold md:text-base">
                               {items.starRating}
                             </span>
                           </div>
@@ -157,7 +157,7 @@ export const MyComments = () => {
                         </time>
                       </div>
                       {/* 코멘트 내용 */}
-                      <div className="pl-2 text-sm whitespace-pre-line sm:text-base">
+                      <div className="pl-2 text-sm whitespace-pre-line">
                         <div>
                           <div>{comment}</div>
                           {(isLfOmit || isLengthOmit) && (

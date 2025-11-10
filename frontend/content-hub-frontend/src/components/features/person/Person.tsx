@@ -44,7 +44,7 @@ export const Person = memo(() => {
   const subTitleStyle = 'mr-2 whitespace-nowrap font-medium text-foreground';
 
   return (
-    <div className="px-4 pt-16 pb-10 sm:px-6 sm:pt-20 lg:px-8">
+    <div className="px-2 pt-20 pb-10 md:px-4 md:pt-24 lg:px-8">
       {
         // 로딩 중이면 로딩 UI 표시, 에러가 발생하면 에러 메시지 표시
         isLoading ? (
