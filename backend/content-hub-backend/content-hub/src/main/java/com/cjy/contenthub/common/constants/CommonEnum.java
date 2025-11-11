@@ -110,7 +110,7 @@ public class CommonEnum {
 		/** 공통 - JWT 검증 에러 */
 		ERROR_COMMON_JWT_VALIDATION("error.common.jwtValidation"),
 		/** 공통 - JWT 리프레시 토큰 검증 에러 */
-		ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION("error.common.jwtRefreshTokenValidation"),
+		ERROR_COMMON_REFRESH_TOKEN_VALIDATION("error.common.refreshTokenValidation"),
 		/** 공통 - 점검중 */
 		ERROR_COMMON_MAINTENANCE("error.common.maintenance"),
 		/** 공통 - 점검중 상세 */
@@ -124,7 +124,9 @@ public class CommonEnum {
 		/** 공통 - 컨트롤러 어드바이스 에러 2 (body 포함) */
 		ERROR_COMMON_CONTROLLER_ADVICE_2("error.common.controllerAdvice2"),
 		/** 공통 - 해시키 변환 에러 */
-		ERROR_COMMON_CONVERT_HASHKEY("error.common.convertHashKey");
+		ERROR_COMMON_CONVERT_HASHKEY("error.common.convertHashKey"),
+		/** 공통 - 디바이스 ID 없음 */
+		ERROR_COMMON_DEVICE_ID_NOT_FOUND("error.common.deviceIdNotFound");
 		
 		/** 메시지 코드 */
 		private String messageCode;

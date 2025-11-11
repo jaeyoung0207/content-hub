@@ -174,10 +174,13 @@ const resources = {
       error: {
         problemsOccurred: '문제가 발생했습니다.',
         notFound: '페이지를 찾을 수 없습니다.',
-        forbidden: '접근 권한이 없습니다.',
         networkError:
           '네트워크 에러가 발생했습니다. 인터넷 연결을 확인해 주세요.',
-        authError: '인증/권한 에러가 발생했습니다.',
+        unauthorizedError: '로그인이 필요합니다. 다시 로그인해 주세요.',
+        jwtError: '로그인 정보가 유효하지 않습니다. \n다시 로그인해 주세요.',
+        forbiddenError: '접근 권한이 없습니다.',
+        deviceIdNotFoundError:
+          '기기 인증 정보가 손실되어 홈으로 이동합니다. 다시 로그인해 주세요.',
         validationError: '입력값이 유효하지 않습니다.',
         apiResponseError:
           '데이터 조회 중 에러가 발생했습니다. 다시 시도해 주세요.',
@@ -189,7 +192,7 @@ const resources = {
           '시스템에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
         timeoutError: '요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.',
         apiRateLimitExceededError:
-          'API 요청 한도를 초과했습니다. \r\n 잠시 후 다시 시도해 주세요.',
+          'API 요청 한도를 초과했습니다. \n잠시 후 다시 시도해 주세요.',
         loginError: '로그인에 실패했습니다. 다시 시도해 주세요.',
         loginStateError: '로그인 상태값이 유효하지 않습니다.',
         loginNoOAuthDataError: '로그인 인증 데이터가 없습니다.',

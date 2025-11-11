@@ -132,6 +132,15 @@ const outputError = (error: Error) => {
             retryAfter: axiosError.response.headers['retry-after'],
           })
         : getErrorMessage(name);
+    // 인증 에러인 경우 세션 스토리지에 에러 메시지 저장
+    if (status === ERROR_CODE.UNAUTHORIZED.status) {
+      sessionStorage.setItem('consoleMessage', consoleErrorMsg);
+      sessionStorage.setItem(
+        'toastMessage',
+        formattingErrorMsg(name, toastErrorMsg)
+      );
+    }
+    // 리다이렉트 처리
     if (!redirectFromErrorCode(status)) {
       toast.error(formattingErrorMsg(name, toastErrorMsg), {
         toastId: 'apiResponseError', // 중복 토스트 방지
@@ -174,17 +183,19 @@ const outputError = (error: Error) => {
  */
 const redirectFromErrorCode = (status: number): boolean => {
   if (status === ERROR_CODE.UNAUTHORIZED.status) {
-    window.location.href = `/`;
+    window.location.replace('/');
     return true;
   } else if (status === ERROR_CODE.FORBIDDEN.status) {
-    const message = i18n.t('error.forbidden');
-    window.location.href = `/error?status=${status}&message=${encodeURIComponent(message)}`;
+    const message = i18n.t('error.forbiddenError');
+    window.location.replace(
+      `/error?status=${status}&message=${encodeURIComponent(message)}`
+    );
     return true;
   } else if (status === ERROR_CODE.NOT_FOUND.status) {
-    window.location.href = `/error`;
+    window.location.replace('/error');
     return true;
   } else if (status === ERROR_CODE.SERVICE_UNAVAILABLE.status) {
-    window.location.href = `/maintenance`;
+    window.location.replace('/maintenance');
     return true;
   }
   return false;

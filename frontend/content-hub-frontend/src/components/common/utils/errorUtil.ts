@@ -86,8 +86,12 @@ export const getErrorMessage = (errorName: string): string => {
   switch (errorName) {
     case ERROR_MESSAGE.NETWORK_ERROR.name:
       return ERROR_MESSAGE.NETWORK_ERROR.message;
-    case ERROR_MESSAGE.AUTHORIZATION_ERROR.name:
-      return ERROR_MESSAGE.AUTHORIZATION_ERROR.message;
+    case ERROR_MESSAGE.UNAUTHORIZED_ERROR.name:
+      return ERROR_MESSAGE.UNAUTHORIZED_ERROR.message;
+    case ERROR_MESSAGE.JWT_ERROR.name:
+      return ERROR_MESSAGE.JWT_ERROR.message;
+    case ERROR_MESSAGE.FORBIDDEN_ERROR.name:
+      return ERROR_MESSAGE.FORBIDDEN_ERROR.message;
     case ERROR_MESSAGE.VALIDATION_ERROR.name:
       return ERROR_MESSAGE.VALIDATION_ERROR.message;
     case ERROR_MESSAGE.API_RESPONSE_ERROR.name:
@@ -106,6 +110,8 @@ export const getErrorMessage = (errorName: string): string => {
       return ERROR_MESSAGE.UNEXPECTED_ERROR.message;
     case ERROR_MESSAGE.API_RATE_LIMIT_EXCEEDED_ERROR.name:
       return ERROR_MESSAGE.API_RATE_LIMIT_EXCEEDED_ERROR.message;
+    case ERROR_MESSAGE.DEVICE_ID_NOT_FOUND_ERROR.name:
+      return ERROR_MESSAGE.DEVICE_ID_NOT_FOUND_ERROR.message;
     default:
       return i18n.t('error.unexpectedError');
   }

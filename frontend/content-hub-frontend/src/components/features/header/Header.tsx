@@ -206,7 +206,7 @@ export const Header = () => {
             >
               {isMenuOpen ? (
                 <div>
-                  <TfiMenu className="h-8 w-8" aria-label='메뉴아이콘 열림' />
+                  <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 열림" />
                   <div className="flex justify-center">
                     {/* 메뉴 열림 상태일 때 표시할 내용 */}
                     <div
@@ -230,7 +230,7 @@ export const Header = () => {
                   </div>
                 </div>
               ) : (
-                <TfiMenu className="h-8 w-8" aria-label='메뉴아이콘 닫힘' />
+                <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 닫힘" />
               )}
             </div>
           ) : (

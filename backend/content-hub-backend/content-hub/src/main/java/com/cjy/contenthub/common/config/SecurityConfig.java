@@ -103,7 +103,7 @@ public class SecurityConfig {
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
-		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, messageUtil), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, messageUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 
 		// HTTP 보안 설정을 빌드하여 반환

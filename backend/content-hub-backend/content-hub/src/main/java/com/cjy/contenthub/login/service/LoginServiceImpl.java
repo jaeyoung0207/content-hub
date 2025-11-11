@@ -207,12 +207,12 @@ public class LoginServiceImpl implements LoginService {
 		// 제공자 정보가 없는 경우 예외 처리
 		if (providerInfo == null) {
             throw new AccountExpiredException(
-                messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+                messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_REFRESH_TOKEN_VALIDATION.getMessageCode()));
         }
 		// 리프레시 토큰 검증
 		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken, deviceId)) {
 			throw new AccountExpiredException(
-					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
 
 		// 네이버 토큰 갱신 URL 생성
@@ -315,12 +315,12 @@ public class LoginServiceImpl implements LoginService {
 		// 제공자 정보가 없는 경우 예외 처리
 		if (providerInfo == null) {
 			throw new AccountExpiredException(
-					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
 		// 리프레시 토큰 검증
 		if (!redisUtil.validateRefreshToken(providerInfo.provider(), providerInfo.providerId(), refreshToken, deviceId)) {
 			throw new AccountExpiredException(
-					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_REFRESH_TOKEN_VALIDATION.getMessageCode()));
+					messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_REFRESH_TOKEN_VALIDATION.getMessageCode()));
 		}
 
 		// 카카오 토큰 갱신 URL 생성

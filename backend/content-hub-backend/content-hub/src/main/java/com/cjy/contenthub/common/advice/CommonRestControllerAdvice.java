@@ -22,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
+import com.cjy.contenthub.common.exception.CommonJwtException;
+import com.cjy.contenthub.common.exception.DeviceIdNotFoundException;
 import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
 import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
@@ -48,7 +50,13 @@ public class CommonRestControllerAdvice {
 	private final CookieUtil cookieUtil;
 
 	/** 인증 에러 */
-	private static final String AUTHENTICATION_AUTHORIZATION_ERROR = "Authentication/Authorization Error";
+	private static final String UNAUTHORIZED_ERROR = "Unauthorized Error";
+	
+	/** JWT 에러 */
+	private static final String JWT_ERROR = "JWT Error";
+	
+	/** 권한 에러 */
+	private static final String FORBIDDEN_ERROR = "Forbidden Error";
 
 	/** 입력값 검사 에러 */
 	private static final String VALIDATION_ERROR = "Validation Error";
@@ -68,6 +76,9 @@ public class CommonRestControllerAdvice {
 	/** 타임아웃 에러 */
 	private static final String TIMEOUT_ERROR = "Timeout Error";
 	
+	/** 디바이스 ID 미존재 에러 */
+	private static final String DEVICE_ID_NOT_FOUND_ERROR = "Device ID Not Found Error";
+	
 	/**
 	 * 인증/인가 관련 예외 처리
 	 * 
@@ -84,14 +95,25 @@ public class CommonRestControllerAdvice {
 		String path = request.getRequestURI();
 		int statusCode = ex instanceof AccessDeniedException
 				? HttpStatus.FORBIDDEN.value() : HttpStatus.UNAUTHORIZED.value();
+		String errorName;
+		if (ex instanceof AccessDeniedException) {
+			errorName = FORBIDDEN_ERROR;
+		} else {
+			// 인증 실패 중 JWT 관련 예외인지 확인
+			if (ex instanceof CommonJwtException) {
+				errorName = JWT_ERROR;
+			} else {
+				errorName = UNAUTHORIZED_ERROR;
+			}
+		}
 		String message = ex.getMessage();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
 				.status(statusCode)
 				.message(message)
-				.name(AUTHENTICATION_AUTHORIZATION_ERROR)
+				.name(errorName)
 				.build();
-		Object[] messageParams = {AUTHENTICATION_AUTHORIZATION_ERROR, path, statusCode, 
+		Object[] messageParams = {errorName, path, statusCode, 
 				ObjectUtils.isNotEmpty(ex.getCause()) ? ex.getCause().getMessage() : message};
 		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		
@@ -204,17 +226,26 @@ public class CommonRestControllerAdvice {
 	 * @return 공통 에러 응답 오브젝트
 	 */
 	@ExceptionHandler(CommonBusinessException.class)
-	public ResponseEntity<CommonErrorResponse> handleBusinessException(CommonBusinessException ex, HttpServletRequest request) {
+	public ResponseEntity<CommonErrorResponse> handleBusinessException(CommonBusinessException ex, HttpServletRequest request, HttpServletResponse response) {
 		String path = request.getRequestURI();
 		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode();
 		String message = ex.getMessage();
+		String errorName = ex instanceof DeviceIdNotFoundException ? DEVICE_ID_NOT_FOUND_ERROR : BUSINESS_ERROR;
+		// DeviceIdNotFoundException 인 경우 처리
+		if (ex instanceof DeviceIdNotFoundException) {
+			// 로그인 쿠키 삭제
+			LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
+			// 쿠키 헤더 추가
+			response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.refreshToken());
+			response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.provider());
+		}
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
 				.status(statusCode)
 				.message(message)
-				.name(BUSINESS_ERROR)
+				.name(errorName)
 				.build();
-		Object[] messageParams = {BUSINESS_ERROR, path, statusCode, message};
+		Object[] messageParams = {errorName, path, statusCode, message};
 		log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_CONTROLLER_ADVICE_1.getMessageCode(), messageParams), ex);
 		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(statusCode));
 	}

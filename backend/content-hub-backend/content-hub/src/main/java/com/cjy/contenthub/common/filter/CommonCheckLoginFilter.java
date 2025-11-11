@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
+import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
+import com.cjy.contenthub.common.exception.CommonJwtException;
+import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 
@@ -38,6 +40,9 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	/** 메시지 유틸리티 클래스 */
 	private final MessageUtil messageUtil;
 	
+	/** API 접두사 및 버전 설정 */
+	private final ApiPrefixProperties apiPrefixProperties;
+	
 	/**
 	 * 필터가 적용될 URL 패턴을 정의
 	 * 모든 요청에 대해 필터가 적용되도록 설정
@@ -49,9 +54,13 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		
 		// 요청 URI 추출
-		String pathInfo = request.getRequestURI();
-		// 주소가 /login 으로 시작하는 주소는 처리대상에서 제외  
-		if (pathInfo.matches("^/login/.*")) {
+		String uri = request.getRequestURI();
+		// HTTP 메소드 추출
+		String method = request.getMethod();
+		// API 접두사 및 버전 정보 추출
+		String fullPrefix = apiPrefixProperties.getFullPrefix();
+		// 주소가 /login 으로 시작하는 주소는 처리대상에서 제외
+		if (HttpMethod.OPTIONS.matches(method) || uri.matches(fullPrefix.concat("/login/.*"))) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -69,10 +78,10 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 				String validateResult = jwtUtil.validateToken(jwt);
 				// 유효하지 않은 토큰인 경우, 예외를 발생시킴
 				if (!JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode().equals(validateResult)) {
-					throw new AccountExpiredException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
+					throw new CommonJwtException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
 				}
 			} catch (JwtException ex) {
-				throw new AccountExpiredException(
+				throw new CommonJwtException(
 						messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_PARSING.getMessageCode()), ex);
 			}
 

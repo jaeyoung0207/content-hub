@@ -229,10 +229,19 @@ export const ERROR_MESSAGE = {
     name: 'Network Error',
     message: i18n.t('error.networkError'),
   },
-  // 인증/권한 에러
-  AUTHORIZATION_ERROR: {
-    name: 'Authentication/Authorization Error',
-    message: i18n.t('error.authError'),
+  // 인증 에러
+  UNAUTHORIZED_ERROR: {
+    name: 'Unauthorized Error',
+    message: i18n.t('error.unauthorizedError'),
+  },
+  JWT_ERROR: {
+    name: 'JWT Error',
+    message: i18n.t('error.jwtError'),
+  },
+  // 권한 에러
+  FORBIDDEN_ERROR: {
+    name: 'Forbidden Error',
+    message: i18n.t('error.forbiddenError'),
   },
   // 유효성 검사 에러
   VALIDATION_ERROR: {
@@ -278,5 +287,10 @@ export const ERROR_MESSAGE = {
   API_RATE_LIMIT_EXCEEDED_ERROR: {
     name: 'API Rate Limit Exceeded Error',
     message: i18n.t('error.apiRateLimitExceededError'),
+  },
+  // 디바이스 ID 없음 에러
+  DEVICE_ID_NOT_FOUND_ERROR: {
+    name: 'Device ID Not Found Error',
+    message: i18n.t('error.deviceIdNotFoundError'),
   },
 };

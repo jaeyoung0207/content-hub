@@ -4,10 +4,7 @@ import {
   LOGIN_PROVIDER,
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
-import {
-  useProviderStore,
-  useUserStore,
-} from '@/components/common/store/globalStateStore';
+import { useUserStore } from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -23,7 +20,8 @@ import { useNavigate } from 'react-router-dom';
 import { headerQueryKeys } from '../queryKeys/headerQueryKeys';
 import { AppApi } from '@/api/AppApi';
 import { settings } from '@/components/common/config/settings';
-import { LoginUserInfoDto, LoginUserResponseDto } from '@/api/data-contracts';
+import { LoginUserInfoDto } from '@/api/data-contracts';
+import { setLoginInfo } from '@/components/common/utils/loginUtil';
 
 /**
  * 헤더 훅 반환 타입
@@ -55,9 +53,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   // ================================================================================================== zustand
 
   // 유저 정보 전역 상태 저장용 훅
-  const { user, setUser } = useUserStore();
-  // provider 정보 전역 상태 저장용 훅
-  const { setProvider } = useProviderStore();
+  const { user } = useUserStore();
 
   // ================================================================================================== react query
 
@@ -161,12 +157,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
               },
               retry: 0, // 재시도 없음 명시
             });
-            saveLoginData(
-              updateResponse,
-              setUser,
-              setProvider,
-              LOGIN_PROVIDER.NAVER
-            );
+            setLoginInfo(updateResponse, LOGIN_PROVIDER.NAVER);
             return updateResponse;
           } catch (error) {
             // 유저 정보 초기화
@@ -189,12 +180,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
               },
               retry: 0, // 재시도 없음 명시
             });
-            saveLoginData(
-              updateResponse,
-              setUser,
-              setProvider,
-              LOGIN_PROVIDER.KAKAO
-            );
+            setLoginInfo(updateResponse, LOGIN_PROVIDER.KAKAO);
             return updateResponse;
           } catch (error) {
             // 유저 정보 초기화
@@ -253,33 +239,4 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
     userOptionRef: userOptionRef,
     setUserOptionIsOpen: setUserOptionIsOpen,
   };
-};
-
-/**
- * 로그인 정보 저장 함수
- * @param updateResponse 로그인 응답 데이터
- * @param setUser 유저 정보 설정 함수
- * @param setProvider 프로바이더 정보 설정 함수
- */
-const saveLoginData = (
-  updateResponse: LoginUserResponseDto | undefined,
-  setUser: (user: LoginUserInfoDto) => void,
-  setProvider: (provider: LOGIN_PROVIDER) => void,
-  provider: LOGIN_PROVIDER
-) => {
-  // 로그인 정보 저장
-  if (updateResponse && updateResponse.userInfo) {
-    // 유저정보 저장
-    setUser(updateResponse.userInfo!);
-    // provider 저장
-    setProvider(provider);
-    // 액세스 토큰을 sessionStorage에 저장
-    sessionStorage.setItem('accessToken', updateResponse.accessToken!);
-    // JWT를 localStorage에 저장
-    sessionStorage.setItem('jwt', updateResponse.jwt!);
-    // 만료시각을 sessionStorage에 저장
-    sessionStorage.setItem('expireDate', updateResponse.expireDate!);
-  } else {
-    clearUserData();
-  }
 };
