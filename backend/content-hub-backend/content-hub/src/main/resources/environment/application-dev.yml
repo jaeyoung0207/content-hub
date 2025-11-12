@@ -83,3 +83,5 @@ app:
   url: http://192.168.219.101:3000 # 프론트엔드 로컬IP:PORT번호
   cors:
     enabled: true
+  actuator:
+    developer-mode: true

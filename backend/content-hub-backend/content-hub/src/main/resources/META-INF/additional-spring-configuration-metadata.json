@@ -628,5 +628,10 @@
     "name": "cache.individuals.translate.expire-after-write",
     "type": "java.lang.String",
     "description": "A description for 'cache.individuals.translate.expire-after-write'"
+  },
+  {
+    "name": "app.actuator.developer-mode",
+    "type": "java.lang.String",
+    "description": "A description for 'app.actuator.developer-mode'"
   }
 ]}

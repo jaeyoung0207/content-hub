@@ -1,7 +1,5 @@
 package com.cjy.contenthub.common.filter;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,7 +10,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -46,12 +43,10 @@ public class CommonAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	 * @param request HTTP 요청 객체
 	 * @param response HTTP 응답 객체
 	 * @param authException 인증 예외 객체
-	 * @throws IOException I/O 예외
-	 * @throws ServletException 서블릿 예외
 	 */
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException, ServletException {
+			AuthenticationException authException) {
 		
 		// AuthenticationEntryPoint 가 필터 체인의 바깥에서 실행되기 때문에, 
 	    // 미리 설정해 놓은 WebMvcConfigurer의 addCorsMappings()의 CORS 설정이 적용되지 않으므로, CORS 헤더 직접 수동 추가

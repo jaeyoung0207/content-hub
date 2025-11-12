@@ -32,6 +32,12 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: false
 
+# Server Config
+server:
+  error:
+    whitelabel:
+      enabled: false
+
 # Log Config
 logging:
   file:
@@ -385,4 +391,3 @@ app:
       - path: "/wishlist/getWishlist"
         max-request-count: 60
         seconds: 60
-
