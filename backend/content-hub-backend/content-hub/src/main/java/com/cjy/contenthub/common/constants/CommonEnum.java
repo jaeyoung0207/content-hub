@@ -45,6 +45,20 @@ public class CommonEnum {
 	}
 	
 	/**
+	 * 인포 메시지 코드 정의 enum
+	 */
+	@AllArgsConstructor
+	@Getter
+	public enum CommonMessagesInfoEnum {
+		
+		/** 공통 - 캐시 삭제 */
+		INFO_COMMON_CACHEDELETE("info.common.cacheDelete");
+		
+		/** 메시지 코드 */
+		private String messageCode;
+	}
+	
+	/**
 	 * 디버그 메시지 코드 정의 enum
 	 */
 	@AllArgsConstructor
@@ -126,7 +140,11 @@ public class CommonEnum {
 		/** 공통 - 해시키 변환 에러 */
 		ERROR_COMMON_CONVERT_HASHKEY("error.common.convertHashKey"),
 		/** 공통 - 디바이스 ID 없음 */
-		ERROR_COMMON_DEVICE_ID_NOT_FOUND("error.common.deviceIdNotFound");
+		ERROR_COMMON_DEVICE_ID_NOT_FOUND("error.common.deviceIdNotFound"),
+		/** 공통 - 캐시 삭제 실패 */
+		ERROR_COMMON_FAILED_CACHE_DELETE("error.common.failedCacheDelete"),
+		/** 공통 - 캐시 삭제 실패(AfterThrowing) */
+		ERROR_COMMON_FAILED_CACHE_DELETE_IN_AFTER_THROWING("error.common.failedCacheDeleteInAfterThrowing");
 		
 		/** 메시지 코드 */
 		private String messageCode;

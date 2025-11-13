@@ -28,6 +28,7 @@ public class CommonCacheManager extends CaffeineCacheManager {
 
 	/**
 	 * 네이티브 Caffeine 캐시 생성
+	 * 엔드포인트별로 캐시 설정을 적용
 	 * 
 	 * @param name 캐시 이름
 	 * @return Caffeine 캐시 인스턴스

@@ -114,7 +114,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.TMDB_TV_RECOMMENDATIONS, key = "#seriesId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.TMDB_TV_RECOMMENDATIONS, unless = "#result == null")
 	public DetailRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page, Long userId) {
 
 		// TMDB 장르 정보 조회
@@ -189,7 +189,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return ResponseEntity<TmdbRecommendationsMovieDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.TMDB_MOVIE_RECOMMENDATIONS, key = "#movieId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.TMDB_MOVIE_RECOMMENDATIONS, unless = "#result == null")
 	public DetailRecommendationsMovieDto getMovieRecommendations(Integer movieId, Integer page, Long userId) {
 
 		// TMDB 영화 추천 작품 조회
@@ -264,7 +264,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @return ResponseEntity<DetailComicsRecommendationsResponseDto> 추천 작품 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.ANILIST_COMICS_RECOMMENDATIONS, key = "#mediaId + '-' + #page + '-' + #userId", unless = "#result == null")
+	@Cacheable(value = CacheNames.ANILIST_COMICS_RECOMMENDATIONS, unless = "#result == null")
 	public DetailRecommendationsComicsResponseDto getComicsRecommendations(Integer mediaId, Integer page, Long userId) throws IOException {
 
 		// graphql 쿼리 파일 불러오기

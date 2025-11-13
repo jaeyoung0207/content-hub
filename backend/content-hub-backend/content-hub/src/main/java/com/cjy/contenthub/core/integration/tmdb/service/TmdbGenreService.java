@@ -40,7 +40,7 @@ public class TmdbGenreService {
 	 * 
 	 * @return TV 장르 정보 Map
 	 */
-	@Cacheable(cacheNames = CacheNames.TV_GENRE, unless = "#result == null || #result.isEmpty()")
+	@Cacheable(value = CacheNames.TV_GENRE, unless = "#result == null || #result.isEmpty()")
 	public Map<String, Integer> getTvGenres() {
 		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbTvGenres().block();
 		return getGenreMap(genreList);
@@ -53,7 +53,7 @@ public class TmdbGenreService {
 	 * 
 	 * @return 영화 장르 정보 Map
 	 */
-	@Cacheable(cacheNames = CacheNames.MOVIE_GENRE, unless = "#result == null || #result.isEmpty()")
+	@Cacheable(value = CacheNames.MOVIE_GENRE, unless = "#result == null || #result.isEmpty()")
 	public Map<String, Integer> getMovieGenres() {
 		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbMovieGenres().block();
 		return getGenreMap(genreList);

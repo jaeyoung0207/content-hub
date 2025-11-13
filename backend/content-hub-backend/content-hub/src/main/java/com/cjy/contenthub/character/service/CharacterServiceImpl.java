@@ -47,7 +47,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = CacheNames.CHARACTER, key = "#characterId", unless = "#result == null")
+	@Cacheable(value = CacheNames.CHARACTER, unless = "#result == null")
 	public AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -88,7 +88,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = CacheNames.STAFF, key = "#staffId", unless = "#result == null")
+	@Cacheable(value = CacheNames.STAFF, unless = "#result == null")
 	public AniListStaffNodeDto getStaff(Integer staffId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기

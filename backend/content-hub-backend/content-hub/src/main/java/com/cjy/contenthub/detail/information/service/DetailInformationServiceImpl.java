@@ -117,7 +117,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @return TV 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.TV_DETAIL, key = "#seriesId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.TV_DETAIL, unless = "#result == null")
 	public DetailTvResponseDto getTvDetail(Integer seriesId, String contentMediaType) {
 
 		// TMDB TV 상세 조회
@@ -170,7 +170,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @return ResponseEntity<DetailMovieResponseDto> 영화 상세 응답 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.MOVIE_DETAIL, key = "#movieId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.MOVIE_DETAIL, unless = "#result == null")
 	public DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType) {
 
 		// TMDB 영화 상세 조회
@@ -224,7 +224,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = CacheNames.COMICS_DETAIL, key = "#comicsId + '-' + #contentMediaType", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_DETAIL, unless = "#result == null")
 	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -299,7 +299,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = CacheNames.COMICS_CHARACTER_LIST, key = "'character_' + #comicsId + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_CHARACTER_LIST, unless = "#result == null")
 	public AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
@@ -345,7 +345,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
 	@Override
-	@Cacheable(value = CacheNames.COMICS_STAFF_LIST, key = "'staff_' + #comicsId + '-' + #page", unless = "#result == null")
+	@Cacheable(value = CacheNames.COMICS_STAFF_LIST, unless = "#result == null")
 	public AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기

@@ -27,7 +27,8 @@ public class DeepLService {
 	 * @param sourceLang 원본 언어 코드
 	 * @return 번역된 텍스트
 	 */
-	@Cacheable(value = CacheNames.TRANSLATE, key = "#keyword + '-' + #targetLang + '-' + #sourceLang", unless = "#result == null || #result.isEmpty()")
+	@Cacheable(value = CacheNames.TRANSLATE,
+	           unless = "!T(org.springframework.util.StringUtils).hasText(#result)")
 	public String translateText(String keyword, String targetLang, String sourceLang) {
 		return deeplApiClient.translateText(keyword, targetLang, sourceLang);
 	}

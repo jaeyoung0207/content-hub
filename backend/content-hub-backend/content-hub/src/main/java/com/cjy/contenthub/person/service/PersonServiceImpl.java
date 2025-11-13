@@ -66,7 +66,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @return 인물 상세 정보 DTO
 	 */
 	@Override
-	@Cacheable(value = CacheNames.PERSON_DETAILS, key = "#personId", unless = "#result == null")
+	@Cacheable(value = CacheNames.PERSON_DETAILS, unless = "#result == null")
 	public PersonResponseDto getPersonDetails(int personId) {
 
 		// 장르 맵 조회
