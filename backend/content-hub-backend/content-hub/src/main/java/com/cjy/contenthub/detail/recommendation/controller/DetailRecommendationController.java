@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResponseDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsComicsResultDto;
 import com.cjy.contenthub.detail.recommendation.controller.dto.DetailRecommendationsMovieDto;
@@ -69,7 +70,7 @@ public class DetailRecommendationController {
 	public ResponseEntity<DetailRecommendationsTvDto> getTvRecommendations(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -109,7 +110,7 @@ public class DetailRecommendationController {
 	public ResponseEntity<DetailRecommendationsMovieDto> getMovieRecommendations(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
@@ -149,7 +150,7 @@ public class DetailRecommendationController {
 	public ResponseEntity<DetailRecommendationsComicsResponseDto> getComicsRecommendations(
 			@RequestParam(PARAM_MEDIA_ID) Integer mediaId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) throws IOException {
 		
 		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)

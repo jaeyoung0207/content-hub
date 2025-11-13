@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.home.controller.dto.HomeRankingListResponseDto;
 import com.cjy.contenthub.home.mapper.HomeMapper;
 import com.cjy.contenthub.home.service.HomeService;
@@ -41,7 +42,7 @@ public class HomeController {
 	 */
 	@Operation(summary = "콘텐츠 랭킹 정보 조회")
 	@GetMapping("/rankings")
-	public ResponseEntity<HomeRankingListResponseDto> getContentRankings(@RequestParam(value = PARAM_USER_ID, required = false) Long userId) {
+	public ResponseEntity<HomeRankingListResponseDto> getContentRankings(@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId) {
 		// 서비스에서 콘텐츠 랭킹 데이터 조회
 		HomeRankingListServiceDto serviceResult = homeService.getContentRankings(userId);
 		// 서비스 DTO 리스트를 응답 DTO 리스트로 매핑

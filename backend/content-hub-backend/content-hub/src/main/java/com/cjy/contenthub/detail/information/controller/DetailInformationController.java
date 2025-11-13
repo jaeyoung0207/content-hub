@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
 import com.cjy.contenthub.detail.information.controller.dto.DetailComicsResponseDto;
@@ -70,7 +71,7 @@ public class DetailInformationController {
 	public ResponseEntity<DetailTvResponseDto> getTvDetail(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// TV 상세 정보 조회
@@ -100,7 +101,7 @@ public class DetailInformationController {
 	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// 영화 상세 정보 조회
@@ -131,7 +132,7 @@ public class DetailInformationController {
 	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) throws IOException {
 		
 		// 만화 상세 정보 조회

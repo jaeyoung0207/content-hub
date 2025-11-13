@@ -3,6 +3,8 @@ package com.cjy.contenthub.detail.comments.controller.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.cjy.contenthub.common.annotation.MaskingTarget;
+
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -43,6 +45,7 @@ public class DetailCommentsSaveRequestDto {
 	
 	/** 유저 ID */
 	@NotEmpty
+	@MaskingTarget
 	private String providerId;
 	
 	/** 닉네임 */

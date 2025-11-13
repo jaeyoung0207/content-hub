@@ -18,6 +18,7 @@ import com.cjy.contenthub.app.controller.dto.AppDisplayMediaTypeDto;
 import com.cjy.contenthub.app.controller.dto.AppLoginCookiesResponseDto;
 import com.cjy.contenthub.app.controller.dto.AppMediaTypeResponseDto;
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.properties.LoginCookieProperties;
 import com.cjy.contenthub.common.util.SessionUtil;
@@ -58,7 +59,7 @@ public class AppController {
 	 */
 	@Operation(summary = "CSRF 토큰 조회")
     @GetMapping("/getCsrfToken")
-    public CsrfToken getCsrfToken(@Nullable CsrfToken token) {
+    public CsrfToken getCsrfToken(@Nullable @MaskingTarget CsrfToken token) {
         return token;
     }
 	

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
@@ -149,7 +150,7 @@ public class SearchController {
 	public ResponseEntity<SearchTvResponseDto> searchAni(
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page);
@@ -179,7 +180,7 @@ public class SearchController {
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page);
@@ -207,7 +208,7 @@ public class SearchController {
 	public ResponseEntity<SearchMovieResponseDto> searchMovie(
 			@RequestParam(PARAM_KEYWORD) String keyword, 
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page);
@@ -237,7 +238,7 @@ public class SearchController {
 			@RequestParam(PARAM_KEYWORD) String keyword, 
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_IS_MAIN_PAGE) boolean isMainPage,
-			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
+			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
 		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage);

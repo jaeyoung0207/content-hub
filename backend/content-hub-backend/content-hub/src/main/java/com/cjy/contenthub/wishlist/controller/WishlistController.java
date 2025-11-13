@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistCheckResultResponseDto;
 import com.cjy.contenthub.wishlist.controller.dto.WishlistListResponseDto;
@@ -93,7 +94,7 @@ public class WishlistController {
 	@Operation(summary = "위시리스트 체크")
 	@GetMapping("/checkWishlist")
 	public ResponseEntity<WishlistCheckResultResponseDto> checkWishlist(
-			@RequestParam(PARAM_USER_ID) Long userId, 
+			@RequestParam(PARAM_USER_ID) @MaskingTarget Long userId, 
 			@RequestParam(PARAM_API_ID) String apiId, 
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType) {
 
@@ -112,7 +113,7 @@ public class WishlistController {
 	 */
 	@Operation(summary = "위시리스트 조회")
 	@PostMapping("/getWishlist")
-	public ResponseEntity<WishlistListResponseDto> getWishlist(Long userId) {
+	public ResponseEntity<WishlistListResponseDto> getWishlist(@MaskingTarget Long userId) {
 		
 		WishlistListServiceDto serviceResult = wishlistService.getWishlist(userId);
 

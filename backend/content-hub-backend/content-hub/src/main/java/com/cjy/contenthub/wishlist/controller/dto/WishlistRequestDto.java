@@ -2,6 +2,8 @@ package com.cjy.contenthub.wishlist.controller.dto;
 
 import java.util.List;
 
+import com.cjy.contenthub.common.annotation.MaskingTarget;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class WishlistRequestDto {
 	
 	/** user 테이블 ID */
 	@NotNull
+	@MaskingTarget
 	private Long userId;
 	
 	/** 컨텐츠 미디어 타입 */

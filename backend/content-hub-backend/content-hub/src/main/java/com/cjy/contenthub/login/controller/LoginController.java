@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.constants.CommonConstants;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoIssueTokenDto;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
@@ -85,7 +86,10 @@ public class LoginController {
 	 */
 	@Operation(summary = "네이버 로그인 정보 조회")
 	@GetMapping("/getNaverLoginInfo")
-	public ResponseEntity<LoginUserResponseDto> getNaverLoginInfo(HttpServletRequest request, @RequestParam(PARAM_CODE) String code, @RequestParam(PARAM_STATE) String state) {
+	public ResponseEntity<LoginUserResponseDto> getNaverLoginInfo(
+			HttpServletRequest request, 
+			@RequestParam(PARAM_CODE) @MaskingTarget String code, 
+			@RequestParam(PARAM_STATE) @MaskingTarget String state) {
 
 		// 네이버 토큰 발행
 		NaverIssueTokenDto tokenResponse = loginService.getNaverIssueToken(code, state);
@@ -145,7 +149,7 @@ public class LoginController {
 	@GetMapping("/getNaverUserInfo")
 	public ResponseEntity<LoginUserResponseDto> getNaverUserInfo(
 			HttpServletRequest request, 
-			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
+			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
 			@RequestParam(PARAM_EXPIRES_IN) int expiresIn
 			) {
 
@@ -165,9 +169,9 @@ public class LoginController {
 	@GetMapping("/deleteNaverToken")
 	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
 			HttpServletRequest request,
-			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
-			@RequestParam(PARAM_TARGET_ID) String targetId,
-			@RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
+			@RequestParam(PARAM_TARGET_ID) @MaskingTarget String targetId,
+			@RequestParam(PARAM_USER_ID) @MaskingTarget Long userId
 			) {
 		
 		// 리프레시 토큰 추출
@@ -201,9 +205,9 @@ public class LoginController {
 	@GetMapping("/getKakaoLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> getKakaoLoginInfo(
 			HttpServletRequest request, 
-			@RequestParam(PARAM_CLIENT_ID) String clientId, 
+			@RequestParam(PARAM_CLIENT_ID) @MaskingTarget String clientId, 
 			@RequestParam(PARAM_REDIRECT_URI)String redirectUri,
-			@RequestParam(PARAM_CODE) String code
+			@RequestParam(PARAM_CODE) @MaskingTarget String code
 			) {
 
 		// 카카오 토큰 발행		
@@ -231,7 +235,7 @@ public class LoginController {
 	@GetMapping("/updateKakaoLoginInfo")
 	public ResponseEntity<LoginUserResponseDto> updateKakaoLoginInfo(
 			HttpServletRequest request, 
-			@RequestParam(PARAM_CLIENT_ID) String clientId
+			@RequestParam(PARAM_CLIENT_ID) @MaskingTarget String clientId
 			) {
 
 		// 쿠키에서 리프레시 토큰 추출
@@ -270,7 +274,7 @@ public class LoginController {
 	@GetMapping("/getKakaoUserInfo")
 	public ResponseEntity<LoginUserResponseDto> getKakaoUserInfo(
 			HttpServletRequest request, 
-			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
+			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
 			@RequestParam(PARAM_EXPIRES_IN) int expiresIn
 			) {
 
@@ -291,9 +295,9 @@ public class LoginController {
 	@GetMapping("/deleteKakaoToken")
 	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
-			@RequestParam(PARAM_ACCESS_TOKEN) String accessToken,
-			@RequestParam(PARAM_TARGET_ID) String targetId,
-			@RequestParam(PARAM_USER_ID) Long userId
+			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
+			@RequestParam(PARAM_TARGET_ID) @MaskingTarget String targetId,
+			@RequestParam(PARAM_USER_ID) @MaskingTarget Long userId
 			) {
 		
 		// 리프레시 토큰 추출

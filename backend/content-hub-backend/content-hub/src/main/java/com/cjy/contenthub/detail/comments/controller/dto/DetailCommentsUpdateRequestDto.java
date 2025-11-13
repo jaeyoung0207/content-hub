@@ -2,6 +2,8 @@ package com.cjy.contenthub.detail.comments.controller.dto;
 
 import java.math.BigDecimal;
 
+import com.cjy.contenthub.common.annotation.MaskingTarget;
+
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +34,7 @@ public class DetailCommentsUpdateRequestDto {
 	
 	/** 유저 ID */
 	@NotEmpty
+	@MaskingTarget
 	private String providerId;
 	
 	/** 닉네임 */

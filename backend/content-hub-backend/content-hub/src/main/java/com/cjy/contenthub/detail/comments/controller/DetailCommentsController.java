@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsGetDataDto;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsGetResponseDto;
 import com.cjy.contenthub.detail.comments.controller.dto.DetailCommentsSaveRequestDto;
@@ -134,7 +135,7 @@ public class DetailCommentsController {
 			@RequestParam(PARAM_ORIGINAL_MEDIATYPE)  String contentMediaType,
 			@RequestParam(PARAM_API_ID)  String apiId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
-			@RequestParam(value = PARAM_PROVIDER_ID, required = false)  String providerId
+			@RequestParam(value = PARAM_PROVIDER_ID, required = false) @MaskingTarget String providerId
 			) {
 
 		// 응답 DTO 초기화

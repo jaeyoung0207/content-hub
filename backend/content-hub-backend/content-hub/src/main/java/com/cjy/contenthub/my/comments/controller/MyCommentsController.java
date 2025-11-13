@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cjy.contenthub.common.annotation.ApiController;
+import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.my.comments.controller.dto.MyCommentsResponseDto;
 import com.cjy.contenthub.my.comments.mapper.MyCommentsMapper;
 import com.cjy.contenthub.my.comments.service.MyCommentsService;
@@ -45,7 +46,7 @@ public class MyCommentsController {
 	 */
 	@Operation(summary = "나의 코멘트 리스트 조회")
 	@GetMapping("/getMyCommentList")
-	public ResponseEntity<MyCommentsResponseDto> getMyCommentList(@RequestParam(PARAM_USER_ID) Long userId,
+	public ResponseEntity<MyCommentsResponseDto> getMyCommentList(@RequestParam(PARAM_USER_ID) @MaskingTarget Long userId,
 			@RequestParam(PARAM_PAGE_NO) Integer pageNo) {
 
 		MyCommentsServiceDto serviceResult = myCommentService.getMyCommentList(userId, pageNo);
