@@ -1,9 +1,29 @@
 /**
+ * 필수 환경변수 체크 함수
+ * @param value 환경변수 값
+ * @param key 환경변수 키
+ * @returns 환경변수 값 또는 빈 문자열
+ */
+const requiredCheck = (value: string | undefined, key: string): string => {
+  if (!value) {
+    // 운영 환경에서는 실패하도록 처리
+    if (import.meta.env.MODE === 'production') {
+      throw new Error(`[ENV] Missing required key: ${key}`);
+    }
+    console.error(`[ENV] Missing key: ${key}, using empty fallback.`);
+    return '';
+  }
+  return value;
+};
+
+/**
  * .env에서 설정한 환경변수를 가지고 내부에서 사용할 수 있도록 설정
  */
 export const settings = {
-  appBackendUrl:
-    import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080',
+  appBackendUrl: requiredCheck(
+    import.meta.env.VITE_APP_BACKEND_URL,
+    'VITE_APP_BACKEND_URL'
+  ),
   isBlockingAdultContent: import.meta.env.VITE_BLOCKING_ADULT_CONTENT
     ? import.meta.env.VITE_BLOCKING_ADULT_CONTENT === 'true'
     : false,
@@ -24,8 +44,9 @@ export const settings = {
   kakaoClientId:
     import.meta.env.VITE_KAKAO_CLIENT_ID || 'kakao_client_id_placeholder',
   sentryDsn: import.meta.env.VITE_SENTRY_DSN || 'sentry_dsn_placeholder',
-  sentryAuthToken:
-    import.meta.env.VITE_SENTRY_AUTH_TOKEN || 'sentry_auth_token_placeholder',
+  isSentryEnabled: import.meta.env.VITE_SENTRY_ENABLE
+    ? import.meta.env.VITE_SENTRY_ENABLE === 'true'
+    : false,
   detailVideoCount: Number(import.meta.env.VITE_VIDEO_CREDITS_COUNT || 6),
   detailComicsCount: Number(import.meta.env.VITE_COMICS_CREDITS_COUNT || 10),
   detailCreditsPerPage: Number(import.meta.env.VITE_CREDITS_PER_PAGE || 9),

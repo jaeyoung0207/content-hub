@@ -7,7 +7,9 @@ import {
   useUserStore,
 } from '../store/globalStateStore';
 import { LoginUserResponseDto } from '@/api/data-contracts';
-import Sentry from '@/sentry';
+
+// Sentry 동적 import
+const Sentry = import('@sentry/react');
 
 /**
  * 로그인 후 리다이렉트 처리
@@ -64,7 +66,7 @@ export const loginConfirmDialog = (
  * 로그인 정보 설정
  * @param loginInfo 로그인 정보
  */
-export const setLoginInfo = (
+export const setLoginInfo = async (
   loginInfo: LoginUserResponseDto,
   provider: string
 ) => {
@@ -83,7 +85,7 @@ export const setLoginInfo = (
   // 만료시각을 sessionStorage에 저장
   sessionStorage.setItem('expireDate', loginInfo.expireDate!);
   // Sentry에 유저 정보 설정
-  Sentry.setUser({
+  (await Sentry).setUser({
     id: loginInfo.userInfo!.userId,
     username: loginInfo.userInfo!.nickname,
   });

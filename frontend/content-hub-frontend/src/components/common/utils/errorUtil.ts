@@ -3,7 +3,9 @@ import { isAxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import i18n from 'i18next';
 import { AxiosErrorType } from '../config/queryClientConfig';
-import Sentry from '@/sentry';
+
+// Sentry 동적 import
+const Sentry = import('@sentry/react');
 
 /**
  * 콘솔 출력시 글자색을 붉은색으로 출력
@@ -24,13 +26,13 @@ export const handleUnExceptedError = (error: unknown, message?: string) => {
  */
 export const commonErrorHandler =
   <T extends unknown[]>(fn: (...args: T) => void) =>
-  (...args: T) => {
+  async (...args: T) => {
     try {
       fn(...args);
     } catch (err) {
       handleUnExceptedError(err, '이벤트 처리 중 문제가 발생했습니다.');
       // Sentry 에러 캡처
-      Sentry.captureException(err);
+      (await Sentry).captureException(err);
     }
   };
 

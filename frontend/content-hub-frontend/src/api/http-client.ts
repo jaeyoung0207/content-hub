@@ -18,7 +18,6 @@ import {
   useUserStore,
 } from '@/components/common/store/globalStateStore'; // add custom config
 import { clearUserData } from '@/components/common/utils/clearUtil'; // add custom config
-import Sentry from '@/sentry'; // add custom config
 import type {
   AxiosError,
   AxiosInstance,
@@ -30,6 +29,9 @@ import type {
 import axios from 'axios';
 import dayjs from 'dayjs'; // add custom config
 import { LoginProfileResultDto } from './data-contracts'; // add custom config
+
+// Sentry 동적 import
+const Sentry = import('@sentry/react'); // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -113,9 +115,7 @@ export class HttpClient<SecurityDataType = unknown> {
         // 접근토큰
         const jwt = sessionStorage.getItem('jwt');
         // 만료시각
-        const expireDateStr = sessionStorage.getItem('expireDate');
-        const expireDate =
-          expireDateStr && dayjs(expireDateStr, 'YYYYMMDDHHmmss');
+        const expireDate = sessionStorage.getItem('expireDate');
         // 현재시각
         const now = dayjs();
         // 접근토큰 만료 확인
@@ -164,11 +164,13 @@ export class HttpClient<SecurityDataType = unknown> {
     this.instance.interceptors.response.use(
       (response) => {
         // Sentry에 성공 로그 남기기
-        Sentry.addBreadcrumb({
-          category: 'api',
-          message: `API Success: ${response.config.url}`,
-          level: 'info',
-        });
+        (async () => {
+          (await Sentry).addBreadcrumb({
+            category: 'api',
+            message: `API Success: ${response.config.url}`,
+            level: 'info',
+          });
+        })();
         return response;
       },
       (error: AxiosError<AxiosErrorType>) => {

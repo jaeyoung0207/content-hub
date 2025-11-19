@@ -6,9 +6,11 @@ import {
 } from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { afterLoginRedirect } from '@/components/common/utils/loginUtil';
-import Sentry from '@/sentry';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Sentry 동적 import
+const Sentry = import('@sentry/react');
 
 /**
  * 로그아웃 컴포넌트
@@ -67,7 +69,7 @@ export const Logout = () => {
         // 리다이렉트 처리
         afterLoginRedirect(navigate);
         // Sentry에 유저 정보 설정
-        Sentry.setUser(null);
+        (await Sentry).setUser(null);
       }
     };
     logout();

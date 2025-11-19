@@ -8,7 +8,6 @@ import { queryClientConfig } from '../config/queryClientConfig';
 import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
 import { LoadingUi } from '@/components/ui/common/LoadingUi';
-import { ErrorBoundary } from '@sentry/react';
 import { ProtectedRoute } from '@/components/features/common/ProtectedRoute';
 
 // lazy loading
@@ -30,6 +29,9 @@ const LoginPopup = lazy(() => import('@/components/features/login/LoginPopup'));
 const NaverLogin = lazy(() => import('@/components/features/login/NaverLogin'));
 const KakaoLogin = lazy(() => import('@/components/features/login/KakaoLogin'));
 const Logout = lazy(() => import('@/components/features/login/Logout'));
+const ErrorBoundary = lazy(() =>
+  import('@sentry/react').then((module) => ({ default: module.ErrorBoundary }))
+);
 
 /**
  * AppBrowserRouter 컴포넌트

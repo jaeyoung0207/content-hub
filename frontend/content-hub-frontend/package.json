@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "build:dev": "vite build --mode development",
+    "build:staging": "vite build --mode staging",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview",
+    "lint": "eslint .",
     "generate:api": "npx swagger-typescript-api generate -p ./api-docs.yaml -o ./src/api --axios --modular --module-name-first-tag --useTags --extract-enums --exportServices --exportModels --exportCore --cleanOutput"
   },
   "dependencies": {

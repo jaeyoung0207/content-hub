@@ -7,21 +7,31 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const isProduction = mode === 'production';
+  const enableSentry = env.VITE_SENTRY_ENABLE === 'true' && isProduction; 
   return {
     plugins: [
       react(),
       tailwindcss(),
       visualizer(),
-      sentryVitePlugin({
-        org: 'cjy-37',
-        project: 'javascript-react',
-        authToken: env.VITE_SENTRY_AUTH_TOKEN,
-      }),
+      enableSentry &&
+        sentryVitePlugin({
+          org: 'cjy-37',
+          project: 'javascript-react',
+          authToken: process.env.SENTRY_AUTH_TOKEN, // process.env.SENTRY_AUTH_TOKEN은 빌드 시점에만 접근 가능, CI/CD 환경변수에서 설정
+        }),
     ],
     server: {
-      // develope only
-      host: true,
+      host: true, // 0.0.0.0 으로 바인딩
       port: 3000,
+      strictPort: false,
+      proxy: {
+        '/api': {
+          target: 'http://backend:8080',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
     resolve: {
       alias: [
@@ -32,6 +42,10 @@ export default defineConfig(({ mode }) => {
       ],
     },
     build: {
+      // 운영환경 + Sentry 활성화 시에만 sourcemap 생성
+      sourcemap: enableSentry,
+      chunkSizeWarningLimit: 600, // KB / 필요 시 조정
+      target: 'es2022', // 최종 번들 자바스크립트 코드의 문법 수준을 ES2022(ECMAScript 2022)로 맞춰서 출력 → 불필요한 폴리필 줄여서 번들 작아짐
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -49,15 +63,10 @@ export default defineConfig(({ mode }) => {
               if (id.includes('react-hook-form'))
                 return 'react-hook-form-vendor';
               if (id.includes('react')) return 'react-vendor';
-              if (id.includes('@sentry-internal'))
-                return 'sentry-internal-vendor';
-              if (id.includes('@sentry')) return 'sentry-vendor';
-              return 'vendor';
             }
           },
         },
       },
-      sourcemap: true,
     },
   };
 });
