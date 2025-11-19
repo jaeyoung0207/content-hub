@@ -1,10 +1,8 @@
 package com.cjy.contenthub.login.client;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -169,24 +167,23 @@ public class LoginClient {
 
 								String jwt;
 								Date expireDate;
+								String expireDateStr;
 								try {
+									// 만료 시각 계산
+									Instant now = Instant.now();                         // UTC 기준 현재
+									Instant expiryInstant = now.plusSeconds(expiresIn);  // 만료 Instant
+									// ISO8601 UTC 문자열
+									expireDateStr = DateTimeFormatter.ISO_INSTANT.format(expiryInstant);
 									// 현재시각 설정
-									Date currentDate = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
+									Date currentDate = Date.from(now);
 									// 만료시각 설정
-									Calendar calendar = Calendar.getInstance();
-									calendar.setTime(currentDate);
-									calendar.add(Calendar.SECOND, expiresIn);
-									expireDate = calendar.getTime();
+									expireDate = Date.from(expiryInstant);
 									// jwt 생성
 									jwt = jwtUtil.createToken(profile.getId(), provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
 									throw new IllegalStateException(
 											messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
 								}
-
-								// 만료시각 변환(Date -> String)
-								SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
-								String expireDateStr = sdf.format(expireDate);
 
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = mapper.profileDataDtoToProfileDataDto(profile);
@@ -294,14 +291,17 @@ public class LoginClient {
 
 								String jwt;
 								Date expireDate;
+								String expireDateStr;
 								try {
+									// 만료 시각 계산
+									Instant now = Instant.now();                         // UTC 기준 현재
+									Instant expiryInstant = now.plusSeconds(expiresIn);  // 만료 Instant
+									// ISO8601 UTC 문자열
+									expireDateStr = DateTimeFormatter.ISO_INSTANT.format(expiryInstant);
 									// 현재시각 설정
-									Date currentDate = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
+									Date currentDate = Date.from(now);
 									// 만료시각 설정
-									Calendar calendar = Calendar.getInstance();
-									calendar.setTime(currentDate);
-									calendar.add(Calendar.SECOND, expiresIn);
-									expireDate = calendar.getTime();
+									expireDate = Date.from(expiryInstant);
 									// jwt 생성
 									jwt = jwtUtil.createToken(providerId, provider, profile.getNickname(), currentDate, expireDate);
 								} catch (ParseException ex) {
@@ -315,11 +315,6 @@ public class LoginClient {
 										.id(providerId)
 										.nickname(profile.getNickname())
 										.build();
-
-								// 만료시각 변환(Date -> String)
-								SimpleDateFormat sdf = new SimpleDateFormat(CommonConstants.DATE_FORMAT_YYYYMMDDHHMMSS);
-								String expireDateStr = sdf.format(expireDate);
-
 								// 결과값 설정
 								LoginUserResponseDto userResponse = LoginUserResponseDto.builder()
 										.resultcode(PROFILE_API_SUCCESS)
