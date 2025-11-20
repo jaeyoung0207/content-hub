@@ -6,10 +6,12 @@ spring:
     name: content-hub
   config:
     import:
+    - classpath:environment/application-local.yml
     - classpath:environment/application-dev.yml
+    - classpath:environment/application-staging.yml
     - classpath:environment/application-prod.yml
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev} # 환경변수 - 개발환경: dev / 운영환경: prod
+    active: ${SPRING_PROFILES_ACTIVE:dev} # 환경변수 - 로컬환경:local / 개발환경: dev / 스테이징환경: staging / 운영환경: prod
   jackson:
     property-naming-strategy: LOWER_CAMEL_CASE
   jpa:
@@ -17,10 +19,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false # true로 설정하면 View 렌더링 중에도 데이터베이스 쿼리가 실행될 수 있음
-  data:
-    redis:
-      host: localhost
-      port: 6379
   messages:
     basename: messages
     encoding: UTF-8

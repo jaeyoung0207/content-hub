@@ -1,31 +1,26 @@
-# Development Environment
+# Local Environment
 
 # Spring Config
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: local
   datasource:
-    url: jdbc:postgresql://db:5432/content_hub
+    url: jdbc:postgresql://localhost:5432/content_hub
     username: myuser
     password: mypassword
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}  # create, update, validate, none 중 선택/ update: DB 테이블과 엔티티 매핑정보를 비교해 변경 사항만 수정,추가
+      ddl-auto: update  # create, update, validate, none 중 선택/ update: DB 테이블과 엔티티 매핑정보를 비교해 변경 사항만 수정,추가
     show-sql: true # SQL 로그 출력
   flyway:
-    enabled: true
-    locations: classpath:db/migration
-    default-schema: content
-    schemas: content
-    validate-on-migrate: true   # 초기 부트스트랩 단계에서는 false
-    baseline-on-migrate: false   # 기존 DB 채택이 아니므로 false
+    enabled: false
   graphql:
     graphiql:
       enabled: true
   data:
     redis:
-      host: redis
+      host: localhost
       port: 6379
   security:
     user: 

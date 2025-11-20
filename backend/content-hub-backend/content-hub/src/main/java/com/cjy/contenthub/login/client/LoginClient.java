@@ -88,14 +88,6 @@ public class LoginClient {
 	@Value("${login.kakao.url.user-info-url}")
 	private String kakaoUserInfoUrl;
 
-	/** 네이버 API 클라이언트 ID */
-	@Value("${login.naver.api.client-id}")
-	private String naverClientId;
-
-	/** 네이버 API 클라이언트 시크릿 */
-	@Value("${login.naver.api.client-secret}")
-	private String naverClientSecret;
-	
 	/** 네이버 리프레시 토큰 만료 시간 (일) */
 	@Value("${login.naver.custom.refresh-token-expires-in}")
 	private long naverExpiresIn;

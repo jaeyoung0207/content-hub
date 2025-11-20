@@ -1,10 +1,10 @@
-# Production Environment
+# Staging Environment
 
 # Spring Config
 spring:
   config:
     activate:
-      on-profile: prod
+      on-profile: staging
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -22,7 +22,7 @@ spring:
     baseline-on-migrate: false
   graphql:
     graphiql:
-      enabled: false
+      enabled: false # 필요시 QA 편의 위해 true 설정 (보안/접근제어 전제)
   data:
     redis:
       host: ${REDIS_HOST}
@@ -50,9 +50,9 @@ server:
       cookie: # JSESSIONID 쿠키 설정
         http-only: true
         secure: true
-        same-site: lax # back/front 서로 다른 도메인/서브도메인이라면 'none'
+        same-site: lax  # back/front 서로 다른 도메인/서브도메인이라면 'none'
   address: 0.0.0.0
-  forward-headers-strategy: framework # Proxy(리버스 프록시 뒤에서 동작)
+  forward-headers-strategy: framework
 
 # Log Config
 logging:
@@ -60,13 +60,13 @@ logging:
     root: INFO
     com:
       cjy:
-        contenthub: INFO
+        contenthub: DEBUG  # QA 편의상 애플리케이션만 DEBUG
 
 # Actuator Config
 management:
   server:
-    port: 8081 # 운영에선 관리 포트 분리
-    address: 127.0.0.1 # 로컬루프백 바인딩 후 프록시에서만 접근
+    port: 8081
+    address: 0.0.0.0   # QA(품질 보증) 접근 필요 없으면 127.0.0.1 유지
   endpoints:
     web:
       base-path: /actuator
@@ -79,21 +79,21 @@ management:
 # info
 info:
   app:
-    environment: prod
+    environment: staging
 
 # Login Config
 login:
   cookie:
     http-only: true
     secure: true
-    same-site: Lax # back/front 서로 다른 도메인/서브도메인이라면 'None'
-#    domain: ${DOMAIN} # 같은 호스트의 경우 생략
+    same-site: Lax   # 프론트/백 도메인이 다르면 'None'
+#      domain: ${DOMAIN} # 같은 호스트의 경우 생략
     path: /
 
 # Application Config
 app:
-  url: ${DOMAIN} # 프론트엔드 Origin URL, 스킴 포함(https://)
+  url: ${DOMAIN} # 스테이징 프론트 Origin(https://)
   cors:
-    enabled: false # 단일 도메인의 경우 CORS 불필요
+    enabled: true # 스테이징에서 프론트/백 도메인 분리 시 true
   actuator:
     developer-mode: false

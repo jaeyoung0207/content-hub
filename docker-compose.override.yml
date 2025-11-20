@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  frontend:
+    ports:
+      - "80:80"
+    restart: unless-stopped
+  backend:
+    ports: []
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+  db:
+    ports: []            # 외부 노출 제거
+    restart: unless-stopped
+  redis:
+    ports: []            # 외부 노출 제거
+    restart: unless-stopped

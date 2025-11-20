@@ -64,7 +64,9 @@ replay_pid*
 /backend/**/build/
 /backend/**/.gradle/
 /backend/**/gradle/
-/backend/**/.env*
+/backend/**/.env.prod
+/backend/**/.env.dev
+/backend/**/.env.staging
 
 # ================================================
 # Node.js / React 관련
@@ -73,15 +75,20 @@ replay_pid*
 /frontend/**/build/
 /frontend/**/dist/
 /frontend/**/stats.html
-/frontend/**/.env*
+/frontend/**/.env
+/frontend/**/.env.development
+/frontend/**/.env.production
+/frontend/**/.env.staging
 /frontend/**/*.log
 
 # ================================================
-# 백업 폴더 무시 (직접 만든 bk/)
+# 기타 폴더
 # ================================================
+/bk/
 /backend/bk/
 /frontend/bk/
 /frontend/front_01/
+/data/
 
 # ================================================
 # SonarLint 관련
