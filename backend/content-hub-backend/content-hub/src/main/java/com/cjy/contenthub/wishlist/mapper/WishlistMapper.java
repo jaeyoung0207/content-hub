@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.core.repository.entity.ContentEntity;
@@ -37,6 +38,8 @@ public interface WishlistMapper {
 	 * @return WishlistServiceDto
 	 */
 	@Named("contentToService")
+	@Mapping(target = "userId", ignore = true)
+	@Mapping(target = "genreIds", ignore = true)
 	WishlistServiceDto contentToService(ContentEntity contentEntity);
 	
 	/**

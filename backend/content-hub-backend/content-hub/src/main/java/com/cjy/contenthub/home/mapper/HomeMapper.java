@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.home.controller.dto.HomeRankingListResponseDto;
@@ -24,6 +25,7 @@ public interface HomeMapper {
 	 * @param entity 콘텐츠 뷰 엔티티
 	 */
 	@Named("entityToService")
+	@Mapping(target = "wishlisted", ignore = true)
 	HomeRankingServiceDto entityToService(HomeRankingViewEntity entity);
 	
 	/**

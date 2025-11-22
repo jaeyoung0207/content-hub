@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMovieResultsDto;
@@ -29,6 +30,9 @@ public interface SearchMapper {
 	 * @return SearchTvResultsDto
 	 */
 	@Named("tvResultsToTmdbTvResults")
+	@Mapping(target = "contentMediaType", ignore = true)
+	@Mapping(target = "genreNames", ignore = true)
+	@Mapping(target = "isWishlisted", ignore = true)
 	SearchTvResultsDto tvResultsToTmdbTvResults(TmdbSearchTvResultsDto tmdbTvResults);
 	
 	/**
@@ -47,6 +51,9 @@ public interface SearchMapper {
 	 * @return SearchMovieResultsDto
 	 */
 	@Named("movieResultsToTmdbMovieResults")
+	@Mapping(target = "contentMediaType", ignore = true)
+	@Mapping(target = "genreNames", ignore = true)
+	@Mapping(target = "isWishlisted", ignore = true)
 	SearchMovieResultsDto movieResultsToTmdbMovieResults(TmdbSearchMovieResultsDto tmdbMovieResults);
 	
 	/**

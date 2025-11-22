@@ -20,6 +20,9 @@ public interface LoginMapper {
 	 * @param requestDto NaverProfileDataDto
 	 */
 	@Mapping(target = "providerId", source = "id")
+	@Mapping(target = "userId", ignore = true)
+	@Mapping(target = "provider", ignore = true)
+	@Mapping(target = "status", ignore = true)
 	LoginUserServiceDto profileDataDtoToUserServiceDto(NaverProfileDataDto requestDto);
 
 	/**
@@ -27,6 +30,8 @@ public interface LoginMapper {
 	 * 
 	 * @param serviceDto LoginUserServiceDto
 	 */
+	@Mapping(target = "createTime", ignore = true)
+	@Mapping(target = "updateTime", ignore = true)
 	UserEntity userServiceDtoToUserEntity(LoginUserServiceDto serviceDto);
 	
 	/**
@@ -34,6 +39,13 @@ public interface LoginMapper {
 	 * 
 	 * @param userEntity UserEntity
 	 */
+	@Mapping(target = "name", ignore = true)
+	@Mapping(target = "gender", ignore = true)
+	@Mapping(target = "age", ignore = true)
+	@Mapping(target = "birthday", ignore = true)
+	@Mapping(target = "profileImage", ignore = true)
+	@Mapping(target = "birthyear", ignore = true)
+	@Mapping(target = "mobile", ignore = true)
 	LoginUserServiceDto userEntityToUserServiceDto(UserEntity userEntity);
 	
 	/**
@@ -41,6 +53,9 @@ public interface LoginMapper {
 	 * 
 	 * @param userEntity UserEntity
 	 */
+	@Mapping(target = "userId", ignore = true)
+	@Mapping(target = "provider", ignore = true)
+	@Mapping(target = "status", ignore = true)
 	LoginUserInfoDto profileDataDtoToProfileDataDto(NaverProfileDataDto requestDto);
 	
 }

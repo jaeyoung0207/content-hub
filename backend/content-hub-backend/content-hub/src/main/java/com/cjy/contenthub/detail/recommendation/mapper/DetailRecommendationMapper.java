@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbRecommendationsMovieResultsDto;
@@ -28,6 +29,8 @@ public interface DetailRecommendationMapper {
 	 * @param apiResponse TMDB 추천 TV API 응답 DTO
 	 */
 	@Named("tmdbRecommendationsTvToDetailRecommendationsTv")
+	@Mapping(target = "contentMediaType", ignore = true)
+	@Mapping(target = "wishlisted", ignore = true)
 	DetailRecommendationsTvResultsDto tmdbRecommendationsTvToDetailRecommendationsTv(TmdbRecommendationsTvResultsDto apiResponse);
 	
 	/**
@@ -45,6 +48,8 @@ public interface DetailRecommendationMapper {
 	 * @param apiResponse TMDB 추천 영화 API 응답 DTO
 	 */
 	@Named("tmdbRecommendationsMovieToDetailRecommendationsMovie")
+	@Mapping(target = "contentMediaType", ignore = true)
+	@Mapping(target = "wishlisted", ignore = true)
 	DetailRecommendationsMovieResultsDto tmdbRecommendationsMovieToDetailRecommendationsMovie(TmdbRecommendationsMovieResultsDto apiResponse);
 	
 	/**
@@ -100,6 +105,7 @@ public interface DetailRecommendationMapper {
 	 * @return 복사된 새로운 DetailComicsRecommendationsResultDto 객체
 	 */
 	@Named("deepCopyForRecommendationsComicsResults")
+	@Mapping(target = "isWishlisted", ignore = true)
 	DetailRecommendationsComicsResultDto deepCopyForRecommendationsComicsResults(DetailRecommendationsComicsResultDto source);
 	
 	/**

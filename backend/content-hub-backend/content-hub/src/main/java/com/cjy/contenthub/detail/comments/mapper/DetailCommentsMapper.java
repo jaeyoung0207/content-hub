@@ -30,6 +30,7 @@ public interface DetailCommentsMapper {
 	 * @param requestDto 상세 코멘트 저장 요청 DTO
 	 */
 	@Mapping(target = "createTime", ignore = true)
+	@Mapping(target = "commentId", ignore = true)
 	DetailCommentsDataServiceDto commentsSaveReqToCommentsService(DetailCommentsSaveRequestDto requestDto);
 	
 	/**
@@ -38,6 +39,10 @@ public interface DetailCommentsMapper {
 	 * @param requestDto 상세 코멘트 업데이트 요청 DTO
 	 */
 	@Mapping(target = "createTime", ignore = true)
+	@Mapping(target = "genreIds", ignore = true)
+	@Mapping(target = "title", ignore = true)
+	@Mapping(target = "thumbnailImageUrl", ignore = true)
+	@Mapping(target = "provider", ignore = true)
 	DetailCommentsDataServiceDto commentUpdateReqToCommentsService(DetailCommentsUpdateRequestDto requestDto);
 	
 	/**
@@ -45,6 +50,9 @@ public interface DetailCommentsMapper {
 	 * 
 	 * @param serviceDto 상세 코멘트 서비스 DTO
 	 */
+	@Mapping(target = "content", ignore = true)
+	@Mapping(target = "user", ignore = true)
+	@Mapping(target = "updateTime", ignore = true)
 	DetailCommentsEntity commentsServiceToCommentsEntity(DetailCommentsDataServiceDto serviceDto);
 	
 	/**
@@ -54,6 +62,12 @@ public interface DetailCommentsMapper {
 	 */
 	@Mapping(source = "createTime", target = "createTime", dateFormat = "uuuu/MM/dd hh:mm:ss")
 	@Named("commentsEntityToCommentService")
+	@Mapping(target = "genreIds", ignore = true)
+	@Mapping(target = "title", ignore = true)
+	@Mapping(target = "thumbnailImageUrl", ignore = true)
+	@Mapping(target = "provider", ignore = true)
+	@Mapping(target = "good", ignore = true)
+	@Mapping(target = "bad", ignore = true)
 	DetailCommentsDataServiceDto commentsEntityToCommentService(DetailCommentsViewEntity entity);
 	
 	/**

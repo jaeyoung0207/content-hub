@@ -24,8 +24,11 @@ public interface PersonMapper {
 	 * 
 	 * @param detailsDto 인물 상세 정보 DTO
 	 */
+	@Mapping(target = "genderValue", ignore = true)
 	@Mapping(target = "cast", ignore = true)
 	@Mapping(target = "crew", ignore = true)
+	@Mapping(target = "castCount", ignore = true)
+	@Mapping(target = "crewCount", ignore = true)
 	PersonResponseDto personToPersonResponse(PersonDto detailsDto);
 	
 	/**
@@ -33,6 +36,13 @@ public interface PersonMapper {
 	 * 
 	 * @param castDto TMDB 인물 출연진 정보 DTO
 	 */
+	@Mapping(target = "originalTitle", ignore = true)
+	@Mapping(target = "releaseDate", ignore = true)
+	@Mapping(target = "releaseYear", ignore = true)
+	@Mapping(target = "title", ignore = true)
+	@Mapping(target = "episodeCount", ignore = true)
+	@Mapping(target = "contentMediaTypeName", ignore = true)
+	@Mapping(target = "contentMediaType", ignore = true)
 	PersonCreditsCastDto tmdbPersonCastToPersonCast(TmdbPersonCreditsCastDto castDto);
 	
 	/**
@@ -40,6 +50,13 @@ public interface PersonMapper {
 	 * 
 	 * @param castDto TMD 인물 제작진 정보 DTO
 	 */
+	@Mapping(target = "originalTitle", ignore = true)
+	@Mapping(target = "releaseDate", ignore = true)
+	@Mapping(target = "releaseYear", ignore = true)
+	@Mapping(target = "title", ignore = true)
+	@Mapping(target = "episodeCount", ignore = true)
+	@Mapping(target = "contentMediaTypeName", ignore = true)
+	@Mapping(target = "contentMediaType", ignore = true)
 	PersonCreditsCrewDto tmdbPersonCrewToPersonCrew(TmdbPersonCreditsCrewDto castDto);
 
 }

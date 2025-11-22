@@ -26,6 +26,8 @@ public interface DetailInformationMapper {
 	 */
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
+	@Mapping(target = "genreIds", ignore = true)
+	@Mapping(target = "wishlisted", ignore = true)
 	@Mapping(target = "credits", source = "aggregateCredits")
 	DetailTvResponseDto detailTvToDetailTvResponse(TmdbTvDetailsDto apiResponse);
 	
@@ -36,6 +38,8 @@ public interface DetailInformationMapper {
 	 */
 	@Mapping(target = "link", ignore = true)
 	@Mapping(target = "starRatingAverage", ignore = true)
+	@Mapping(target = "genreIds", ignore = true)
+	@Mapping(target = "wishlisted", ignore = true)
 	DetailMovieResponseDto detailMovieToDetailMovieResponse(TmdbMovieDetailsDto apiResponse);
 	
 	/**
