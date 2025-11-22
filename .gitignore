@@ -63,7 +63,6 @@ replay_pid*
 /backend/**/bin/
 /backend/**/build/
 /backend/**/.gradle/
-/backend/**/gradle/
 /backend/**/.env.prod
 /backend/**/.env.dev
 /backend/**/.env.staging
