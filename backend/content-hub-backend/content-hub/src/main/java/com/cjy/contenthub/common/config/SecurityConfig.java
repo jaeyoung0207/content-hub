@@ -1,5 +1,6 @@
 package com.cjy.contenthub.common.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,9 +86,11 @@ public class SecurityConfig {
 				.httpOnly(csrfCookieHttpOnly)
 				.secure(csrfCookieSecure)
 				.sameSite(csrfCookieSameSite)
-				.domain(csrfCookieDomain)
-				.path(csrfCookiePath)
-				.build());
+				.path(csrfCookiePath));
+		// 도메인 설정
+		if (StringUtils.isNotEmpty(csrfCookieDomain)) {
+			csrfTokenRepository.setCookieCustomizer(cookie -> cookie.domain(csrfCookieDomain));
+		}
 		// HTTP 보안 설정
 		httpSecurity
 		.authorizeHttpRequests(auth -> auth

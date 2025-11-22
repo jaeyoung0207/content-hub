@@ -35,7 +35,7 @@ security:
       http-only: false
       secure: false
       same-site: Lax
-      domain: ''
+      domain: ${DOMAIN:}
       path: /
 
 # Server Config
@@ -84,12 +84,12 @@ login:
     http-only: true
     secure: false
     same-site: Lax
-    domain: ''
+    domain: ${DOMAIN:}
     path: /
 
 # Application Config
 app:
-  url: ${DOMAIN:http://localhost:3000} # 프론트엔드 로컬IP:PORT번호
+  url: ${APP_URL} # 프론트엔드 로컬IP:PORT번호
   cors:
     enabled: true
   actuator:

@@ -40,7 +40,7 @@ security:
       http-only: false
       secure: true
       same-site: Lax   # 프론트/백 도메인이 다르면 'None'
-#      domain: ${DOMAIN} # 같은 호스트의 경우 생략
+      domain: ${DOMAIN:}
       path: /
 
 # Server Config
@@ -65,7 +65,7 @@ logging:
 # Actuator Config
 management:
   server:
-    port: 8081
+    port: 8081 # 스테이징에선 관리 포트 분리
     address: 0.0.0.0   # QA(품질 보증) 접근 필요 없으면 127.0.0.1 유지
   endpoints:
     web:
@@ -87,12 +87,12 @@ login:
     http-only: true
     secure: true
     same-site: Lax   # 프론트/백 도메인이 다르면 'None'
-#      domain: ${DOMAIN} # 같은 호스트의 경우 생략
+    domain: ${DOMAIN:}
     path: /
 
 # Application Config
 app:
-  url: ${DOMAIN} # 스테이징 프론트 Origin(https://)
+  url: ${APP_URL} # 스테이징 프론트 Origin(https://)
   cors:
     enabled: true # 스테이징에서 프론트/백 도메인 분리 시 true
   actuator:
