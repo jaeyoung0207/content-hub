@@ -11,11 +11,17 @@ COPY gradle gradle
 COPY settings.gradle settings.gradle
 COPY build.gradle build.gradle
 
+# gradlew 파일에 실행 권한 부여
+RUN chmod +x gradlew
+
 # 의존성만 먼저 받기 (소스 없이)
 RUN ./gradlew --no-daemon dependencies || true
 
 # 로컬 컴퓨터의 현재 디렉터리에 있는 모든 파일과 폴더를 도커 이미지 내부의 현재 작업 디렉터리로 그대로 복사
 COPY . .
+
+# 위에서 gradlew 덮어쓸 위험이 있으면 다시 실행권한 부여
+RUN [ ! -x gradlew ] && chmod +x gradlew || true
 
 # 테스트 없이 빌드(필요 시 -x test 제거)
 RUN ./gradlew --no-daemon clean bootJar -x test

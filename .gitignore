@@ -67,6 +67,9 @@ replay_pid*
 /backend/**/.env.dev
 /backend/**/.env.staging
 
+# 예외 설정: gradlew Wrapper jar 파일은 포함
+!/backend/**/gradle/wrapper/gradle-wrapper.jar 
+
 # ================================================
 # Node.js / React 관련
 # ================================================
