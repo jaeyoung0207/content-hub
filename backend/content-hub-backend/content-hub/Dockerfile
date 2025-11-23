@@ -14,9 +14,9 @@ COPY build.gradle build.gradle
 # gradlew 파일에 실행 권한 부여
 RUN chmod +x gradlew
 
-# 의존성 다운로드 (cache mount)
+# 의존성/플러그인 캐시 미리 캐싱 (소스 없이)
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --console=plain build -x test || true
+    ./gradlew --console=plain help
 
 # 로컬 컴퓨터의 현재 디렉터리에 있는 모든 파일과 폴더를 도커 이미지 내부의 현재 작업 디렉터리로 그대로 복사
 COPY . .
