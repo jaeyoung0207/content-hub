@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
   const enableSentry = env.VITE_SENTRY_ENABLE === 'true' && isProduction; 
   return {
+    base: '/', // 배포 기본 경로
     plugins: [
       react(),
       tailwindcss(),
@@ -46,27 +47,6 @@ export default defineConfig(({ mode }) => {
       sourcemap: enableSentry,
       chunkSizeWarningLimit: 600, // KB / 필요 시 조정
       target: 'es2022', // 최종 번들 자바스크립트 코드의 문법 수준을 ES2022(ECMAScript 2022)로 맞춰서 출력 → 불필요한 폴리필 줄여서 번들 작아짐
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react-dom')) return 'react-dom-vendor';
-              if (id.includes('react-router')) return 'react-router-vendor';
-              if (id.includes('@tanstack/query-core'))
-                return 'query-core-vendor';
-              if (id.includes('axios')) return 'axios-vendor';
-              if (id.includes('react-toastify')) return 'toastify-vendor';
-              if (id.includes('zod')) return 'zod-vendor';
-              if (id.includes('i18next')) return 'i18next-vendor';
-              if (id.includes('dompurify')) return 'dompurify-vendor';
-              if (id.includes('react-icons')) return 'icons-vendor';
-              if (id.includes('react-hook-form'))
-                return 'react-hook-form-vendor';
-              if (id.includes('react')) return 'react-vendor';
-            }
-          },
-        },
-      },
     },
   };
 });
