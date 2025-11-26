@@ -165,6 +165,7 @@ export const Person = memo(() => {
                       <a
                         href={data.homepage}
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"
                       >
                         {data.homepage}

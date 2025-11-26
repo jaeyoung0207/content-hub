@@ -38,7 +38,7 @@ jobs:
 
       # 테스트 실행
       - name: Run Tests
-        run: npm test -- --ci --watchAll=false
+        run: npm run test:run  # vitest run (watch 모드 비활성화)
       
       # 빌드
       - name: Build

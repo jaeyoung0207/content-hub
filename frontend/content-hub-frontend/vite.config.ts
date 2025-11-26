@@ -48,5 +48,11 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 600, // KB / 필요 시 조정
       target: 'es2022', // 최종 번들 자바스크립트 코드의 문법 수준을 ES2022(ECMAScript 2022)로 맞춰서 출력 → 불필요한 폴리필 줄여서 번들 작아짐
     },
+    test: {
+      globals: true, // describe, it, test, expect 같은 Vitest의 핵심 API를 전역 변수로 사용할 수 있게 해줌
+      environment: 'jsdom', // 테스트를 실행할 환경으로 jsdom을 사용하도록 지정
+      setupFiles: './src/test/setup.ts', // 테스트 실행 전에 설정 파일을 불러옴
+      css: true, // CSS 관련 테스트 지원 활성화
+    },
   };
 });
