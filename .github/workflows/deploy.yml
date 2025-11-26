@@ -1,0 +1,188 @@
+name: Full Deploy (Backend -> Frontend)
+
+on:
+  push:
+    branches: [ "main" ]
+
+# 동시 실행(레이스 컨디션) 방지
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+# 권한 최소화
+permissions:
+  contents: read
+
+jobs:
+  # ============================
+  # 변경 감지 Job
+  # ============================
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend_changed: ${{ steps.filter.outputs.backend }}
+      frontend_changed: ${{ steps.filter.outputs.frontend }}
+      infra_changed: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'backend/content-hub-backend/content-hub/**'
+            frontend:
+              - 'frontend/content-hub-frontend/**'
+            infra:
+              - 'docker-compose.yml'
+              - 'docker-compose.override.yml'
+
+  # ============================
+  # 백엔드 Job
+  # ============================
+  backend:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: detect_changes
+    if: |
+      needs.detect_changes.outputs.backend_changed == 'true' &&
+      needs.detect_changes.outputs.infra_changed != 'true'
+    steps:
+      # 배포
+      - name: Deploy to EC2 (Backend)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # 어떤 명령어든 실패 시 즉시 중단
+            set -e
+            # 앱 루트경로
+            cd ~/app
+            # 깃 최신 다운로드
+            git pull
+            # 도커 빌드 및 실행
+            docker compose build backend
+            docker compose up -d backend
+
+  # ============================
+  # 프론트 Job (백 Job 이후 실행)
+  # ============================
+  frontend:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [detect_changes, backend]
+    if: |
+      needs.detect_changes.outputs.frontend_changed == 'true' &&
+      needs.detect_changes.outputs.infra_changed != 'true' &&
+      !failure() && !cancelled()
+    steps:
+      # 배포
+      - name: Deploy to EC2 (Frontend)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # 어떤 명령어든 실패 시 즉시 중단
+            set -e
+            # 앱 루트경로
+            cd ~/app
+            # 깃 최신 다운로드
+            git pull
+            # 프론트엔드 .env.production 파일 생성
+            cd frontend/content-hub-frontend
+            export SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+            export VITE_KAKAO_CLIENT_ID="${{ secrets.VITE_KAKAO_CLIENT_ID }}"
+            export VITE_NAVER_CLIENT_ID="${{ secrets.VITE_NAVER_CLIENT_ID }}"
+            export VITE_SENTRY_DSN="${{ secrets.VITE_SENTRY_DSN }}"
+            export VITE_APP_BACKEND_URL="${{ vars.VITE_APP_BACKEND_URL }}"
+            export VITE_BLOCKING_ADULT_CONTENT="${{ vars.VITE_BLOCKING_ADULT_CONTENT }}"
+            export VITE_COMICS_CREDITS_COUNT="${{ vars.VITE_COMICS_CREDITS_COUNT }}"
+            export VITE_COMMENT_LENGTH_OMISSION_LENGTH="${{ vars.VITE_COMMENT_LENGTH_OMISSION_LENGTH }}"
+            export VITE_COMMENT_LF_OMISSION_LENGTH="${{ vars.VITE_COMMENT_LF_OMISSION_LENGTH }}"
+            export VITE_COMMENT_MAX_LENGTH="${{ vars.VITE_COMMENT_MAX_LENGTH }}"
+            export VITE_CREDITS_PER_PAGE="${{ vars.VITE_CREDITS_PER_PAGE }}"
+            export VITE_KAKAO_REDIRECT_URI="${{ vars.VITE_KAKAO_REDIRECT_URI }}"
+            export VITE_MAINTENANCE_END="${{ vars.VITE_MAINTENANCE_END }}"
+            export VITE_MAINTENANCE_MODE="${{ vars.VITE_MAINTENANCE_MODE }}"
+            export VITE_MAINTENANCE_START="${{ vars.VITE_MAINTENANCE_START }}"
+            export VITE_MARGIN_PAGES_DISPLAYED="${{ vars.VITE_MARGIN_PAGES_DISPLAYED }}"
+            export VITE_NAVER_REDIRECT_URI="${{ vars.VITE_NAVER_REDIRECT_URI }}"
+            export VITE_PAGE_RANGE_DISPLAYED="${{ vars.VITE_PAGE_RANGE_DISPLAYED }}"
+            export VITE_SAVE_KEYWORD_HISTORY_COUNT="${{ vars.VITE_SAVE_KEYWORD_HISTORY_COUNT }}"
+            export VITE_SENTRY_ENABLE="${{ vars.VITE_SENTRY_ENABLE }}"
+            export VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH="${{ vars.VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH }}"
+            export VITE_VIDEO_CREDITS_COUNT="${{ vars.VITE_VIDEO_CREDITS_COUNT }}"
+            export VITE_WISHLIST_COMICS_OMISSION_MOBILE_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_MOBILE_LENGTH }}"
+            export VITE_WISHLIST_COMICS_OMISSION_PC_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_PC_LENGTH }}"
+            export VITE_WISHLIST_COMICS_OMISSION_TABLET_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_TABLET_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_MOBILE_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_MOBILE_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_PC_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_PC_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_TABLET_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_TABLET_LENGTH }}"
+            envsubst < .env.production.template > .env.production
+            # 도커 빌드 및 실행
+            cd ~/app
+            docker compose build frontend
+            docker compose up -d frontend
+
+  # ============================
+  # 인프라 Job
+  # ============================
+  full_deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: detect_changes
+    if: needs.detect_changes.outputs.infra_changed == 'true'
+    steps:
+      - name: Full Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets. EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # 어떤 명령어든 실패 시 즉시 중단
+            set -e
+            # 앱 루트경로
+            cd ~/app
+            # 깃 최신 다운로드
+            git pull
+            # 프론트엔드 .env.production 파일 생성
+            cd frontend/content-hub-frontend
+            export SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+            export VITE_KAKAO_CLIENT_ID="${{ secrets.VITE_KAKAO_CLIENT_ID }}"
+            export VITE_NAVER_CLIENT_ID="${{ secrets.VITE_NAVER_CLIENT_ID }}"
+            export VITE_SENTRY_DSN="${{ secrets.VITE_SENTRY_DSN }}"
+            export VITE_APP_BACKEND_URL="${{ vars.VITE_APP_BACKEND_URL }}"
+            export VITE_BLOCKING_ADULT_CONTENT="${{ vars.VITE_BLOCKING_ADULT_CONTENT }}"
+            export VITE_COMICS_CREDITS_COUNT="${{ vars.VITE_COMICS_CREDITS_COUNT }}"
+            export VITE_COMMENT_LENGTH_OMISSION_LENGTH="${{ vars.VITE_COMMENT_LENGTH_OMISSION_LENGTH }}"
+            export VITE_COMMENT_LF_OMISSION_LENGTH="${{ vars.VITE_COMMENT_LF_OMISSION_LENGTH }}"
+            export VITE_COMMENT_MAX_LENGTH="${{ vars.VITE_COMMENT_MAX_LENGTH }}"
+            export VITE_CREDITS_PER_PAGE="${{ vars.VITE_CREDITS_PER_PAGE }}"
+            export VITE_KAKAO_REDIRECT_URI="${{ vars.VITE_KAKAO_REDIRECT_URI }}"
+            export VITE_MAINTENANCE_END="${{ vars.VITE_MAINTENANCE_END }}"
+            export VITE_MAINTENANCE_MODE="${{ vars.VITE_MAINTENANCE_MODE }}"
+            export VITE_MAINTENANCE_START="${{ vars.VITE_MAINTENANCE_START }}"
+            export VITE_MARGIN_PAGES_DISPLAYED="${{ vars.VITE_MARGIN_PAGES_DISPLAYED }}"
+            export VITE_NAVER_REDIRECT_URI="${{ vars.VITE_NAVER_REDIRECT_URI }}"
+            export VITE_PAGE_RANGE_DISPLAYED="${{ vars.VITE_PAGE_RANGE_DISPLAYED }}"
+            export VITE_SAVE_KEYWORD_HISTORY_COUNT="${{ vars.VITE_SAVE_KEYWORD_HISTORY_COUNT }}"
+            export VITE_SENTRY_ENABLE="${{ vars.VITE_SENTRY_ENABLE }}"
+            export VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH="${{ vars.VITE_TMDB_SEARCH_KEYWORD_MAX_LENGTH }}"
+            export VITE_VIDEO_CREDITS_COUNT="${{ vars.VITE_VIDEO_CREDITS_COUNT }}"
+            export VITE_WISHLIST_COMICS_OMISSION_MOBILE_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_MOBILE_LENGTH }}"
+            export VITE_WISHLIST_COMICS_OMISSION_PC_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_PC_LENGTH }}"
+            export VITE_WISHLIST_COMICS_OMISSION_TABLET_LENGTH="${{ vars.VITE_WISHLIST_COMICS_OMISSION_TABLET_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_MOBILE_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_MOBILE_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_PC_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_PC_LENGTH }}"
+            export VITE_WISHLIST_VIDEO_OMISSION_TABLET_LENGTH="${{ vars.VITE_WISHLIST_VIDEO_OMISSION_TABLET_LENGTH }}"
+            envsubst < .env.production.template > .env.production
+            # 전체 재배포
+            cd ~/app
+            docker compose down
+            docker compose up -d --build
