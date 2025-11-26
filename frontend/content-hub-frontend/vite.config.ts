@@ -68,5 +68,11 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    test: {
+      globals: true, // describe, it, test, expect 같은 Vitest의 핵심 API를 전역 변수로 사용할 수 있게 해줌
+      environment: 'jsdom', // 테스트를 실행할 환경으로 jsdom을 사용하도록 지정
+      setupFiles: './src/test/setup.ts', // 테스트 실행 전에 설정 파일을 불러옴
+      css: true, // CSS 관련 테스트 지원 활성화
+    },
   };
 });
