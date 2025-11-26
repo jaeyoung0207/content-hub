@@ -101,7 +101,7 @@ export const DisplaySearchResults = ({
       {searchScreenType === SEARCH_SCREEN_TYPE.VIEW_MORE && (
         // 키워드 미디어 검색 결과
         <h2 className="mt-2 text-xl font-bold md:text-2xl lg:text-3xl">
-          "{keyword}" {mediaName} {t('info.searchResults')}
+          &quot;{keyword}&quot; {mediaName} {t('info.searchResults')}
         </h2>
       )}
 
