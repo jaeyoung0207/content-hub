@@ -10,11 +10,16 @@ services:
        - /var/www/certbot:/var/www/certbot
        # Let's Encrypt에서 발급받은 실제 SSL 인증서 파일들이 저장되는 핵심 디렉토리(ro:Read Only)
        - /etc/letsencrypt:/etc/letsencrypt:ro
+       # 로그 추가
+       - ./logs/frontend:/var/log/nginx
   backend:
     env_file:
       - ./backend/env/.env.prod
     ports: []
     restart: "no"
+    volumes:
+      # 로그 추가
+      - ./logs/backend:/app/logs
     healthcheck:
       test: ["CMD-SHELL","curl -f http://localhost:8081/actuator/health || exit 1"]
       interval: 30s
