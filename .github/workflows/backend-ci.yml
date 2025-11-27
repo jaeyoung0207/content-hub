@@ -7,11 +7,13 @@ on:
   pull_request:
     paths:
       - "backend/content-hub-backend/content-hub/**"
+  # 워크플로우를 GitHub 웹 인터페이스에서 수동으로 실행
+  workflow_dispatch: 
 
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
-
+    environment: ci
     defaults:
       run:
         working-directory: backend/content-hub-backend/content-hub
@@ -58,7 +60,4 @@ jobs:
 
       # SonarQube
       - name: SonarQube Analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # PR 분석용
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --info
+        run: ./gradlew sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} --info
