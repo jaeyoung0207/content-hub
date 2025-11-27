@@ -58,7 +58,6 @@ jobs:
 
       # SonarQube
       - name: SonarQube Analysis
-        if: github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # PR 분석용
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
