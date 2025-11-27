@@ -17,8 +17,11 @@ jobs:
         working-directory: backend/content-hub-backend/content-hub
 
     steps:
+      # 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # SonarCloud용 전체 히스토리
 
       # java 셋업
       - name: Set up JDK 21
@@ -27,32 +30,36 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      # SonarQube 캐시
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       # Gradle 캐시
-      - name: Cache Gradle
+      - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle
 
       # 권한 부여
-      - name: Make gradlew executable
+      - name: Grant execute permission
         run: chmod +x gradlew
         
-      # 빌드
+      # 빌드 (테스트 포함)
       - name: Build with Gradle
         run: ./gradlew clean build --scan
 
       # SonarQube
-      - name: Run SonarQube Analysis
+      - name: SonarQube Analysis
+        if: github.event_name == 'pull_request'
         env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # PR 분석용
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          ./gradlew sonar \
-            -Dsonar.projectKey=contenthub-backend \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+        run: ./gradlew sonar --info
