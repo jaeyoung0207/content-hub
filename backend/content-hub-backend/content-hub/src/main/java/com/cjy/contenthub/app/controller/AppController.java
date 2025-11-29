@@ -1,11 +1,7 @@
 package com.cjy.contenthub.app.controller;
 
-import java.util.UUID;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +16,7 @@ import com.cjy.contenthub.app.controller.dto.AppMediaTypeResponseDto;
 import com.cjy.contenthub.common.annotation.ApiController;
 import com.cjy.contenthub.common.annotation.MaskingTarget;
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.properties.LoginCookieProperties;
+import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.SessionUtil;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
@@ -48,9 +44,9 @@ public class AppController {
 	/** 세션 유틸리티 클래스 */
 	private final SessionUtil sessionUtil;
 	
-	/** 로그인 쿠키 프로퍼티 */
-	private final LoginCookieProperties loginCookieProperties;
-
+	/** 쿠키 유틸 */
+	private final CookieUtil cookieUtil;
+	
 	/**
 	 * 첫 로드시 csrf 토큰을 생성하기 위한 API
 	 * Spring Security가 자동으로 XSRF-TOKEN 쿠키를 생성해 내려줌
@@ -92,17 +88,8 @@ public class AppController {
 		}
 		// 쿠키에 디바이스 ID가 없는 경우 신규 생성
 		if (StringUtils.isEmpty(cookiesResponse.getDeviceId())) {
-			String deviceId = UUID.randomUUID().toString();
-			// 디바이스 ID 쿠키
-			ResponseCookie deviceIdCookie = ResponseCookie.from(CommonConstants.DEVICE_ID, deviceId)
-					.httpOnly(loginCookieProperties.isHttpOnly())
-					.secure(loginCookieProperties.isSecure())
-					.sameSite(loginCookieProperties.getSameSite())
-					.path("/")
-					.maxAge(60L * 60L * 24L * 365L) // 1년
-					.build();
-			// 디바이스 ID 쿠키 설정
-			response.setHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
+			// 디바이스 ID 생성 및 쿠키 설정
+			String deviceId = cookieUtil.setDeviceId(response);
 			// 디바이스 ID 응답 DTO 설정
 			cookiesResponse.setDeviceId(deviceId);
 		}

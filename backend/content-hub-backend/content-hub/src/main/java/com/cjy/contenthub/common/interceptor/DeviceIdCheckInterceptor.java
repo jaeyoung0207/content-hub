@@ -4,18 +4,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
-import com.cjy.contenthub.common.exception.DeviceIdNotFoundException;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.properties.ApiRateLimitProperties;
 import com.cjy.contenthub.common.properties.ApiRateLimitProperties.ApiRateLimitRules;
 import com.cjy.contenthub.common.util.CookieUtil;
-import com.cjy.contenthub.common.util.MessageUtil;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,9 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class DeviceIdCheckInterceptor implements HandlerInterceptor {
-	
-	/** 메시지 유틸 */
-	private final MessageUtil messageUtil;
 	
 	/** 쿠키 유틸 */
 	private final CookieUtil cookieUtil;
@@ -82,10 +75,9 @@ public class DeviceIdCheckInterceptor implements HandlerInterceptor {
 		// 쿠키에서 Device ID 값 가져오기
 		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 		
-		// Device ID 값이 없으면 예외 발생
+		// Device ID 값이 없는 경우, Device ID 쿠키 생성
 		if (StringUtils.isEmpty(deviceId)) {
-			throw new DeviceIdNotFoundException(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_DEVICE_ID_NOT_FOUND.getMessageCode()), 
-					HttpStatus.UNAUTHORIZED.value());
+			cookieUtil.setDeviceId(response);
 		}
 		return true;
 	}
