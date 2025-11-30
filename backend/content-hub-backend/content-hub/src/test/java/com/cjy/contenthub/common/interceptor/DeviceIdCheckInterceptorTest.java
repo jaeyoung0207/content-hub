@@ -45,10 +45,10 @@ class DeviceIdCheckInterceptorTest {
 	private ApiPrefixProperties apiPrefixProperties = new ApiPrefixProperties();
 	
 	@Mock
-	private HttpServletRequest mockRequest;
+	private HttpServletRequest request;
 
 	@Mock
-	private HttpServletResponse mockResponse;
+	private HttpServletResponse response;
 	
 	@Mock
 	private Object handler;
@@ -95,11 +95,11 @@ class DeviceIdCheckInterceptorTest {
 	@DisplayName("preHandle: OPTIONS 메서드 요청")
 	void test_preHandle_optionsMethod() throws Exception {
 		// Mock 설정
-		when(mockRequest.getRequestURI()).thenReturn("/api/home/rankings");
-		when(mockRequest.getMethod()).thenReturn(HttpMethod.OPTIONS.name());
+		when(request.getRequestURI()).thenReturn("/api/home/rankings");
+		when(request.getMethod()).thenReturn(HttpMethod.OPTIONS.name());
 		
 		// 테스트 대상 메서드 호출
-		boolean result = deviceIdCheckInterceptor.preHandle(mockRequest, mockResponse, handler);
+		boolean result = deviceIdCheckInterceptor.preHandle(request, response, handler);
 		
 		// 결과 검증
 		assertThat(result).isTrue();
@@ -113,11 +113,11 @@ class DeviceIdCheckInterceptorTest {
 	void test_preHandle_notTargetUri() throws Exception {
 		// Mock 설정
 		String uri = "/api/app/getMediaTypes";
-		when(mockRequest.getRequestURI()).thenReturn(uri);
-		when(mockRequest.getMethod()).thenReturn(HttpMethod.GET.name());
+		when(request.getRequestURI()).thenReturn(uri);
+		when(request.getMethod()).thenReturn(HttpMethod.GET.name());
 		
 		// 테스트 대상 메서드 호출
-		boolean result = deviceIdCheckInterceptor.preHandle(mockRequest, mockResponse, handler);
+		boolean result = deviceIdCheckInterceptor.preHandle(request, response, handler);
 		
 		// 결과 검증
 		assertThat(result).isTrue();
@@ -131,13 +131,13 @@ class DeviceIdCheckInterceptorTest {
 	void test_preHandle_targetUriAndExistDeviceId() throws Exception {
 		// Mock 설정
 		String uri = "/api/home/rankings";
-		when(mockRequest.getRequestURI()).thenReturn(uri);
-		when(mockRequest.getMethod()).thenReturn(HttpMethod.GET.name());
+		when(request.getRequestURI()).thenReturn(uri);
+		when(request.getMethod()).thenReturn(HttpMethod.GET.name());
 		String deviceId = UUID.randomUUID().toString();
-		when(cookieUtil.getCookieValue(mockRequest, CommonConstants.DEVICE_ID)).thenReturn(deviceId);
+		when(cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID)).thenReturn(deviceId);
 		
 		// 테스트 대상 메서드 호출
-		boolean result = deviceIdCheckInterceptor.preHandle(mockRequest, mockResponse, handler);
+		boolean result = deviceIdCheckInterceptor.preHandle(request, response, handler);
 		
 		// 결과 검증
 		assertThat(result).isTrue();
@@ -151,20 +151,20 @@ class DeviceIdCheckInterceptorTest {
 	void test_preHandle_targetUriAndNotExistDeviceId() throws Exception {
 		// Mock 설정
 		String uri = "/api/home/rankings";
-		when(mockRequest.getRequestURI()).thenReturn(uri);
-		when(mockRequest.getMethod()).thenReturn(HttpMethod.GET.name());
+		when(request.getRequestURI()).thenReturn(uri);
+		when(request.getMethod()).thenReturn(HttpMethod.GET.name());
 		String deviceId = UUID.randomUUID().toString();
-		when(cookieUtil.getCookieValue(mockRequest, CommonConstants.DEVICE_ID)).thenReturn("");
-		when(cookieUtil.setDeviceId(mockResponse)).thenReturn(deviceId);
+		when(cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID)).thenReturn("");
+		when(cookieUtil.setDeviceId(response)).thenReturn(deviceId);
 		
 		// 테스트 대상 메서드 호출
-		boolean result = deviceIdCheckInterceptor.preHandle(mockRequest, mockResponse, handler);
+		boolean result = deviceIdCheckInterceptor.preHandle(request, response, handler);
 		
 		// 결과 검증
 		assertThat(result).isTrue();
 		
 		// cookieUtil.setDeviceId 메서드가 호출되었는지 검증
-		verify(cookieUtil, times(1)).setDeviceId(mockResponse);
+		verify(cookieUtil, times(1)).setDeviceId(response);
 	}
 
 }

@@ -37,21 +37,21 @@ class AppControllerTest {
 	private CookieUtil cookieUtil;
 
 	@Mock
-	private HttpServletRequest mockRequest;
+	private HttpServletRequest request;
 
 	@Mock
-	private HttpServletResponse mockResponse;
+	private HttpServletResponse response;
 
 	@Test
 	@DisplayName("getLoginCookies: 쿠키가 존재하지 않는 경우")
 	void test_getLoginCookies_notExistCookie() {
 		// Mock 설정
-		when(mockRequest.getCookies()).thenReturn(null);
+		when(request.getCookies()).thenReturn(null);
 		String deviceId = UUID.randomUUID().toString();
-		when(cookieUtil.setDeviceId(mockResponse)).thenReturn(deviceId);
+		when(cookieUtil.setDeviceId(response)).thenReturn(deviceId);
 
 		// 테스트 대상 메서드 호출
-		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(mockRequest, mockResponse);
+		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(request, response);
 
 		// 결과 검증
 		assertThat(resultDto.isHasRefreshToken()).isFalse();
@@ -59,7 +59,7 @@ class AppControllerTest {
 		assertThat(resultDto.getDeviceId()).isEqualTo(deviceId);
 		
 		// cookieUtil.setDeviceId 메서드가 한 번 호출되었는지 검증
-		verify(cookieUtil, times(1)).setDeviceId(mockResponse);
+		verify(cookieUtil, times(1)).setDeviceId(response);
 	}
 
 	@Test
@@ -71,10 +71,10 @@ class AppControllerTest {
 		Cookie refreshTokenCookie = new Cookie(CommonConstants.REFRESH_TOKEN, "refresh_token");
 		Cookie providerCookie = new Cookie(CommonConstants.PROVIDER, provider);
 		Cookie deviceIdCookie = new Cookie(CommonConstants.DEVICE_ID, deviceId);
-		when(mockRequest.getCookies()).thenReturn(new Cookie[] { refreshTokenCookie, deviceIdCookie, providerCookie });
+		when(request.getCookies()).thenReturn(new Cookie[] { refreshTokenCookie, deviceIdCookie, providerCookie });
 
 		// 테스트 대상 메서드 호출
-		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(mockRequest, mockResponse);
+		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(request, response);
 
 		// 결과 검증
 		assertThat(resultDto.getProvider()).isEqualTo(providerCookie.getValue());
@@ -93,12 +93,12 @@ class AppControllerTest {
 		Cookie refreshTokenCookie = new Cookie(CommonConstants.REFRESH_TOKEN, "refresh_token");
 		Cookie providerCookie = new Cookie(CommonConstants.PROVIDER, provider);
 		Cookie dummyCookie = new Cookie("DUMMY", null);
-		when(mockRequest.getCookies()).thenReturn(new Cookie[] { refreshTokenCookie, providerCookie, dummyCookie });
+		when(request.getCookies()).thenReturn(new Cookie[] { refreshTokenCookie, providerCookie, dummyCookie });
 		String deviceId = UUID.randomUUID().toString();
-		when(cookieUtil.setDeviceId(mockResponse)).thenReturn(deviceId);
+		when(cookieUtil.setDeviceId(response)).thenReturn(deviceId);
 
 		// 테스트 대상 메서드 호출
-		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(mockRequest, mockResponse);
+		AppLoginCookiesResponseDto resultDto = appController.getLoginCookies(request, response);
 
 		// 결과 검증
 		assertThat(resultDto.isHasRefreshToken()).isTrue();
@@ -106,7 +106,7 @@ class AppControllerTest {
 		assertThat(resultDto.getDeviceId()).isEqualTo(deviceId);
 		
 		// cookieUtil.setDeviceId 메서드가 한 번 호출되었는지 검증
-		verify(cookieUtil, times(1)).setDeviceId(mockResponse);
+		verify(cookieUtil, times(1)).setDeviceId(response);
 	}
 
 }

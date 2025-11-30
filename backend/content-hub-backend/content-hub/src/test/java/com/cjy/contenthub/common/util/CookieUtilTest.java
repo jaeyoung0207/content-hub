@@ -27,7 +27,7 @@ class CookieUtilTest {
     private LoginCookieProperties loginCookieProperties;
     
     @Mock
-    private HttpServletResponse mockResponse;
+    private HttpServletResponse response;
     
     @BeforeEach
     void setUp() {
@@ -44,14 +44,14 @@ class CookieUtilTest {
 	@DisplayName("setDeviceId: 디바이스 ID 생성 및 쿠키 설정")
 	void test_setDeviceId_createDeviceIdAndSetCookie() {
 		// 테스트 대상 메서드 호출
-		String deviceId = cookieUtil.setDeviceId(mockResponse);
+		String deviceId = cookieUtil.setDeviceId(response);
 		
 		// 디바이스 ID 검증
 		assertThat(deviceId).isNotNull();		
 		assertThat(UUID.fromString(deviceId)).isNotNull();
 		
 		// 응답 헤더에 쿠키 설정 검증
-		verify(mockResponse).setHeader(eq(HttpHeaders.SET_COOKIE), contains("deviceId=" + deviceId));
+		verify(response).setHeader(eq(HttpHeaders.SET_COOKIE), contains("deviceId=" + deviceId));
 	}
 
 }
