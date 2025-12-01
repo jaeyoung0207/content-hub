@@ -1,3 +1,11 @@
+---
+name: 리팩터 요청
+about: 코드 리팩터링이나 구조 개선 사항 제안
+title: "[Refactor]"
+labels: refactor
+assignees: ''
+---
+
 ## 리팩터링 대상
 - 어떤 코드/모듈을 개선할 것인지
 

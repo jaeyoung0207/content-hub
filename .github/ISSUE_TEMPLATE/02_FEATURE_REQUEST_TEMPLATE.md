@@ -1,3 +1,11 @@
+---
+name: 기능 요청
+about: 새로운 기능이나 개선 제안
+title: "[Feature]"
+labels: enhancement
+assignees: ''
+---
+
 ## 기능 설명
 - 어떤 기능을 추가하고 싶은지 명확하게 설명
 

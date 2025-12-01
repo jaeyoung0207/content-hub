@@ -1,3 +1,11 @@
+---
+name: 버그 리포트
+about: 버그 보고
+title: "[BUG]"
+labels: bug
+assignees: ''
+---
+
 ## 문제 설명
 - 어떤 버그인지 명확하게 설명
 
