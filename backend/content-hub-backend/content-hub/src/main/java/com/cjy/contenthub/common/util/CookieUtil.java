@@ -3,9 +3,11 @@ package com.cjy.contenthub.common.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,7 @@ import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -139,6 +142,29 @@ public class CookieUtil {
 		}
 		// 리프레시 토큰 반환
 		return refreshToken;
+	}
+	
+	/**
+	 * 디바이스 ID 생성 및 쿠키 설정
+	 * 
+	 * @param response HttpServletResponse
+	 * @return String 디바이스 ID
+	 */
+	public String setDeviceId(HttpServletResponse response) {
+		// 디바이스 ID 생성
+		String deviceId = UUID.randomUUID().toString();
+		// 디바이스 ID 쿠키
+		ResponseCookie deviceIdCookie = ResponseCookie.from(CommonConstants.DEVICE_ID, deviceId)
+				.httpOnly(loginCookieProperties.isHttpOnly())
+				.secure(loginCookieProperties.isSecure())
+				.sameSite(loginCookieProperties.getSameSite())
+				.path("/")
+				.maxAge(60L * 60L * 24L * 365L) // 1년
+				.build();
+		// 디바이스 ID 쿠키 설정
+		response.setHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
+		// 디바이스 ID 반환
+		return deviceId;
 	}
 
 }

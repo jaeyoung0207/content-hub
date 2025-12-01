@@ -23,7 +23,6 @@ import com.cjy.contenthub.common.advice.response.CommonErrorResponse;
 import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.exception.CommonBusinessException;
 import com.cjy.contenthub.common.exception.CommonJwtException;
-import com.cjy.contenthub.common.exception.DeviceIdNotFoundException;
 import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
 import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
@@ -75,9 +74,6 @@ public class CommonRestControllerAdvice {
 	
 	/** 타임아웃 에러 */
 	private static final String TIMEOUT_ERROR = "Timeout Error";
-	
-	/** 디바이스 ID 미존재 에러 */
-	private static final String DEVICE_ID_NOT_FOUND_ERROR = "Device ID Not Found Error";
 	
 	/**
 	 * 인증/인가 관련 예외 처리
@@ -228,17 +224,9 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(CommonBusinessException.class)
 	public ResponseEntity<CommonErrorResponse> handleBusinessException(CommonBusinessException ex, HttpServletRequest request, HttpServletResponse response) {
 		String path = request.getRequestURI();
-		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode();
+		int statusCode = ex.getStatusCode() == null ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode();
 		String message = ex.getMessage();
-		String errorName = ex instanceof DeviceIdNotFoundException ? DEVICE_ID_NOT_FOUND_ERROR : BUSINESS_ERROR;
-		// DeviceIdNotFoundException 인 경우 처리
-		if (ex instanceof DeviceIdNotFoundException) {
-			// 로그인 쿠키 삭제
-			LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
-			// 쿠키 헤더 추가
-			response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.refreshToken());
-			response.addHeader(HttpHeaders.SET_COOKIE, cookiesInfo.provider());
-		}
+		String errorName = BUSINESS_ERROR;
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
 				.status(statusCode)
@@ -260,7 +248,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(ResponseStatusException.class)
 	public ResponseEntity<CommonErrorResponse> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
 		String path = request.getRequestURI();
-		int statusCode = ObjectUtils.isEmpty(ex.getStatusCode()) ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode().value();
+		int statusCode = ex.getStatusCode() == null ? HttpStatus.BAD_REQUEST.value() : ex.getStatusCode().value();
 		String message = ex.getReason();
 		CommonErrorResponse errorResponse = CommonErrorResponse.builder()
 				.path(path)
