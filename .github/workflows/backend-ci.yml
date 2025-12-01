@@ -54,9 +54,9 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
         
-      # 빌드 (테스트 포함)
-      - name: Build with Gradle
-        run: ./gradlew clean build --scan
+      # 빌드 (테스트 포함 및 커버리지 레포트 생성)
+      - name: Build and Generate Coverage Report
+        run: ./gradlew clean build jacocoTestReport --scan
 
       # SonarQube
       - name: SonarQube Analysis
