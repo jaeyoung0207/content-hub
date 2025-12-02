@@ -3,6 +3,8 @@ name: Full Deploy (Backend -> Frontend)
 on:
   push:
     branches: [ "main" ]
+  # 워크플로우를 GitHub 웹 인터페이스에서 수동으로 실행
+  workflow_dispatch: 
 
 # 동시 실행(레이스 컨디션) 방지
 concurrency:

@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
       - "frontend/content-hub-frontend/**"
+  # 워크플로우를 GitHub 웹 인터페이스에서 수동으로 실행
+  workflow_dispatch: 
 
 jobs:
   frontend-ci:
