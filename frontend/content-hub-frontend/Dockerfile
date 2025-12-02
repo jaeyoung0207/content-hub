@@ -19,8 +19,12 @@ COPY . .
 # esbuild 바이너리 재빌드 (알파인 리눅스 호환성 문제 해결용)
 RUN npm rebuild esbuild --update-binary || true
 
-# build
+# build(메모리 확장 후 실행)
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
+
+# build 후 dist 폴더에서 .map 파일 삭제
+RUN find ./dist -name "*.map" -type f -delete
 
 # Stage 2 Nginx to serve static files
 # nginx 빌드 환경 설정
