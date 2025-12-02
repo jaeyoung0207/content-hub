@@ -20,6 +20,10 @@ export default defineConfig(({ mode }) => {
           org: 'cjy-37',
           project: 'javascript-react',
           authToken: process.env.SENTRY_AUTH_TOKEN, // process.env.SENTRY_AUTH_TOKEN은 빌드 시점에만 접근 가능, CI/CD 환경변수에서 설정
+          sourcemaps: {
+            assets: ['./dist/assets/**'], // sourcemap 업로드할 파일 경로
+            filesToDeleteAfterUpload: ['./dist/assets/**.map'], // 업로드 후 삭제할 sourcemap 파일 경로
+          },
         }),
     ],
     server: {
