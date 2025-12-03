@@ -23,8 +23,9 @@ RUN npm rebuild esbuild --update-binary || true
 ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
-# build 후 dist 폴더에서 .map 파일 삭제
+# build 후 dist 폴더에서 .map 파일 삭제(Sentry sourcemap 업로드 실패 시 sourcemap이 삭제되지 않는 경우를 방지)
 RUN find ./dist -name "*.map" -type f -delete
+
 
 # Stage 2 Nginx to serve static files
 # nginx 빌드 환경 설정
