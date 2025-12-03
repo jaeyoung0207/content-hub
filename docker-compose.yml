@@ -25,9 +25,9 @@ services:
       - "8080"   # 내부 네트워크에서만
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy # DB가 실제로 가동되고 쿼리를 받을 준비가 될 때까지 기다리도록 설정
       redis:
-        condition: service_healthy
+        condition: service_healthy # Redis가 실제로 가동되고 쿼리를 받을 준비가 될 때까지 기다리도록 설정
     networks:
       - app-net
 
