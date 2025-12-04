@@ -4,7 +4,7 @@ services:
     ports:
       - "80:80"
       - "443:443"          # HTTPS 외부 노출
-    restart: "no"
+    restart: "unless-stopped"
     volumes:
        # Certbot이 ACME 챌린지(인증을 위해 웹사이트 소유권을 확인하는 과정)를 수행할 때 필요한 임시 파일들을 저장
        - /var/www/certbot:/var/www/certbot
@@ -15,8 +15,10 @@ services:
   backend:
     env_file:
       - ./backend/env/.env.prod
-    ports: []
-    restart: "no"
+    ports:
+      #- "8080:8080"    # 메인 서비스(외부, Nginx 등에서 접근) → 필요 시에만 외부 노출
+      - "8081:8081"    # Actuator 등 운영관리용
+    restart: "unless-stopped"
     volumes:
       # 로그 추가
       - ./logs/backend:/app/logs
@@ -28,7 +30,7 @@ services:
       start_period: 40s
   db:
     ports: []            # 외부 노출 제거
-    restart: "no"
+    restart: "unless-stopped"
   redis:
     ports: []            # 외부 노출 제거
-    restart: "no"
+    restart: "unless-stopped"
