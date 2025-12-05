@@ -55,6 +55,10 @@ class DetailInformationServiceImplTest {
 	void setUp() {
 		ReflectionTestUtils.setField(service, "tvDetailPath", "/3/tv/%s");
 		ReflectionTestUtils.setField(service, "movieDetailPath", "/3/movie/%s");
+		ReflectionTestUtils.setField(service, "tvCreditsPath", "/3/tv/%s/aggregate_credits");
+		ReflectionTestUtils.setField(service, "movieCreditsPath", "/3/movie/%s/credits");
+		ReflectionTestUtils.setField(service, "tvWatchProvidersPath", "/3/tv/%s/watch/providers");
+		ReflectionTestUtils.setField(service, "movieWatchProvidersPath", "/3/movie/%s/watch/providers");
 	}
 
 	@Test
@@ -64,7 +68,7 @@ class DetailInformationServiceImplTest {
 		// 파라미터 설정
 		Integer seriesId = 1000;
 		String contentMediaType = "1101";
-		// WenClient Mock 설정
+		// WebClient Mock 설정
 		RequestHeadersUriSpec uriSpec1 = mock(RequestHeadersUriSpec.class);
 		RequestHeadersUriSpec uriSpec2 = mock(RequestHeadersUriSpec.class);
 		RequestHeadersUriSpec uriSpec3 = mock(RequestHeadersUriSpec.class);
@@ -132,7 +136,7 @@ class DetailInformationServiceImplTest {
 		// 파라미터 설정
 		Integer movieId = 2000;
 		String contentMediaType = "1201";
-		// WenClient Mock 설정
+		// WebClient Mock 설정
 		RequestHeadersUriSpec uriSpec1 = mock(RequestHeadersUriSpec.class);
 		RequestHeadersUriSpec uriSpec2 = mock(RequestHeadersUriSpec.class);
 		RequestHeadersUriSpec uriSpec3 = mock(RequestHeadersUriSpec.class);

@@ -21,9 +21,7 @@ services:
     container_name: backend
     env_file:
       - ./backend/env/.env.prod
-    environment:
-    # 컨테이너 자체 메모리 제한을 명시하여 Docker의 자원 할당을 명확히 함(추후 메모리 확장 시 같이 확장 필요)
-    mem_limit: 600m
+    mem_limit: 600m # 컨테이너 자체 메모리 제한을 명시하여 Docker의 자원 할당을 명확히 함(추후 메모리 확장 시 같이 확장 필요)
     expose:
       - "8080"   # 내부 네트워크에서만
     depends_on:
