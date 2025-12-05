@@ -39,8 +39,8 @@ WORKDIR /app
 # 빌드 스테이지에서 생성된 JAR 파일을 현재 스테이지 내부의 작업 디렉터리로 복사
 COPY --from=builder /workspace/build/libs/*.jar app.jar
 
-# 메모리 최적화 옵션 주입 가능
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+# 메모리 최적화 옵션 설정(컨테이너에 설정한 최대 메모리(mem_limit)의 65%를 힙 메모리로 설정)
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=65.0"
 
 # 애플리케이션이 8080 포트를 사용함을 도커에 알림
 EXPOSE 8080
