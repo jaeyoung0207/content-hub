@@ -155,7 +155,7 @@ tmdb:
     multi-search-path: /3/search/multi
     tv-genre-path: /3/genre/tv/list
     movie-genre-path: /3/genre/movie/list
-    tv-credits-path: /3/tv/%s/credits
+    tv-credits-path: /3/tv/%s/aggregate_credits
     movie-credits-path: /3/movie/%s/credits
     tv-detail-path: /3/tv/%s
     movie-detail-path: /3/movie/%s

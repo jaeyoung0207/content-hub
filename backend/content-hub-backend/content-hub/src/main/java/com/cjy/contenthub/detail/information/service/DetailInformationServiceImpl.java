@@ -22,6 +22,7 @@ import com.cjy.contenthub.common.integration.tmdb.constants.TmdbParamConstants;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbGenreDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbMovieDetailsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbTvDetailsDto;
+import com.cjy.contenthub.common.integration.tmdb.dto.TmdbVideoCreditsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbWatchProvidersDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
@@ -71,10 +72,18 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	/** TMDB API TV Detail API 패스 */
 	@Value("${tmdb.url.tv-detail-path}")
 	private String tvDetailPath;
+	
+	/** TMDB API TV Credits API 패스 */
+	@Value("${tmdb.url.tv-credits-path}")
+	private String tvCreditsPath;
 
 	/** TMDB API Movie Detail API 패스 */
 	@Value("${tmdb.url.movie-detail-path}")
 	private String movieDetailPath;
+	
+	/** TMDB API Movie Credits API 패스 */
+	@Value("${tmdb.url.movie-credits-path}")
+	private String movieCreditsPath;
 
 	/** TMDB API TV Watch Providers API 패스 */
 	@Value("${tmdb.url.tv-watch-providers-path}")
@@ -125,11 +134,20 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.uri(builder -> builder
 						.path(String.format(tvDetailPath, seriesId))
 						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, seriesId)
-						.queryParam(TmdbParamConstants.PARAM_APPEND_TO_RESPONSE, TmdbParamConstants.AGGREGATE_CREDITS)
 						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbTvDetailsDto.class);
+		
+		// TMDB TV 크레딧 조회
+		Mono<TmdbVideoCreditsDto> creditsMono = tmdbWebClient.get()
+				.uri(builder -> builder
+						.path(String.format(tvCreditsPath, seriesId))
+						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, seriesId)
+						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
+						.build())
+				.retrieve()
+				.bodyToMono(TmdbVideoCreditsDto.class);
 		
 		// TMDB 시청 제공자 조회
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
@@ -141,17 +159,21 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.bodyToMono(TmdbWatchProvidersDto.class);
 
 		// TV 상세 조회 결과와 시청 제공자 조회 결과를 병합하여 반환
-		return Mono.zip(detailMono, watchProvidersMono).map(tuple -> {
+		return Mono.zip(detailMono, creditsMono, watchProvidersMono).map(tuple -> {
 			// TMDB TV 상세 DTO
 			TmdbTvDetailsDto detailResponse = tuple.getT1();
+			// TMDB TV 크레딧 DTO
+			TmdbVideoCreditsDto creditsResponse = tuple.getT2();
 			// TMDB 시청 제공자 DTO
-			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT2();
+			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT3();
 			// 시청 제공자 링크 취득
 			String link = Optional.ofNullable(watchProvidersResponse.getResults())
 					.map(results -> results.getKr())
 					.map(getKr -> getKr.getLink())
 					.orElse(null);
 
+			// 상세 DTO에 크레딧 설정
+			detailResponse.setCredits(creditsResponse);
 			// 반환값 설정
 			DetailTvResponseDto response = detailInformationMapper.detailTvToDetailTvResponse(detailResponse);
 			response.setLink(link);
@@ -178,33 +200,46 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 				.uri(builder -> builder
 						.path(String.format(movieDetailPath, movieId))
 						.queryParam(TmdbParamConstants.PARAM_MOVIE_ID, movieId)
-						.queryParam(TmdbParamConstants.PARAM_APPEND_TO_RESPONSE, TmdbParamConstants.CREDITS)
 						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbMovieDetailsDto.class);
+		
+		// TMDB 영화 크레딧 조회
+		Mono<TmdbVideoCreditsDto> creditsMono = tmdbWebClient.get()
+				.uri(builder -> builder
+						.path(String.format(movieCreditsPath, movieId))
+						.queryParam(TmdbParamConstants.PARAM_MOVIE_ID, movieId)
+						.queryParam(TmdbParamConstants.PARAM_LANGUAGE, TmdbParamConstants.LANGUAGE_KOREAN)
+						.build())
+				.retrieve()
+				.bodyToMono(TmdbVideoCreditsDto.class);
 
 		// TMDB 시청 제공자 취득
 		Mono<TmdbWatchProvidersDto> watchProvidersMono = tmdbWebClient.get()
 				.uri(builder -> builder
 						.path(String.format(movieWatchProvidersPath, movieId))
-						.queryParam(TmdbParamConstants.PARAM_TV_SERIES_ID, movieId)
+						.queryParam(TmdbParamConstants.PARAM_MOVIE_ID, movieId)
 						.build())
 				.retrieve()
 				.bodyToMono(TmdbWatchProvidersDto.class);
 
 		// 영화 상세 조회 결과와 시청 제공자 조회 결과를 병합하여 반환 
-		return Mono.zip(detailMono, watchProvidersMono).map(tuple -> {
+		return Mono.zip(detailMono, creditsMono, watchProvidersMono).map(tuple -> {
 			// TMDB 영화 상세 DTO
 			TmdbMovieDetailsDto detailResponse = tuple.getT1();
+			// TMDB 영화 크레딧 DTO
+			TmdbVideoCreditsDto creditsResponse = tuple.getT2();
 			// TMDB 시청 제공자 DTO
-			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT2();
+			TmdbWatchProvidersDto watchProvidersResponse = tuple.getT3();
 			// 시청 제공자 링크 취득
 			String link = Optional.ofNullable(watchProvidersResponse.getResults())
 					.map(results -> results.getKr())
 					.map(getKr -> getKr.getLink())
 					.orElse(null);
 			
+			// 상세 DTO에 크레딧 설정
+			detailResponse.setCredits(creditsResponse);
 			// 반환값 설정
 			DetailMovieResponseDto response = detailInformationMapper.detailMovieToDetailMovieResponse(detailResponse);
 			response.setLink(link);

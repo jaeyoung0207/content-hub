@@ -28,7 +28,6 @@ public interface DetailInformationMapper {
 	@Mapping(target = "starRatingAverage", ignore = true)
 	@Mapping(target = "genreIds", ignore = true)
 	@Mapping(target = "wishlisted", ignore = true)
-	@Mapping(target = "credits", source = "aggregateCredits")
 	DetailTvResponseDto detailTvToDetailTvResponse(TmdbTvDetailsDto apiResponse);
 	
 	/**
