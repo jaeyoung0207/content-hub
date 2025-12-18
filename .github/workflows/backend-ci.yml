@@ -51,7 +51,7 @@ jobs:
 
       # Docker Compose로 Redis 서비스 기동
       - name: Start services (Redis) via Docker Compose
-        run: docker-compose -f ../../../docker-compose.dev.yml up -d redis --wait
+        run: docker compose -f ../../../docker-compose.dev.yml up -d redis --wait
 
       # 권한 부여
       - name: Grant execute permission
