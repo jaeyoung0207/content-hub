@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 /**
  * DeepL API 클라이언트 클래스
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class DeepLApiClient {
-	
+
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
 
@@ -41,34 +42,31 @@ public class DeepLApiClient {
 	 * 원본 언어를 번역할 언어로 변역
 	 * 캐시를 사용하여 동일한 요청에 대해 반복적인 API 호출을 방지
 	 * @Cacheable 어노테이션을 사용하여 캐시를 적용
-	 * @Cacheable를 사용하기 위해서는 동기화 된 메소드여야 하므로, .block() 메소드를 사용하여 결과를 반환
 	 * 
 	 * @param text 번역할 문자열
 	 * @param targetLang 번역할 언어 (예: "KO", "JA")
 	 * @param sourceLang 원본 언어 (예: "KO", "JA")
 	 * @return 번역된 문자열
 	 */
-	public String translateText(String text, String targetLang, String sourceLang) {
-		try {
-			// 파라미터 맵 생성
-			MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
-			paramsMap.add("text", text);
-			paramsMap.add("target_lang", targetLang);
-			paramsMap.add("source_lang", sourceLang);
+	public Mono<String> translateText(String text, String targetLang, String sourceLang) {
+		// 파라미터 맵 생성
+		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+		paramsMap.add("text", text);
+		paramsMap.add("target_lang", targetLang);
+		paramsMap.add("source_lang", sourceLang);
 
-			// DeepL API를 호출하여 번역 요청
-			return deeplWebClient.post()
-					.uri(translatePath)
-					.bodyValue(paramsMap)
-					.retrieve()
-					.bodyToMono(JsonNode.class)
-					.map(json -> json.get("translations").get(0).get("text").asText())
-					.block();
-		} catch(Exception ex) {
-	        Object[] logParams = { text, targetLang, sourceLang, ex.getMessage() };
-	        log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_DEEPL_DETAIL.getMessageCode(), logParams), ex);
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-	        		messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_DEEPL.getMessageCode()), ex);
-		}
+		// DeepL API를 호출하여 번역 요청
+		return deeplWebClient.post()
+				.uri(translatePath)
+				.bodyValue(paramsMap)
+				.retrieve()
+				.bodyToMono(JsonNode.class)
+				.map(json -> json.get("translations").get(0).get("text").asText())
+				.onErrorResume(ex -> {
+					Object[] logParams = { text, targetLang, sourceLang, ex.getMessage() };
+					log.error(messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_DEEPL_DETAIL.getMessageCode(), logParams), ex);
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+							messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_DEEPL.getMessageCode()), ex);
+				});
 	}
 }

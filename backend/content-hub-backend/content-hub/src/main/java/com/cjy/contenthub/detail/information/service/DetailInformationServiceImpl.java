@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,6 +58,9 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
+	
+	/** 비동기 작업용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/** TMDB API 통신용 WebClient 클래스 */
 	@Qualifier("tmdbWebClient")
@@ -127,7 +132,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.TV_DETAIL, unless = "#result == null")
-	public DetailTvResponseDto getTvDetail(Integer seriesId, String contentMediaType) {
+	public CompletableFuture<DetailTvResponseDto> getTvDetail(Integer seriesId, String contentMediaType) {
 
 		// TMDB TV 상세 조회
 		Mono<TmdbTvDetailsDto> detailMono = tmdbWebClient.get()
@@ -181,7 +186,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 			// 응답 DTO 반환
 			return response;
-		}).block();
+		}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -193,7 +198,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.MOVIE_DETAIL, unless = "#result == null")
-	public DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType) {
+	public CompletableFuture<DetailMovieResponseDto> getMovieDetail(Integer movieId, String contentMediaType) {
 
 		// TMDB 영화 상세 조회
 		Mono<TmdbMovieDetailsDto> detailMono = tmdbWebClient.get()
@@ -247,7 +252,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 			// 응답 DTO 반환
 			return response;
-		}).block();
+		}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -260,7 +265,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.COMICS_DETAIL, unless = "#result == null")
-	public DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException {
+	public CompletableFuture<DetailComicsResponseDto> getComicsDetail(Integer comicsId, String contentMediaType) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsDetail.graphql");
@@ -293,11 +298,14 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 					// 응답 데이터 재분배
 					AniListMediaDto media = response.getData().getMedia();
 					// 연재 시작일
-					String startDate = String.valueOf(media.getStartDate().getYear()) 
+					String startDate = "";
+					if (media.getStartDate() != null) {
+						startDate = String.valueOf(media.getStartDate().getYear()) 
 							.concat("/")
 							.concat(StringUtils.leftPad(String.valueOf(media.getStartDate().getMonth()), 2, "0"))
 							.concat("/")
 							.concat(StringUtils.leftPad(String.valueOf(media.getStartDate().getDay()), 2, "0"));
+					}
 					// 응답 DTO 생성
 					DetailComicsResponseDto comicsResponse =
 							DetailComicsResponseDto.builder()
@@ -321,8 +329,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 					// 응답 DTO 반환
 					return comicsResponse;
-				})
-				.block();
+				}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -335,7 +342,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.COMICS_CHARACTER_LIST, unless = "#result == null")
-	public AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page) throws IOException {
+	public CompletableFuture<AniListCharactersDto> getComicsCharacterList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsCharacterList.graphql");
@@ -367,8 +374,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 					// 캐릭터 DTO 반환
 					return media.getCharacters();
-				})
-				.block();
+				}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -381,7 +387,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.COMICS_STAFF_LIST, unless = "#result == null")
-	public AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException {
+	public CompletableFuture<AniListStaffDto> getComicsStaffList(Integer comicsId, Integer page) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsStaffList.graphql");
@@ -413,8 +419,7 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 
 					// 캐릭터 DTO 반환
 					return media.getStaff();
-				})
-				.block();
+				}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 }

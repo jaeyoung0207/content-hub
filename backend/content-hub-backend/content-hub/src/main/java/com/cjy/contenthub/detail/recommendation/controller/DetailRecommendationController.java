@@ -2,6 +2,7 @@ package com.cjy.contenthub.detail.recommendation.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,34 +68,36 @@ public class DetailRecommendationController {
 	 */
 	@Operation(summary = "TV 추천 작품 조회")
 	@GetMapping(value = "/getTvRecommendations")
-	public ResponseEntity<DetailRecommendationsTvDto> getTvRecommendations(
+	public CompletableFuture<ResponseEntity<DetailRecommendationsTvDto>> getTvRecommendations(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		DetailRecommendationsTvDto cachedResponse = recommendationService.getTvRecommendations(seriesId, page, userId);
-		
-		// 추천 결과 리스트 깊은 복사
-		List<DetailRecommendationsTvResultsDto> newResponseList =
-				detailRecommendationMapper.deepCopyForRecommendationsTvResultsList(cachedResponse.getResults());
-		
-		// 새로운 응답 객체 생성
-		DetailRecommendationsTvDto newResponse = DetailRecommendationsTvDto.builder()
-				.page(cachedResponse.getPage())
-				.results(newResponseList)
-				.totalPages(cachedResponse.getTotalPages())
-				.totalResults(cachedResponse.getTotalResults())
-				.build();
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailRecommendationNoCacheService.setWishlistFromTvResponse(newResponse, userId);
-		}
-		
+		// 추천 작품 조회
+		CompletableFuture<DetailRecommendationsTvDto> response = recommendationService.getTvRecommendations(seriesId, page, userId)
+				// 비동기 작업
+				.thenApplyAsync(cachedResponse -> {
+					// 추천 결과 리스트 깊은 복사
+					List<DetailRecommendationsTvResultsDto> newResponseList = detailRecommendationMapper
+							.deepCopyForRecommendationsTvResultsList(cachedResponse.getResults());
+
+					// 새로운 응답 객체 생성
+					DetailRecommendationsTvDto newResponse = DetailRecommendationsTvDto.builder()
+							.page(cachedResponse.getPage())
+							.results(newResponseList)
+							.totalPages(cachedResponse.getTotalPages())
+							.totalResults(cachedResponse.getTotalResults())
+							.build();
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailRecommendationNoCacheService.setWishlistFromTvResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -107,34 +110,37 @@ public class DetailRecommendationController {
 	 */
 	@Operation(summary = "영화 추천 작품 조회")
 	@GetMapping(value = "/getMovieRecommendations")
-	public ResponseEntity<DetailRecommendationsMovieDto> getMovieRecommendations(
+	public CompletableFuture<ResponseEntity<DetailRecommendationsMovieDto>> getMovieRecommendations(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		DetailRecommendationsMovieDto cachedResponse = recommendationService.getMovieRecommendations(movieId, page, userId);
-		
-		// 추천 결과 리스트 깊은 복사
-		List<DetailRecommendationsMovieResultsDto> newResponseList =
-				detailRecommendationMapper.deepCopyForRecommendationsMovieResultsList(cachedResponse.getResults());
-		
-		// 새로운 응답 객체 생성
-		DetailRecommendationsMovieDto newResponse = DetailRecommendationsMovieDto.builder()
-				.page(cachedResponse.getPage())
-				.results(newResponseList)
-				.totalPages(cachedResponse.getTotalPages())
-				.totalResults(cachedResponse.getTotalResults())
-				.build();
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailRecommendationNoCacheService.setWishlistFromMovieResponse(newResponse, userId);
-		}
-		
+		// 추천 작품 조회
+		CompletableFuture<DetailRecommendationsMovieDto> response = 
+				recommendationService.getMovieRecommendations(movieId, page, userId)
+				// 비동기 작업
+				.thenApplyAsync(cachedResponse -> {
+					// 추천 결과 리스트 깊은 복사
+					List<DetailRecommendationsMovieResultsDto> newResponseList =
+							detailRecommendationMapper.deepCopyForRecommendationsMovieResultsList(cachedResponse.getResults());
+					
+					// 새로운 응답 객체 생성
+					DetailRecommendationsMovieDto newResponse = DetailRecommendationsMovieDto.builder()
+							.page(cachedResponse.getPage())
+							.results(newResponseList)
+							.totalPages(cachedResponse.getTotalPages())
+							.totalResults(cachedResponse.getTotalResults())
+							.build();
+					
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailRecommendationNoCacheService.setWishlistFromMovieResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -147,31 +153,34 @@ public class DetailRecommendationController {
 	 */
 	@Operation(summary = "만화 추천 작품 조회")
 	@GetMapping(value = "/getComicsRecommendations")
-	public ResponseEntity<DetailRecommendationsComicsResponseDto> getComicsRecommendations(
+	public CompletableFuture<ResponseEntity<DetailRecommendationsComicsResponseDto>> getComicsRecommendations(
 			@RequestParam(PARAM_MEDIA_ID) Integer mediaId,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) throws IOException {
 		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		DetailRecommendationsComicsResponseDto cachedResponse = recommendationService.getComicsRecommendations(mediaId, page, userId);
-		
-		// 추천 결과 리스트 깊은 복사
-		List<DetailRecommendationsComicsResultDto> newResponseList =
-				detailRecommendationMapper.deepCopyForRecommendationsComicsResultsList(cachedResponse.getResults());
-		
-		// 새로운 응답 객체 생성
-		DetailRecommendationsComicsResponseDto newResponse = DetailRecommendationsComicsResponseDto.builder()
-				.results(newResponseList)
-				.build();
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailRecommendationNoCacheService.setWishlistFromComicsResponse(newResponse, userId);
-		}
-		
+		// 추천 작품 조회
+		CompletableFuture<DetailRecommendationsComicsResponseDto> response = 
+				recommendationService.getComicsRecommendations(mediaId, page, userId)
+				// 비동기 작업
+				.thenApplyAsync(cachedResponse -> {
+					// 추천 결과 리스트 깊은 복사
+					List<DetailRecommendationsComicsResultDto> newResponseList =
+							detailRecommendationMapper.deepCopyForRecommendationsComicsResultsList(cachedResponse.getResults());
+					
+					// 새로운 응답 객체 생성
+					DetailRecommendationsComicsResponseDto newResponse = DetailRecommendationsComicsResponseDto.builder()
+							.results(newResponseList)
+							.build();
+					
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailRecommendationNoCacheService.setWishlistFromComicsResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 }

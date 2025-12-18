@@ -43,7 +43,7 @@ class AppControllerTest {
 	private HttpServletResponse response;
 
 	@Test
-	@DisplayName("getLoginCookies: 쿠키가 존재하지 않는 경우")
+	@DisplayName("[UT]getLoginCookies: 쿠키가 존재하지 않는 경우")
 	void test_getLoginCookies_notExistCookie() {
 		// Mock 설정
 		when(request.getCookies()).thenReturn(null);
@@ -63,7 +63,7 @@ class AppControllerTest {
 	}
 
 	@Test
-	@DisplayName("getLoginCookies: 쿠키가 존재하는 경우 - 디바이스 ID, 리프레시 토큰, 제공자")
+	@DisplayName("[UT]getLoginCookies: 쿠키가 존재하는 경우 - 디바이스 ID, 리프레시 토큰, 제공자")
 	void test_getLoginCookies_existAllCookies() {
 		// Mock 설정
 		String provider = "NAVER";
@@ -86,7 +86,7 @@ class AppControllerTest {
 	}
 
 	@Test
-	@DisplayName("getLoginCookies: 쿠키가 존재하는 경우 - 리프레시 토큰, 제공자")
+	@DisplayName("[UT]getLoginCookies: 쿠키가 존재하는 경우 - 리프레시 토큰, 제공자")
 	void test_getLoginCookies_notExistDeviceIdCookie() {
 		// Mock 설정
 		String provider = "NAVER";

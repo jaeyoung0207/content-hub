@@ -633,5 +633,35 @@
     "name": "app.actuator.developer-mode",
     "type": "java.lang.String",
     "description": "A description for 'app.actuator.developer-mode'"
+  },
+  {
+    "name": "app.thread-pool.api-task.core-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.api-task.core-pool-size'"
+  },
+  {
+    "name": "app.thread-pool.api-task.max-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.api-task.max-pool-size'"
+  },
+  {
+    "name": "app.thread-pool.api-task.queue-capacity",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.api-task.queue-capacity'"
+  },
+  {
+    "name": "app.thread-pool.bloking-task.core-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.blokingTask.core-pool-size'"
+  },
+  {
+    "name": "app.thread-pool.bloking-task.max-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.blokingTask.max-pool-size'"
+  },
+  {
+    "name": "app.thread-pool.bloking-task.queue-capacity",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-pool.blokingTask.queue-capacity'"
   }
 ]}

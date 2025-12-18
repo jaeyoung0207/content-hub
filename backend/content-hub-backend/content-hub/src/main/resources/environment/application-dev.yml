@@ -99,3 +99,12 @@ app:
     enabled: true
   actuator:
     developer-mode: true
+  thread-pool:
+    api-task:
+      core-pool-size: 8
+      max-pool-size: 32
+      queue-capacity: 200
+    bloking-task:
+      core-pool-size: 4
+      max-pool-size: 16
+      queue-capacity: 100

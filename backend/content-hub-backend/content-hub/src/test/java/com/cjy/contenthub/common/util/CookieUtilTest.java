@@ -41,7 +41,7 @@ class CookieUtilTest {
     }
 	
 	@Test
-	@DisplayName("setDeviceId: 디바이스 ID 생성 및 쿠키 설정")
+	@DisplayName("[UT]setDeviceId: 디바이스 ID 생성 및 쿠키 설정")
 	void test_setDeviceId_createDeviceIdAndSetCookie() {
 		// 테스트 대상 메서드 호출
 		String deviceId = cookieUtil.setDeviceId(response);

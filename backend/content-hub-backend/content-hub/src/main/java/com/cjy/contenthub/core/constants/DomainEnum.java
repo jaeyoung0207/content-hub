@@ -415,7 +415,7 @@ public class DomainEnum {
 		
 		/** 인증 실패 */
 		AUTHENTICATION_FAILED(401, "024"),
-		/** 인증 헤더 미존재 */
+		/** 인증 헤더 없음 */
 		AUTHENTICATION_HEADER_NOT_EXISTS(401, "028"),
 		/** 접근 권한 없음 */
 		FORBIDDEN(403, "403"),

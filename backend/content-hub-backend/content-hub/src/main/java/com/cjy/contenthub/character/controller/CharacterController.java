@@ -1,6 +1,7 @@
 package com.cjy.contenthub.character.controller;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +54,9 @@ public class CharacterController {
 	 */
 	@Operation(summary = "캐릭터 조회")
 	@GetMapping(value = "/getCharacter")
-	public ResponseEntity<AniListCharactersNodeDto> getCharacter(
+	public CompletableFuture<ResponseEntity<AniListCharactersNodeDto>> getCharacter(
 			@RequestParam(PARAM_CHARACTER_ID) Integer characterId) throws IOException {
-		return ResponseEntity.ok(characterService.getCharacter(characterId));
+		return characterService.getCharacter(characterId).thenApply(ResponseEntity::ok);
 	}
 	
 	/**
@@ -67,8 +68,8 @@ public class CharacterController {
 	 */
 	@Operation(summary = "스태프 조회")
 	@GetMapping(value = "/getStaff")
-	public ResponseEntity<AniListStaffNodeDto> getStaff(
+	public CompletableFuture<ResponseEntity<AniListStaffNodeDto>> getStaff(
 			@RequestParam(PARAM_STAFF_ID) Integer staffId) throws IOException {
-		return ResponseEntity.ok(characterService.getStaff(staffId));
+		return characterService.getStaff(staffId).thenApply(ResponseEntity::ok);
 	}
 }

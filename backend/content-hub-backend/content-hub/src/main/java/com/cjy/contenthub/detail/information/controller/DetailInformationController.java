@@ -1,6 +1,7 @@
 package com.cjy.contenthub.detail.information.controller;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,24 +69,28 @@ public class DetailInformationController {
 	 */
 	@Operation(summary = "TV 상세 조회")
 	@GetMapping(value = "/getTvDetail")
-	public ResponseEntity<DetailTvResponseDto> getTvDetail(
+	public CompletableFuture<ResponseEntity<DetailTvResponseDto>> getTvDetail(
 			@RequestParam(PARAM_TV_SERIES_ID) Integer seriesId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// TV 상세 정보 조회
-		DetailTvResponseDto cachedResponse = informationService.getTvDetail(seriesId, contentMediaType);
-		
-		// 깊은 복사 수행
-		DetailTvResponseDto newResponse = detailInformationMapper.deepCopyForTvResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailTvResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
-		}
+		CompletableFuture<DetailTvResponseDto> cachedResponse = informationService.getTvDetail(seriesId, contentMediaType)
+				// 비동기적으로 작업 실행
+				.thenApplyAsync(response -> {
+					// 깊은 복사 수행
+					DetailTvResponseDto newResponse = detailInformationMapper.deepCopyForTvResponse(response);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailInformationNoCacheService.setWishlistFromResponse(DetailTvResponseDto::setWishlisted,
+								newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return cachedResponse.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -98,24 +103,28 @@ public class DetailInformationController {
 	 */
 	@Operation(summary = "영화 상세 조회")
 	@GetMapping(value = "/getMovieDetail")
-	public ResponseEntity<DetailMovieResponseDto> getMovieDetail(
+	public CompletableFuture<ResponseEntity<DetailMovieResponseDto>> getMovieDetail(
 			@RequestParam(PARAM_MOVIE_ID) Integer movieId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		
 		// 영화 상세 정보 조회
-		DetailMovieResponseDto cachedResponse = informationService.getMovieDetail(movieId, contentMediaType);
-		
-		// 깊은 복사 수행
-		DetailMovieResponseDto newResponse = detailInformationMapper.deepCopyForMovieResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailMovieResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
-		}
+		CompletableFuture<DetailMovieResponseDto> response = informationService.getMovieDetail(movieId, contentMediaType)
+				// 비동기적으로 작업 실행
+				.thenApplyAsync(cachedResponse -> {
+					// 깊은 복사 수행
+					DetailMovieResponseDto newResponse = detailInformationMapper.deepCopyForMovieResponse(cachedResponse);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailInformationNoCacheService.setWishlistFromResponse(DetailMovieResponseDto::setWishlisted,
+								newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -129,24 +138,27 @@ public class DetailInformationController {
 	 */
 	@Operation(summary = "만화 상세 조회")
 	@GetMapping(value = "/getComicsDetail")
-	public ResponseEntity<DetailComicsResponseDto> getComicsDetail(
+	public CompletableFuture<ResponseEntity<DetailComicsResponseDto>> getComicsDetail(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) throws IOException {
 		
 		// 만화 상세 정보 조회
-		DetailComicsResponseDto cachedResponse = informationService.getComicsDetail(comicsId, contentMediaType);
-		
-		// 깊은 복사 수행
-		DetailComicsResponseDto newResponse = detailInformationMapper.deepCopyForComicsResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			detailInformationNoCacheService.setWishlistFromResponse(DetailComicsResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
-		}
+		CompletableFuture<DetailComicsResponseDto> response = informationService.getComicsDetail(comicsId, contentMediaType)
+				// 비동기적으로 작업 실행
+				.thenApplyAsync(cachedResponse -> {
+					// 깊은 복사 수행
+					DetailComicsResponseDto newResponse = detailInformationMapper.deepCopyForComicsResponse(cachedResponse);
+					
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						detailInformationNoCacheService.setWishlistFromResponse(DetailComicsResponseDto::setWishlisted, newResponse, dto -> String.valueOf(dto.getId()), contentMediaType, userId);
+					}
+					return newResponse;
+				});
 		// 응답 반환
-		return ResponseEntity.ok(newResponse);
+		return response.thenApply(ResponseEntity::ok);
 	}
 	
 	/**
@@ -159,11 +171,12 @@ public class DetailInformationController {
 	 */
 	@Operation(summary = "캐릭터 리스트 조회")
 	@GetMapping(value = "/getComicsCharacterList")
-	public ResponseEntity<AniListCharactersDto> getComicsCharacterList(
+	public CompletableFuture<ResponseEntity<AniListCharactersDto>> getComicsCharacterList(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
 			@RequestParam(PARAM_PAGE) Integer page
 			) throws IOException {
-		return ResponseEntity.ok(informationService.getComicsCharacterList(comicsId, page));
+		return informationService.getComicsCharacterList(comicsId, page)
+				.thenApply(ResponseEntity::ok);
 	}
 	
 	/**
@@ -176,10 +189,11 @@ public class DetailInformationController {
 	 */
 	@Operation(summary = "스태프 리스트 조회")
 	@GetMapping(value = "/getComicsStaffList")
-	public ResponseEntity<AniListStaffDto> getComicsStaffList(
+	public CompletableFuture<ResponseEntity<AniListStaffDto>> getComicsStaffList(
 			@RequestParam(PARAM_COMICS_ID) Integer comicsId,
 			@RequestParam(PARAM_PAGE) Integer page
 			) throws IOException {
-		return ResponseEntity.ok(informationService.getComicsStaffList(comicsId, page));
+		return informationService.getComicsStaffList(comicsId, page)
+				.thenApply(ResponseEntity::ok);
 	}
 }

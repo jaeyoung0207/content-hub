@@ -1,6 +1,7 @@
 package com.cjy.contenthub.detail.information.service;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffDto;
@@ -20,7 +21,7 @@ public interface DetailInformationService {
 	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return TV 상세 응답 DTO
 	 */
-	DetailTvResponseDto	getTvDetail(Integer seriesId, String contentMediaType);
+	CompletableFuture<DetailTvResponseDto> getTvDetail(Integer seriesId, String contentMediaType);
 	
 	/**
 	 * 영화 상세 정보 조회
@@ -29,7 +30,7 @@ public interface DetailInformationService {
 	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return 영화 상세 응답 DTO
 	 */
-	DetailMovieResponseDto getMovieDetail(Integer movieId, String contentMediaType);
+	CompletableFuture<DetailMovieResponseDto> getMovieDetail(Integer movieId, String contentMediaType);
 	
 	/**
 	 * 만화 상세 정보 조회
@@ -38,7 +39,7 @@ public interface DetailInformationService {
 	 * @param contentMediaType 컨텐츠 미디어 타입
 	 * @return Comics 상세 응답 DTO
 	 */
-	DetailComicsResponseDto getComicsDetail(Integer comicsId, String contentMediaType) throws IOException;
+	CompletableFuture<DetailComicsResponseDto> getComicsDetail(Integer comicsId, String contentMediaType) throws IOException;
 	
 	/**
 	 * 만화 등장인물 목록 조회
@@ -47,7 +48,7 @@ public interface DetailInformationService {
 	 * @param page     페이지 번호
 	 * @return AniList 등장인물 DTO
 	 */
-	AniListCharactersDto getComicsCharacterList(Integer comicsId, Integer page)  throws IOException;
+	CompletableFuture<AniListCharactersDto> getComicsCharacterList(Integer comicsId, Integer page)  throws IOException;
 	
 	/**
 	 * 만화 스태프 목록 조회
@@ -56,6 +57,6 @@ public interface DetailInformationService {
 	 * @param page     페이지 번호
 	 * @return AniList 스태프 DTO
 	 */
-	AniListStaffDto getComicsStaffList(Integer comicsId, Integer page) throws IOException;
+	CompletableFuture<AniListStaffDto> getComicsStaffList(Integer comicsId, Integer page) throws IOException;
 
 }

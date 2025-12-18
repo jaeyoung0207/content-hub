@@ -106,3 +106,12 @@ app:
     enabled: false # 단일 도메인의 경우 CORS 불필요
   actuator:
     developer-mode: false
+  thread-pool:
+    api-task:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 50
+    bloking-task:
+      core-pool-size: 1
+      max-pool-size: 2
+      queue-capacity: 25

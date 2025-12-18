@@ -2,6 +2,8 @@ package com.cjy.contenthub.character.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,10 +14,10 @@ import com.cjy.contenthub.common.integration.anilist.constants.AniListParamConst
 import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListResponseDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
+import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
-import com.cjy.contenthub.common.util.GraphqlUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +37,8 @@ public class CharacterServiceImpl implements CharacterService {
 	@Qualifier("anilistWebClient")
 	private final WebClient anilistWebClient;
 
-	/** DeepL API 통신용 WebClient 클래스 */
-	@Qualifier("deeplWebClient")
-	private final WebClient deeplWebClient;
+	/** 비동기 처리용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/**
 	 * 캐릭터 조회
@@ -48,7 +49,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.CHARACTER, unless = "#result == null")
-	public AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException {
+	public CompletableFuture<AniListCharactersNodeDto> getCharacter(Integer characterId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsCharacter.graphql");
@@ -76,7 +77,8 @@ public class CharacterServiceImpl implements CharacterService {
 					// 응답 데이터가 있는 경우 캐릭터 정보 반환
 					return response.getData().getCharacter();
 				})
-				.block();
+				// 결과를 CompletableFuture로 변환하여 반환 및 스레드 위임
+				.toFuture().thenApplyAsync(character -> character, apiTaskExecutor);
 	}
 
 
@@ -89,7 +91,7 @@ public class CharacterServiceImpl implements CharacterService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.STAFF, unless = "#result == null")
-	public AniListStaffNodeDto getStaff(Integer staffId) throws IOException {
+	public CompletableFuture<AniListStaffNodeDto> getStaff(Integer staffId) throws IOException {
 
 		// GraphQL 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsStaff.graphql");
@@ -117,6 +119,7 @@ public class CharacterServiceImpl implements CharacterService {
 					// 응답 데이터가 있는 경우 스태프 정보 반환
 					return response.getData().getStaff();
 				})
-				.block();
+				// 결과를 CompletableFuture로 변환하여 반환 및 스레드 위임
+				.toFuture().thenApplyAsync(staff -> staff, apiTaskExecutor);
 	}
 }

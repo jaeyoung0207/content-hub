@@ -1,5 +1,8 @@
 package com.cjy.contenthub.login.service;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +62,9 @@ public class LoginServiceImpl implements LoginService {
 	/** 카카오 API WebClient */
 	@Qualifier("kakaoWebClient")
 	private final WebClient kakaoWebClient;
+	
+	/** 비동기 처리용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/** 네이버 클라이언트 ID */
 	@Value("${login.naver.api.client-id}")
@@ -172,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return NaverIssueTokenDto
 	 */
 	@Override
-	public NaverIssueTokenDto getNaverIssueToken(String code, String state) {
+	public CompletableFuture<NaverIssueTokenDto> getNaverIssueToken(String code, String state) {
 
 		// 네이버 토큰 발급 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(naverTokenIssueUrl)
@@ -188,7 +194,7 @@ public class LoginServiceImpl implements LoginService {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(NaverIssueTokenDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -199,7 +205,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return NaverIssueTokenDto
 	 */
 	@Override
-	public NaverIssueTokenDto getNaverUpdateToken(String refreshToken, String deviceId) {
+	public CompletableFuture<NaverIssueTokenDto> getNaverUpdateToken(String refreshToken, String deviceId) {
 		
 		// 제공자 정보 조회
 		ProviderInfo providerInfo = redisUtil.getProviderInfo(refreshToken, deviceId);
@@ -228,7 +234,7 @@ public class LoginServiceImpl implements LoginService {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(NaverIssueTokenDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -242,7 +248,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return NaverDeleteTokenDto
 	 */
 	@Override
-	public NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
+	public CompletableFuture<NaverDeleteTokenDto> deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
 		
 		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
 		if (StringUtils.isNotEmpty(refreshToken)) {
@@ -267,7 +273,7 @@ public class LoginServiceImpl implements LoginService {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(NaverDeleteTokenDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -279,7 +285,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return 카카오 토큰 발행 DTO
 	 */
 	@Override
-	public KakaoIssueTokenDto getKakaoIssueToken(String clientId, String redirectUri, String code) {
+	public CompletableFuture<KakaoIssueTokenDto> getKakaoIssueToken(String clientId, String redirectUri, String code) {
 
 		// 카카오 토큰 발급 URL 생성
 		String uri = UriComponentsBuilder.fromUriString(kakaoTokenIssueUrl)
@@ -295,7 +301,7 @@ public class LoginServiceImpl implements LoginService {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(KakaoIssueTokenDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -307,7 +313,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return 카카오 토큰 발행 DTO
 	 */
 	@Override
-	public KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId) {
+	public CompletableFuture<KakaoIssueTokenDto> updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId) {
 		
 		// 제공자 정보 조회
 		ProviderInfo providerInfo = redisUtil.getProviderInfo(refreshToken, deviceId);
@@ -336,7 +342,7 @@ public class LoginServiceImpl implements LoginService {
 				.uri(uri)
 				.retrieve()
 				.bodyToMono(KakaoIssueTokenDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -350,7 +356,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return KakaoUserInfoDto
 	 */
 	@Override
-	public KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
+	public CompletableFuture<KakaoUserInfoDto> deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId) {
 		
 		// Redis에서 리프레시 토큰 및 제공자 정보 삭제
 		if (StringUtils.isNotEmpty(refreshToken)) {
@@ -370,11 +376,11 @@ public class LoginServiceImpl implements LoginService {
 		// 카카오 토큰 삭제 API 호출
 		return kakaoWebClient.get()
 				.uri(uri)
-				.headers(header -> header.set(HttpHeaders.AUTHORIZATION, 
-						CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken)))
+				.header(HttpHeaders.AUTHORIZATION, 
+						CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
-				.block();
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 }

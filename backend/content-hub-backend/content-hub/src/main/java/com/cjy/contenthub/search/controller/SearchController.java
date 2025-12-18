@@ -1,6 +1,7 @@
 package com.cjy.contenthub.search.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,9 +107,10 @@ public class SearchController {
 	 */
 	@Operation(summary = "검색어 리스트 조회")
 	@GetMapping(value = "/searchKeyword")
-	public ResponseEntity<List<String>> searchKeyword(@RequestParam(PARAM_KEYWORD) String keyword) {
+	public CompletableFuture<ResponseEntity<List<String>>> searchKeyword(@RequestParam(PARAM_KEYWORD) String keyword) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		return ResponseEntity.ok(searchService.searchKeyword(keyword, isAdult));
+		return searchService.searchKeyword(keyword, isAdult)
+				.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -120,21 +122,23 @@ public class SearchController {
 	 */
 	@Operation(summary = "비디오 검색")
 	@GetMapping(value = "/searchVideo")
-	public ResponseEntity<SearchVideoResponseDto> searchVideo(
+	public CompletableFuture<ResponseEntity<SearchVideoResponseDto>> searchVideo(
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(value = PARAM_USER_ID, required = false) Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchVideoResponseDto cachedResponse = searchService.searchVideo(keyword, isAdult);
-		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		SearchVideoResponseDto newResponse = searchMapper.deepCopyForVideoResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			searchNoCacheService.setWishlistFromVideoResponse(newResponse, userId);
-		}
-		return ResponseEntity.ok(newResponse);
+		CompletableFuture<SearchVideoResponseDto> response = searchService.searchVideo(keyword, isAdult)
+				.thenApplyAsync(cachedResponse -> {
+					// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+					SearchVideoResponseDto newResponse = searchMapper.deepCopyForVideoResponse(cachedResponse);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						searchNoCacheService.setWishlistFromVideoResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -147,22 +151,24 @@ public class SearchController {
 	 */
 	@Operation(summary = "애니메이션 검색")
 	@GetMapping(value = "/searchAni")
-	public ResponseEntity<SearchTvResponseDto> searchAni(
+	public CompletableFuture<ResponseEntity<SearchTvResponseDto>> searchAni(
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchTvResponseDto cachedResponse = searchService.searchAni(keyword, isAdult, page);
-		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			searchNoCacheService.setWishlistFromAniResponse(newResponse, userId);
-		}
-		return ResponseEntity.ok(newResponse);
+		CompletableFuture<SearchTvResponseDto> response = searchService.searchAni(keyword, isAdult, page)
+				.thenApplyAsync(cachedResponse -> {
+					// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+					SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						searchNoCacheService.setWishlistFromAniResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -176,23 +182,25 @@ public class SearchController {
 	 */
 	@Operation(summary = "애니메이션 제외한 TV 시리즈 검색")
 	@GetMapping(value = "/searchTvExceptAni")
-	public ResponseEntity<SearchTvResponseDto> searchTvExceptAni(
+	public CompletableFuture<ResponseEntity<SearchTvResponseDto>> searchTvExceptAni(
 			@RequestParam(PARAM_KEYWORD) String keyword,
 			@RequestParam(PARAM_CONTENT_MEDIA_TYPE) String contentMediaType,
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchTvResponseDto cachedResponse = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page);
-		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			searchNoCacheService.setWishlistFromTvExceptAniResponse(newResponse, userId, contentMediaType);
-		}
-		return ResponseEntity.ok(newResponse);
+		CompletableFuture<SearchTvResponseDto> response = searchService.searchTvExceptAni(keyword, isAdult, contentMediaType, page)
+				.thenApplyAsync(cachedResponse -> {
+					// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+					SearchTvResponseDto newResponse = searchMapper.deepCopyForTvResponse(cachedResponse);
+					
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						searchNoCacheService.setWishlistFromTvExceptAniResponse(newResponse, userId, contentMediaType);
+					}
+					return newResponse;
+				});
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -205,22 +213,24 @@ public class SearchController {
 	 */
 	@Operation(summary = "영화 정보 검색")
 	@GetMapping(value = "/searchMovie")
-	public ResponseEntity<SearchMovieResponseDto> searchMovie(
+	public CompletableFuture<ResponseEntity<SearchMovieResponseDto>> searchMovie(
 			@RequestParam(PARAM_KEYWORD) String keyword, 
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchMovieResponseDto cachedResponse = searchService.searchMovie(keyword, isAdult, page);
-		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		SearchMovieResponseDto newResponse = searchMapper.deepCopyForMovieResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			searchNoCacheService.setWishlistFromMovieResponse(newResponse, userId);
-		}
-		return ResponseEntity.ok(newResponse);
+		CompletableFuture<SearchMovieResponseDto> response = searchService.searchMovie(keyword, isAdult, page)
+				.thenApplyAsync(cachedResponse -> {
+					// 깊은 복사 수행
+					SearchMovieResponseDto newResponse = searchMapper.deepCopyForMovieResponse(cachedResponse);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						searchNoCacheService.setWishlistFromMovieResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 	/**
@@ -234,23 +244,25 @@ public class SearchController {
 	 */
 	@Operation(summary = "만화 정보 검색")
 	@GetMapping(value = "/searchComics")
-	public ResponseEntity<SearchComicsResponseDto> searchComics(
+	public CompletableFuture<ResponseEntity<SearchComicsResponseDto>> searchComics(
 			@RequestParam(PARAM_KEYWORD) String keyword, 
 			@RequestParam(value = PARAM_PAGE, required = false) Integer page,
 			@RequestParam(value = PARAM_IS_MAIN_PAGE) boolean isMainPage,
 			@RequestParam(value = PARAM_USER_ID, required = false) @MaskingTarget Long userId
 			) {
 		boolean isAdult = session.getSessionBooleanValue(DomainConstants.ADULT_FLG);
-		SearchComicsResponseDto cachedResponse = searchService.searchComics(keyword, isAdult, page, isMainPage);
-		
-		// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
-		SearchComicsResponseDto newResponse = searchMapper.deepCopyForComicsResponse(cachedResponse);
-		
-		// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
-		if (userId != null) {
-			searchNoCacheService.setWishlistFromComicsResponse(newResponse, userId);
-		}
-		return ResponseEntity.ok(newResponse);
+		CompletableFuture<SearchComicsResponseDto> response = 
+				searchService.searchComics(keyword, isAdult, page, isMainPage).thenApplyAsync(cachedResponse -> {
+					// 캐시된 응답 객체를 깊은 복사하여 새로운 객체 생성(캐시된 객체를 직접 수정하지 않고 새로운 객체를 사용)
+					SearchComicsResponseDto newResponse = searchMapper.deepCopyForComicsResponse(cachedResponse);
+
+					// 로그인 유저 정보가 존재할 경우 위시리스트 여부 설정
+					if (userId != null) {
+						searchNoCacheService.setWishlistFromComicsResponse(newResponse, userId);
+					}
+					return newResponse;
+				});
+		return response.thenApply(ResponseEntity::ok);
 	}
 
 }

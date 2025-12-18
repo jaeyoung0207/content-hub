@@ -2,6 +2,7 @@ package com.cjy.contenthub.detail.information.function;
 
 /**
  * 상세 정보를 가져오는 함수형 인터페이스
+ * 서로 다른 DTO에 대해 상세 정보를 가져오는 기능을 제공
  * 
  * @param <T> 상세 응답 DTO 타입
  */
