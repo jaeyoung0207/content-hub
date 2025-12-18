@@ -1,6 +1,7 @@
 package com.cjy.contenthub.core.facade;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -11,7 +12,6 @@ import com.cjy.contenthub.core.integration.tmdb.service.TmdbGenreService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * 외부 API facade 클래스
@@ -29,13 +29,12 @@ public class ApiFacade {
 	/**
 	 * 어플리케이션 기동시 ApplicationReadyEvent를 이용하여, 
 	 * 모든 빈 초기화 + 어플리케이션 준비 완료 후에 캐시화 로직을 실행
-	 * (@Cacheable 가 AOP 프록시로 동작하므로, 이 시점에서는 사용 가능)
 	 */
 	@EventListener(ApplicationReadyEvent.class)
 	public void initializeTMdbApiGenreInfo() {
 		// TMDB API 애니/영화 장르 정보 캐시화 
-		tmdbGenreService.getTvGenres();
-		tmdbGenreService.getMovieGenres();
+		tmdbGenreService.getTvGenres().join();
+		tmdbGenreService.getMovieGenres().join();
 	}
 
 	/**
@@ -44,8 +43,7 @@ public class ApiFacade {
 	 * @return Mono 형태의 TV 장르 정보 Map
 	 */
 	public Mono<Map<String, Integer>> getTvGenres() {
-		return Mono.fromCallable(tmdbGenreService::getTvGenres)
-				.subscribeOn(Schedulers.boundedElastic());
+		return Mono.fromFuture(tmdbGenreService.getTvGenres());
 	}
 
 	/**
@@ -54,8 +52,7 @@ public class ApiFacade {
 	 * @return Mono 형태의 영화 장르 정보 Map
 	 */
 	public Mono<Map<String, Integer>> getMovieGenres() {
-		return Mono.fromCallable(tmdbGenreService::getMovieGenres)
-				.subscribeOn(Schedulers.boundedElastic());
+		return Mono.fromFuture(tmdbGenreService::getMovieGenres);
 	}
 
 	/**
@@ -66,11 +63,8 @@ public class ApiFacade {
 	 * @param sourceLang 원본 언어 (예: "KO", "JA")
 	 * @return 번역된 문자열
 	 */
-	public Mono<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
-		return Mono.fromCallable(() -> 
-		deeplService.translateText(keyword, targetLang, sourceLang))
-				.subscribeOn(Schedulers.boundedElastic())
-				.onErrorResume(ex -> Mono.just(""));
+	public CompletableFuture<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
+		return deeplService.translateText(keyword, targetLang, sourceLang);
 	}
 
 }

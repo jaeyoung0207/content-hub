@@ -60,6 +60,16 @@ logging:
     com:
       cjy:
         contenthub: DEBUG
+    # WebClient의 동작 및 요청/응답 매핑 확인 (WebClient가 Netty를 호출하는 시점)
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+    # Reactor Netty의 I/O 및 스레드 동작 확인 (가장 중요)
+    # 이 설정을 DEBUG 또는 TRACE로 높여야 Netty 스레드의 활동을 볼 수 있음
+    reactor.netty.http.client: DEBUG
+    # (선택적) 데이터가 네트워크를 통해 실제로 어떻게 전송되는지 확인 (매우 상세한 로그)
+    # TRACE는 데이터 패킷까지 출력하므로 필요한 경우에만 사용
+    reactor.netty.http.server.HttpServer: INFO
+    # (선택적) Reactor Core의 자세한 흐름 확인
+    reactor.core: INFO 
 
 # Actuator Config
 management:
@@ -94,3 +104,12 @@ app:
     enabled: true
   actuator:
     developer-mode: true
+  thread-pool:
+    api-task:
+      core-pool-size: 8
+      max-pool-size: 32
+      queue-capacity: 200
+    bloking-task:
+      core-pool-size: 4
+      max-pool-size: 16
+      queue-capacity: 100

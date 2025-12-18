@@ -106,3 +106,12 @@ app:
     enabled: true # 스테이징에서 프론트/백 도메인 분리 시 true
   actuator:
     developer-mode: false
+  thread-pool:
+    api-task:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 50
+    bloking-task:
+      core-pool-size: 1
+      max-pool-size: 2
+      queue-capacity: 25

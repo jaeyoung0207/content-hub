@@ -1,5 +1,7 @@
 package com.cjy.contenthub.login.service;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoIssueTokenDto;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverDeleteTokenDto;
@@ -25,7 +27,7 @@ public interface LoginService {
 	 * @param state 상태 값
 	 * @return 네이버 토큰 발행 DTO
 	 */
-	NaverIssueTokenDto getNaverIssueToken(String code, String state);
+	CompletableFuture<NaverIssueTokenDto> getNaverIssueToken(String code, String state);
 	
 	/**
 	 * 네이버 로그인 토큰 갱신
@@ -34,7 +36,7 @@ public interface LoginService {
 	 * @param deviceId 디바이스 ID
 	 * @return 네이버 토큰 발행 DTO
 	 */
-	NaverIssueTokenDto getNaverUpdateToken(String refreshToken, String deviceId);
+	CompletableFuture<NaverIssueTokenDto> getNaverUpdateToken(String refreshToken, String deviceId);
 	
 	/**
 	 * 네이버 로그인 토큰 삭제
@@ -46,7 +48,7 @@ public interface LoginService {
 	 * @param deviceId 디바이스 ID
 	 * @return 네이버 토큰 삭제 DTO
 	 */
-	NaverDeleteTokenDto deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
+	CompletableFuture<NaverDeleteTokenDto> deleteNaverToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
 	
 	/**
 	 * 카카오 로그인 토큰 발행
@@ -56,7 +58,7 @@ public interface LoginService {
 	 * @param code        인증 코드
 	 * @return 카카오 토큰 발행 DTO
 	 */
-	KakaoIssueTokenDto getKakaoIssueToken(String clientId, String redirectUri, String code);
+	CompletableFuture<KakaoIssueTokenDto> getKakaoIssueToken(String clientId, String redirectUri, String code);
 	
 	/**
 	 * 카카오 로그인 토큰 갱신
@@ -66,7 +68,7 @@ public interface LoginService {
 	 * @param deviceId 디바이스 ID
 	 * @return 카카오 토큰 발행 DTO
 	 */
-	KakaoIssueTokenDto updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId);
+	CompletableFuture<KakaoIssueTokenDto> updateKakaoLoginInfo(String clientId, String refreshToken, String deviceId);
 	
 	/**
 	 * 카카오 로그인 토큰 삭제
@@ -78,6 +80,6 @@ public interface LoginService {
 	 * @param deviceId 디바이스 ID
 	 * @return 카카오 유저 정보 DTO
 	 */
-	KakaoUserInfoDto deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
+	CompletableFuture<KakaoUserInfoDto> deleteKakaoToken(String accessToken, String targetId, Long userId, String refreshToken, String deviceId);
 
 }

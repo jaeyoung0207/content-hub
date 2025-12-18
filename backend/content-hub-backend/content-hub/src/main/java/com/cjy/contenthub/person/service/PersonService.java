@@ -1,5 +1,7 @@
 package com.cjy.contenthub.person.service;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.cjy.contenthub.person.controller.dto.PersonResponseDto;
 
 /**
@@ -13,6 +15,6 @@ public interface PersonService {
 	 * @param personId 인물 ID
 	 * @return PersonResponseDto 인물 상세 정보 DTO
 	 */
-	PersonResponseDto getPersonDetails(int personId);
+	CompletableFuture<PersonResponseDto> getPersonDetails(int personId);
 
 }

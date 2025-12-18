@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,6 +73,9 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 	/** API 유틸리티 클래스 */
 	private final ApiFacade apiUtil;
+	
+	/** 비동기 작업용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/** TMDB API TV 추천 작품 API 패스 */
 	@Value("${tmdb.url.tv-recommendations-path}")
@@ -115,7 +120,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 */
 	@Override
 	@Cacheable(value = CacheNames.TMDB_TV_RECOMMENDATIONS, unless = "#result == null")
-	public DetailRecommendationsTvDto getTvRecommendations(Integer seriesId, Integer page, Long userId) {
+	public CompletableFuture<DetailRecommendationsTvDto> getTvRecommendations(Integer seriesId, Integer page, Long userId) {
 
 		// TMDB 장르 정보 조회
 		return apiUtil.getTvGenres().flatMap(genreMap -> 
@@ -177,7 +182,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 					.results(filterdResultList)
 					.build();
 
-		})).block();
+		})).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -186,11 +191,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @param movieId 영화 ID
 	 * @param page 페이지 번호
 	 * @param userId 유저 테이블 ID
-	 * @return ResponseEntity<TmdbRecommendationsMovieDto> 추천 작품 응답 DTO
+	 * @return 추천 작품 응답 DTO
 	 */
 	@Override
 	@Cacheable(value = CacheNames.TMDB_MOVIE_RECOMMENDATIONS, unless = "#result == null")
-	public DetailRecommendationsMovieDto getMovieRecommendations(Integer movieId, Integer page, Long userId) {
+	public CompletableFuture<DetailRecommendationsMovieDto> getMovieRecommendations(Integer movieId, Integer page, Long userId) {
 
 		// TMDB 영화 추천 작품 조회
 		return tmdbWebClient.get()
@@ -252,7 +257,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 							.totalPages(response.getTotalPages())
 							.totalResults(response.getTotalResults())
 							.results(movieResultList).build();
-				}).block();
+				}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 	/**
@@ -261,11 +266,11 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 	 * @param mediaId 미디어 추천 ID
 	 * @param page 페이지 번호
 	 * @param userId 유저 테이블 ID
-	 * @return ResponseEntity<DetailComicsRecommendationsResponseDto> 추천 작품 응답 DTO
+	 * @return 추천 작품 응답 DTO
 	 */
 	@Override
 	@Cacheable(value = CacheNames.ANILIST_COMICS_RECOMMENDATIONS, unless = "#result == null")
-	public DetailRecommendationsComicsResponseDto getComicsRecommendations(Integer mediaId, Integer page, Long userId) throws IOException {
+	public CompletableFuture<DetailRecommendationsComicsResponseDto> getComicsRecommendations(Integer mediaId, Integer page, Long userId) throws IOException {
 
 		// graphql 쿼리 파일 불러오기
 		String query = GraphqlUtil.loadQuery("comicsRecomendationList.graphql");
@@ -323,7 +328,7 @@ public class DetailRecommendationServiceImpl implements DetailRecommendationServ
 
 					// 추천 작품 응답 DTO 반환
 					return recommendationResponse;
-				}).block();
+				}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 }

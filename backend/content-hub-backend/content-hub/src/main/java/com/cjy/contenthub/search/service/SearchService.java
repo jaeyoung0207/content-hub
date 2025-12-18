@@ -1,6 +1,7 @@
 package com.cjy.contenthub.search.service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
@@ -19,7 +20,7 @@ public interface SearchService {
 	 * @param isAdult 성인물 포함 여부
 	 * @return 검색어 리스트
 	 */
-	List<String> searchKeyword(String keyword, boolean isAdult);
+	CompletableFuture<List<String>> searchKeyword(String keyword, boolean isAdult);
 	
 	/**
 	 * TV 시리즈/영화 검색 데이터 조회
@@ -28,7 +29,7 @@ public interface SearchService {
 	 * @param isAdult 성인물 포함 여부
 	 * @return 검색 결과 DTO
 	 */
-	SearchVideoResponseDto searchVideo(String keyword, boolean isAdult);
+	CompletableFuture<SearchVideoResponseDto> searchVideo(String keyword, boolean isAdult);
 	
 	/**
 	 * 애니 검색 데이터 조회
@@ -38,7 +39,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 애니 검색 결과 DTO
 	 */
-	SearchTvResponseDto searchAni(String keyword, boolean isAdult, Integer page);
+	CompletableFuture<SearchTvResponseDto> searchAni(String keyword, boolean isAdult, Integer page);
 	
 	/**
 	 * TV 시리즈 검색 데이터 조회(애니 제외)
@@ -49,7 +50,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 드라마 검색 결과 DTO
 	 */
-	SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page);
+	CompletableFuture<SearchTvResponseDto> searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page);
 	
 	/**
 	 * 영화 검색 데이터 조회
@@ -59,7 +60,7 @@ public interface SearchService {
 	 * @param page    페이지 번호
 	 * @return 영화 검색 결과 DTO
 	 */
-	SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page);
+	CompletableFuture<SearchMovieResponseDto> searchMovie(String keyword, boolean isAdult, Integer page);
 	
 	/**
 	 * 만화 검색 데이터 조회
@@ -70,5 +71,5 @@ public interface SearchService {
 	 * @param isMainPage 메인 페이지 여부
 	 * @return 만화 검색 결과 DTO
 	 */
-	SearchComicsResponseDto searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage);
+	CompletableFuture<SearchComicsResponseDto> searchComics(String keyword, boolean isAdult, Integer page, boolean isMainPage);
 }

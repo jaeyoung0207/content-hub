@@ -66,7 +66,7 @@ class DeviceIdCheckInterceptorTest {
 	}
 	
 	@Test
-	@DisplayName("init: 전체 경로 리스트 초기화")
+	@DisplayName("[UT]init: 전체 경로 리스트 초기화")
 	void test_init() {
 		// 값 설정
 		List<ApiRateLimitRules> rules = new ArrayList<>();
@@ -92,7 +92,7 @@ class DeviceIdCheckInterceptorTest {
 	}
 	
 	@Test
-	@DisplayName("preHandle: OPTIONS 메서드 요청")
+	@DisplayName("[UT]preHandle: OPTIONS 메서드 요청")
 	void test_preHandle_optionsMethod() throws Exception {
 		// Mock 설정
 		when(request.getRequestURI()).thenReturn("/api/home/rankings");
@@ -109,7 +109,7 @@ class DeviceIdCheckInterceptorTest {
 	}
 	
 	@Test
-	@DisplayName("preHandle: 대상 URI가 아닌 경우")
+	@DisplayName("[UT]preHandle: 대상 URI가 아닌 경우")
 	void test_preHandle_notTargetUri() throws Exception {
 		// Mock 설정
 		String uri = "/api/app/getMediaTypes";
@@ -127,7 +127,7 @@ class DeviceIdCheckInterceptorTest {
 	}
 	
 	@Test
-	@DisplayName("preHandle: 대상 URI이면서 디바이스 ID가 있는 경우")
+	@DisplayName("[UT]preHandle: 대상 URI이면서 디바이스 ID가 있는 경우")
 	void test_preHandle_targetUriAndExistDeviceId() throws Exception {
 		// Mock 설정
 		String uri = "/api/home/rankings";
@@ -147,7 +147,7 @@ class DeviceIdCheckInterceptorTest {
 	}
 	
 	@Test
-	@DisplayName("preHandle: 대상 URI이면서 디바이스 ID가 없는 경우")
+	@DisplayName("[UT]preHandle: 대상 URI이면서 디바이스 ID가 없는 경우")
 	void test_preHandle_targetUriAndNotExistDeviceId() throws Exception {
 		// Mock 설정
 		String uri = "/api/home/rankings";

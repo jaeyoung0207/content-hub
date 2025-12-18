@@ -3,6 +3,8 @@ package com.cjy.contenthub.core.integration.tmdb.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -33,30 +35,31 @@ public class TmdbGenreService {
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
 
+	/** 비동기 처리용 Executor */
+	private final Executor apiTaskExecutor;
+
 	/**
 	 * TMDB API를 사용하여 TV 장르 정보 조회
 	 * @Cacheable 캐시를 적용하여 동일한 요청에 대해 반복적인 API 호출을 방지
-	 * @Cacheable를 사용하기 위해서는 동기화 된 메소드여야 하므로, .block() 메소드를 사용하여 결과를 반환
 	 * 
 	 * @return TV 장르 정보 Map
 	 */
 	@Cacheable(value = CacheNames.TV_GENRE, unless = "#result == null || #result.isEmpty()")
-	public Map<String, Integer> getTvGenres() {
-		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbTvGenres().block();
-		return getGenreMap(genreList);
+	public CompletableFuture<Map<String, Integer>> getTvGenres() {
+		CompletableFuture<List<TmdbGenreDto>> genreList = tmdbApiGenreClient.getTmdbTvGenres().toFuture();
+		return getGenreMap(genreList).thenApplyAsync(map -> map, apiTaskExecutor);
 	}
 
 	/**
 	 * TMDB API를 사용하여 영화 장르 정보 조회
 	 * @Cacheable 캐시를 적용하여 동일한 요청에 대해 반복적인 API 호출을 방지
-	 * @Cacheable를 사용하기 위해서는 동기화 된 메소드여야 하므로, .block() 메소드를 사용하여 결과를 반환
 	 * 
 	 * @return 영화 장르 정보 Map
 	 */
 	@Cacheable(value = CacheNames.MOVIE_GENRE, unless = "#result == null || #result.isEmpty()")
-	public Map<String, Integer> getMovieGenres() {
-		List<TmdbGenreDto> genreList = tmdbApiGenreClient.getTmdbMovieGenres().block();
-		return getGenreMap(genreList);
+	public CompletableFuture<Map<String, Integer>> getMovieGenres() {
+		CompletableFuture<List<TmdbGenreDto>> genreList = tmdbApiGenreClient.getTmdbMovieGenres().toFuture();
+		return getGenreMap(genreList).thenApplyAsync(map -> map, apiTaskExecutor);
 	}
 
 	/**
@@ -65,8 +68,9 @@ public class TmdbGenreService {
 	 * @param genreList TMDB 장르 리스트
 	 * @return 장르명-장르ID 맵
 	 */
-	public Map<String, Integer> getGenreMap(List<TmdbGenreDto> genreList) {
-		return genreList.stream().collect(
+	public CompletableFuture<Map<String, Integer>> getGenreMap(CompletableFuture<List<TmdbGenreDto>> genreList) {
+		return genreList.thenApply(list -> 
+		list.stream().collect(
 				Collectors.toMap(
 						genre -> {
 							String genreName = TmdbGenreEnum.GENRE_ID_EN_MAP.get(genre.getId());
@@ -83,7 +87,7 @@ public class TmdbGenreService {
 						(oldId, newId) -> newId, // 키 중복일 경우, 새로운 키로 덮어씌움
 						HashMap::new // 반환형 지정
 						)
-				);
+				));
 	}
 
 }

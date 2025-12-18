@@ -1,6 +1,7 @@
 package com.cjy.contenthub.character.service;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import com.cjy.contenthub.common.integration.anilist.dto.AniListCharactersNodeDto;
 import com.cjy.contenthub.common.integration.anilist.dto.AniListStaffNodeDto;
@@ -17,8 +18,8 @@ public interface CharacterService {
 	 * @return AniListCharactersNodesDto 캐릭터 정보
 	 * @throws IOException 쿼리 파일 로딩 중 발생하는 예외
 	 */
-	AniListCharactersNodeDto getCharacter(Integer characterId) throws IOException;
+	CompletableFuture<AniListCharactersNodeDto> getCharacter(Integer characterId) throws IOException;
 	
-	AniListStaffNodeDto getStaff(Integer staffId) throws IOException;
+	CompletableFuture<AniListStaffNodeDto> getStaff(Integer staffId) throws IOException;
 
 }

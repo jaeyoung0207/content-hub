@@ -2,6 +2,8 @@ package com.cjy.contenthub.person.service;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +46,7 @@ public class PersonServiceImpl implements PersonService {
 	private final WebClient tmdbWebClient;
 	
 	/** 공통 유틸리티 */
-	private final ApiFacade apiUtil;
+	private final ApiFacade apiFacade;
 	
 	/** 메시지 유틸리티 */
 	private final MessageUtil messageUtil;
@@ -54,6 +56,9 @@ public class PersonServiceImpl implements PersonService {
 
 	/** TMDB API 인물 상세 헬퍼 */
 	private final PersonHelper helper;
+	
+	/** 비동기 처리용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/** TMDB API Person Detail API 패스 */
 	@Value("${tmdb.url.person-detail-path}")
@@ -67,11 +72,11 @@ public class PersonServiceImpl implements PersonService {
 	 */
 	@Override
 	@Cacheable(value = CacheNames.PERSON_DETAILS, unless = "#result == null")
-	public PersonResponseDto getPersonDetails(int personId) {
+	public CompletableFuture<PersonResponseDto> getPersonDetails(int personId) {
 
 		// 장르 맵 조회
-		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiFacade.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiFacade.getMovieGenres();
 
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
 			Map<String, Integer> tvGenreMap = genreTuple.getT1();
@@ -156,7 +161,7 @@ public class PersonServiceImpl implements PersonService {
 						// 응답 반환
 						return personResponse;
 					});
-		}).block();
+		}).toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 }

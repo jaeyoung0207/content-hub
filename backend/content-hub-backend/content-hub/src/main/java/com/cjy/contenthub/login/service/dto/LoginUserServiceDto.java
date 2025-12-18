@@ -1,6 +1,7 @@
 package com.cjy.contenthub.login.service.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
+@EqualsAndHashCode
 public class LoginUserServiceDto {
 	
 	/** 유저 테이블 식별 ID */

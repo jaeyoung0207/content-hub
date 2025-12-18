@@ -6,11 +6,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.cjy.contenthub.common.annotation.MaskingTarget;
@@ -22,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * 공통 로그 출력 Aspect 클래스
  */
 @Aspect
+@Order(1) // 가장 먼저 실행되도록 설정
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -142,13 +145,38 @@ public class CommonLoggingAspect {
 		// 실행 시작 시간
 		long startTime = System.currentTimeMillis();
 		try {
-			if (CONTROLLER_TYPE.equals(type)) {	    		
+			if (CONTROLLER_TYPE.equals(type)) {
 				log.info("{}_START: {}.{}({})", type, declaringTypeName, methodName, args);
 			} else if (log.isDebugEnabled()) {
 				log.debug("{}_START: {}.{}({})", type, declaringTypeName, methodName, args);
 			}
 			// 메소드 실행
 			Object result = joinPoint.proceed();
+
+			// 비동기(CompletableFuture) 처리인 경우
+			if (result instanceof CompletableFuture) {
+				CompletableFuture<?> future = (CompletableFuture<?>) result;
+				// CompletableFuture가 완료될 때 로그 출력
+				return future.whenComplete((res, ex) -> {
+					// 경과 시간 계산
+					long duration = System.currentTimeMillis() - startTime;
+					if (ex != null) {
+						// 실패 로그
+						log.error("{}_END(ASYNC)_FAILED: {}.{}({}) - {}ms (Exception: {})", 
+								type, declaringTypeName, methodName, args, duration, ex.getMessage());
+					} else {
+						// 성공 로그
+						if (CONTROLLER_TYPE.equals(type)) {
+							log.info("{}_END(ASYNC): {}.{}({}) - {}ms", 
+									type, declaringTypeName, methodName, args, duration);
+						} else if (log.isDebugEnabled()) {
+							log.debug("{}_END(ASYNC): {}.{}({}) - {}ms", 
+									type, declaringTypeName, methodName, args, duration);
+						}
+					}
+				});
+			} 
+
 			// 경과 시간 계산
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			if (CONTROLLER_TYPE.equals(type)) {
@@ -158,7 +186,7 @@ public class CommonLoggingAspect {
 			}
 			return result;
 		} catch (Throwable ex) {
-			log.error("{}_Error: {}.{} - {}", type, declaringTypeName, methodName, ex.getMessage(), ex);
+			log.error("{}_Error: {}.{} - {}", type, declaringTypeName, methodName, ex.getMessage());
 			throw ex;
 		}
 	}

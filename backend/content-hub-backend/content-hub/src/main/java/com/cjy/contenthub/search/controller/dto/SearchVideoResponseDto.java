@@ -3,6 +3,7 @@ package com.cjy.contenthub.search.controller.dto;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -11,6 +12,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class SearchVideoResponseDto extends SearchTvResponseDto {
 

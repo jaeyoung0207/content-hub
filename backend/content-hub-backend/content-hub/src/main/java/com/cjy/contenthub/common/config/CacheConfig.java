@@ -39,6 +39,8 @@ public class CacheConfig {
 		CaffeineCacheManager caffeineCacheManager = new CommonCacheManager(cacheProperties, meterRegistry);
 		// null 값 허용 안 함
 		caffeineCacheManager.setAllowNullValues(false);
+		// 비동기 캐시 모드 설정
+		caffeineCacheManager.setAsyncCacheMode(true);
 		// 캐시 관리자 인스턴스 반환
 		return caffeineCacheManager;
 	}

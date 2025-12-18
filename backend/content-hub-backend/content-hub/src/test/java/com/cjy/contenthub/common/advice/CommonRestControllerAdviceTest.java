@@ -45,7 +45,7 @@ class CommonRestControllerAdviceTest {
 	private static final String BUSINESS_ERROR = "Business Error";
 	
 	@Test
-	@DisplayName("handleCommonBusinessException: CommonBusinessException 처리 - statusCode가 null인 경우")
+	@DisplayName("[UT]handleCommonBusinessException: CommonBusinessException 처리 - statusCode가 null인 경우")
 	void test_handleCommonBusinessException_statusCodeIsNull() {
 		// Mock 설정
 		String path = "/api/detail/comments/updateComment";
@@ -77,7 +77,7 @@ class CommonRestControllerAdviceTest {
 	}
 	
 	@Test
-	@DisplayName("handleCommonBusinessException: CommonBusinessException 처리 - statusCode가 null이 아닌 경우")
+	@DisplayName("[UT]handleCommonBusinessException: CommonBusinessException 처리 - statusCode가 null이 아닌 경우")
 	void test_handleCommonBusinessException_statusCodeIsNotNull() {
 		// Mock 설정
 		String path = "/api/home/rankings";

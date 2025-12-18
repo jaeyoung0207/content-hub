@@ -1,0 +1,448 @@
+# Test Environment
+
+# Spring Config
+spring:
+  application:
+    name: content-hub
+  config:
+    import: optional:application-secret.yml
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS content;NON_KEYWORDS=USER;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: true # SQL 로그 출력
+    open-in-view: false # true로 설정하면 View 렌더링 중에도 데이터베이스 쿼리가 실행될 수 있음
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+  flyway:
+    enabled: false
+  graphql:
+    graphiql:
+      enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  security:
+    user: 
+      name: actuator
+      password: "{noop}password" # 실제로는 password 를 입력
+      roles: ACTUATOR
+  mvc:
+    async:
+      request-timeout: 20000 # 20초
+
+# Security Config
+security:
+  csrf:
+    cookie:
+      http-only: false
+      secure: false
+      same-site: Lax
+      domain: ${DOMAIN:}
+      path: /
+
+# Server Config
+server:
+  servlet:
+    session:
+      cookie: # JSESSIONID 쿠키 설정
+        http-only: true
+        secure: false
+        same-site: lax
+  address: 0.0.0.0 # 모든 네트워크 인터페이스에서 외부 접속을 허용
+  error:
+    whitelabel:
+      enabled: false
+
+# Log Config
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        security: DEBUG
+    com:
+      cjy:
+        contenthub: DEBUG
+
+# Actuator Config
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: info, health
+  endpoint:
+    info:
+      access: read-only
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  info:
+    defaults:
+      enabled: true
+    env:
+      enabled: true # info.app 이하 정의 노출
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true
+    git:
+      mode: simple
+
+# App Information
+info:
+  app:
+    name: content-hub
+    description: Content Hub backend service
+    version: 1.0.0
+
+# Cache Config
+cache:
+  default-cache:
+    expire-after-write: 15
+    maximum-size: 1000
+  individuals:
+    # core
+    translate:
+      expire-after-write: 60
+      maximum-size: 2000
+    tvGenre:
+      expire-after-write: 1440
+      maximum-size: 100
+    movieGenre:
+      expire-after-write: 1440
+      maximum-size: 100
+    # character
+    character:
+      expire-after-write: 720
+      maximum-size: 1000
+    staff:
+      expire-after-write: 720
+      maximum-size: 1000
+    # detail/information
+    tvDetail:
+      expire-after-write: 180
+      maximum-size: 1000
+    movieDetail:
+      expire-after-write: 180
+      maximum-size: 1000
+    comicsDetail:
+      expire-after-write: 180
+      maximum-size: 1000
+    comicsCharacterList:
+      expire-after-write: 720
+      maximum-size: 1000
+    comicsStaffList:
+      expire-after-write: 720
+      maximum-size: 1000
+    # detail/recommendation
+    tmdbTvRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    tmdbMovieRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    anilistComicsRecommendations:
+      expire-after-write: 60
+      maximum-size: 1000
+    # person
+    personDetails:
+      expire-after-write: 180
+      maximum-size: 1000
+    # search 
+    searchKeyword:
+      expire-after-write: 10
+      maximum-size: 2000
+    searchVideo:
+      expire-after-write: 15
+      maximum-size: 1500
+    searchAni:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchTvExceptAni:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchMovie:
+      expire-after-write: 15
+      maximum-size: 2000
+    searchComics:
+      expire-after-write: 15
+      maximum-size: 2000
+
+# TMDB API Config
+tmdb:
+  api:
+    key: ${TMDB_API_KEY:dummy}
+    token: ${TMDB_API_TOKEN:dummy}
+  url: 
+    base-url: https://api.themoviedb.org
+    tv-search-path: /3/search/tv
+    movie-search-path: /3/search/movie
+    multi-search-path: /3/search/multi
+    tv-genre-path: /3/genre/tv/list
+    movie-genre-path: /3/genre/movie/list
+    tv-credits-path: /3/tv/%s/aggregate_credits
+    movie-credits-path: /3/movie/%s/credits
+    tv-detail-path: /3/tv/%s
+    movie-detail-path: /3/movie/%s
+    person-detail-path: /3/person/%s
+    tv-watch-providers-path: /3/tv/%s/watch/providers
+    movie-watch-providers-path: /3/movie/%s/watch/providers
+    tv-recommendations-path: /3/tv/%s/recommendations
+    movie-recommendations-path: /3/movie/%s/recommendations
+    tv-similar-path: /3/tv/%s/similar
+    movie-similar-path: /3/movie/%s/similar
+  custom:
+    per-main-page: 10
+    auto-complete-count: 15
+    parallel-pages: 2
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 80
+    max-conn-per-route: 20
+
+# Anilist API Config
+anilist:
+  url:
+    base-url: https://graphql.anilist.co
+  custom:
+    per-main-page: 12
+    per-more-page: 18
+    per-character-page: 25
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 80
+    max-conn-per-route: 20
+
+# DeepL API Config
+deepl:
+  api:
+    key: ${DEEPL_API_KEY:dummy}
+  url:
+    base-url: https://api-free.deepl.com/v2
+    translate-path: /translate
+  custom:
+    connection-request-timeout: 10 # 초 단위
+    response-timeout: 15 # 초 단위
+    max-conn-total: 100
+    max-conn-per-route: 30
+
+# Login Config
+login:
+  cookie:
+    http-only: true
+    secure: false
+    same-site: Lax
+    domain: ${DOMAIN:}
+    path: /
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:dummy}
+  naver:
+    api:
+      client-id: ${NAVER_CLIENT_ID:dummy}
+      client-secret: ${NAVER_CLIENT_SECRET:dummy}
+    url:
+      token-issue-url: https://nid.naver.com/oauth2.0/token
+      user-info-url: https://openapi.naver.com/v1/nid/me
+    custom:
+      refresh-token-expires-in: 365 # 일 단위
+      connection-request-timeout: 5 # 초 단위
+      response-timeout: 10 # 초 단위
+      max-conn-total: 20
+      max-conn-per-route: 10
+  kakao:
+    api:
+      client-secret: ${KAKAO_CLIENT_SECRET:dummy}
+    url:
+      token-issue-url: https://kauth.kakao.com/oauth/token
+      oidc-user-info-url: https://kapi.kakao.com/v1/oidc/userinfo
+      user-info-url: https://kapi.kakao.com/v2/user/me
+      logout-url: https://kapi.kakao.com/v1/user/logout
+    custom:
+      refresh-token-expires-in: 60 # 일 단위
+      connection-request-timeout: 5 # 초 단위
+      response-timeout: 10 # 초 단위
+      max-conn-total: 20
+      max-conn-per-route: 10
+
+# Application Config
+app:
+  url: http://localhost:3000
+  cors:
+    enabled: true
+  actuator:
+    developer-mode: true
+  thread-pool:
+    api-task:
+      core-pool-size: 8
+      max-pool-size: 32
+      queue-capacity: 200
+    bloking-task:
+      core-pool-size: 4
+      max-pool-size: 16
+      queue-capacity: 100
+  prefix: /api
+  version: "" # 필요 시 "/v1"로 변경
+  maintenance:
+    mode: ${MAINTENANCE_MODE:false}
+  web-client:
+    max-in-memory-size: 10 # MB
+  comment:
+    per-page: 20
+  my-comments:
+    per-page: 10
+  wishlist:
+    max-registration-size: 500
+  rate-limit:
+    defaults:
+      max-request-count: 60
+      seconds: 60
+    rules:
+      # common
+      - path: "/app/getCsrfToken"
+        max-request-count: 20
+        seconds: 60
+      - path: "/app/getMediaTypes"
+        max-request-count: 20
+        seconds: 60
+      - path: "/app/setAdultFlg"
+        max-request-count: 20
+        seconds: 60
+      - path: "/app/clearAdultFlg"
+        max-request-count: 20
+        seconds: 60
+      # character
+      - path: "/character/getCharacter"
+        max-request-count: 60
+        seconds: 60
+      - path: "/character/getStaff"
+        max-request-count: 60
+        seconds: 60
+      # detail/comments
+      - path: "/detail/comments/saveComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/updateComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/deleteComment"
+        max-request-count: 10
+        seconds: 60
+      - path: "/detail/comments/getCommentList"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/comments/getStarRatingAverage"
+        max-request-count: 60
+        seconds: 60
+      # detail/information
+      - path: "/detail/information/getTvDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getMovieDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getComicsDetail"
+        max-request-count: 60
+        seconds: 60
+      - path: "/detail/information/getComicsCharacterList"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/information/getComicsStaffList"
+        max-request-count: 100
+        seconds: 60
+      # detail/recommendation
+      - path: "/detail/recommendation/getTvRecommendations"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/recommendation/getMovieRecommendations"
+        max-request-count: 100
+        seconds: 60
+      - path: "/detail/recommendation/getComicsRecommendations"
+        max-request-count: 100
+        seconds: 60
+      # home
+      - path: "/home/rankings"
+        max-request-count: 60
+        seconds: 60
+      # login
+      - path: "/login/getNaverLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/updateNaverLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getNaverUserInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/deleteNaverToken"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getKakaoLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/updateKakaoLoginInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/getKakaoUserInfo"
+        max-request-count: 10
+        seconds: 60
+      - path: "/login/deleteKakaoToken"
+        max-request-count: 10
+        seconds: 60
+      # my/comments
+      - path: "/my/comments/getMyCommentList"
+        max-request-count: 60
+        seconds: 60
+      # person
+      - path: "/person/getPersonDetails"
+        max-request-count: 60
+        seconds: 60
+      # serach
+      - path: "/search/searchKeyword"
+        max-request-count: 180
+        seconds: 60
+      - path: "/search/searchVideo"
+        max-request-count: 60
+        seconds: 60
+      - path: "/search/searchAni"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchTvExceptAni"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchMovie"
+        max-request-count: 100
+        seconds: 60
+      - path: "/search/searchComics"
+        max-request-count: 100
+        seconds: 60
+      # wishlist
+      - path: "/wishlist/saveWishlist"
+        max-request-count: 100
+        seconds: 60
+      - path: "/wishlist/deleteWishlist"
+        max-request-count: 60
+        seconds: 60
+      - path: "/wishlist/checkWishlist"
+        max-request-count: 100
+        seconds: 60
+      - path: "/wishlist/getWishlist"
+        max-request-count: 60
+        seconds: 60

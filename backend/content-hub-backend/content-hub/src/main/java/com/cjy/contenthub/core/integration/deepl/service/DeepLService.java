@@ -1,5 +1,8 @@
 package com.cjy.contenthub.core.integration.deepl.service;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,9 @@ public class DeepLService {
 	
 	/** DeepL API 번역 WebClient 클래스 */
 	private final DeepLApiClient deeplApiClient;
+	
+	/** 비동기 처리용 Executor */
+	private final Executor apiTaskExecutor;
 
 	/**
 	 * DeepL API를 사용하여 텍스트 번역
@@ -29,8 +35,9 @@ public class DeepLService {
 	 */
 	@Cacheable(value = CacheNames.TRANSLATE,
 	           unless = "!T(org.springframework.util.StringUtils).hasText(#result)")
-	public String translateText(String keyword, String targetLang, String sourceLang) {
-		return deeplApiClient.translateText(keyword, targetLang, sourceLang);
+	public CompletableFuture<String> translateText(String keyword, String targetLang, String sourceLang) {
+		return deeplApiClient.translateText(keyword, targetLang, sourceLang)
+				.toFuture().thenApplyAsync(response -> response, apiTaskExecutor);
 	}
 
 }

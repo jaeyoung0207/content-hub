@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.login.client.LoginClient;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.service.LoginService;
@@ -77,7 +79,7 @@ public class LoginController {
 	private static final String PARAM_USER_ID = "user_id";
 
 	/**
-	 * 네이버 로그인 정보 조회
+	 * 네이버 로그인 정보 조회 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @param code 인증 코드
@@ -92,25 +94,23 @@ public class LoginController {
 			@RequestParam(PARAM_STATE) @MaskingTarget String state) {
 
 		// 네이버 토큰 발행
-		NaverIssueTokenDto tokenResponse = loginService.getNaverIssueToken(code, state);
-
+		NaverIssueTokenDto tokenResponse = loginService.getNaverIssueToken(code, state).join();
 		// 토큰 발행 API 응답이 정상적인 경우
 		if (StringUtils.isEmpty(tokenResponse.getError())) {
 			// 네이버 프로필 조회 처리
-			return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
-
+			return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken())
+					.join();
 		} 
 		// 토큰 발행 API 응답에 에러가 있는 경우
 		else {
 			// 에러 코드와 설명을 추출하여 예외 처리
-			String errorCode = tokenResponse.getError();
-			Integer status =  errorCode.chars().allMatch(Character::isDigit) ? Integer.parseInt(errorCode) : HttpStatus.INTERNAL_SERVER_ERROR.value();
-			throw new ResponseStatusException(HttpStatus.valueOf(status), tokenResponse.getErrorDescription());
+			Integer httpErrorCode = NaverProfileErrorEnum.getNaverProfileError(tokenResponse.getError()).getHttpErrorCode();
+			throw new ResponseStatusException(HttpStatus.valueOf(httpErrorCode), tokenResponse.getErrorDescription());
 		}
 	}
 
 	/**
-	 * 네이버 로그인 정보 갱신
+	 * 네이버 로그인 정보 갱신 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @return ResponseEntity<LoginUserResponseDto>
@@ -131,14 +131,14 @@ public class LoginController {
 		}
 
 		// 네이버 토큰 갱신 서비스 호출
-		NaverIssueTokenDto tokenResponse = loginService.getNaverUpdateToken(refreshToken, deviceId);
+		NaverIssueTokenDto tokenResponse = loginService.getNaverUpdateToken(refreshToken, deviceId).join();
 
 		// 네이버 프로필 조회 처리
-		return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), null).block();
+		return loginClient.getNaverUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), null).join();
 	}
 
 	/**
-	 * 네이버 유저 정보 조회
+	 * 네이버 유저 정보 조회 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
@@ -154,11 +154,11 @@ public class LoginController {
 			) {
 
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getNaverUserInfo(request, accessToken, expiresIn, null).block();
+		return loginClient.getNaverUserInfo(request, accessToken, expiresIn, null).join();
 	}
 
 	/**
-	 * 네이버 토큰 삭제
+	 * 네이버 토큰 삭제 API
 	 * 
 	 * @param accessToken 액세스 토큰
 	 * @param targetId 대상 ID
@@ -166,7 +166,7 @@ public class LoginController {
 	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
 	@Operation(summary = "네이버 토큰 삭제")
-	@GetMapping("/deleteNaverToken")
+	@DeleteMapping("/deleteNaverToken")
 	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
 			HttpServletRequest request,
 			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
@@ -181,7 +181,7 @@ public class LoginController {
 		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
 		// 네이버 토큰 삭제 서비스 호출
-		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken, targetId, userId, refreshToken, deviceId);
+		NaverDeleteTokenDto tokenResponse = loginService.deleteNaverToken(accessToken, targetId, userId, refreshToken, deviceId).join();
 		
 		// 로그인 쿠키 삭제
 		LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();
@@ -193,7 +193,7 @@ public class LoginController {
 	}
 
 	/**
-	 * 카카오 로그인 정보 조회
+	 * 카카오 로그인 정보 조회 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @param clientId 클라이언트 ID
@@ -211,7 +211,7 @@ public class LoginController {
 			) {
 
 		// 카카오 토큰 발행		
-		KakaoIssueTokenDto tokenResponse = loginService.getKakaoIssueToken(clientId, redirectUri, code);
+		KakaoIssueTokenDto tokenResponse = loginService.getKakaoIssueToken(clientId, redirectUri, code).join();
 
 		// idToken 확인
 		String[] idTokenArray = tokenResponse.getIdToken().split("\\.");
@@ -221,11 +221,12 @@ public class LoginController {
 					HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_LOGIN_PAYLOAD_EMPTY.getMessageCode()));
 		}
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
+		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken())
+				.join();
 	}
 
 	/**
-	 * 카카오 로그인 정보 갱신
+	 * 카카오 로그인 정보 갱신 API
 	 * 
 	 * @param request  HttpServletRequest
 	 * @param clientId 클라이언트 ID
@@ -250,7 +251,7 @@ public class LoginController {
 		}
 
 		// 카카오 토큰 갱신 서비스 호출
-		KakaoIssueTokenDto tokenResponse = loginService.updateKakaoLoginInfo(clientId, refreshToken, deviceId);
+		KakaoIssueTokenDto tokenResponse = loginService.updateKakaoLoginInfo(clientId, refreshToken, deviceId).join();
 
 		// idToken 확인
 		String[] idTokenArray = tokenResponse.getIdToken().split("\\.");
@@ -259,11 +260,12 @@ public class LoginController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, messageUtil.getMessageKO(DomainMessagesErrorEnum.ERROR_LOGIN_PAYLOAD_EMPTY.getMessageCode()));
 		}
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken()).block();
+		return loginClient.getKakaoUserInfo(request, tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), tokenResponse.getRefreshToken())
+				.join();
 	}
 
 	/**
-	 * 카카오 유저 정보 조회
+	 * 카카오 유저 정보 조회 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
@@ -279,11 +281,11 @@ public class LoginController {
 			) {
 
 		// 유저 정보 가져오기 API 조회
-		return loginClient.getKakaoUserInfo(request, accessToken, expiresIn, null).block();
+		return loginClient.getKakaoUserInfo(request, accessToken, expiresIn, null).join();
 	}
 
 	/**
-	 * 카카오 토큰 삭제
+	 * 카카오 토큰 삭제 API
 	 * 
 	 * @param request HttpServletRequest
 	 * @param accessToken 액세스 토큰
@@ -292,7 +294,7 @@ public class LoginController {
 	 * @return ResponseEntity<KakaoUserInfoDto>
 	 */
 	@Operation(summary = "카카오 토큰 삭제")
-	@GetMapping("/deleteKakaoToken")
+	@DeleteMapping("/deleteKakaoToken")
 	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
@@ -307,7 +309,7 @@ public class LoginController {
 		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 
 		// 카카오 토큰 삭제 서비스 호출
-		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId, userId, refreshToken, deviceId);
+		KakaoUserInfoDto useInfo = loginService.deleteKakaoToken(accessToken, targetId, userId, refreshToken, deviceId).join();
 		
 		// 로그인 쿠키 삭제
 		LoginCookiesRecord cookiesInfo = cookieUtil.getLoginCookiesForDelete();

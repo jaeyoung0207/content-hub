@@ -1,5 +1,7 @@
 package com.cjy.contenthub.person.controller;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +49,10 @@ public class PersonController {
 	 */
 	@Operation(summary = "인물 상세 정보 조회")
 	@GetMapping("/getPersonDetails")
-	public ResponseEntity<PersonResponseDto> getPersonDetails(
+	public CompletableFuture<ResponseEntity<PersonResponseDto>> getPersonDetails(
 			@RequestParam(PARAM_PERSON_ID) int personId) {
-		return ResponseEntity.ok(personService.getPersonDetails(personId));
+		return personService.getPersonDetails(personId)
+				.thenApply(ResponseEntity::ok);
 	}
 
 }
