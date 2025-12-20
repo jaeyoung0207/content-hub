@@ -27,11 +27,11 @@ import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
+import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
 import com.cjy.contenthub.core.facade.ApiFacade;
-import com.cjy.contenthub.common.util.GraphqlUtil;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
 import com.cjy.contenthub.search.controller.dto.SearchMovieResponseDto;
@@ -64,7 +64,7 @@ public class SearchServiceImpl implements SearchService {
 	private final WebClient anilistWebClient;
 
 	/** 공통 API 유틸 클래스 */
-	private final ApiFacade apiUtil;
+	private final ApiFacade apiFacade;
 
 	/** 검색 헬퍼 클래스 */
 	private final SearchHelper helper;
@@ -110,8 +110,8 @@ public class SearchServiceImpl implements SearchService {
 	@Cacheable(value = CacheNames.SEARCH_KEYWORD, unless = "#result == null")
 	public List<String> searchKeyword(String keyword, boolean isAdult) {
 
-		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiFacade.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiFacade.getMovieGenres();
 
 		// TV 장르와 영화 장르를 병렬로 묶어서 처리
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(tuple -> {
@@ -167,8 +167,8 @@ public class SearchServiceImpl implements SearchService {
 	@Cacheable(value = CacheNames.SEARCH_VIDEO, unless = "#result == null")
 	public SearchVideoResponseDto searchVideo(String keyword, boolean isAdult) {
 
-		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiFacade.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiFacade.getMovieGenres();
 
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
 			Map<String, Integer> tvGenreMap = genreTuple.getT1();
@@ -314,8 +314,8 @@ public class SearchServiceImpl implements SearchService {
 
 		int currentPage = Optional.ofNullable(page).orElse(1);
 
-		Mono<Map<String, Integer>> tvGenreMapMono = apiUtil.getTvGenres();
-		Mono<Map<String, Integer>> movieGenreMapMono = apiUtil.getMovieGenres();
+		Mono<Map<String, Integer>> tvGenreMapMono = apiFacade.getTvGenres();
+		Mono<Map<String, Integer>> movieGenreMapMono = apiFacade.getMovieGenres();
 
 		return Mono.zip(tvGenreMapMono, movieGenreMapMono).flatMap(genreTuple -> {
 			Map<String, Integer> aniGenreMap = genreTuple.getT1();
@@ -392,7 +392,7 @@ public class SearchServiceImpl implements SearchService {
 	public SearchTvResponseDto searchTvExceptAni(String keyword, boolean isAdult, String contentMediaType, Integer page) {
 
 		// 드라마 장르 정보 조회
-		return apiUtil.getTvGenres().flatMap(tvGenreMap -> 
+		return apiFacade.getTvGenres().flatMap(tvGenreMap -> 
 		tmdbWebClient.get()
 		.uri(helper.getSearchUri(tvSearchPath, keyword, isAdult, Optional.ofNullable(page).orElse(1)))
 		.retrieve()
@@ -402,15 +402,29 @@ public class SearchServiceImpl implements SearchService {
 			List<SearchTvResultsDto> tvResultsList = mapper.tvResultsListToTmdbTvResultsList(response.getResults());
 
 			// 결과값 설정
-			SearchTvResponseDto dramaResponse = SearchTvResponseDto.builder()
-					.dramaResults(helper.getTvListOfMediaType(tvResultsList, tvGenreMap, contentMediaType))
+			var tvResponseBuilder = SearchTvResponseDto.builder()
 					.page(response.getPage())
 					.totalPages(response.getTotalPages())
-					.totalResults(response.getTotalResults())
-					.build();
+					.totalResults(response.getTotalResults());
+			// 컨텐츠 미디어 타입에 해당하는 TV 시리즈 리스트 필터링
+			List<SearchTvResultsDto> filteredList = helper.getTvListOfMediaType(tvResultsList, tvGenreMap, contentMediaType);
+			// 컨텐츠 미디어 타입에 따라 결과 설정
+			if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
+				tvResponseBuilder.dramaResults(filteredList);
+			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())) {
+				tvResponseBuilder.documentaryResults(filteredList);
+			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
+				tvResponseBuilder.kidsResults(filteredList);
+			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
+				tvResponseBuilder.newsResults(filteredList);
+			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
+				tvResponseBuilder.varietyResults(filteredList);
+			}
+			// 응답 오브젝트 생성
+			SearchTvResponseDto tvResponse = tvResponseBuilder.build();
 
 			// 응답 오브젝트 반환
-			return dramaResponse;
+			return tvResponse;
 		})).block();
 	}
 
@@ -427,7 +441,7 @@ public class SearchServiceImpl implements SearchService {
 	public SearchMovieResponseDto searchMovie(String keyword, boolean isAdult, Integer page) {
 
 		// 영화 장르 정보 조회
-		return apiUtil.getMovieGenres().flatMap(movieGenreMap -> 
+		return apiFacade.getMovieGenres().flatMap(movieGenreMap -> 
 		// 영화 정보 조회
 		tmdbWebClient.get()
 		.uri(helper.getSearchUri(movieSearchPath, keyword, isAdult, Optional.ofNullable(page).orElse(1)))
@@ -466,7 +480,7 @@ public class SearchServiceImpl implements SearchService {
 		int perPage = isMainPage ? anilistPerMainPage : anilistPerMorePage;
 
 		// 한글 검색어 -> 일본어로 번역후(DeepL API), AniList API 조회
-		return apiUtil.getTranslationText(keyword, DomainConstants.API_LANGUAGE_JAPANESE, DomainConstants.API_LANGUAGE_KOREAN).flatMap(jaKeyword -> {
+		return apiFacade.getTranslationText(keyword, DomainConstants.API_LANGUAGE_JAPANESE, DomainConstants.API_LANGUAGE_KOREAN).flatMap(jaKeyword -> {
 			try {
 				// graphql 쿼리 파일 불러오기
 				String query = GraphqlUtil.loadQuery("comicsList.graphql");
