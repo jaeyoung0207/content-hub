@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodyUriSpec;
@@ -57,8 +58,10 @@ import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.facade.ApiFacade;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -70,6 +73,9 @@ import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.search.helper.SearchHelper;
 import com.cjy.contenthub.search.mapper.SearchMapper;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,6 +98,12 @@ class SearchServiceImplTest {
 	@Mock
 	ApiFacade apiFacade;
 	
+	@Mock
+	MessageUtil messageUtil;
+	
+	private Logger logger = (Logger) LoggerFactory.getLogger(SearchServiceImpl.class); 
+    private ListAppender<ILoggingEvent> listAppender;
+	
 	static final String TV_SEARCH_PATH = "/3/search/tv";
 	
 	static final String MOVIE_SEARCH_PATH = "/3/search/movie";
@@ -100,12 +112,19 @@ class SearchServiceImplTest {
 	
 	@BeforeEach
 	void setUp() {
+		// ListAppender 생성
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        // Logger에 ListAppender 추가
+        logger.addAppender(listAppender);
+        // 서비스 클래스 생성
 		service = new SearchServiceImpl(
 				tmdbWebClient,
 				anilistWebClient,
 				apiFacade,
 				helper,
-				mapper
+				mapper,
+				messageUtil
 				);
 		ReflectionTestUtils.setField(service, "tvSearchPath", TV_SEARCH_PATH);
 		ReflectionTestUtils.setField(service, "movieSearchPath", MOVIE_SEARCH_PATH);
@@ -809,6 +828,15 @@ class SearchServiceImplTest {
 		tvResultsList.add(tvResult);
 		when(mapper.tvResultsListToTmdbTvResultsList(anyList())).thenReturn(tvResultsList);
 		when(helper.getTvListOfMediaType(anyList(), eq(tvGenreMap), eq(contentMediaType))).thenReturn(tvResultsList);
+		
+		// 결과 없음 케이스
+		Object[] params = {contentMediaType};
+		String errorMessage = String.format("잘못된 컨텐츠 미디어 타입입니다. (contentMediaType: %s)", params);
+		if (contentMediaType.equals("1101")) {			
+			when(messageUtil.getMessageKO(
+					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
+			.thenReturn(errorMessage);
+		}
 
 		// 서비스 메서드 호출
 		SearchTvResponseDto result = service.searchTvExceptAni(keyword, isAdult, contentMediaType, page);
@@ -829,9 +857,19 @@ class SearchServiceImplTest {
 			expectedResultBuild.newsResults(tvResultsList);
 		} else if (contentMediaType.equals("1106")) {
 			expectedResultBuild.varietyResults(tvResultsList);
+		} else {
+			// 로그 메시지 검증
+			List<ILoggingEvent> logsList = listAppender.list;
+			boolean logFound = logsList.stream()
+					.map(ILoggingEvent::getFormattedMessage)
+					.anyMatch(event -> event.contains(errorMessage));
+			assertThat(logFound).isTrue();
+			verify(messageUtil, times(1))
+					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
 		}
 		SearchTvResponseDto expectedResult = expectedResultBuild.build();
 		assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
+		
 		verify(apiFacade, times(1)).getTvGenres();
 		verify(tmdbWebClient, times(1)).get();
 		verify(helper, times(1)).getSearchUri(anyString(), anyString(), anyBoolean(), anyInt());

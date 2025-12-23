@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +24,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.slf4j.LoggerFactory;
 
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.shared.service.WishlistSharedService;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -32,6 +38,10 @@ import com.cjy.contenthub.search.controller.dto.SearchTvResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.wishlist.repository.WishlistRepository;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -44,12 +54,25 @@ class SearchNoCacheServiceImplTest {
 
 	@Mock
 	WishlistSharedService wishlistFlagSharedService;
+	
+	@Mock
+	MessageUtil messageUtil;
+	
+	private Logger logger = (Logger) LoggerFactory.getLogger(SearchNoCacheServiceImpl.class); 
+    private ListAppender<ILoggingEvent> listAppender;
 
 	@BeforeEach
 	void setUp() {
+		// ListAppender 생성
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        // Logger에 ListAppender 추가
+        logger.addAppender(listAppender);
+        // 서비스 인스턴스 생성
 		service = new SearchNoCacheServiceImpl(
 				wishlistRepository,
-				wishlistFlagSharedService
+				wishlistFlagSharedService,
+				messageUtil
 				);
 	}
 
@@ -214,7 +237,7 @@ class SearchNoCacheServiceImplTest {
 				any(), 
 				any(), 
 				eq(wishlistRepository));
-
+		
 		// 실제 메서드 호출
 		service.setWishlistFromVideoResponse(serchVideoResponse, userId);
 
@@ -273,6 +296,8 @@ class SearchNoCacheServiceImplTest {
 
 		List<SearchTvResultsDto> tvResults = new ArrayList<>();
 		List<String> contentMediaTypeList = new ArrayList<>();
+		Object[] params = {contentMediaType};
+		String errorMessage = String.format("잘못된 컨텐츠 미디어 타입입니다. (contentMediaType: %s)", params);
 		if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
 			tvResults = searchTvResponse.getDramaResults();
 			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
@@ -292,6 +317,11 @@ class SearchNoCacheServiceImplTest {
 				ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
 			tvResults = searchTvResponse.getVarietyResults();
 			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
+		} else {
+			// 결과 없음 케이스
+			when(messageUtil.getMessageKO(
+					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
+			.thenReturn(errorMessage);
 		}
 
 		// 드라마 위시리스트 설정 mock
@@ -307,7 +337,7 @@ class SearchNoCacheServiceImplTest {
 				any(), 
 				any(),
 				eq(wishlistRepository));
-
+		
 		// 실제 메서드 호출
 		service.setWishlistFromTvExceptAniResponse(searchTvResponse, userId, contentMediaType);
 
@@ -326,9 +356,39 @@ class SearchNoCacheServiceImplTest {
 		} else if (StringUtils.equals(contentMediaType,
 				ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
 			assertThat(searchTvResponse.getVarietyResults().getFirst().isWishlisted()).isTrue();
+		} else {
+			// 결과 없음 케이스
+			assertThat(tvResults).isEmpty();
+			// 로그 메시지 검증
+			List<ILoggingEvent> logsList = listAppender.list;
+			boolean logFound = logsList.stream()
+					.map(ILoggingEvent::getFormattedMessage)
+					.anyMatch(event -> event.contains(errorMessage));
+			assertThat(logFound).isTrue();
+			verify(messageUtil, times(1))
+					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
+			verify(wishlistFlagSharedService, times(0)).setWishlisted(
+					eq(tvResults), 
+					eq(contentMediaTypeList),
+					eq(userId), 
+					any(),
+					any(), 
+					eq(wishlistRepository));
+			return;
 		}
+		verify(wishlistFlagSharedService, times(1)).setWishlisted(
+				eq(tvResults), 
+				eq(contentMediaTypeList),
+				eq(userId), 
+				any(),
+				any(), 
+				eq(wishlistRepository));
 	}
 
+	/**
+	 * 애니 제외 TV 시리즈에 해당하는 contentMediaType 파라미터 제공
+	 * @return
+	 */
 	static Stream<Arguments> contentMediaTypeParams() {
 		Long userId = 1L;
 		SearchTvResponseDto searchTvResponse = new SearchTvResponseDto();
@@ -368,7 +428,7 @@ class SearchNoCacheServiceImplTest {
 				Arguments.of(searchTvResponse, userId, ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode()),
 				Arguments.of(searchTvResponse, userId, ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode()),
 				Arguments.of(searchTvResponse, userId, ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode()),
-				Arguments.of(new SearchTvResponseDto(), userId, ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode()) // 결과 없음 케이스
+				Arguments.of(new SearchTvResponseDto(), userId, "9999") // 결과 없음 케이스
 				);
 	}
 	

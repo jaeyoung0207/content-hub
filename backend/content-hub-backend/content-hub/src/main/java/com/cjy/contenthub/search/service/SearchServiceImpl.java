@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,9 +29,11 @@ import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchMultiResultsDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvDto;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchTvResultsDto;
 import com.cjy.contenthub.common.util.GraphqlUtil;
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.CacheNames;
 import com.cjy.contenthub.core.constants.DomainConstants;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.facade.ApiFacade;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -71,6 +74,9 @@ public class SearchServiceImpl implements SearchService {
 
 	/** 검색 매퍼 클래스 */
 	private final SearchMapper mapper;
+	
+	/** 메시지 유틸 클래스 */
+	private final MessageUtil messageUtil;
 
 	/** TMDB API TV시리즈 검색 API 패스 */
 	@Value("${tmdb.url.tv-search-path}")
@@ -99,6 +105,15 @@ public class SearchServiceImpl implements SearchService {
 	/** AniList API 전체보기화면 작품 표시 개수 */
 	@Value("${anilist.custom.per-more-page}")
 	private int anilistPerMorePage;
+	
+	/** TV 응답 맵 (미디어 타입별 결과 설정 함수 매핑) */
+	private static final Map<String, BiConsumer<SearchTvResponseDto.SearchTvResponseDtoBuilder<?, ?>, List<SearchTvResultsDto>>> TV_EXCEPT_ANI_RESPONSE_MAP = 
+			Map.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode(), SearchTvResponseDto.SearchTvResponseDtoBuilder::dramaResults,
+						ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode(), SearchTvResponseDto.SearchTvResponseDtoBuilder::documentaryResults,
+						ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode(), SearchTvResponseDto.SearchTvResponseDtoBuilder::kidsResults,
+						ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode(), SearchTvResponseDto.SearchTvResponseDtoBuilder::newsResults,
+						ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode(), SearchTvResponseDto.SearchTvResponseDtoBuilder::varietyResults
+						);
 
 	/**
 	 * 검색어 리스트 조회
@@ -377,7 +392,7 @@ public class SearchServiceImpl implements SearchService {
 			});
 		}).block();
 	}
-
+	
 	/**
 	 * TV 시리즈 검색 데이터 조회(애니 제외)
 	 * 
@@ -408,18 +423,14 @@ public class SearchServiceImpl implements SearchService {
 					.totalResults(response.getTotalResults());
 			// 컨텐츠 미디어 타입에 해당하는 TV 시리즈 리스트 필터링
 			List<SearchTvResultsDto> filteredList = helper.getTvListOfMediaType(tvResultsList, tvGenreMap, contentMediaType);
+			
 			// 컨텐츠 미디어 타입에 따라 결과 설정
-			if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
-				tvResponseBuilder.dramaResults(filteredList);
-			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())) {
-				tvResponseBuilder.documentaryResults(filteredList);
-			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
-				tvResponseBuilder.kidsResults(filteredList);
-			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
-				tvResponseBuilder.newsResults(filteredList);
-			} else if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
-				tvResponseBuilder.varietyResults(filteredList);
-			}
+			Optional.ofNullable(TV_EXCEPT_ANI_RESPONSE_MAP.get(contentMediaType))
+			.ifPresentOrElse(consumer -> 
+                consumer.accept(tvResponseBuilder, filteredList),
+                // 컨텐츠 미디어 타입이 잘못된 경우 경고 로그 출력
+                () -> log.warn(messageUtil.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), new Object[] {contentMediaType}))
+            );
 			// 응답 오브젝트 생성
 			SearchTvResponseDto tvResponse = tvResponseBuilder.build();
 

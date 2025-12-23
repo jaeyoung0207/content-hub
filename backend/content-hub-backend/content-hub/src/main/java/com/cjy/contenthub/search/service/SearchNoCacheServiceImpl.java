@@ -1,13 +1,17 @@
 package com.cjy.contenthub.search.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.DomainEnum.ContentMediaTypeEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesWarnEnum;
 import com.cjy.contenthub.core.shared.service.WishlistSharedService;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResponseDto;
 import com.cjy.contenthub.search.controller.dto.SearchComicsResultDto;
@@ -18,7 +22,9 @@ import com.cjy.contenthub.search.controller.dto.SearchTvResultsDto;
 import com.cjy.contenthub.search.controller.dto.SearchVideoResponseDto;
 import com.cjy.contenthub.wishlist.repository.WishlistRepository;
 
+import io.jsonwebtoken.lang.Arrays;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 검색 콘텐츠 서비스 구현 클래스 (캐시 미사용)
@@ -26,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
+@Slf4j
 public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 
 	/** 위시리스트 레포지토리 */
@@ -33,7 +40,35 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	
 	/** 위시리스트 플래그 공유 서비스 */
 	private final WishlistSharedService wishlistFlagSharedService;
+	
+	/** 메시지 유틸 클래스 */
+	private final MessageUtil messageUtil;
+	
+	/** 비디오 컨텐츠 미디어 타입 리스트 */
+	private static final List<String> VIDEO_CONTENT_MEDIA_TYPE_LIST = Arrays.asList(ContentMediaTypeEnum.values()).stream()
+			.filter(cm -> !StringUtils.equalsAny(cm.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.ANILIST_MEDIA_TYPE_ANIME.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.ANILIST_MEDIA_TYPE_MANGA.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.MEDIA_TYPE_PERSON.getContentMediaTypeCode(),
+					ContentMediaTypeEnum.MEDIA_TYPE_COMICS.getContentMediaTypeCode())
+					)
+            .map(ContentMediaTypeEnum::getContentMediaTypeCode)
+            .toList();
 
+	/** TV 응답 맵 (미디어 타입별 결과 추출 함수 매핑) */
+	private static final Map<String, Function<SearchTvResponseDto, List<SearchTvResultsDto>>> TV_RESPOSE_MAP =
+			Map.of(
+					ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode(), SearchTvResponseDto::getAniResults,
+					ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode(), SearchTvResponseDto::getDramaResults,
+					ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode(), SearchTvResponseDto::getDocumentaryResults,
+					ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode(), SearchTvResponseDto::getKidsResults,
+					ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode(), SearchTvResponseDto::getNewsResults,
+					ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode(), SearchTvResponseDto::getVarietyResults
+					);
+	
 	/**
 	 * 검색 결과에 위시리스트 여부 설정
 	 * 
@@ -44,19 +79,9 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	public void setWishlistFromVideoResponse(SearchVideoResponseDto serchVideoResponse, Long userId) {
 		
 		// 모든 컨텐츠 미디어 타입에 대해 처리
-		for (ContentMediaTypeEnum contentMediaTypeEnum : ContentMediaTypeEnum.values()) {
-			// TMDB 및 AniList 미디어 타입은 스킵
-			if (StringUtils.equalsAny(contentMediaTypeEnum.getContentMediaTypeCode(), 
-					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_TV.getContentMediaTypeCode(),
-					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_MOVIE.getContentMediaTypeCode(),
-					ContentMediaTypeEnum.TMDB_MEDIA_TYPE_PERSON.getContentMediaTypeCode(),
-					ContentMediaTypeEnum.ANILIST_MEDIA_TYPE_ANIME.getContentMediaTypeCode(),
-					ContentMediaTypeEnum.ANILIST_MEDIA_TYPE_MANGA.getContentMediaTypeCode()
-					)) {
-				continue;
-			}
+		for (String contentMediaTypeCode : VIDEO_CONTENT_MEDIA_TYPE_LIST) {
 			// 미디어 타입이 영화인 경우
-			if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
+			if (StringUtils.equals(contentMediaTypeCode,
 					ContentMediaTypeEnum.MEDIA_TYPE_MOVIE.getContentMediaTypeCode())) {
 				// 각 미디어 타입별로 위시리스트 여부 설정
 				wishlistFlagSharedService.setWishlisted(
@@ -69,40 +94,34 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 			} 
 			// 그 외 TV 미디어 타입인 경우
 			else {
-				// 미디어 타입별 설정
-				List<SearchTvResultsDto> tvResults = new ArrayList<>();
-				List<String> contentMediaTypeList = new ArrayList<>();
-				if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
+				// TV 검색 결과에서 미디어 타입별 결과 추출
+				List<String> contentMediaTypeList;
+				Function<SearchTvResponseDto, List<SearchTvResultsDto>> tvResultsFunction = TV_RESPOSE_MAP.get(contentMediaTypeCode);
+				// 해당 미디어 타입에 대한 결과 추출 함수가 없는 경우
+				if (tvResultsFunction == null) {
+					// 경고 로그 출력 후 종료
+					Object[] params = {contentMediaTypeCode};
+					log.warn(messageUtil.getMessageKO(
+							DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
+					return;
+				}
+				// 미디어 타입별 TV 결과 추출
+				List<SearchTvResultsDto> tvResults = tvResultsFunction.apply(serchVideoResponse);
+				// 애니인 경우 모든 애니 컨텐츠 미디어 타입 리스트 생성
+				if (StringUtils.equals(contentMediaTypeCode,
 						ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getAniResults();
-					// 애니 컨텐츠 미디어 타입 리스트 생성
 					contentMediaTypeList = serchVideoResponse.getAniResults().stream()
 							.map(dto -> dto.getContentMediaType())
 							.distinct()
 							.toList();
-				} else if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
-						ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getDramaResults();
-					contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
-				} else if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
-						ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getDocumentaryResults();
-					contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode());
-				} else if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
-						ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getKidsResults();
-					contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode());
-				} else if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
-						ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getNewsResults();
-					contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode());
-				} else if (StringUtils.equals(contentMediaTypeEnum.getContentMediaTypeCode(),
-						ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
-					tvResults = serchVideoResponse.getVarietyResults();
-					contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
+				} 
+				// 그 외 미디어 타입인 경우 단일 컨텐츠 미디어 타입 리스트 생성
+				else {
+					contentMediaTypeList = List.of(contentMediaTypeCode);
 				}
+
 				// 결과가 존재하는 경우
-				if (!tvResults.isEmpty()) {
+				if (!CollectionUtils.isEmpty(tvResults)) {
 					// 위시리스트 여부 설정
 					wishlistFlagSharedService.setWishlisted(
 							tvResults, 
@@ -140,7 +159,7 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 				SearchTvResultsDto::setWishlisted,
 				wishlistRepository);
 	}
-
+	
 	/**
 	 * TV 검색 결과에 위시리스트 여부 설정 (애니 제외)
 	 * 
@@ -151,31 +170,22 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 	@Override
 	public void setWishlistFromTvExceptAniResponse(SearchTvResponseDto searchTvResponse, Long userId, String contentMediaType) {
 		
-		// 미디어 타입별 설정
-		List<SearchTvResultsDto> tvResults = new ArrayList<>();
-		List<String> contentMediaTypeList = new ArrayList<>();
-		if (StringUtils.equals(contentMediaType, ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode())) {
-			tvResults = searchTvResponse.getDramaResults();
-			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode());
-		} else if (StringUtils.equals(contentMediaType,
-				ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode())) {
-			tvResults = searchTvResponse.getDocumentaryResults();
-			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode());
-		} else if (StringUtils.equals(contentMediaType,
-				ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode())) {
-			tvResults = searchTvResponse.getKidsResults();
-			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode());
-		} else if (StringUtils.equals(contentMediaType,
-				ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode())) {
-			tvResults = searchTvResponse.getNewsResults();
-			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode());
-		} else if (StringUtils.equals(contentMediaType,
-				ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode())) {
-			tvResults = searchTvResponse.getVarietyResults();
-			contentMediaTypeList = List.of(ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode());
+		// TV 검색 결과에서 미디어 타입별 결과 추출
+		Function<SearchTvResponseDto, List<SearchTvResultsDto>> tvResultsFunction = 
+				TV_RESPOSE_MAP.get(contentMediaType);
+		// 해당 미디어 타입에 대한 결과 추출 함수가 없는 경우
+		if (tvResultsFunction == null) {
+			// 경고 로그 출력 후 종료
+			Object[] params = {contentMediaType};
+			log.warn(messageUtil.getMessageKO(
+					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
+			return;
 		}
+		// 미디어 타입별 TV 결과 추출
+		List<SearchTvResultsDto> tvResults = tvResultsFunction.apply(searchTvResponse);
+		List<String> contentMediaTypeList = List.of(contentMediaType);
 		// 결과가 존재하는 경우
-		if (!tvResults.isEmpty()) {
+		if (!CollectionUtils.isEmpty(tvResults)) {
 			// 위시리스트 여부 설정		
 			wishlistFlagSharedService.setWishlisted(
 					tvResults, 

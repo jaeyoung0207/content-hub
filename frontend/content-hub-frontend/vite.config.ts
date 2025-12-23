@@ -8,7 +8,7 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const isProduction = mode === 'production';
-  const enableSentry = env.VITE_SENTRY_ENABLE === 'true' && isProduction; 
+  const enableSentry = env.VITE_SENTRY_ENABLE === 'true' && isProduction;
   return {
     base: '/', // 배포 기본 경로
     plugins: [

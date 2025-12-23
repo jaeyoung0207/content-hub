@@ -26,6 +26,7 @@ import {
   getDisplayMediaType,
   mappingToMediaType,
 } from '@/components/common/utils/convertUtil';
+import { SearchTvResultsDto } from '@/api/data-contracts';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -134,20 +135,19 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       // 미디어 타입에 따라 다른 결과 반환
-      switch (contentMediaType) {
-        case getContentMediaType().dramaCode:
-          return response.data.dramaResults;
-        case getContentMediaType().documentaryCode:
-          return response.data.documentaryResults;
-        case getContentMediaType().kidsCode:
-          return response.data.kidsResults;
-        case getContentMediaType().newsCode:
-          return response.data.newsResults;
-        case getContentMediaType().varietyCode:
-          return response.data.varietyResults;
-        default:
-          return null;
-      }
+      const contentMediaTypeRecord: Partial<
+        Record<string, keyof typeof response.data>
+      > = {
+        [getContentMediaType().dramaCode]: 'dramaResults',
+        [getContentMediaType().documentaryCode]: 'documentaryResults',
+        [getContentMediaType().kidsCode]: 'kidsResults',
+        [getContentMediaType().newsCode]: 'newsResults',
+        [getContentMediaType().varietyCode]: 'varietyResults',
+      };
+      const resultKey = contentMediaTypeRecord[contentMediaType];
+      return resultKey
+        ? (response.data[resultKey] as SearchTvResultsDto[])
+        : [];
     }
     // 영화의 경우
     else if (displayMediaType == getDisplayMediaType().movieCode) {
