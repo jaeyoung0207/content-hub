@@ -13,7 +13,6 @@ on:
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
-    environment: ci
     defaults:
       run:
         working-directory: backend/content-hub-backend/content-hub
@@ -50,14 +49,33 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      # Docker Compose로 Redis 서비스 기동
+      - name: Start services (Redis) via Docker Compose
+        run: docker compose -f ../../../docker-compose.dev.yml up -d redis --wait
+
       # 권한 부여
       - name: Grant execute permission
         run: chmod +x gradlew
         
       # 빌드 (테스트 포함 및 커버리지 레포트 생성)
       - name: Build and Generate Coverage Report
-        run: ./gradlew clean build jacocoTestReport --scan
-
+        run: ./gradlew clean build jacocoTestReport -Dspring.profiles.active=test
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
       # SonarQube
       - name: SonarQube Analysis
         run: ./gradlew sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} --info
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}

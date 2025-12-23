@@ -5,6 +5,7 @@ import java.util.List;
 import com.cjy.contenthub.common.integration.tmdb.dto.TmdbSearchCommonResultsDto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -13,6 +14,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @SuperBuilder
 public class SearchComicsResultDto extends TmdbSearchCommonResultsDto {
 

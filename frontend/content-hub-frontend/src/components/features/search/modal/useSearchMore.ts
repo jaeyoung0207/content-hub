@@ -22,9 +22,11 @@ import { searchQueryKeys } from '../queryKeys/searchQueryKeys';
 import { throttle } from 'lodash-es';
 import { useUserStore } from '@/components/common/store/globalStateStore';
 import {
+  getContentMediaType,
   getDisplayMediaType,
   mappingToMediaType,
 } from '@/components/common/utils/convertUtil';
+import { SearchTvResultsDto } from '@/api/data-contracts';
 
 /**
  * 전체보기 모달화면 훅 결과 타입
@@ -86,11 +88,16 @@ export const useSearchMore = (
   // 검색 API 인스턴스 생성
   const searchApi = new SearchApi();
 
-  // 전체보기 검색결과를 가져오기 위한 API 호출 함수
+  /**
+   * 미디어 타입에 따라 적절한 검색 API를 호출하는 함수
+   * @param pageParam
+   * @returns
+   */
   const judgeExecApi = async (pageParam: number) => {
+    // 애니메이션의 경우
     if (displayMediaType == getDisplayMediaType().aniCode) {
       // 애니메이션 검색 API 호출
-      const response = await await searchApi.searchAni(
+      const response = await searchApi.searchAni(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
         {}
       );
@@ -99,20 +106,22 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.aniResults;
-    } else if (
+    }
+    // 애니 이외 TV 시리즈의 경우
+    else if (
       displayMediaType == getDisplayMediaType().dramaCode ||
-      displayMediaType == getDisplayMediaType().varietyCode ||
       displayMediaType == getDisplayMediaType().documentaryCode ||
       displayMediaType == getDisplayMediaType().kidsCode ||
-      displayMediaType == getDisplayMediaType().newsCode
+      displayMediaType == getDisplayMediaType().newsCode ||
+      displayMediaType == getDisplayMediaType().varietyCode
     ) {
       // 컨텐츠 미디어 타입 코드 가져오기
       const contentMediaType = mappingToMediaType(
         displayMediaType,
         MEDIA_TYPE_KIND.CONTENT_MEDIA_TYPE
       )!;
-      // 드라마 검색 API 호출
-      const response = await await searchApi.searchTvExceptAni(
+      // 애니 이외 TV 시리즈 검색 API 호출
+      const response = await searchApi.searchTvExceptAni(
         {
           keyword: keyword,
           content_media_type: contentMediaType,
@@ -125,10 +134,25 @@ export const useSearchMore = (
       if (response.data.page === 1) {
         totalPagesRef.current = response.data.totalPages;
       }
-      return response.data.dramaResults;
-    } else if (displayMediaType == getDisplayMediaType().movieCode) {
+      // 미디어 타입에 따라 다른 결과 반환
+      const contentMediaTypeRecord: Partial<
+        Record<string, keyof typeof response.data>
+      > = {
+        [getContentMediaType().dramaCode]: 'dramaResults',
+        [getContentMediaType().documentaryCode]: 'documentaryResults',
+        [getContentMediaType().kidsCode]: 'kidsResults',
+        [getContentMediaType().newsCode]: 'newsResults',
+        [getContentMediaType().varietyCode]: 'varietyResults',
+      };
+      const resultKey = contentMediaTypeRecord[contentMediaType];
+      return resultKey
+        ? (response.data[resultKey] as SearchTvResultsDto[])
+        : [];
+    }
+    // 영화의 경우
+    else if (displayMediaType == getDisplayMediaType().movieCode) {
       // 영화 검색 API 호출
-      const response = await await searchApi.searchMovie(
+      const response = await searchApi.searchMovie(
         { keyword: keyword, page: pageParam, user_id: user?.userId },
         {}
       );
@@ -137,9 +161,11 @@ export const useSearchMore = (
         totalPagesRef.current = response.data.totalPages;
       }
       return response.data.movieResults;
-    } else if (displayMediaType == getDisplayMediaType().comicsCode) {
+    }
+    // 만화의 경우
+    else if (displayMediaType == getDisplayMediaType().comicsCode) {
       // 만화 검색 API 호출
-      const response = await await searchApi.searchComics(
+      const response = await searchApi.searchComics(
         {
           keyword: keyword,
           page: pageParam,
@@ -262,12 +288,6 @@ export const useSearchMore = (
     // observeTarget이 null이거나 hasNextPage가 false이거나 isFetchingNextPage가 true인 경우에는 관찰을 중지
     if (!observeTarget || !hasNextPage || isFetchingNextPage) {
       return;
-    }
-
-    // 기존 옵저버 정리 후 새로 생성
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
     }
 
     // 새로운 IntersectionObserver를 생성

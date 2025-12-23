@@ -66,6 +66,7 @@ replay_pid*
 /backend/**/.env.prod
 /backend/**/.env.dev
 /backend/**/.env.staging
+/backend/**/application-secret.yml
 
 # 예외 설정: gradlew Wrapper jar 파일은 포함
 !/backend/**/gradle/wrapper/gradle-wrapper.jar 

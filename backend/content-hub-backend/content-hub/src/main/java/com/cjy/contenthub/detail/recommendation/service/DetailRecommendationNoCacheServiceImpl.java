@@ -43,7 +43,11 @@ public class DetailRecommendationNoCacheServiceImpl implements DetailRecommendat
 		// 컨텐츠 미디어 타입 리스트 생성
 		List<String> contentMediaTypeList = List.of(
 				ContentMediaTypeEnum.MEDIA_TYPE_ANI.getContentMediaTypeCode(),
-				ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode()
+				ContentMediaTypeEnum.MEDIA_TYPE_DRAMA.getContentMediaTypeCode(),
+				ContentMediaTypeEnum.MEDIA_TYPE_DOCUMENTARY.getContentMediaTypeCode(),
+				ContentMediaTypeEnum.MEDIA_TYPE_KIDS.getContentMediaTypeCode(),
+				ContentMediaTypeEnum.MEDIA_TYPE_NEWS.getContentMediaTypeCode(),
+				ContentMediaTypeEnum.MEDIA_TYPE_VARIETY.getContentMediaTypeCode()
 				);
 
 		// 위시리스트 여부 설정

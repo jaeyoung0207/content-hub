@@ -2,6 +2,8 @@ package com.cjy.contenthub.home.service.dto;
 
 import java.math.BigDecimal;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +13,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 	public class HomeRankingServiceDto {
 	
 	/** 콘텐츠 ID */

@@ -25,7 +25,7 @@ public interface HomeMapper {
 	 * @param entity 콘텐츠 뷰 엔티티
 	 */
 	@Named("entityToService")
-	@Mapping(target = "wishlisted", ignore = true)
+	@Mapping(target = "isWishlisted", ignore = true)
 	HomeRankingServiceDto entityToService(HomeRankingViewEntity entity);
 	
 	/**
