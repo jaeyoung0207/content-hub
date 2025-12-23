@@ -493,7 +493,7 @@ public class DomainEnum {
 		/** 인물 - 인물 정보 없음 */
 		WARN_PERSON_PERSON_NOT_FOUND("warn.person.personNotFound"),
 		/** 검색 - 잘못된 컨텐츠 미디어 타입 */
-		WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE("warn.search.wrongContentMediaType"),
+		WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE("warn.search.wrongContentMediaType"),
 		/** 위시리스트 - 위시리스트 없음 */
 		WARN_WISHLIST_WISHLIST_NOT_FOUND("warn.wishlist.wishlistNotFound"),
 		/** 위시리스트 - 이미 존재하는 위시리스트 */

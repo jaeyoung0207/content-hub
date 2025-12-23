@@ -102,7 +102,7 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 					// 경고 로그 출력 후 종료
 					Object[] params = {contentMediaTypeCode};
 					log.warn(messageUtil.getMessageKO(
-							DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
+							DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
 					return;
 				}
 				// 미디어 타입별 TV 결과 추출
@@ -178,7 +178,7 @@ public class SearchNoCacheServiceImpl implements SearchNoCacheService {
 			// 경고 로그 출력 후 종료
 			Object[] params = {contentMediaType};
 			log.warn(messageUtil.getMessageKO(
-					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
+					DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params));
 			return;
 		}
 		// 미디어 타입별 TV 결과 추출

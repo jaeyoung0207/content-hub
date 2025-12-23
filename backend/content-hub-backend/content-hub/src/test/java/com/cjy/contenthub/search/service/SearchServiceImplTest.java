@@ -834,7 +834,7 @@ class SearchServiceImplTest {
 		String errorMessage = String.format("잘못된 컨텐츠 미디어 타입입니다. (contentMediaType: %s)", params);
 		if (contentMediaType.equals("1101")) {			
 			when(messageUtil.getMessageKO(
-					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
+					DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
 			.thenReturn(errorMessage);
 		}
 
@@ -865,7 +865,7 @@ class SearchServiceImplTest {
 					.anyMatch(event -> event.contains(errorMessage));
 			assertThat(logFound).isTrue();
 			verify(messageUtil, times(1))
-					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
+					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
 		}
 		SearchTvResponseDto expectedResult = expectedResultBuild.build();
 		assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);

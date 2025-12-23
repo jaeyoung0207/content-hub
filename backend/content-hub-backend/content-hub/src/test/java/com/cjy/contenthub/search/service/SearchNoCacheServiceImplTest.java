@@ -320,7 +320,7 @@ class SearchNoCacheServiceImplTest {
 		} else {
 			// 결과 없음 케이스
 			when(messageUtil.getMessageKO(
-					DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
+					DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params))
 			.thenReturn(errorMessage);
 		}
 
@@ -366,7 +366,7 @@ class SearchNoCacheServiceImplTest {
 					.anyMatch(event -> event.contains(errorMessage));
 			assertThat(logFound).isTrue();
 			verify(messageUtil, times(1))
-					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRANG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
+					.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), params);
 			verify(wishlistFlagSharedService, times(0)).setWishlisted(
 					eq(tvResults), 
 					eq(contentMediaTypeList),
