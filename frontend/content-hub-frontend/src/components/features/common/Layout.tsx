@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Header } from '@components/features/header/Header';
 import { Suspense } from 'react';
 import { LoadingUi } from '@/components/ui/common/LoadingUi';
+import { useLoginDoneStore } from '@/components/common/store/globalStateStore';
 
 /**
  * 레이아웃 컴포넌트
@@ -11,12 +12,15 @@ import { LoadingUi } from '@/components/ui/common/LoadingUi';
  * 이 레이아웃은 모든 페이지에서 공통적으로 사용되며, 페이지 간 일관된 디자인을 유지하도록 해 줌
  */
 export const Layout = () => {
+  // 로그인 완료 상태관리 훅
+  const { isLoginDone } = useLoginDoneStore();
+
   return (
     <>
       <Header />
       <main>
         <Suspense fallback={<LoadingUi />}>
-          <Outlet />
+          {isLoginDone ? <Outlet /> : <LoadingUi />}
         </Suspense>
       </main>
     </>

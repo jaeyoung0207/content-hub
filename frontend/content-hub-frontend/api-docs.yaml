@@ -16,10 +16,10 @@ tags:
     description: Detail Information APIs
   - name: character-api
     description: Character APIs
-  - name: detail-recommendation-api
-    description: Detail Recommendation APIs
   - name: login-api
     description: Login APIs
+  - name: detail-recommendation-api
+    description: Detail Recommendation APIs
   - name: person-api
     description: Person APIs
   - name: search-api
@@ -521,66 +521,6 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/LoginUserResponseDto'
-  /api/login/deleteNaverToken:
-    get:
-      tags:
-        - login-api
-      summary: 네이버 토큰 삭제
-      operationId: deleteNaverToken
-      parameters:
-        - name: access_token
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: target_id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/NaverDeleteTokenDto'
-  /api/login/deleteKakaoToken:
-    get:
-      tags:
-        - login-api
-      summary: 카카오 토큰 삭제
-      operationId: deleteKakaoToken
-      parameters:
-        - name: access_token
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: target_id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/KakaoUserInfoDto'
   /api/home/rankings:
     get:
       tags:
@@ -1005,6 +945,66 @@ paths:
             '*/*':
               schema:
                 type: boolean
+  /api/login/deleteNaverToken:
+    delete:
+      tags:
+        - login-api
+      summary: 네이버 토큰 삭제
+      operationId: deleteNaverToken
+      parameters:
+        - name: access_token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: target_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/NaverDeleteTokenDto'
+  /api/login/deleteKakaoToken:
+    delete:
+      tags:
+        - login-api
+      summary: 카카오 토큰 삭제
+      operationId: deleteKakaoToken
+      parameters:
+        - name: access_token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: target_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/KakaoUserInfoDto'
   /api/detail/comments/deleteComment:
     delete:
       tags:
@@ -1694,114 +1694,6 @@ components:
           format: int32
         expireDate:
           type: string
-    NaverDeleteTokenDto:
-      type: object
-      properties:
-        accessToken:
-          type: string
-        result:
-          type: string
-        expiresIn:
-          type: integer
-          format: int32
-        error:
-          type: string
-        errorDescription:
-          type: string
-    KakaoAccountDto:
-      type: object
-      properties:
-        profileNeedsAgreement:
-          type: boolean
-        profileNicknameNeedsAgreement:
-          type: boolean
-        profileImageNeedsAgreement:
-          type: boolean
-        profile:
-          $ref: '#/components/schemas/KakaoProfileDto'
-        nameNeedsAgreement:
-          type: boolean
-        name:
-          type: string
-        emailNeedsAgreement:
-          type: boolean
-        email:
-          type: string
-        ageRangeNeedsAgreement:
-          type: boolean
-        ageRange:
-          type: string
-        birthyearNeedsAgreement:
-          type: boolean
-        birthyear:
-          type: string
-        birthdayNeedsAgreement:
-          type: boolean
-        birthday:
-          type: string
-        birthdayType:
-          type: string
-        genderNeedsAgreement:
-          type: boolean
-        gender:
-          type: string
-        phoneNumberNeedsAgreement:
-          type: boolean
-        phoneNumber:
-          type: string
-        ciNeedsAgreement:
-          type: boolean
-        ci:
-          type: string
-        ciAuthenticatedAt:
-          type: string
-          format: date-time
-        leapMonth:
-          type: boolean
-        emailVerified:
-          type: boolean
-        emailValid:
-          type: boolean
-    KakaoPartnerDto:
-      type: object
-      properties:
-        uuid:
-          type: string
-    KakaoProfileDto:
-      type: object
-      properties:
-        nickname:
-          type: string
-        thumbnailImageUrl:
-          type: string
-        profileImageUrl:
-          type: string
-        defaultImage:
-          type: boolean
-        defaultNickname:
-          type: boolean
-    KakaoUserInfoDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        hasSignedUp:
-          type: boolean
-        connectedAt:
-          type: string
-          format: date-time
-        synchedAt:
-          type: string
-          format: date-time
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-        kakaoAccount:
-          $ref: '#/components/schemas/KakaoAccountDto'
-        forPartner:
-          $ref: '#/components/schemas/KakaoPartnerDto'
     HomeRankingListResponseDto:
       type: object
       properties:
@@ -2467,9 +2359,9 @@ components:
           format: int32
         siteUrl:
           type: string
-        favouriteBlocked:
-          type: boolean
         favourite:
+          type: boolean
+        favouriteBlocked:
           type: boolean
     DetailComicsResponseDto:
       type: object
@@ -2640,9 +2532,117 @@ components:
     CsrfToken:
       type: object
       properties:
+        token:
+          type: string
         parameterName:
           type: string
         headerName:
           type: string
-        token:
+    NaverDeleteTokenDto:
+      type: object
+      properties:
+        accessToken:
           type: string
+        result:
+          type: string
+        expiresIn:
+          type: integer
+          format: int32
+        error:
+          type: string
+        errorDescription:
+          type: string
+    KakaoAccountDto:
+      type: object
+      properties:
+        profileNeedsAgreement:
+          type: boolean
+        profileNicknameNeedsAgreement:
+          type: boolean
+        profileImageNeedsAgreement:
+          type: boolean
+        profile:
+          $ref: '#/components/schemas/KakaoProfileDto'
+        nameNeedsAgreement:
+          type: boolean
+        name:
+          type: string
+        emailNeedsAgreement:
+          type: boolean
+        email:
+          type: string
+        ageRangeNeedsAgreement:
+          type: boolean
+        ageRange:
+          type: string
+        birthyearNeedsAgreement:
+          type: boolean
+        birthyear:
+          type: string
+        birthdayNeedsAgreement:
+          type: boolean
+        birthday:
+          type: string
+        birthdayType:
+          type: string
+        genderNeedsAgreement:
+          type: boolean
+        gender:
+          type: string
+        phoneNumberNeedsAgreement:
+          type: boolean
+        phoneNumber:
+          type: string
+        ciNeedsAgreement:
+          type: boolean
+        ci:
+          type: string
+        ciAuthenticatedAt:
+          type: string
+          format: date-time
+        emailVerified:
+          type: boolean
+        emailValid:
+          type: boolean
+        leapMonth:
+          type: boolean
+    KakaoPartnerDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+    KakaoProfileDto:
+      type: object
+      properties:
+        nickname:
+          type: string
+        thumbnailImageUrl:
+          type: string
+        profileImageUrl:
+          type: string
+        defaultImage:
+          type: boolean
+        defaultNickname:
+          type: boolean
+    KakaoUserInfoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        hasSignedUp:
+          type: boolean
+        connectedAt:
+          type: string
+          format: date-time
+        synchedAt:
+          type: string
+          format: date-time
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        kakaoAccount:
+          $ref: '#/components/schemas/KakaoAccountDto'
+        forPartner:
+          $ref: '#/components/schemas/KakaoPartnerDto'

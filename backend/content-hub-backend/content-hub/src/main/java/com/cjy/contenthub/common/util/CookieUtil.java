@@ -69,14 +69,14 @@ public class CookieUtil {
 				.secure(loginCookieProperties.isSecure())
 				.sameSite(loginCookieProperties.getSameSite())
 				.path(loginCookieProperties.getPath())
-				.maxAge(expiresIn);
+				.maxAge(CommonConstants.SECONDS_IN_A_DAY * expiresIn);
 		// provider 쿠키
 		ResponseCookieBuilder providerCookieBuilder = ResponseCookie.from(CommonConstants.PROVIDER, provider)
 				.httpOnly(loginCookieProperties.isHttpOnly())
 				.secure(loginCookieProperties.isSecure())
 				.sameSite(loginCookieProperties.getSameSite())
 				.path(loginCookieProperties.getPath())
-				.maxAge(expiresIn);
+				.maxAge(CommonConstants.SECONDS_IN_A_DAY * expiresIn);
 		// 도메인 설정
 		if (StringUtils.isNotEmpty(loginCookieProperties.getDomain())) {
 			refreshTokenCookieBuilder.domain(loginCookieProperties.getDomain());
@@ -159,7 +159,7 @@ public class CookieUtil {
 				.secure(loginCookieProperties.isSecure())
 				.sameSite(loginCookieProperties.getSameSite())
 				.path("/")
-				.maxAge(60L * 60L * 24L * 365L) // 1년
+				.maxAge(CommonConstants.SECONDS_IN_A_DAY * 365L) // 1년
 				.build();
 		// 디바이스 ID 쿠키 설정
 		response.setHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());

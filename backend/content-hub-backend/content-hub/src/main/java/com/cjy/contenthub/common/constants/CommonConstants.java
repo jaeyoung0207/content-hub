@@ -57,4 +57,7 @@ public class CommonConstants {
 	/** 60초 */
 	public static final int SIXTY_SECONDS = 60;
 	
+	/** 1일(초) */
+	public static final long SECONDS_IN_A_DAY = 60L * 60L * 24L;
+	
 }

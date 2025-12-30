@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ import com.cjy.contenthub.common.util.CookieUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
+import com.cjy.contenthub.core.constants.DomainEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.login.client.LoginClient;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
 import com.cjy.contenthub.login.service.LoginService;
@@ -103,9 +105,8 @@ public class LoginController {
 		// 토큰 발행 API 응답에 에러가 있는 경우
 		else {
 			// 에러 코드와 설명을 추출하여 예외 처리
-			String errorCode = tokenResponse.getError();
-			Integer status =  errorCode.chars().allMatch(Character::isDigit) ? Integer.parseInt(errorCode) : HttpStatus.INTERNAL_SERVER_ERROR.value();
-			throw new ResponseStatusException(HttpStatus.valueOf(status), tokenResponse.getErrorDescription());
+			Integer httpErrorCode = NaverProfileErrorEnum.getNaverProfileError(tokenResponse.getError()).getHttpErrorCode();
+			throw new ResponseStatusException(HttpStatus.valueOf(httpErrorCode), tokenResponse.getErrorDescription());
 		}
 	}
 
@@ -166,7 +167,7 @@ public class LoginController {
 	 * @return ResponseEntity<NaverDeleteTokenDto>
 	 */
 	@Operation(summary = "네이버 토큰 삭제")
-	@GetMapping("/deleteNaverToken")
+	@DeleteMapping("/deleteNaverToken")
 	public ResponseEntity<NaverDeleteTokenDto> deleteNaverToken(
 			HttpServletRequest request,
 			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,
@@ -292,7 +293,7 @@ public class LoginController {
 	 * @return ResponseEntity<KakaoUserInfoDto>
 	 */
 	@Operation(summary = "카카오 토큰 삭제")
-	@GetMapping("/deleteKakaoToken")
+	@DeleteMapping("/deleteKakaoToken")
 	public ResponseEntity<KakaoUserInfoDto> deleteKakaoToken(
 			HttpServletRequest request, 
 			@RequestParam(PARAM_ACCESS_TOKEN) @MaskingTarget String accessToken,

@@ -342,69 +342,6 @@ export interface LoginUserResponseDto {
   expireDate?: string;
 }
 
-export interface NaverDeleteTokenDto {
-  accessToken?: string;
-  result?: string;
-  /** @format int32 */
-  expiresIn?: number;
-  error?: string;
-  errorDescription?: string;
-}
-
-export interface KakaoAccountDto {
-  profileNeedsAgreement?: boolean;
-  profileNicknameNeedsAgreement?: boolean;
-  profileImageNeedsAgreement?: boolean;
-  profile?: KakaoProfileDto;
-  nameNeedsAgreement?: boolean;
-  name?: string;
-  emailNeedsAgreement?: boolean;
-  email?: string;
-  ageRangeNeedsAgreement?: boolean;
-  ageRange?: string;
-  birthyearNeedsAgreement?: boolean;
-  birthyear?: string;
-  birthdayNeedsAgreement?: boolean;
-  birthday?: string;
-  birthdayType?: string;
-  genderNeedsAgreement?: boolean;
-  gender?: string;
-  phoneNumberNeedsAgreement?: boolean;
-  phoneNumber?: string;
-  ciNeedsAgreement?: boolean;
-  ci?: string;
-  /** @format date-time */
-  ciAuthenticatedAt?: string;
-  leapMonth?: boolean;
-  emailVerified?: boolean;
-  emailValid?: boolean;
-}
-
-export interface KakaoPartnerDto {
-  uuid?: string;
-}
-
-export interface KakaoProfileDto {
-  nickname?: string;
-  thumbnailImageUrl?: string;
-  profileImageUrl?: string;
-  defaultImage?: boolean;
-  defaultNickname?: boolean;
-}
-
-export interface KakaoUserInfoDto {
-  /** @format int64 */
-  id?: number;
-  hasSignedUp?: boolean;
-  /** @format date-time */
-  connectedAt?: string;
-  /** @format date-time */
-  synchedAt?: string;
-  properties?: Record<string, string>;
-  kakaoAccount?: KakaoAccountDto;
-  forPartner?: KakaoPartnerDto;
-}
-
 export interface HomeRankingListResponseDto {
   aniRankingList?: HomeRankingReponseDto[];
   dramaRankingList?: HomeRankingReponseDto[];
@@ -766,8 +703,8 @@ export interface AniListCharactersNodeDto {
   /** @format int32 */
   favourites?: number;
   siteUrl?: string;
-  favouriteBlocked?: boolean;
   favourite?: boolean;
+  favouriteBlocked?: boolean;
 }
 
 export interface DetailComicsResponseDto {
@@ -852,7 +789,70 @@ export interface AppLoginCookiesResponseDto {
 }
 
 export interface CsrfToken {
+  token?: string;
   parameterName?: string;
   headerName?: string;
-  token?: string;
+}
+
+export interface NaverDeleteTokenDto {
+  accessToken?: string;
+  result?: string;
+  /** @format int32 */
+  expiresIn?: number;
+  error?: string;
+  errorDescription?: string;
+}
+
+export interface KakaoAccountDto {
+  profileNeedsAgreement?: boolean;
+  profileNicknameNeedsAgreement?: boolean;
+  profileImageNeedsAgreement?: boolean;
+  profile?: KakaoProfileDto;
+  nameNeedsAgreement?: boolean;
+  name?: string;
+  emailNeedsAgreement?: boolean;
+  email?: string;
+  ageRangeNeedsAgreement?: boolean;
+  ageRange?: string;
+  birthyearNeedsAgreement?: boolean;
+  birthyear?: string;
+  birthdayNeedsAgreement?: boolean;
+  birthday?: string;
+  birthdayType?: string;
+  genderNeedsAgreement?: boolean;
+  gender?: string;
+  phoneNumberNeedsAgreement?: boolean;
+  phoneNumber?: string;
+  ciNeedsAgreement?: boolean;
+  ci?: string;
+  /** @format date-time */
+  ciAuthenticatedAt?: string;
+  emailVerified?: boolean;
+  emailValid?: boolean;
+  leapMonth?: boolean;
+}
+
+export interface KakaoPartnerDto {
+  uuid?: string;
+}
+
+export interface KakaoProfileDto {
+  nickname?: string;
+  thumbnailImageUrl?: string;
+  profileImageUrl?: string;
+  defaultImage?: boolean;
+  defaultNickname?: boolean;
+}
+
+export interface KakaoUserInfoDto {
+  /** @format int64 */
+  id?: number;
+  hasSignedUp?: boolean;
+  /** @format date-time */
+  connectedAt?: string;
+  /** @format date-time */
+  synchedAt?: string;
+  properties?: Record<string, string>;
+  kakaoAccount?: KakaoAccountDto;
+  forPartner?: KakaoPartnerDto;
 }

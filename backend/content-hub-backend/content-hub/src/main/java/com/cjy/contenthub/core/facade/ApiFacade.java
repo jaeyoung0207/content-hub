@@ -69,8 +69,7 @@ public class ApiFacade {
 	public Mono<String> getTranslationText(String keyword, String targetLang, String sourceLang) {
 		return Mono.fromCallable(() -> 
 		deeplService.translateText(keyword, targetLang, sourceLang))
-				.subscribeOn(Schedulers.boundedElastic())
-				.onErrorResume(ex -> Mono.just(""));
+				.subscribeOn(Schedulers.boundedElastic());
 	}
 
 }

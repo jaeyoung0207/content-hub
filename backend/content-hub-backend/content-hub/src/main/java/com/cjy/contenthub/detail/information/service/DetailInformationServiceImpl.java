@@ -65,10 +65,6 @@ public class DetailInformationServiceImpl implements DetailInformationService {
 	@Qualifier("anilistWebClient")
 	private final WebClient anilistWebClient;
 
-	/** DeepL API 통신용 WebClient 클래스 */
-	@Qualifier("deeplWebClient")
-	private final WebClient deeplWebClient;
-
 	/** TMDB API TV Detail API 패스 */
 	@Value("${tmdb.url.tv-detail-path}")
 	private String tvDetailPath;

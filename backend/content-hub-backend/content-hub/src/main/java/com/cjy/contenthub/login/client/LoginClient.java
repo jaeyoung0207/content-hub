@@ -1,10 +1,5 @@
 package com.cjy.contenthub.login.client;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,31 +7,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoProfileDto;
-import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserDetails;
 import com.cjy.contenthub.common.integration.kakao.dto.KakaoUserInfoDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverProfileDataDto;
 import com.cjy.contenthub.common.integration.naver.dto.NaverProfileResultDto;
-import com.cjy.contenthub.common.integration.naver.dto.NaverUserDetails;
-import com.cjy.contenthub.common.record.CommonRecords.LoginCookiesRecord;
-import com.cjy.contenthub.common.util.CookieUtil;
-import com.cjy.contenthub.common.util.JwtUtil;
 import com.cjy.contenthub.common.util.MessageUtil;
-import com.cjy.contenthub.common.util.RedisUtil;
 import com.cjy.contenthub.core.constants.DomainEnum.DomainMessagesErrorEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.LoginProviderEnum;
 import com.cjy.contenthub.core.constants.DomainEnum.NaverProfileErrorEnum;
 import com.cjy.contenthub.login.controller.dto.LoginUserInfoDto;
 import com.cjy.contenthub.login.controller.dto.LoginUserResponseDto;
+import com.cjy.contenthub.login.helper.LoginHelper;
+import com.cjy.contenthub.login.helper.LoginHelper.JwtCreationRecord;
 import com.cjy.contenthub.login.mapper.LoginMapper;
 import com.cjy.contenthub.login.service.LoginService;
 import com.cjy.contenthub.login.service.dto.LoginUserServiceDto;
@@ -56,21 +43,15 @@ public class LoginClient {
 
 	/** 로그인 매퍼 */
 	private final LoginMapper mapper;
-
-	/** Redis 템플릿 */
-	private final RedisUtil redisUtil;
 	
 	/** 메시지 유틸 */
 	private final MessageUtil messageUtil;
 	
-	/** 쿠키 유틸 */
-	private final CookieUtil cookieUtil;
-	
 	/** 로그인 서비스 */
 	private final LoginService service;
-
-	/** JWT 유틸리티 */
-	private final JwtUtil jwtUtil;
+	
+	/** 로그인 헬퍼 */
+	private final LoginHelper loginHelper;
 
 	/** 네이버 API WebClient */
 	@Qualifier("naverWebClient")
@@ -129,15 +110,13 @@ public class LoginClient {
 					if (!StringUtils.equals(response.getResultcode(), PROFILE_API_SUCCESS)) {
 						// 프로필 조회 API 에러 발생시 처리
 						Integer errorCode = NaverProfileErrorEnum.getNaverProfileError(response.getResultcode()).getHttpErrorCode();
-						throw new ResponseStatusException(
-								ObjectUtils.isNotEmpty(errorCode) ? HttpStatus.valueOf(errorCode) : null,
-										response.getMessage());
+						throw new ResponseStatusException(HttpStatus.valueOf(errorCode), response.getMessage());
 					}
 
 					// 프로필 정보
 					NaverProfileDataDto profile = response.getResponse();
-					// provider
 					String provider = LoginProviderEnum.NAVER.getProvider();
+					String providerId = profile.getId();
 					// 유저 서비스 파라미터 설정
 					LoginUserServiceDto userServiceDto = mapper.profileDataDtoToUserServiceDto(profile);
 					userServiceDto.setProvider(provider);
@@ -145,37 +124,10 @@ public class LoginClient {
 					// user 등록 확인 후 등록
 					return Mono.fromCallable(() -> service.saveUser(userServiceDto))
 							.map(saveResponse -> {
-
-								// 유저 정보 설정
-								NaverUserDetails userDetails = new NaverUserDetails(profile);
-
-								// 권한 정보 설정 후 SecurityContextHolder에 저장
-								Authentication auth = new UsernamePasswordAuthenticationToken(
-										userDetails, null, userDetails.getAuthorities());
-								SecurityContextHolder.getContext().setAuthentication(auth);
-
-								// 세션에 유저 정보 저장
-								request.getSession().setAttribute(LoginProviderEnum.NAVER.getProviderUser(), userDetails);
-
-								String jwt;
-								Date expireDate;
-								String expireDateStr;
-								try {
-									// 만료 시각 계산
-									Instant now = Instant.now();                         // UTC 기준 현재
-									Instant expiryInstant = now.plusSeconds(expiresIn);  // 만료 Instant
-									// ISO8601 UTC 문자열
-									expireDateStr = DateTimeFormatter.ISO_INSTANT.format(expiryInstant);
-									// 현재시각 설정
-									Date currentDate = Date.from(now);
-									// 만료시각 설정
-									expireDate = Date.from(expiryInstant);
-									// jwt 생성
-									jwt = jwtUtil.createToken(profile.getId(), provider, profile.getNickname(), currentDate, expireDate);
-								} catch (ParseException ex) {
-									throw new IllegalStateException(
-											messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
-								}
+								// JWT 및 만료일자 생성
+								JwtCreationRecord jwtRecord = loginHelper.createJwt(expiresIn, providerId, provider, userServiceDto);
+								String jwt = jwtRecord.jwt();
+								String expireDateStr = jwtRecord.expireDateStr();
 
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = mapper.profileDataDtoToProfileDataDto(profile);
@@ -195,24 +147,15 @@ public class LoginClient {
 
 								// 파라미터에 리프레시 토큰이 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
-									// 디바이스 ID 조회
-									String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
-									// refresh token을 redis에 저장
-									redisUtil.saveRefreshToken(provider, profile.getId(),
-											refreshToken, deviceId, naverExpiresIn);
 									// 로그인 쿠키 설정
-									LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn);
-									// 쿠키 배열 생성
-									String[] cookieArray = new String[] {
-											loginCookies.refreshToken(), 
-											loginCookies.provider()
-									};
+									String[] cookieArray = loginHelper
+											.setLoginCookies(request, refreshToken, provider, providerId, naverExpiresIn);
+									
+									// 헤더에 쿠키 설정 후 응답 반환
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
 								} 
 								// 파라미터에 리프레시 토큰이 존재하지 않는 경우(쿠키가 이미 있는 경우) 헤더 미설정
-								else {
-									return ResponseEntity.ok().body(userResponse);
-								}
+								return ResponseEntity.ok().body(userResponse);
 							});
 				});
 	}
@@ -238,13 +181,10 @@ public class LoginClient {
 		// 유저 정보 가져오기 API 조회
 		return kakaoWebClient.get()
 				.uri(kakaoUserInfoUrl)
-				.headers(header -> 
-				header.set(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
-						)
+				.header(HttpHeaders.AUTHORIZATION, CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.flatMap(response -> {
-
 					// 프로필 정보가 존재하지 않을 경우, 400 에러
 					if (ObjectUtils.isEmpty(response.getKakaoAccount())
 							|| ObjectUtils.isEmpty(response.getKakaoAccount().getProfile())) {
@@ -261,45 +201,18 @@ public class LoginClient {
 					// 유저 서비스 파라미터 설정
 					LoginUserServiceDto userServiceDto = 
 							LoginUserServiceDto.builder()
-							.providerId(providerId)
 							.provider(provider)
+							.providerId(providerId)
 							.nickname(profile.getNickname())
 							.build();
 
 					// user 등록 확인 후 등록
 					return Mono.fromCallable(() -> service.saveUser(userServiceDto))
 							.map(saveResponse -> {
-
-								// 유저 정보 설정
-								KakaoUserDetails userDetails = new KakaoUserDetails(response);
-
-								// 권한 정보 설정 후 SecurityContextHolder에 저장
-								Authentication auth = new UsernamePasswordAuthenticationToken(
-										userDetails, null, userDetails.getAuthorities());
-								SecurityContextHolder.getContext().setAuthentication(auth);
-
-								// 세션에 유저 정보 저장
-								request.getSession().setAttribute(LoginProviderEnum.KAKAO.getProviderUser(), userDetails);
-
-								String jwt;
-								Date expireDate;
-								String expireDateStr;
-								try {
-									// 만료 시각 계산
-									Instant now = Instant.now();                         // UTC 기준 현재
-									Instant expiryInstant = now.plusSeconds(expiresIn);  // 만료 Instant
-									// ISO8601 UTC 문자열
-									expireDateStr = DateTimeFormatter.ISO_INSTANT.format(expiryInstant);
-									// 현재시각 설정
-									Date currentDate = Date.from(now);
-									// 만료시각 설정
-									expireDate = Date.from(expiryInstant);
-									// jwt 생성
-									jwt = jwtUtil.createToken(providerId, provider, profile.getNickname(), currentDate, expireDate);
-								} catch (ParseException ex) {
-									throw new IllegalStateException(
-											messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_CREATION.getMessageCode()), ex);
-								}
+								// JWT 및 만료일자 생성
+								JwtCreationRecord jwtRecord = loginHelper.createJwt(expiresIn, providerId, provider, userServiceDto);
+								String jwt = jwtRecord.jwt();
+								String expireDateStr = jwtRecord.expireDateStr();
 								// 유저 프로필 정보 매핑
 								LoginUserInfoDto userInfo = LoginUserInfoDto.builder()
 										.userId(saveResponse.getUserId())
@@ -319,24 +232,14 @@ public class LoginClient {
 
 								// 파라미터에 쿠키가 존재하는 경우(쿠키가 없는 경우) 헤더에 쿠키설정
 								if (StringUtils.isNotEmpty(refreshToken)) {
-									// 디바이스 ID 조회
-									String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
-									// refresh token을 redis에 저장
-									redisUtil.saveRefreshToken(provider, providerId,
-											refreshToken, deviceId, kakaoExpiresIn);
 									// 로그인 쿠키 설정
-									LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn);
-									// 쿠키 배열 생성
-									String[] cookieArray = new String[] {
-											loginCookies.refreshToken(), 
-											loginCookies.provider()
-									};
+									String[] cookieArray = loginHelper.setLoginCookies(request, refreshToken, provider, providerId, kakaoExpiresIn);
+									
+									// 헤더에 쿠키 설정 후 응답 반환
 									return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookieArray).body(userResponse);
-								} 
-								// 파라미터에 쿠키가 존재하지 않는 경우(쿠키가 이미 있는 경우) 헤더 미설정
-								else {
-									return ResponseEntity.ok().body(userResponse);
 								}
+								// 파라미터에 쿠키가 존재하지 않는 경우(쿠키가 이미 있는 경우) 헤더 미설정
+								return ResponseEntity.ok().body(userResponse);
 							});
 				});
 	}

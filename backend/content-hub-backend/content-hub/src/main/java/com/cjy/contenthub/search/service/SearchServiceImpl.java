@@ -431,11 +431,9 @@ public class SearchServiceImpl implements SearchService {
                 // 컨텐츠 미디어 타입이 잘못된 경우 경고 로그 출력
                 () -> log.warn(messageUtil.getMessageKO(DomainMessagesWarnEnum.WARN_SEARCH_WRONG_CONTENT_MEDIA_TYPE.getMessageCode(), new Object[] {contentMediaType}))
             );
-			// 응답 오브젝트 생성
-			SearchTvResponseDto tvResponse = tvResponseBuilder.build();
 
 			// 응답 오브젝트 반환
-			return tvResponse;
+			return tvResponseBuilder.build();
 		})).block();
 	}
 

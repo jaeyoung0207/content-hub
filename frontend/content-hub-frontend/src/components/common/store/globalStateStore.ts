@@ -9,37 +9,12 @@ import { persist } from 'zustand/middleware';
 // ================================================================================================== type
 
 /**
- * 홈 버튼 클릭시 초기화 상태관리 타입
- */
-type UseInitializeStoreType = {
-  isReadyForInitialization: boolean;
-  setIsReadyForInitialization: () => void;
-  setIsNotReadyForInitialization: () => void;
-};
-
-/**
  * 유저 정보 상태관리 타입
  */
 type UseUserStoreType = {
   user: LoginUserInfoDto | null;
   setUser: (user: LoginUserInfoDto) => void;
   clearUser: () => void;
-};
-
-/**
- * 코멘트 수정 상태관리 타입
- */
-type UseCommentStoreType = {
-  isCommentEditable: boolean;
-  setIsCommentEditable: () => void;
-};
-
-/**
- * 검색 필터 상태관리 타입
- */
-type UseStarRatingStoreType = {
-  userStarRating?: number;
-  setUserStarRating: (userStarRating: number) => void;
 };
 
 /**
@@ -72,7 +47,7 @@ export type UseSearchTypeStoreType = {
     varietyFlg: boolean;
     comicsFlg: boolean;
   };
-  setSearchTypeState: (
+  setSearchTypeState: ( // NOSONAR
     aniFlg: boolean,
     movieFlg: boolean,
     dramaFlg: boolean,
@@ -82,16 +57,6 @@ export type UseSearchTypeStoreType = {
     varietyFlg: boolean,
     comicsFlg: boolean
   ) => void;
-};
-
-/**
- * 에러 상태관리 타입
- */
-type UseErrorStoreType = {
-  status?: number;
-  message?: string;
-  url?: string;
-  setError: (status?: number, message?: string, url?: string) => void;
 };
 
 /**
@@ -140,32 +105,12 @@ type UseDisplayMediaTypeMapStoreType = {
 // ================================================================================================== store
 
 /**
- * 홈 버튼 클릭시 초기화 상태관리
- */
-export const useInitializeStore = create<UseInitializeStoreType>((set) => ({
-  isReadyForInitialization: false,
-  setIsReadyForInitialization: () =>
-    set(() => ({ isReadyForInitialization: true })),
-  setIsNotReadyForInitialization: () =>
-    set(() => ({ isReadyForInitialization: false })),
-}));
-
-/**
  * 유저 정보 상태관리
  */
 export const useUserStore = create<UseUserStoreType>((set) => ({
   user: null,
   setUser: (user) => set(() => ({ user })),
   clearUser: () => set(() => ({ user: null })),
-}));
-
-/**
- * 코멘트 수정 상태관리
- */
-export const useCommentStore = create<UseCommentStoreType>((set) => ({
-  isCommentEditable: false,
-  setIsCommentEditable: () =>
-    set((state) => ({ isCommentEditable: !state.isCommentEditable })),
 }));
 
 /**
@@ -182,7 +127,7 @@ export const useSearchTypeStore = create<UseSearchTypeStoreType>((set) => ({
     varietyFlg: true,
     comicsFlg: true,
   },
-  setSearchTypeState: (
+  setSearchTypeState: ( // NOSONAR
     aniFlg,
     dramaFlg,
     movieFlg,
@@ -207,15 +152,6 @@ export const useSearchTypeStore = create<UseSearchTypeStoreType>((set) => ({
 }));
 
 /**
- * 유저 평점 상태관리
- */
-export const useStarRatingStore = create<UseStarRatingStoreType>((set) => ({
-  userStarRating: undefined,
-  setUserStarRating: (userStarRating) =>
-    set(() => ({ userStarRating: userStarRating })),
-}));
-
-/**
  * 확인 다이얼로그 상태관리
  */
 export const useConfirmDialogStore = create<UseConfirmDialogStoreType>(
@@ -233,16 +169,6 @@ export const useConfirmDialogStore = create<UseConfirmDialogStoreType>(
     setConfirmMsg: (confirmMsg) => set(() => ({ confirmMsg })),
   })
 );
-
-/**
- * 에러 상태관리
- */
-export const useErrorStore = create<UseErrorStoreType>((set) => ({
-  status: undefined,
-  message: '',
-  url: '',
-  setError: (status, message, url) => set({ status, message, url }),
-}));
 
 /**
  * 프로바이더 상태관리
@@ -310,3 +236,14 @@ export const useDisplayMediaTypeMapStore =
       }
     )
   );
+
+/**
+ * 로그인 완료 상태관리
+ */
+export const useLoginDoneStore = create<{
+  isLoginDone: boolean;
+  setIsLoginDone: (isDone: boolean) => void;
+}>((set) => ({
+  isLoginDone: false,
+  setIsLoginDone: (isDone: boolean) => set({ isLoginDone: isDone }),
+}));

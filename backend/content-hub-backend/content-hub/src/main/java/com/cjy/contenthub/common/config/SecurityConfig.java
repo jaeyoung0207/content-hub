@@ -19,7 +19,6 @@ import com.cjy.contenthub.common.filter.CommonAuthenticationEntryPoint;
 import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.util.JwtUtil;
-import com.cjy.contenthub.common.util.MessageUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +33,6 @@ public class SecurityConfig {
 
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
-
-	/** 메시지 유틸리티 클래스 */
-	private final MessageUtil messageUtil;
 
 	/** 인증 예외 처리 필터 */
 	private final CommonAuthenticationEntryPoint authenticationEntryPoint;
@@ -106,7 +102,7 @@ public class SecurityConfig {
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
-		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, messageUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 
 		// HTTP 보안 설정을 빌드하여 반환

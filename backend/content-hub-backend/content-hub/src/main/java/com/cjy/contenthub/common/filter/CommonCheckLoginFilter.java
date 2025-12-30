@@ -10,15 +10,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cjy.contenthub.common.constants.CommonConstants;
-import com.cjy.contenthub.common.constants.CommonEnum.CommonMessagesErrorEnum;
 import com.cjy.contenthub.common.constants.CommonEnum.JwtValidateResultEnum;
 import com.cjy.contenthub.common.exception.CommonJwtException;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.util.JwtUtil;
-import com.cjy.contenthub.common.util.MessageUtil;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,9 +33,6 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 	
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
-	
-	/** 메시지 유틸리티 클래스 */
-	private final MessageUtil messageUtil;
 	
 	/** API 접두사 및 버전 설정 */
 	private final ApiPrefixProperties apiPrefixProperties;
@@ -60,7 +54,8 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 		// API 접두사 및 버전 정보 추출
 		String fullPrefix = apiPrefixProperties.getFullPrefix();
 		// 주소가 /login 으로 시작하는 주소는 처리대상에서 제외
-		if (HttpMethod.OPTIONS.matches(method) || uri.matches(fullPrefix.concat("/login/.*"))) {
+		if (HttpMethod.OPTIONS.matches(method) || uri.matches(fullPrefix.concat("/login/.*"))
+				|| uri.matches(fullPrefix.concat("/app/.*"))) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -72,22 +67,16 @@ public class CommonCheckLoginFilter extends OncePerRequestFilter {
 		if (StringUtils.isNotEmpty(authorization) && authorization.startsWith(CommonConstants.AUTHORIZATION_HEADER_PREFIX)) {
 			// JWT 추출
 			String jwt = authorization.substring(CommonConstants.AUTHORIZATION_HEADER_PREFIX.length());
-			// JWT 검증
-			try {
-				// JWT 토큰의 유효성 검사
-				String validateResult = jwtUtil.validateToken(jwt);
-				// 유효하지 않은 토큰인 경우, 예외를 발생시킴
-				if (!JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode().equals(validateResult)) {
-					throw new CommonJwtException(JwtValidateResultEnum.getJwtValidateResult(validateResult).getJwtValidateResultMsg());
-				}
-			} catch (JwtException ex) {
-				throw new CommonJwtException(
-						messageUtil.getMessageKO(CommonMessagesErrorEnum.ERROR_COMMON_JWT_PARSING.getMessageCode()), ex);
+			// JWT 토큰의 유효성 검사
+			String validationResult = jwtUtil.validateToken(jwt);
+			// 유효하지 않은 토큰인 경우, 예외를 발생시킴
+			if (!JwtValidateResultEnum.VALID_TOKEN.getJwtValidateResultCode().equals(validationResult)) {
+				throw new CommonJwtException(JwtValidateResultEnum.getJwtValidateResult(validationResult).getJwtValidateResultMsg());
 			}
 
 			// JWT에서 클레임 추출
 			Claims claims = jwtUtil.parseClaims(jwt);
-			// 클레임에서 providerId와 provider 추출
+			// 클레임에서 providerId 추출
 			String providerId = claims.getSubject();
 			
 			// 인증 객체 생성

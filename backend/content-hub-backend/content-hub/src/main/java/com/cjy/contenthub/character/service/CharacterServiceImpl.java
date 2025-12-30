@@ -35,10 +35,6 @@ public class CharacterServiceImpl implements CharacterService {
 	@Qualifier("anilistWebClient")
 	private final WebClient anilistWebClient;
 
-	/** DeepL API 통신용 WebClient 클래스 */
-	@Qualifier("deeplWebClient")
-	private final WebClient deeplWebClient;
-
 	/**
 	 * 캐릭터 조회
 	 *
