@@ -77,7 +77,7 @@ public class SecurityConfig {
 		String fullPrefix = apiPrefixProperties.getFullPrefix();
 
 		// CSRF TOKEN 쿠키 저장소 설정 
-		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse(); // SPA 프론트엔드에서 token 읽기 필요하으로 의도적으로 false 설정
 		csrfTokenRepository.setCookieCustomizer(cookie -> cookie
 				.httpOnly(csrfCookieHttpOnly)
 				.secure(csrfCookieSecure)
@@ -100,7 +100,6 @@ public class SecurityConfig {
 		.csrf(csrf -> csrf
 				.csrfTokenRepository(csrfTokenRepository)
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
 		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터

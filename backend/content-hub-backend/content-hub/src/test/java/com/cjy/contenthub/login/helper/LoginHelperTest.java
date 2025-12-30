@@ -155,17 +155,17 @@ class LoginHelperTest {
 		String refreshToken = "refresh token";
 		String provider = "KAKAO";
 		String providerId = "providerId";
-		int expiresIn = 3600;
+		long expiresInDays = 365L;
 		
 		String deviceId = "deviceId";
 		when(cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID)).thenReturn(deviceId);
 		
 		String[] expectedCookies = new String[] { refreshToken, provider };
-		when(cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn)).thenReturn(
+		when(cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresInDays)).thenReturn(
 				new LoginCookiesRecord(provider, refreshToken));
 		
 		// 실제 메서드 호출
-		String[] resultCookies = helper.setLoginCookies(request, refreshToken, provider, providerId, expiresIn);
+		String[] resultCookies = helper.setLoginCookies(request, refreshToken, provider, providerId, expiresInDays);
 		
 		// 검증
 		assertThat(resultCookies).isEqualTo(expectedCookies);

@@ -111,17 +111,17 @@ public class LoginHelper {
 	 * @param refreshToken 리프레시 토큰
 	 * @param provider     로그인 제공자
 	 * @param providerId   로그인 제공자 유저 ID
-	 * @param expiresIn    만료 시간(초)
+	 * @param expiresInDays 만료 기간(일)
 	 * @return 로그인 쿠키 배열
 	 */
-	public String[] setLoginCookies(HttpServletRequest request, String refreshToken, String provider, String providerId, long expiresIn) {
+	public String[] setLoginCookies(HttpServletRequest request, String refreshToken, String provider, String providerId, long expiresInDays) {
 		// 디바이스 ID 조회
 		String deviceId = cookieUtil.getCookieValue(request, CommonConstants.DEVICE_ID);
 		// refresh token을 redis에 저장
 		redisUtil.saveRefreshToken(provider, providerId,
-				refreshToken, deviceId, expiresIn);
+				refreshToken, deviceId, expiresInDays);
 		// 로그인 쿠키 설정
-		LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresIn);
+		LoginCookiesRecord loginCookies = cookieUtil.getLoginCookiesForRegister(refreshToken, provider, expiresInDays);
 		// 쿠키 배열 생성
 		return new String[] {
 				loginCookies.refreshToken(), 
