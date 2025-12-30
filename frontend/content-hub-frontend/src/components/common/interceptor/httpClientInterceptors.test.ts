@@ -279,7 +279,7 @@ describe('HttpClient Request Interceptors(KAKAO)', () => {
       // 검증
       expect(axiosMock).toHaveBeenCalledWith(
         expect.stringContaining('/api/login/updateKakaoLoginInfo'),
-        { params: { clientId: '73e00fcdb71f8c687ca89df9bb4cf37b' } }
+        { params: { clientId: 'kakao_client_id_placeholder' } }
       );
       expect(setLoginInfo).toHaveBeenCalledWith(mockNewToken, 'KAKAO');
       expect(result.headers.Authorization).toBe('Bearer new-jwt');
