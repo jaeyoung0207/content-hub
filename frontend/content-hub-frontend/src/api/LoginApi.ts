@@ -147,7 +147,7 @@ export class LoginApi<
    * @tags login-api
    * @name DeleteNaverToken
    * @summary 네이버 토큰 삭제
-   * @request GET:/api/login/deleteNaverToken
+   * @request DELETE:/api/login/deleteNaverToken
    */
   deleteNaverToken = (
     query: {
@@ -160,7 +160,7 @@ export class LoginApi<
   ) =>
     this.request<NaverDeleteTokenDto, any>({
       path: `/api/login/deleteNaverToken`,
-      method: 'GET',
+      method: 'DELETE',
       query: query,
       ...params,
     });
@@ -170,7 +170,7 @@ export class LoginApi<
    * @tags login-api
    * @name DeleteKakaoToken
    * @summary 카카오 토큰 삭제
-   * @request GET:/api/login/deleteKakaoToken
+   * @request DELETE:/api/login/deleteKakaoToken
    */
   deleteKakaoToken = (
     query: {
@@ -183,7 +183,7 @@ export class LoginApi<
   ) =>
     this.request<KakaoUserInfoDto, any>({
       path: `/api/login/deleteKakaoToken`,
-      method: 'GET',
+      method: 'DELETE',
       query: query,
       ...params,
     });

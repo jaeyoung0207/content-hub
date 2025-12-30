@@ -25,6 +25,12 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
+    volumes:
+      # 로컬의 상대 경로를 컨테이너 내부의 표준 경로로 매핑
+      - ./backend/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      # 데이터 유실 방지를 위한 데이터 디렉토리 매핑
+      - ./backend/redis/data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

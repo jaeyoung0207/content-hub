@@ -19,7 +19,6 @@ import com.cjy.contenthub.common.filter.CommonAuthenticationEntryPoint;
 import com.cjy.contenthub.common.filter.CommonCheckLoginFilter;
 import com.cjy.contenthub.common.properties.ApiPrefixProperties;
 import com.cjy.contenthub.common.util.JwtUtil;
-import com.cjy.contenthub.common.util.MessageUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +33,6 @@ public class SecurityConfig {
 
 	/** JWT 유틸리티 클래스 */
 	private final JwtUtil jwtUtil;
-
-	/** 메시지 유틸리티 클래스 */
-	private final MessageUtil messageUtil;
 
 	/** 인증 예외 처리 필터 */
 	private final CommonAuthenticationEntryPoint authenticationEntryPoint;
@@ -81,7 +77,7 @@ public class SecurityConfig {
 		String fullPrefix = apiPrefixProperties.getFullPrefix();
 
 		// CSRF TOKEN 쿠키 저장소 설정 
-		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse(); // SPA 프론트엔드에서 token 읽기 필요하으로 의도적으로 false 설정
 		csrfTokenRepository.setCookieCustomizer(cookie -> cookie
 				.httpOnly(csrfCookieHttpOnly)
 				.secure(csrfCookieSecure)
@@ -104,9 +100,8 @@ public class SecurityConfig {
 		.csrf(csrf -> csrf
 				.csrfTokenRepository(csrfTokenRepository)
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-				.ignoringRequestMatchers(fullPrefix.concat("/login/**"))
 				) // CSRF 보호 활성화
-		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, messageUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+		.addFilterBefore(new CommonCheckLoginFilter(jwtUtil, apiPrefixProperties), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
 		.addFilterBefore(new ExceptionTranslationFilter(authenticationEntryPoint), CommonCheckLoginFilter.class); // 예외 처리 필터
 
 		// HTTP 보안 설정을 빌드하여 반환

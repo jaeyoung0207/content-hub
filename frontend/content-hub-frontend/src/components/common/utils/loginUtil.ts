@@ -7,6 +7,7 @@ import {
   useUserStore,
 } from '../store/globalStateStore';
 import { LoginUserResponseDto } from '@/api/data-contracts';
+import { clearUserData } from './clearUtil';
 
 // Sentry 동적 import
 const Sentry = import('@sentry/react');
@@ -17,7 +18,7 @@ const Sentry = import('@sentry/react');
 export const afterLoginRedirect = (navigate: NavigateFunction) => {
   // 리다이렉트 URL이 있다면 해당 URL로 이동
   const redirectUrl = sessionStorage.getItem(REDIRECT_URL);
-  if (redirectUrl && redirectUrl.startsWith('/')) {
+  if (redirectUrl?.startsWith('/')) {
     // 대상 URL로 이동
     navigate(redirectUrl, { replace: true });
     // 리다이렉트 URL 삭제
@@ -70,12 +71,13 @@ export const setLoginInfo = async (
   loginInfo: LoginUserResponseDto,
   provider: string
 ) => {
-  // 로그인 정보가 없으면 종료
+  // 로그인 정보가 없으면 유저정보 클리어 후 종료
   if (!loginInfo.userInfo) {
+    clearUserData();
     return;
   }
   // 유저정보를 전역상태저장
-  useUserStore.getState().setUser(loginInfo.userInfo!);
+  useUserStore.getState().setUser(loginInfo.userInfo);
   // provider 전역상태저장
   useProviderStore.getState().setProvider(provider as LOGIN_PROVIDER);
   // 액세스 토큰을 sessionStorage에 저장
@@ -86,7 +88,7 @@ export const setLoginInfo = async (
   sessionStorage.setItem('expireDate', loginInfo.expireDate!);
   // Sentry에 유저 정보 설정
   (await Sentry).setUser({
-    id: loginInfo.userInfo!.userId,
-    username: loginInfo.userInfo!.nickname,
+    id: loginInfo.userInfo.userId,
+    username: loginInfo.userInfo.nickname,
   });
 };

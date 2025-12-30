@@ -370,8 +370,8 @@ public class LoginServiceImpl implements LoginService {
 		// 카카오 토큰 삭제 API 호출
 		return kakaoWebClient.get()
 				.uri(uri)
-				.headers(header -> header.set(HttpHeaders.AUTHORIZATION, 
-						CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken)))
+				.header(HttpHeaders.AUTHORIZATION, 
+						CommonConstants.AUTHORIZATION_HEADER_PREFIX.concat(accessToken))
 				.retrieve()
 				.bodyToMono(KakaoUserInfoDto.class)
 				.block();

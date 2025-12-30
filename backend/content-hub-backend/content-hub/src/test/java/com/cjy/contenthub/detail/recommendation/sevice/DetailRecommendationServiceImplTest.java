@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -668,19 +666,6 @@ class DetailRecommendationServiceImplTest {
 			assertThat(((WebClientResponseException) exception).getResponseBodyAsString()).isEqualTo(errorBody);
 		});
 		
-//		CompletableFuture<DetailRecommendationsMovieDto> result = service.getMovieRecommendations(movieId, page, userId);
-//		
-//		// 결과 검증
-//		// CompletableFuture .get() 시 ExecutionException 발생
-//		ExecutionException exception = assertThrows(ExecutionException.class, () -> {
-//			result;
-//		});
-		
-//		assertThat(exception.getCause()).isInstanceOf(WebClientResponseException.class);
-//		assertThat(((WebClientResponseException)exception.getCause()).getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//		assertThat(((WebClientResponseException)exception.getCause()).getMessage()).isEqualTo(errorMessage);
-//		assertThat(((WebClientResponseException)exception.getCause()).getResponseBodyAsString()).isEqualTo(errorBody);
-		
 		verify(tmdbWebClient, times(2)).get();
 		verify(helper, times(1)).getMovieRecommendationUri(movieId, page, TmdbParamConstants.LANGUAGE_KOREAN);
 		verify(helper, times(1)).getMovieRecommendationUri(movieId, page, TmdbParamConstants.LANGUAGE_ENGLISH);
@@ -729,7 +714,7 @@ class DetailRecommendationServiceImplTest {
 	@Test
 	@DisplayName("[UT]getComicsRecommendations: 만화 추천 작품 조회 - 응답 데이터 존재 및 첫번째 페이지")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void test_getComicsRecommendations_existResponseAndFirstPage() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+	void test_getComicsRecommendations_existResponseAndFirstPage() throws IOException {
 		
 		// MockedStatic 사용 -> try with resources 구문으로 자동 close 처리
 		try (MockedStatic<GraphqlUtil> mocked = mockStatic(GraphqlUtil.class)) {
@@ -785,7 +770,7 @@ class DetailRecommendationServiceImplTest {
 	@Test
 	@DisplayName("[UT]getComicsRecommendations: 만화 추천 작품 조회 - 응답 데이터 존재 및 두번째 페이지")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void test_getComicsRecommendations_existResponseAndSecondPage() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+	void test_getComicsRecommendations_existResponseAndSecondPage() throws IOException {
 		
 		// MockedStatic 사용 -> try with resources 구문으로 자동 close 처리
 		try (MockedStatic<GraphqlUtil> mocked = mockStatic(GraphqlUtil.class)) {
@@ -839,7 +824,7 @@ class DetailRecommendationServiceImplTest {
 	@Test
 	@DisplayName("[UT]getComicsRecommendations: 만화 추천 작품 조회 - 응답 데이터 Data 없음")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void test_getComicsRecommendations_notExistData() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+	void test_getComicsRecommendations_notExistData() throws IOException {
 		
 		// MockedStatic 사용 -> try with resources 구문으로 자동 close 처리
 		try (MockedStatic<GraphqlUtil> mocked = mockStatic(GraphqlUtil.class)) {
@@ -882,7 +867,7 @@ class DetailRecommendationServiceImplTest {
 	@Test
 	@DisplayName("[UT]getComicsRecommendations: 만화 추천 작품 조회 - 응답 데이터 Media 없음")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void test_getComicsRecommendations_notExistMedia() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+	void test_getComicsRecommendations_notExistMedia() throws IOException {
 		
 		// MockedStatic 사용 -> try with resources 구문으로 자동 close 처리
 		try (MockedStatic<GraphqlUtil> mocked = mockStatic(GraphqlUtil.class)) {
@@ -927,7 +912,7 @@ class DetailRecommendationServiceImplTest {
 	@Test
 	@DisplayName("[UT]getComicsRecommendations: 만화 추천 작품 조회 - 404 에러")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void test_getComicsRecommendations_404Error() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+	void test_getComicsRecommendations_404Error() throws IOException {
 		
 		// MockedStatic 사용 -> try with resources 구문으로 자동 close 처리
 		try (MockedStatic<GraphqlUtil> mocked = mockStatic(GraphqlUtil.class)) {

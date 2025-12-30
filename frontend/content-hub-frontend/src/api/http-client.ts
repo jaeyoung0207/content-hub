@@ -12,12 +12,11 @@
 
 import { AxiosErrorType } from '@/components/common/config/queryClientConfig'; // add custom config
 import { settings } from '@/components/common/config/settings'; // add custom config
-import { LOGIN_PROVIDER } from '@/components/common/constants/constants'; // add custom config
 import {
-  useProviderStore,
-  useUserStore,
-} from '@/components/common/store/globalStateStore'; // add custom config
-import { clearUserData } from '@/components/common/utils/clearUtil'; // add custom config
+  httpClientRequestInterceptor,
+  httpClientResponseErrorInterceptor,
+  httpClientResponseInterceptor,
+} from '@/components/common/interceptor/httpClientInterceptors'; // add custom config
 import type {
   AxiosError,
   AxiosInstance,
@@ -27,11 +26,6 @@ import type {
   ResponseType,
 } from 'axios'; // add custom config
 import axios from 'axios';
-import dayjs from 'dayjs'; // add custom config
-import { LoginProfileResultDto } from './data-contracts'; // add custom config
-
-// Sentry 동적 import
-const Sentry = import('@sentry/react'); // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -104,55 +98,11 @@ export class HttpClient<SecurityDataType = unknown> {
     this.securityWorker = securityWorker;
     axios.defaults.withCredentials = true; // axios를 직접 사용시 쿠키 추가
 
-    // 유저정보
-    const { user, clearUser } = useUserStore.getState();
-    // provider 정보
-    const { provider } = useProviderStore.getState();
-
     // axios 공통 요청 인터셉터 // add custom config
     this.instance.interceptors.request.use(
       async (request) => {
-        // 접근토큰
-        const jwt = sessionStorage.getItem('jwt');
-        // 만료시각
-        const expireDate = sessionStorage.getItem('expireDate');
-        // 현재시각
-        const now = dayjs();
-        // 접근토큰 만료 확인
-        const isJwtExpired =
-          user && provider && jwt && dayjs(expireDate).isBefore(dayjs(now));
-        if (isJwtExpired) {
-          // 접근토큰 갱신 API 조회
-          let res;
-          if (provider === LOGIN_PROVIDER.NAVER) {
-            res = (
-              await axios.get(`${backendUrl}/api/login/updateNaverLoginInfo`)
-            ).data as LoginProfileResultDto;
-          } else if (provider === LOGIN_PROVIDER.KAKAO) {
-            res = (
-              await axios.get(`${backendUrl}/api/login/updateKakaoLoginInfo`, {
-                params: {
-                  clientId: settings.kakaoClientId,
-                },
-              })
-            ).data as LoginProfileResultDto;
-          }
-          if (res) {
-            // 접근토큰을 sessionStorage에 저장
-            sessionStorage.setItem('accessToken', res.accessToken);
-            // JWT를 sessionStorage에 저장
-            sessionStorage.setItem('jwt', res.jwt);
-            // 만료시각을 sessionStorage에 저장
-            sessionStorage.setItem('expireDate', res.expireDate);
-          } else {
-            // 유저정보 클리어
-            clearUserData();
-          }
-        } else if (!jwt && user) {
-          // 유저정보 클리어
-          clearUserData();
-        }
-        return request;
+        // 요청 인터셉터 처리
+        return httpClientRequestInterceptor(request, axios);
       },
       (error) => {
         // 요청 전 단계의 예외만 처리
@@ -163,24 +113,13 @@ export class HttpClient<SecurityDataType = unknown> {
     // axios 공통 응답 인터셉터 // add custom config
     this.instance.interceptors.response.use(
       (response) => {
-        // Sentry에 성공 로그 남기기
-        (async () => {
-          (await Sentry).addBreadcrumb({
-            category: 'api',
-            message: `API Success: ${response.config.url}`,
-            level: 'info',
-          });
-        })();
-        return response;
+        // 응답 성공 인터셉터 처리
+        return httpClientResponseInterceptor(response);
       },
       (error: AxiosError<AxiosErrorType>) => {
-        const data = error.response?.data;
-        // 로그인 만료시 또는 권한없음인 경우
-        if (data?.status === 401 || data?.status === 403) {
-          // 유저정보 클리어
-          clearUserData();
-        }
-        return Promise.reject(error);
+        // 응답 에러 인터셉터 처리
+        const errorInterceptor = httpClientResponseErrorInterceptor(error);
+        return Promise.reject(errorInterceptor);
       }
     );
   }

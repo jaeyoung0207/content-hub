@@ -65,6 +65,12 @@ services:
       - "6379"   # 내부 네트워크에서만
     #ports:
     #  - "6379:6379"  # 필요 시에만 외부 노출
+    volumes:
+      # 로컬의 상대 경로를 컨테이너 내부의 표준 경로로 매핑
+      - ./backend/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      # 데이터 유실 방지를 위한 데이터 디렉토리 매핑
+      - ./backend/redis/data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

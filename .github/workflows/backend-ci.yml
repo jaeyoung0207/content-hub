@@ -46,7 +46,8 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          # hashFiles는 루트 기준이므로 전체 경로 기재
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/content-hub-backend/content-hub/**/*.gradle*', 'backend/content-hub-backend/content-hub/**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle
 
       # Docker Compose로 Redis 서비스 기동

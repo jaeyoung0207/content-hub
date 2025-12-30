@@ -4,7 +4,10 @@ import {
   LOGIN_PROVIDER,
   REDIRECT_URL,
 } from '@/components/common/constants/constants';
-import { useUserStore } from '@/components/common/store/globalStateStore';
+import {
+  useLoginDoneStore,
+  useUserStore,
+} from '@/components/common/store/globalStateStore';
 import { clearUserData } from '@/components/common/utils/clearUtil';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -54,6 +57,8 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
 
   // 유저 정보 전역 상태 저장용 훅
   const { user } = useUserStore();
+  // 로그인 완료 상태 설정용 훅
+  const { setIsLoginDone } = useLoginDoneStore();
 
   // ================================================================================================== react query
 
@@ -110,13 +115,6 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
   useEffect(() => {
     // 맨 처음 접속시에는 유저정보 초기화
     clearUserData();
-    // csrf token 초기화 API 호출
-    queryClient.fetchQuery({
-      queryKey: headerQueryKeys.getCsrfToken(),
-      queryFn: async () => {
-        return await appApi.getCsrfToken();
-      },
-    });
 
     // 로그인 쿠키 정보가 존재하는지 확인 후 유저정보 갱신 처리
     (async () => {
@@ -128,6 +126,9 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
       isExecutingRef.current = true;
 
       try {
+        // 로그인 완료 상태 초기화
+        setIsLoginDone(false);
+
         // 로그인 쿠키 정보 조회
         const cookiesResponse = await queryClient.fetchQuery({
           queryKey: headerQueryKeys.getLoginCookies(),
@@ -191,6 +192,8 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
       } finally {
         // 중복 실행 방지 플래그 해제
         isExecutingRef.current = false;
+        // 로그인 완료 상태 설정
+        setIsLoginDone(true);
       }
     })();
   }, []);
@@ -209,7 +212,7 @@ export const useHeaderLogin = (): UseHeaderLoginReturnType => {
         setUserOptionIsOpen(false);
       }
     };
-    // 필터 및 자동완성박스 esc 키다운 이벤트
+    // 유저 옵션 esc 키다운 이벤트
     const handleOnKeyDown = (e: globalThis.KeyboardEvent) => {
       if (e.key === ESC_KEY) {
         // 유저 옵션 닫기
