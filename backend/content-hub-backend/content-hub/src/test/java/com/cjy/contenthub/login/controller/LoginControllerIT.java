@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -286,6 +287,7 @@ class LoginControllerIT extends AbstractBaseIT {
         // 테스트 대상 호출
 		String url = "/api/login/deleteNaverToken";
 		MvcResult mvcResult = mockMvc.perform(delete(url)
+				.with(csrf()) // DELETE 메서드에 CSRF 토큰 추가
 				.param("access_token", accessToken)
 				.param("target_id", targetId)
 				.param("user_id", String.valueOf(userId))
@@ -608,6 +610,7 @@ class LoginControllerIT extends AbstractBaseIT {
         // 테스트 대상 호출
 		String url = "/api/login/deleteKakaoToken";
 		MvcResult mvcResult = mockMvc.perform(delete(url)
+				.with(csrf()) // DELETE 메서드에 CSRF 토큰 추가
 				.param("access_token", accessToken)
 				.param("target_id", targetId)
 				.param("user_id", String.valueOf(userId))
