@@ -10,7 +10,7 @@ export const Maintenance = () => {
   const { t } = useTranslation();
 
   const handleReload = () => {
-    window.location.href = '/';
+    globalThis.location.href = '/';
   };
 
   return (

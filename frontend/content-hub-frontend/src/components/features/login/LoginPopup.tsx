@@ -38,7 +38,7 @@ export const LoginPopup = () => {
     );
 
     // 모바일 또는 태블릿 환경일 경우
-    if (isMobile || isTablet || !window.opener) {
+    if (isMobile || isTablet || !globalThis.opener) {
       if (isProviderValid) {
         navigate(`/login?${searchParams.toString()}`, { replace: true });
       } else {
@@ -49,12 +49,12 @@ export const LoginPopup = () => {
     }
 
     // 부모 창이 존재할 경우(모바일/태블릿 이외 환경)
-    if (window.opener) {
+    if (globalThis.opener) {
       // 에러가 있을 경우 부모 창에 에러 메시지 전달
       if (error) {
-        window.opener.postMessage(
+        globalThis.opener.postMessage(
           { error, error_description, provider },
-          window.location.origin
+          globalThis.location.origin
         );
       }
       // 인증 데이터가 모두 존재할 경우
@@ -62,34 +62,34 @@ export const LoginPopup = () => {
         // 유효한 로그인 제공자인지 확인
         if (isProviderValid) {
           // 부모 창에 메시지로 코드와 상태 전달
-          window.opener.postMessage(
+          globalThis.opener.postMessage(
             { code, state, provider },
-            window.location.origin
+            globalThis.location.origin
           );
         } else {
           // 유효하지 않은 로그인 제공자일 경우 에러 메시지 전달
-          window.opener.postMessage(
+          globalThis.opener.postMessage(
             {
               error: 'Invalid Provider',
               error_description: t('error.loginProviderError'),
               provider,
             },
-            window.location.origin
+            globalThis.location.origin
           );
         }
       } else {
         // 인증 데이터가 부족할 경우 에러 메시지 전달
-        window.opener.postMessage(
+        globalThis.opener.postMessage(
           {
             error: 'Invalid Data',
             error_description: t('error.loginNoOAuthDataError'),
             provider,
           },
-          window.location.origin
+          globalThis.location.origin
         );
       }
       // 팝업 창 닫기
-      window.close();
+      globalThis.close();
     }
   }, [location, t, navigate]);
 

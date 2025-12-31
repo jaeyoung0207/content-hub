@@ -95,7 +95,7 @@ export const useDetailComicsCharacterInformation = (
                 comics_id: detailResult.id!,
                 page: pageParam,
               });
-        return response.data.edges ? response.data.edges : [];
+        return response.data.edges ?? [];
       },
       getNextPageParam: (lastPageData, allPages) => {
         return !lastPageData || lastPageData.length === 0

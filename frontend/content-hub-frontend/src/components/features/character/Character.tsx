@@ -7,6 +7,7 @@ import { convertDate } from '@/components/common/utils/convertUtil';
 import { isStaffType } from '@/components/common/utils/typeGuardUtil';
 import { memo } from 'react';
 import { LazyImage } from '@/components/ui/common/LazyImageUi';
+import DOMPurify from 'dompurify';
 
 /**
  * 캐릭터 화면 컴포넌트
@@ -27,14 +28,13 @@ export const Character = memo(() => {
   // 소제목 스타일
   const subTitleStyle = 'mr-2 whitespace-nowrap font-medium text-foreground';
   // 생년월일
-  const birthday =
-    data && data.dateOfBirth
-      ? convertDate(
-          data.dateOfBirth.year,
-          data.dateOfBirth.month,
-          data.dateOfBirth.day
-        )
-      : '';
+  const birthday = data?.dateOfBirth
+    ? convertDate(
+        data.dateOfBirth.year,
+        data.dateOfBirth.month,
+        data.dateOfBirth.day
+      )
+    : '';
   // 사망일(Staff Only)
   const deathday =
     data && isStaffType(data) && data.dateOfDeath
@@ -44,6 +44,8 @@ export const Character = memo(() => {
           data.dateOfDeath.day
         )
       : '';
+  // 나이
+  const age = String(data?.age) === '0' ? '' : String(data?.age);
   // 활동 시작 연도(Staff Only)
   const yearsActive =
     data && isStaffType(data) && data.yearsActive
@@ -54,13 +56,14 @@ export const Character = memo(() => {
     data && isStaffType(data) && data.homeTown ? data.homeTown : '';
 
   // 캐릭터 설명 (HTML 태그 변환)
-  const characterDescription =
-    data?.description &&
-    data.description
-      .replace(/:__/g, ':</b>') // 볼드 태그 변환
-      .replace(/__/g, '<b>') // 볼드 태그 변환
-      .replace(/~!/g, '<span class="text-white bg-gray-50">') // 회색 배경 텍스트 변환
-      .replace(/!~/g, '</span>'); // 회색 배경 텍스트 변환
+  let characterDescription = '';
+  if (data?.description) {
+    characterDescription = data.description
+      .replaceAll(':__', ':</b>') // 볼드 태그 변환
+      .replaceAll('__', '<b>') // 볼드 태그 변환
+      .replaceAll('~!', '<span class="text-white bg-gray-50">') // 회색 배경 텍스트 변환
+      .replaceAll('!~', '</span>'); // 회색 배경 텍스트 변환
+  }
 
   return (
     <div className="px-2 pt-20 pb-10 md:px-4 md:pt-24 lg:px-8">
@@ -118,14 +121,12 @@ export const Character = memo(() => {
                                 ')'}
                             </button>
                           ) : (
-                            <>
-                              <button
-                                onClick={toggleSpoilerName}
-                                className="ml-2 cursor-pointer text-blue-500 hover:underline"
-                              >
-                                {t('info.showSpoilerName')}
-                              </button>
-                            </>
+                            <button
+                              onClick={toggleSpoilerName}
+                              className="ml-2 cursor-pointer text-blue-500 hover:underline"
+                            >
+                              {t('info.showSpoilerName')}
+                            </button>
                           ))}
                       </div>
                     </li>
@@ -159,12 +160,12 @@ export const Character = memo(() => {
                   </li>
                 )}
                 {/* 나이 */}
-                {data.age && (
+                {age && (
                   <li className={characterInfoStyle}>
                     <div className={subTitleStyle}>
                       {t('info.age') + t('info.colon')}
                     </div>
-                    <div>{data.age}</div>
+                    <div>{age}</div>
                   </li>
                 )}
                 {/* 혈액형 */}
@@ -221,7 +222,9 @@ export const Character = memo(() => {
               </h2>
               <p
                 className="text-base leading-relaxed whitespace-pre-wrap sm:text-lg"
-                dangerouslySetInnerHTML={{ __html: characterDescription! }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(characterDescription),
+                }}
               />
             </section>
           )}

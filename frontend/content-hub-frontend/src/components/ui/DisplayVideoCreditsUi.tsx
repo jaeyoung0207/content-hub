@@ -64,13 +64,18 @@ export const DisplayVideoCredits = ({
       ? videoCredits.cast
       : videoCredits.crew);
   // 크레딧(cast or crew) 필터링 데이터
-  const creditsList =
-    creditsAll &&
-    (isOmit
-      ? creditsAll.filter((_, index) => index < settings.detailVideoCount)
-      : displayCount
-        ? creditsAll.slice(0, displayCount)
-        : creditsAll);
+  let creditsList: typeof creditsAll = undefined;
+  if (creditsAll) {
+    if (isOmit) {
+      creditsList = creditsAll.filter(
+        (_, index) => index < settings.detailVideoCount
+      );
+    } else if (displayCount) {
+      creditsList = creditsAll.slice(0, displayCount);
+    } else {
+      creditsList = creditsAll;
+    }
+  }
   // 탭 번호
   const tabNo =
     creditsType === VIDEO_CREDITS_TYPE.CAST
@@ -88,35 +93,44 @@ export const DisplayVideoCredits = ({
                 : t('info.cast')}
             </div>
             {/* 더보기 링크 */}
-            {isOmit && creditsAll.length > settings.detailVideoCount && (
-              <div className="text-lx">
-                <Link
-                  to={detailUrlQuery({
-                    contentMediaType: contentMediaType,
-                    apiId: String(detailResult.id),
-                    tabNo: tabNo,
-                  })}
-                  className={`${HIGHLIGHT_HOVER_COLOR}`}
-                >
-                  {t('info.seeMore')} &gt;
-                </Link>
-              </div>
-            )}
+            {isOmit &&
+              creditsAll &&
+              creditsAll.length > settings.detailVideoCount && (
+                <div className="text-lx">
+                  <Link
+                    to={detailUrlQuery({
+                      contentMediaType: contentMediaType,
+                      apiId: String(detailResult.id),
+                      tabNo: tabNo,
+                    })}
+                    className={`${HIGHLIGHT_HOVER_COLOR}`}
+                  >
+                    {t('info.seeMore')} &gt;
+                  </Link>
+                </div>
+              )}
           </div>
 
           {/* 출연진 or 제작진 리스트 */}
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3 lg:gap-y-5">
             {creditsList.map((items, index) => {
               // 역할
-              const role = isDetailCreditsCrewType(items)
-                ? isDetailTvType(detailResult, contentMediaType)
-                  ? items.jobs?.map((job) => job.job).join(SEPERATE_SLASH)
-                  : items.job
-                : isDetailTvType(detailResult, contentMediaType)
-                  ? items.roles
-                      ?.map((role) => role.character)
-                      .join(SEPERATE_SLASH)
-                  : items.character;
+              let role: string | undefined = undefined;
+              if (isDetailCreditsCrewType(items)) {
+                if (isDetailTvType(detailResult, contentMediaType)) {
+                  role = items.jobs?.map((job) => job.job).join(SEPERATE_SLASH);
+                } else {
+                  role = items.job;
+                }
+              } else {
+                if (isDetailTvType(detailResult, contentMediaType)) { // NOSONAR
+                  role = items.roles
+                    ?.map((role) => role.character)
+                    .join(SEPERATE_SLASH);
+                } else {
+                  role = items.character;
+                }
+              }
 
               return (
                 <Link

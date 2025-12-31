@@ -10,7 +10,7 @@ import { freshOnMountOptions } from '@/components/common/config/queryOptions';
  */
 type UseComicsSearchReturnType = {
   isComicsLoading?: boolean; // 로딩 중 여부
-  comicsData?: SearchComicsResponseDto | undefined; // 검색 결과 데이터
+  comicsData: SearchComicsResponseDto | undefined; // 검색 결과 데이터
   comicsStatus?: number; // HTTP 상태 코드
   isComicsError?: boolean; // 에러 발생 여부
 };

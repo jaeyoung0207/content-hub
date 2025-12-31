@@ -35,15 +35,11 @@ export const DetailCrewInformation = memo(
     const isVideoCrew =
       (isDetailTvType(detailResult, contentMediaType) ||
         isDetailMovieType(detailResult, contentMediaType)) &&
-      detailResult.credits &&
-      detailResult.credits.crew &&
-      detailResult.credits.crew.length !== 0;
+      detailResult.credits?.crew?.length !== 0;
     // 만화 제작진 정보 존재 여부
     const isComicsStaff =
       isDetailComicsType(detailResult, contentMediaType) &&
-      detailResult.staff &&
-      detailResult.staff.edges &&
-      detailResult.staff.edges.length !== 0;
+      detailResult.staff?.edges?.length !== 0;
     return (
       <div>
         {contentMediaType !== getContentMediaType().comicsCode &&

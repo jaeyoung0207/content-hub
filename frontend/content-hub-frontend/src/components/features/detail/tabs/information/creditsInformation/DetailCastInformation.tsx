@@ -35,17 +35,11 @@ export const DetailCastInformation = memo(
     const isVideoCast =
       (isDetailTvType(detailResult, contentMediaType) ||
         isDetailMovieType(detailResult, contentMediaType)) &&
-      detailResult &&
-      detailResult.credits &&
-      detailResult.credits.cast &&
-      detailResult.credits.cast.length !== 0;
+      detailResult.credits?.cast?.length !== 0;
     // 만화 캐릭터 정보 존재 여부
     const isComicsCharacter =
       isDetailComicsType(detailResult, contentMediaType) &&
-      detailResult &&
-      detailResult.characters &&
-      detailResult.characters.edges &&
-      detailResult.characters.edges.length !== 0;
+      detailResult.characters?.edges?.length !== 0;
     return (
       <div>
         {contentMediaType !== getContentMediaType().comicsCode &&

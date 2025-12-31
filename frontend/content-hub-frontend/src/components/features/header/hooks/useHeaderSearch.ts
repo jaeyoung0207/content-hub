@@ -152,9 +152,9 @@ export const useHeaderSearch = ({
   /**
    * 성인물 검색 플래그 설정
    */
-  const setAdultFlg = async () => {
+  const setAdultFlg = () => {
     // 성인물 검색 플래그 설정 API 호출
-    await setAdultFlgMutation.mutate();
+    setAdultFlgMutation.mutate();
     // 재검색
     handleSearchOnClick();
   };
@@ -162,9 +162,9 @@ export const useHeaderSearch = ({
   /**
    * 성인물 검색 플래그 해제
    */
-  const clearAdultFlg = async () => {
+  const clearAdultFlg = () => {
     // 성인물 검색 플래그 해제 API 호출
-    await clearAdultFlgMutation.mutate();
+    clearAdultFlgMutation.mutate();
   };
 
   /**
@@ -193,7 +193,7 @@ export const useHeaderSearch = ({
   /**
    * 검색창 클릭시 처리
    */
-  const handleKeywordOnKeyDown = async () => {
+  const handleKeywordOnKeyDown = () => {
     // 검색어가 비어있지 않은 경우
     if (keyword) {
       // 검색어 입력값 저장
@@ -263,8 +263,8 @@ export const useHeaderSearch = ({
       let searchKeyword = selectedKeyword;
       // 검색어가 인코딩 후 최대 길이를 초과하는 경우, 최대 길이에 맞게 변환
       const encodedMaxLength = settings.tmdbSearchKeywordMaxLength;
-      if (encodeURIComponent(searchKeyword!).length > encodedMaxLength) {
-        searchKeyword = convertURIEncodedText(searchKeyword!, encodedMaxLength);
+      if (encodeURIComponent(searchKeyword).length > encodedMaxLength) {
+        searchKeyword = convertURIEncodedText(searchKeyword, encodedMaxLength);
       }
       // 검색 실행
       navigate(
@@ -287,7 +287,7 @@ export const useHeaderSearch = ({
    */
   const handleSearchOnClick = useCallback(() => {
     // 현재 검색어 설정
-    let currentKeyword = keyword ? keyword : keywordParam;
+    let currentKeyword = keyword || keywordParam;
     // 검색어가 인코딩 후 최대 길이를 초과하는 경우, 최대 길이에 맞게 변환
     const encodedMaxLength = settings.tmdbSearchKeywordMaxLength;
     if (encodeURIComponent(currentKeyword!).length > encodedMaxLength) {
@@ -360,7 +360,7 @@ export const useHeaderSearch = ({
    * @param e 키보드 이벤트
    * @returns void
    */
-  const handleKeywordOnKeyDownEvent = (e: KeyboardEvent) => {
+  const handleKeywordOnKeyDownEvent = (e: KeyboardEvent) => { // NOSONAR
     // 엔터키 입력시
     if (e.key === ENTER_KEY) {
       // 검색 실행 함수 호출
@@ -400,15 +400,14 @@ export const useHeaderSearch = ({
     // 위 화살표 키 입력시
     else if (e.key === ARROW_UP_KEY) {
       // 자동완성 박스 인덱스와 자동완성 리스트 길이를 비교하여 이전 인덱스 계산
-      // 현재 인덱스가 -1인 경우, 이전 인덱스를 자동완성 리스트의 마지막 인덱스로 설정
-      // 현재 인덱스 - 1 < -1인 경우, 이전 인덱스를 -1(검색창)로 설정
-      // 그 외의 경우, 이전 인덱스를 현재 인덱스 - 1로 설정
-      const nextIndex =
-        currentIndex === -1
-          ? autoCompleteList.length - 1
-          : currentIndex - 1 < -1
-            ? -1
-            : currentIndex - 1;
+      let nextIndex;
+      if (currentIndex === -1) {
+        // 현재 인덱스가 -1인 경우, 마지막 인덱스로 이동
+        nextIndex = autoCompleteList.length - 1;
+      } else {
+        // 그 외의 경우, -1(검색창)과 현재 인덱스 - 1 중 더 큰 값으로 이동
+        nextIndex = Math.max(currentIndex - 1, -1);
+      }
       setCurrentIndex(nextIndex);
       // 현재 인덱스가 -1인 경우, 검색어를 저장된 검색어(검색창에 입력된 검색어)로 설정
       // 현재 인덱스가 -1이 아니면, 검색어를 자동완성 리스트의 해당 인덱스의 검색어로 설정

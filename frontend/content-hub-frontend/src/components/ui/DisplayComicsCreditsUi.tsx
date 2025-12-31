@@ -68,7 +68,7 @@ export const DisplayComicsCredits = ({
         <div className="text-2xl font-bold sm:text-3xl">
           {isCharacter ? t('info.characters') : t('info.crew')}
         </div>
-        {isOmit && creditsAllList!.length > settings.detailComicsCount && (
+        {isOmit && creditsAllList.length > settings.detailComicsCount && (
           <div className="text-lx">
             <Link
               to={detailUrlQuery({
@@ -86,71 +86,70 @@ export const DisplayComicsCredits = ({
 
       {/* 크레딧 목록 */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-        {creditsList &&
-          creditsList.map((items, index) => {
-            const creditsInfo = items?.node;
-            const role = items?.role;
-            return (
-              <div key={items?.id + '_' + index}>
-                {creditsInfo && (
-                  <Link
-                    key={items?.id + '_' + index}
-                    to={
-                      creditsInfo.id
-                        ? characterUrlQuery({
-                            comicsCreditsType: isCharacter
-                              ? COMICS_CREDITS_TYPE.CHARACTER
-                              : COMICS_CREDITS_TYPE.STAFF,
-                            creditsId: creditsInfo.id,
-                          })
-                        : '#'
-                    }
-                    aria-label={`${creditsInfo.name?.full ?? ''} ${role ?? ''}`}
-                    className={`${HIGHLIGHT_HOVER_COLOR} block cursor-pointer`}
-                    onClick={() =>
-                      isCharacter
-                        ? checkCharacterId(creditsInfo.id)
-                        : checkStaffId(creditsInfo.id)
-                    }
+        {creditsList?.map((items, index) => {
+          const creditsInfo = items?.node;
+          const role = items?.role;
+          return (
+            <div key={items?.id + '_' + index}>
+              {creditsInfo && (
+                <Link
+                  key={items?.id + '_' + index}
+                  to={
+                    creditsInfo.id
+                      ? characterUrlQuery({
+                          comicsCreditsType: isCharacter
+                            ? COMICS_CREDITS_TYPE.CHARACTER
+                            : COMICS_CREDITS_TYPE.STAFF,
+                          creditsId: creditsInfo.id,
+                        })
+                      : '#'
+                  }
+                  aria-label={`${creditsInfo.name?.full ?? ''} ${role ?? ''}`}
+                  className={`${HIGHLIGHT_HOVER_COLOR} block cursor-pointer`}
+                  onClick={() =>
+                    isCharacter
+                      ? checkCharacterId(creditsInfo.id)
+                      : checkStaffId(creditsInfo.id)
+                  }
+                >
+                  <div
+                    className={`flex h-[105px] w-full items-center rounded-2xl border border-black/5 p-2 sm:p-3 md:h-[140px]`}
                   >
+                    {/* 이미지 */}
+                    <div className="relative flex h-full max-w-[35%] shrink-0 basis-[35%] items-center justify-center">
+                      <LazyImage
+                        src={
+                          creditsInfo.image?.medium ?? COMMON_IMAGES.NO_IMAGE
+                        }
+                        alt={creditsInfo.name?.full || 'Profile'}
+                        className="h-full rounded-2xl object-cover lg:max-h-[105px] lg:w-auto"
+                      />
+                    </div>
+                    {/* 이름 & 역할 */}
                     <div
-                      className={`flex h-[105px] w-full items-center rounded-2xl border border-black/5 p-2 sm:p-3 md:h-[140px]`}
+                      className={`ml-3 flex h-full max-w-[65%] basis-[65%] flex-col`}
                     >
-                      {/* 이미지 */}
-                      <div className="relative flex h-full max-w-[35%] shrink-0 basis-[35%] items-center justify-center">
-                        <LazyImage
-                          src={
-                            creditsInfo.image?.medium ?? COMMON_IMAGES.NO_IMAGE
-                          }
-                          alt={creditsInfo.name?.full || 'Profile'}
-                          className="h-full rounded-2xl object-cover lg:max-h-[105px] lg:w-auto"
-                        />
-                      </div>
-                      {/* 이름 & 역할 */}
                       <div
-                        className={`ml-3 flex h-full max-w-[65%] basis-[65%] flex-col`}
+                        className={`grow rounded-md bg-white/0 p-1 text-sm md:text-base ${OVERFLOW_AUTO_STYLE}`}
                       >
-                        <div
-                          className={`grow rounded-md bg-white/0 p-1 text-sm md:text-base ${OVERFLOW_AUTO_STYLE}`}
-                        >
-                          <div>
-                            <div className="font-medium">
-                              {creditsInfo.name?.full}
-                            </div>
-                            {role && (
-                              <div className="mt-1 text-sm text-gray-600">
-                                {role}
-                              </div>
-                            )}
+                        <div>
+                          <div className="font-medium">
+                            {creditsInfo.name?.full}
                           </div>
+                          {role && (
+                            <div className="mt-1 text-sm text-gray-600">
+                              {role}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-                  </Link>
-                )}
-              </div>
-            );
-          })}
+                  </div>
+                </Link>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

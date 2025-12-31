@@ -51,54 +51,56 @@ export const mappingToMediaType = (
       console.error('toMediaTypeKind is wrong:', mediaType);
       return mediaType;
     }
-    if (mediaType == getDisplayMediaType().aniCode) {
-      return getContentMediaType().aniCode;
-    } else if (mediaType == getDisplayMediaType().dramaCode) {
-      return getContentMediaType().dramaCode;
-    } else if (mediaType == getDisplayMediaType().documentaryCode) {
-      return getContentMediaType().documentaryCode;
-    } else if (mediaType == getDisplayMediaType().kidsCode) {
-      return getContentMediaType().kidsCode;
-    } else if (mediaType == getDisplayMediaType().newsCode) {
-      return getContentMediaType().newsCode;
-    } else if (mediaType == getDisplayMediaType().varietyCode) {
-      return getContentMediaType().varietyCode;
-    } else if (mediaType == getDisplayMediaType().movieCode) {
-      return getContentMediaType().movieCode;
-    } else if (mediaType == getDisplayMediaType().personCode) {
-      return getContentMediaType().personCode;
-    } else if (mediaType == getDisplayMediaType().comicsCode) {
-      return getContentMediaType().comicsCode;
-    } else {
-      return null;
+    switch (mediaType) {
+      case getDisplayMediaType().aniCode:
+        return getContentMediaType().aniCode;
+      case getDisplayMediaType().dramaCode:
+        return getContentMediaType().dramaCode;
+      case getDisplayMediaType().documentaryCode:
+        return getContentMediaType().documentaryCode;
+      case getDisplayMediaType().kidsCode:
+        return getContentMediaType().kidsCode;
+      case getDisplayMediaType().newsCode:
+        return getContentMediaType().newsCode;
+      case getDisplayMediaType().varietyCode:
+        return getContentMediaType().varietyCode;
+      case getDisplayMediaType().movieCode:
+        return getContentMediaType().movieCode;
+      case getDisplayMediaType().personCode:
+        return getContentMediaType().personCode;
+      case getDisplayMediaType().comicsCode:
+        return getContentMediaType().comicsCode;
+      default:
+        return null;
     }
   }
   // 컨텐츠 미디어 타입인 경우 -> 화면 표시용 미디어 타입으로 변환
   else {
-    if (!mediaType || mediaType.length !== 4) {
+    if (mediaType?.length !== 4) {
       console.error('toMediaTypeKind is wrong:', mediaType);
       return mediaType;
     }
-    if (mediaType == getContentMediaType().aniCode) {
-      return getDisplayMediaType().aniCode;
-    } else if (mediaType == getContentMediaType().dramaCode) {
-      return getDisplayMediaType().dramaCode;
-    } else if (mediaType == getContentMediaType().documentaryCode) {
-      return getDisplayMediaType().documentaryCode;
-    } else if (mediaType == getContentMediaType().kidsCode) {
-      return getDisplayMediaType().kidsCode;
-    } else if (mediaType == getContentMediaType().newsCode) {
-      return getDisplayMediaType().newsCode;
-    } else if (mediaType == getContentMediaType().varietyCode) {
-      return getDisplayMediaType().varietyCode;
-    } else if (mediaType == getContentMediaType().movieCode) {
-      return getDisplayMediaType().movieCode;
-    } else if (mediaType == getContentMediaType().personCode) {
-      return getDisplayMediaType().personCode;
-    } else if (mediaType == getContentMediaType().comicsCode) {
-      return getDisplayMediaType().comicsCode;
-    } else {
-      return null;
+    switch (mediaType) {
+      case getContentMediaType().aniCode:
+        return getDisplayMediaType().aniCode;
+      case getContentMediaType().dramaCode:
+        return getDisplayMediaType().dramaCode;
+      case getContentMediaType().documentaryCode:
+        return getDisplayMediaType().documentaryCode;
+      case getContentMediaType().kidsCode:
+        return getDisplayMediaType().kidsCode;
+      case getContentMediaType().newsCode:
+        return getDisplayMediaType().newsCode;
+      case getContentMediaType().varietyCode:
+        return getDisplayMediaType().varietyCode;
+      case getContentMediaType().movieCode:
+        return getDisplayMediaType().movieCode;
+      case getContentMediaType().personCode:
+        return getDisplayMediaType().personCode;
+      case getContentMediaType().comicsCode:
+        return getDisplayMediaType().comicsCode;
+      default:
+        return null;
     }
   }
 };

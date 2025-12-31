@@ -12,7 +12,6 @@ export const useDetailCommentsSchema = z.object({
     .min(0.5, { message: i18n.t('validation.starRatingError') }),
   // 코멘트
   comment: z.string(),
-  // comment: z.string().min(1, { message: "코멘트를 입력해 주세요." }),
 });
 
 /**

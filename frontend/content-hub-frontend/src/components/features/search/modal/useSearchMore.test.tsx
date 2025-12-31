@@ -29,10 +29,18 @@ const queryClientMock = () =>
 vi.mock('@/api/SearchApi', () => {
   return {
     SearchApi: class MockSearchApi {
-      searchAni() {}
-      searchTvExceptAni() {}
-      searchMovie() {}
-      searchComics() {}
+      searchAni() {
+        // 테스트에서 구현
+      }
+      searchTvExceptAni() {
+        // 테스트에서 구현
+      }
+      searchMovie() {
+        // 테스트에서 구현
+      }
+      searchComics() {
+        // 테스트에서 구현
+      }
     },
   };
 });
@@ -164,7 +172,6 @@ class IntersectionObserverMock {
 vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
 
 // 각 테스트 전에 실행되는 설정
-// let queryClient: QueryClient;
 beforeEach(() => {
   observerInstance = [];
   // 새로운 QueryClient 인스턴스 생성
@@ -188,7 +195,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 // useSearchMore 훅 테스트
 describe('useSearchMore', () => {
-  describe('test_judgeExecApi_differentMediaTypes', () => {
+  describe('judgeExecApi_differentMediaTypes', () => {
     it('애니메이션 검색 API 호출 시 결과를 반환', async () => {
       // 애니메이션 이름
       const aniName = '진격의 거인';
@@ -237,7 +244,7 @@ describe('useSearchMore', () => {
       );
     });
 
-    Object.values(displayMediaType).map((mediaType) => {
+    Object.values(displayMediaType).forEach((mediaType) => {
       if (
         mediaType === displayMediaType.aniCode ||
         mediaType === displayMediaType.movieCode ||
@@ -285,9 +292,10 @@ describe('useSearchMore', () => {
             statusText: 'OK',
             config: {} as InternalAxiosRequestConfig,
           });
+
           // useSearchMore 훅 렌더링
           const { result } = renderHook(
-            () => useSearchMore(title, false, mediaType),
+            () => useSearchMore(title, false, mediaType), // NOSONAR
             { wrapper } // 래퍼 컴포넌트 지정
           );
 
@@ -298,7 +306,7 @@ describe('useSearchMore', () => {
           }
 
           // 비동기 작업 완료 대기
-          await waitFor(() => {
+          await waitFor(() => { // NOSONAR
             expect(result.current.data).toBeDefined();
             expect(result.current.data?.pages).toHaveLength(1);
           });
@@ -443,7 +451,7 @@ describe('useSearchMore', () => {
     });
   });
 
-  describe('test_useEffect_infiniteScroll', () => {
+  describe('useEffect_infiniteScroll', () => {
     it('무한 스크롤로 다음 페이지 로드 시 데이터가 추가로 로드됨', async () => {
       const aniName = '귀멸의 칼날';
       // 메서드 스파이 설정
@@ -518,14 +526,14 @@ describe('useSearchMore', () => {
       expect(allData).toHaveLength(2);
       if (
         allData &&
-        isSearchTvType(allData[0]!, displayMediaType.aniCode) &&
+        isSearchTvType(allData[0], displayMediaType.aniCode) &&
         allData[0].name
       ) {
         expect(allData[0].name).toBe(aniName + ' 무한열차편');
       }
       if (
         allData &&
-        isSearchTvType(allData[1]!, displayMediaType.aniCode) &&
+        isSearchTvType(allData[1], displayMediaType.aniCode) &&
         allData[1].name
       ) {
         expect(allData[1].name).toBe(aniName + ' 무한성편');
@@ -535,29 +543,74 @@ describe('useSearchMore', () => {
     });
   });
 
-  describe('test_handleModalClose_overlayClickAndEscKey', () => {
-    it('onOverlayClick이 호출될 때 handleModalClose이 호출됨', () => {
+  describe('handleModalClose_overlayClickAndEscKey', () => {
+    it('모달 바깥영역 클릭 시 handleModalClose이 호출됨', () => {
       const aniName = '진격의 거인';
       const { result } = renderHook(
         () => useSearchMore(aniName, false, displayMediaType.aniCode),
         { wrapper } // 래퍼 컴포넌트 지정
       );
-      // 모달 닫기 핸들러 호출을 위한 가짜 이벤트 객체 생성
-      const mockTarget = document.createElement('div');
-      const event = {
-        currentTarget: mockTarget,
-        target: mockTarget,
-      } as unknown as React.MouseEvent<HTMLDivElement>;
+      // 모달 바깥영역을 시뮬레이션하기 위해 오버레이 요소 생성
+      const modalRef = document.createElement('div');
+      document.body.appendChild(modalRef);
 
-      // 오버레이(모달 바깥 영역) 클릭 시 모달 닫기 함수 호출
+      // 모달 내부로 인식 되도록 modalRef 설정
       act(() => {
-        result.current.onOverlayClick(event);
+        result.current.modalRef.current = modalRef;
       });
+
+      // 오버레이(모달 바깥 영역) 클릭 이벤트 생성
+      const clickEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+      });
+
+      // 문서에 이벤트 디스패치
+      act(() => {
+        document.body.dispatchEvent(clickEvent);
+      });
+
       // setSearchParams가 viewMore 파라미터를 제거하는지 확인
-      expect(setSearchParamsMock).toHaveBeenCalled();
+      expect(setSearchParamsMock).toHaveBeenCalledTimes(1);
       // 호출된 setSearchParams의 인자를 확인
       const calledParams = setSearchParamsMock.mock.calls[0][0];
       expect(calledParams.has('viewMore')).toBe(false);
+
+      // 테스트 후 오버레이 요소 제거
+      modalRef.remove();
+    });
+
+    it('모달 내부 클릭 시 handleModalClose이 호출되지 않음', () => {
+      const aniName = '진격의 거인';
+      const { result } = renderHook(
+        () => useSearchMore(aniName, false, displayMediaType.aniCode),
+        { wrapper } // 래퍼 컴포넌트 지정
+      );
+      // 모달 내부를 시뮬레이션하기 위해 모달 요소 생성
+      const modalRef = document.createElement('div');
+      document.body.appendChild(modalRef);
+
+      // 모달 내부로 인식 되도록 modalRef 설정
+      act(() => {
+        result.current.modalRef.current = modalRef;
+      });
+
+      // 모달 내부 클릭 이벤트 생성
+      const clickEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+      });
+
+      // 모달 내부에 이벤트 디스패치
+      act(() => {
+        modalRef.dispatchEvent(clickEvent);
+      });
+
+      // setSearchParams가 호출되지 않았는지 확인
+      expect(setSearchParamsMock).not.toHaveBeenCalled();
+
+      // 테스트 후 모달 요소 제거
+      modalRef.remove();
     });
 
     it('ESC키 입력 시 handleModalClose이 호출됨', () => {

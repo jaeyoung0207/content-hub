@@ -24,56 +24,53 @@ export const CheckBoxUi = <T extends FieldValues>({
 }: FormFieldProps<T>) => {
   // i18n 번역 훅
   return (
-    <>
-      <div className={cn('mb-1 inline-flex items-center gap-2', className)}>
-        <Controller
-          name={name}
-          control={control}
-          render={({ field: { onChange, value, ref } }) => {
-            const checked =
-              typeof value === 'boolean' ? value : !!defaultChecked;
-            return (
-              <>
-                {/* 체크박스 */}
-                <input
-                  id={name}
-                  type="checkbox"
-                  onChange={(e) => {
-                    onClick?.();
-                    onChange(e.target.checked);
-                  }}
-                  value={value}
-                  ref={ref}
-                  checked={checked}
-                  disabled={disabled}
-                  className={cn(
-                    // 사이즈: 모바일에서 더 큼 → 상위 뷰포트로 갈수록 작아짐
-                    'h-5 w-5 sm:h-4 sm:w-4',
-                    // 라운드/보더만 유지, 배경은 지정하지 않음(브라우저가 accent 처리)
-                    'rounded border border-black/20',
-                    // 포커스 링
-                    'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                    // 파란 배경 + 흰 체크
-                    'accent-primary',
-                    // 비활성화
-                    disabled && 'pointer-events-none opacity-50'
-                  )}
-                />
-                {/* 체크박스 라벨(클릭 영역 확대) */}
-                <label
-                  htmlFor={name}
-                  className={cn(
-                    'cursor-pointer select-none',
-                    'text-foreground text-sm md:text-base'
-                  )}
-                >
-                  {label as ReactNode}
-                </label>
-              </>
-            );
-          }}
-        />
-      </div>
-    </>
+    <div className={cn('mb-1 inline-flex items-center gap-2', className)}>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value, ref } }) => {
+          const checked = typeof value === 'boolean' ? value : !!defaultChecked;
+          return (
+            <>
+              {/* 체크박스 */}
+              <input
+                id={name}
+                type="checkbox"
+                onChange={(e) => {
+                  onClick?.();
+                  onChange(e.target.checked);
+                }}
+                value={value}
+                ref={ref}
+                checked={checked}
+                disabled={disabled}
+                className={cn(
+                  // 사이즈: 모바일에서 더 큼 → 상위 뷰포트로 갈수록 작아짐
+                  'h-5 w-5 sm:h-4 sm:w-4',
+                  // 라운드/보더만 유지, 배경은 지정하지 않음(브라우저가 accent 처리)
+                  'rounded border border-black/20',
+                  // 포커스 링
+                  'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                  // 파란 배경 + 흰 체크
+                  'accent-primary',
+                  // 비활성화
+                  disabled && 'pointer-events-none opacity-50'
+                )}
+              />
+              {/* 체크박스 라벨(클릭 영역 확대) */}
+              <label
+                htmlFor={name}
+                className={cn(
+                  'cursor-pointer select-none',
+                  'text-foreground text-sm md:text-base'
+                )}
+              >
+                {label as ReactNode}
+              </label>
+            </>
+          );
+        }}
+      />
+    </div>
   );
 };

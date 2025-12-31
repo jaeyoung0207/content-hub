@@ -59,7 +59,7 @@ export const DetailComicsCharacterInformation = ({
             // 다음 페이지가 있는 경우 무한 스크롤을 위한 div 태그
             hasNextPage && (
               <div
-                ref={(el) => setObserveTarget && setObserveTarget(el)}
+                ref={(el) => setObserveTarget?.(el)}
                 aria-hidden="true"
               ></div>
             )

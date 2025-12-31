@@ -73,12 +73,12 @@ export const Login = () => {
     // 모바일 또는 태블릿 환경일 경우
     if (isMobileDevice) {
       // 현재 창에서 로그인 페이지로 리다이렉트
-      window.location.replace(url);
+      globalThis.location.replace(url);
     }
     // 데스크탑 환경일 경우
     else {
       // 팝업 창으로 로그인 페이지 열기
-      const loginPopup = window.open(url, '로그인', 'width=500,height=700');
+      const loginPopup = globalThis.open(url, '로그인', 'width=500,height=700');
       // 팝업이 차단되었을 경우 에러 메시지 출력
       if (!loginPopup) {
         toast.warn(t('warn.popupBlocked'), {
@@ -103,15 +103,15 @@ export const Login = () => {
     // 모바일/태블릿 이외 환경일 경우
     const handleLoginMessage = (event: MessageEvent) => {
       // 메시지의 출처가 현재 도메인과 일치하는지 확인
-      if (event.origin !== window.location.origin) {
+      if (event.origin !== globalThis.location.origin) {
         return;
       }
       // 로그인 OAuth 데이터 체크 후 리다이렉트 처리
       checkAndRedirectLoginPage(event, t, navigate, searchParams);
     };
-    window.addEventListener('message', handleLoginMessage);
+    globalThis.addEventListener('message', handleLoginMessage);
     return () => {
-      window.removeEventListener('message', handleLoginMessage);
+      globalThis.removeEventListener('message', handleLoginMessage);
     };
   }, [navigate, t, isMobileDevice, codeParam, searchParams]);
 
@@ -250,6 +250,5 @@ const checkAndRedirectLoginPage = (
     toast.error(t('error.loginError'), {
       toastId: 'loginPopupError',
     });
-    return;
   }
 };

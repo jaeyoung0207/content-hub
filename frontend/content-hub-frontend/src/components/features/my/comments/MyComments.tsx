@@ -8,13 +8,13 @@ import {
 } from '@/components/common/constants/constants';
 import { getContentMediaType } from '@/components/common/utils/convertUtil';
 import { useNavigate } from 'react-router-dom';
-import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { useTranslation } from 'react-i18next';
 import { settings } from '@/components/common/config/settings';
 import { StarRatingUi } from '@/components/ui/StarRatingUi';
 import { ButtonUi, LazyImage } from '@/components/ui/common';
 import { BsStarFill } from 'react-icons/bs';
 import { isMobileOnly } from 'react-device-detect';
+import { navigateToDetailPage } from '@/components/common/utils/navigateUtil';
 
 /**
  * 나의 코멘트 컴포넌트
@@ -51,7 +51,7 @@ export const MyComments = () => {
       </div>
       {isLoading ? (
         <LoadingUi />
-      ) : data && data.length > 0 ? (
+      ) : data && data.length > 0 ? ( // NOSONAR
         <div>
           <div className="mb-4 text-lg font-semibold sm:text-xl">
             {t('info.totalComments', { totalElements })}
@@ -64,11 +64,17 @@ export const MyComments = () => {
               const isComics =
                 items.contentMediaType === getContentMediaType().comicsCode;
               // 썸네일 이미지 경로
-              const thumbnailImageUrl = items.thumbnailImageUrl
-                ? isComics
-                  ? items.thumbnailImageUrl
-                  : thumbnailImagePath + items.thumbnailImageUrl
-                : COMMON_IMAGES.NO_IMAGE;
+              let thumbnailImageUrl;
+              if (items.thumbnailImageUrl) {
+                if (isComics) {
+                  thumbnailImageUrl = items.thumbnailImageUrl;
+                } else {
+                  thumbnailImageUrl =
+                    thumbnailImagePath + items.thumbnailImageUrl;
+                }
+              } else {
+                thumbnailImageUrl = COMMON_IMAGES.NO_IMAGE;
+              }
               // 코멘트 배열화
               const commentArray = (items.comment ?? '').split('\n');
               // 코멘트 생략 처리(개행 문자 수)
@@ -77,15 +83,20 @@ export const MyComments = () => {
               const isLengthOmit =
                 (items.comment ?? '').length > isOmitCommentLength;
               // 표시할 코멘트
-              const comment = !isOmitComment[index]
-                ? isLfOmit
-                  ? commentArray.slice(0, isOmitCommentLf).join('\n') +
-                    t('info.omissionString')
-                  : isLengthOmit
-                    ? items.comment?.substring(0, isOmitCommentLength) +
-                      t('info.omissionString')
-                    : items.comment
-                : items.comment;
+              let comment;
+              if (isOmitComment[index]) {
+                comment = items.comment;
+              } else if (isLfOmit) {
+                comment =
+                  commentArray.slice(0, isOmitCommentLf).join('\n') +
+                  t('info.omissionString');
+              } else if (isLengthOmit) {
+                comment =
+                  items.comment?.substring(0, isOmitCommentLength) +
+                  t('info.omissionString');
+              } else {
+                comment = items.comment;
+              }
 
               return (
                 <article
@@ -95,15 +106,15 @@ export const MyComments = () => {
                 >
                   <div className="flex w-full gap-3">
                     <div className="relative flex w-[28%] shrink-0 overflow-hidden rounded-xl bg-white sm:w-40 md:pl-2">
-                      <div
+                      <button
                         className={`relative aspect-[16/9] w-full cursor-pointer`}
                         onClick={() => {
-                          const detailUrl = detailUrlQuery({
-                            contentMediaType: items.contentMediaType,
-                            apiId: items.apiId,
-                            tabNo: 3, // 코멘트 탭
-                          });
-                          navigate(detailUrl);
+                          navigateToDetailPage(
+                            navigate,
+                            Number(items.apiId),
+                            items.contentMediaType!,
+                            3 // 코멘트 탭으로 이동
+                          );
                         }}
                         title={items.title || ''} // 썸네일에 제목 툴팁 추가
                       >
@@ -121,7 +132,7 @@ export const MyComments = () => {
                         <div className="mt-1 w-full truncate text-left text-sm font-medium hover:underline">
                           {items.title}
                         </div>
-                      </div>
+                      </button>
                     </div>
 
                     <div className="w-[72%] min-w-0 grow px-2">
@@ -157,7 +168,7 @@ export const MyComments = () => {
                         </time>
                       </div>
                       {/* 코멘트 내용 */}
-                      <div className="pl-2 text-sm whitespace-pre-line">
+                      <div className="pl-2 text-sm break-all whitespace-pre-line">
                         <div>
                           <div>{comment}</div>
                           {(isLfOmit || isLengthOmit) && (
@@ -182,17 +193,19 @@ export const MyComments = () => {
             })}
           </div>
           {/* 페이지 네비게이션 */}
-          <div className="mt-6 flex justify-center">
-            <PagenationUi
-              pageCount={totalPages} // 전체 페이지 수
-              pageRangeDisplayed={settings.pageRangeDisplayed} // 한 번에 표시할 페이지 수
-              marginPagesDisplayed={settings.marginPagesDisplayed} // 양쪽에 표시할 페이지 수
-              currentPage={currentPage} // 현재 페이지 (0부터 시작)
-              onPageChange={(selectedItem) =>
-                handlePageOnClick(selectedItem.selected)
-              } // 페이지 변경 시 호출되는 함수
-            />
-          </div>
+          {totalPages > 0 && (
+            <div className="mt-6 flex justify-center">
+              <PagenationUi
+                pageCount={totalPages} // 전체 페이지 수
+                pageRangeDisplayed={settings.pageRangeDisplayed} // 한 번에 표시할 페이지 수
+                marginPagesDisplayed={settings.marginPagesDisplayed} // 양쪽에 표시할 페이지 수
+                currentPage={currentPage} // 현재 페이지 (0부터 시작)
+                onPageChange={(selectedItem) =>
+                  handlePageOnClick(selectedItem.selected)
+                } // 페이지 변경 시 호출되는 함수
+              />
+            </div>
+          )}
         </div>
       ) : (
         // 코멘트가 없을 때

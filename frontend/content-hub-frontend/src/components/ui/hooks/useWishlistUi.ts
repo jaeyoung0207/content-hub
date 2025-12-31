@@ -95,12 +95,12 @@ export const useWishlistUi = ({
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
-      } else {
-        toast.warning(t('info.existsInWishlist', { title: title }), {
-          autoClose: 1000,
-          style: { whiteSpace: 'pre-line' },
-        });
+        return;
       }
+      toast.warning(t('info.existsInWishlist', { title: title }), {
+        autoClose: 1000,
+        style: { whiteSpace: 'pre-line' },
+      });
     },
     onError: () => {
       toast.error(t('error.failedToAddWishlist', { title: title }), {
@@ -134,12 +134,12 @@ export const useWishlistUi = ({
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
-      } else {
-        toast.warning(t('info.notExistsInWishlist', { title: title }), {
-          autoClose: 1000,
-          style: { whiteSpace: 'pre-line' },
-        });
+        return;
       }
+      toast.warning(t('info.notExistsInWishlist', { title: title }), {
+        autoClose: 1000,
+        style: { whiteSpace: 'pre-line' },
+      });
     },
     onError: () => {
       toast.error(t('error.failedToRemoveWishlist', { title: title }), {

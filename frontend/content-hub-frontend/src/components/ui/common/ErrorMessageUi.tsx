@@ -24,7 +24,7 @@ export const ErrorMessageUi = ({
    * 각 렌더링마다 toast 메세지를 표시하지 않고, 의존성 배열의 변경에 따라서만 토스트를 표시하도록 useEffect 훅을 사용
    */
   useEffect(() => {
-    const errorToastId = toastId ? toastId : errorMsg;
+    const errorToastId = toastId || errorMsg;
     // toast 메시지 표시
     if (errorMsg && isOnlyToast) {
       toast.error(errorMsg, { toastId: errorToastId, autoClose: false });

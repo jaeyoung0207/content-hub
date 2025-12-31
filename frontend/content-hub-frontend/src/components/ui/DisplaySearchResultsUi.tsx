@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { RecommendationContentResultType } from '../features/detail/tabs/recommendation/useDetailRecommendation';
 import { SearchCommonResultType } from '../features/search/Search';
 import { Link, useNavigate } from 'react-router-dom';
-import { detailUrlQuery, viewMoreUrlQuery } from '../common/utils/urlUtil';
+import { viewMoreUrlQuery } from '../common/utils/urlUtil';
 import {
   COMMON_IMAGES,
   SEARCH_SCREEN_TYPE,
@@ -10,7 +10,6 @@ import {
   WIDTH_300,
 } from '../common/constants/constants';
 import { commonErrorHandler } from '../common/utils/errorUtil';
-import { checkApiId } from '../common/utils/checkUtil';
 import {
   isRecommendationsTvType,
   isSearchTvType,
@@ -20,6 +19,7 @@ import { HIGHLIGHT_HOVER_COLOR } from '../common/constants/tailwindStyles';
 import { WishlistUi } from './WishlistUi';
 import { useUserStore } from '../common/store/globalStateStore';
 import { getDisplayMediaType } from '../common/utils/convertUtil';
+import { navigateToDetailPage } from '../common/utils/navigateUtil';
 
 /**
  * 각 미디어 검색결과 컴포넌트 props 타입
@@ -110,13 +110,18 @@ export const DisplaySearchResults = ({
         {results.length !== 0 &&
           results.map((items, index) => {
             // 썸네일 이미지 경로
-            const thumbnail = items.backdropPath
-              ? displayMediaType === getDisplayMediaType().comicsCode
-                ? items.backdropPath
-                : thumbnailImagePath + items.backdropPath
-              : items.posterPath
-                ? thumbnailImagePath + items.posterPath
-                : COMMON_IMAGES.NO_IMAGE;
+            let thumbnail: string;
+            if (items.backdropPath) {
+              if (isComics) {
+                thumbnail = items.backdropPath;
+              } else {
+                thumbnail = thumbnailImagePath + items.backdropPath;
+              }
+            } else if (items.posterPath) {
+              thumbnail = thumbnailImagePath + items.posterPath;
+            } else {
+              thumbnail = COMMON_IMAGES.NO_IMAGE;
+            }
             // 제목
             const title =
               isSearchTvType(items, displayMediaType) ||
@@ -130,31 +135,30 @@ export const DisplaySearchResults = ({
 
             return (
               <div
-                key={items.id + '_' + index}
-                className={`${HIGHLIGHT_HOVER_COLOR} cursor-pointer`}
-                onClick={commonErrorHandler(() => {
-                  // apiId 체크
-                  checkApiId(items.id);
-                  // 상세화면 URL 생성
-                  const detailUrl = detailUrlQuery({
-                    contentMediaType: items.contentMediaType!,
-                    apiId: String(items.id),
-                    tabNo: 0,
-                  });
-                  // 상세화면 이동
-                  navigate(detailUrl);
-                })}
+                key={items.id + '-' + index}
+                className={`${HIGHLIGHT_HOVER_COLOR}`}
               >
                 {/* 썸네일 */}
                 <div className="overflow-hidden">
                   <div
                     className={`relative flex h-full w-full justify-center ${aspectClass}`}
                   >
-                    <LazyImage
-                      src={thumbnail}
-                      alt={title || 'Thumbnail Image'}
-                      className={`h-full w-full rounded-2xl object-cover`}
-                    />
+                    <button
+                      className="cursor-pointer"
+                      onClick={commonErrorHandler(() => {
+                        navigateToDetailPage(
+                          navigate,
+                          items.id,
+                          items.contentMediaType!
+                        );
+                      })}
+                    >
+                      <LazyImage
+                        src={thumbnail}
+                        alt={title || 'Thumbnail Image'}
+                        className={`h-full w-full rounded-2xl object-cover`}
+                      />
+                    </button>
                     <div className={heartClass}>
                       <WishlistUi
                         contentMediaType={items.contentMediaType!}
@@ -171,12 +175,19 @@ export const DisplaySearchResults = ({
                   </div>
                 </div>
                 {/* 제목 */}
-                <div
-                  className="relative mt-2 line-clamp-2 px-1 text-base sm:text-lg"
+                <button
+                  onClick={commonErrorHandler(() => {
+                    navigateToDetailPage(
+                      navigate,
+                      items.id,
+                      items.contentMediaType!
+                    );
+                  })}
+                  className="relative mt-2 line-clamp-2 cursor-pointer px-1 text-left text-base hover:underline sm:text-lg"
                   title={title || ''} // 툴팁용 title 속성
                 >
                   {title}
-                </div>
+                </button>
               </div>
             );
           })}

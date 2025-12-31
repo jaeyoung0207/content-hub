@@ -51,7 +51,9 @@ export const DetailComicsInformation = ({
             {t('info.overview')}
           </div>
           <div className="mb-8 text-sm leading-relaxed whitespace-pre-line sm:text-base">
-            <div dangerouslySetInnerHTML={{ __html: overview }}></div>
+            <div
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(overview) }}
+            ></div>
           </div>
         </>
       )}
