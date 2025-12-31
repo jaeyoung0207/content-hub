@@ -196,12 +196,14 @@ export const Header = () => {
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-3 sm:h-16">
           {isMobileOnly ? (
-            // 모바일 화면일 때 메뉴 아이콘
-            <button
-              type="button"
-              aria-label="메뉴 아이콘"
-              onClick={commonErrorHandler(handleMenuIconOnClick)}
-            >
+            <div>
+              {/* 모바일 화면일 때 메뉴 아이콘 */}
+              <button
+                type="button"
+                className="absolute cursor-pointer items-center justify-center w-8 h-8"
+                aria-label="메뉴 아이콘"
+                onClick={commonErrorHandler(handleMenuIconOnClick)}
+              />
               <div className="cursor-pointer" ref={menuRef}>
                 {isMenuOpen ? (
                   <div>
@@ -209,13 +211,17 @@ export const Header = () => {
                     <div className="flex justify-center">
                       {/* 메뉴 열림 상태일 때 표시할 내용 */}
                       <div
-                        className={`absolute z-50 mt-2 w-28 gap-y-10 rounded border bg-white p-1 shadow-2xl ${isMobileOnly ? 'left-1' : 'left-30'}`}
+                        className={`absolute z-50 mt-2 w-28 gap-y-10 rounded border bg-white p-1 shadow-2xl left-1`}
                       >
                         {/* 홈 */}
                         <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
                           <button
+                            type="button"
                             className="w-full cursor-pointer"
-                            onClick={commonErrorHandler(handleHomeOnClick)}
+                            onClick={() => { 
+                              commonErrorHandler(handleHomeOnClick)();
+                              handleMenuIconOnClick();
+                            }}
                           >
                             {t('info.home')}
                           </button>
@@ -223,8 +229,12 @@ export const Header = () => {
                         {/* 위시리스트 */}
                         <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
                           <button
+                            type="button"
                             className="w-full cursor-pointer"
-                            onClick={commonErrorHandler(handleWishlistOnClick)}
+                            onClick={() => { 
+                              commonErrorHandler(handleWishlistOnClick)();
+                              handleMenuIconOnClick();
+                            }}
                           >
                             {t('info.wishlist')}
                           </button>
@@ -236,7 +246,7 @@ export const Header = () => {
                   <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 닫힘" />
                 )}
               </div>
-            </button>
+            </div>
           ) : (
             // 데스크탑 화면일 때 아이콘들
             <>
@@ -407,6 +417,7 @@ export const Header = () => {
               <div className="relative" ref={userOptionRef}>
                 {/* 유저 닉네임 */}
                 <button
+                  type="button"
                   className="flex cursor-pointer items-center text-sm break-words text-yellow-600 md:text-base"
                   onClick={handleUserOptionToggle}
                   onMouseEnter={() =>
@@ -508,11 +519,11 @@ const AutoCompleteBox = memo(
                 item.search(new RegExp(savedKeyword, 'gi')) === -1
                   ? [item]
                   : item
-                      .replaceAll(
-                        new RegExp(savedKeyword, 'gi'),
-                        tab.concat(savedKeyword).concat(tab)
-                      )
-                      .split(tab);
+                    .replaceAll(
+                      new RegExp(savedKeyword, 'gi'),
+                      tab.concat(savedKeyword).concat(tab)
+                    )
+                    .split(tab);
 
               // 현재 인덱스와 비교하여 활성화 상태 결정
               const isActive = index === currentIndex;

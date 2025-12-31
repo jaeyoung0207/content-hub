@@ -141,19 +141,33 @@ export const Detail = memo(() => { // NOSONAR
   // 상영 시간
   const movieRuntime =
     isMovieType && data.runtime ? data.runtime + t('info.minutes') : undefined;
+    
   // 작품 상태
-  const contentStatus =
-    data?.status &&
-    ((isTvType &&
-      (Object.keys(TV_RELEASE_STATUS).some(
-        (key) => key === data.status && key === 'Returning Series'
-      ) && data.nextEpisodeToAir?.airDate
-        ? t('info.onAir')
-        : (TV_RELEASE_STATUS[data.status] ?? t('info.unknown')))) ||
-      (isMovieType &&
-        (MOVIE_RELEASE_STATUS[data.status] ?? t('info.unknown'))) ||
-      (isComicsType &&
-        (COMICS_RELEASE_STATUS[data.status] ?? t('info.unknown'))));
+  const getContentStatus = () => {
+    if (!data?.status) {
+      return undefined;
+    }
+    const status = data.status;
+    // TV 방영 상태
+    if (isTvType) {
+      if (status === 'Returning Series' && data.nextEpisodeToAir?.airDate) {
+        return t('info.onAir');
+      } else {
+        return TV_RELEASE_STATUS[status] ?? t('info.unknown');
+      }
+    }
+    // 영화 상영 상태
+    else if (isMovieType) {
+      return MOVIE_RELEASE_STATUS[status] ?? t('info.unknown');
+    }
+    // 만화 연재 상태
+    else if (isComicsType) {
+      return COMICS_RELEASE_STATUS[status] ?? t('info.unknown');
+    }
+    return undefined;
+  };
+  const contentStatus = getContentStatus();
+
   // 총 권수
   let comicsVolume: string | undefined;
   if (isComicsType && data.volumes) {
@@ -176,10 +190,10 @@ export const Detail = memo(() => { // NOSONAR
     releaseDateArray.every((date) => !Number.isNaN(Number(date)));
   const convertedReleaseDate = idValidateDateArray
     ? convertDate(
-        Number(releaseDateArray[0]),
-        Number(releaseDateArray[1]),
-        Number(releaseDateArray[2])
-      )
+      Number(releaseDateArray[0]),
+      Number(releaseDateArray[1]),
+      Number(releaseDateArray[2])
+    )
     : undefined;
 
   // 포스터 URL (세로형 포스터 비율)

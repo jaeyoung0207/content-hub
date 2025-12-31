@@ -107,6 +107,7 @@ export const MyComments = () => {
                   <div className="flex w-full gap-3">
                     <div className="relative flex w-[28%] shrink-0 overflow-hidden rounded-xl bg-white sm:w-40 md:pl-2">
                       <button
+                        type="button"
                         className={`relative aspect-[16/9] w-full cursor-pointer`}
                         onClick={() => {
                           navigateToDetailPage(

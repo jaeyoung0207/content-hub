@@ -188,6 +188,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                 className={`relative max-w-full overflow-hidden ${aspectClass} bg-white`}
               >
                 <button
+                  type="button"
                   className={`relative flex max-h-full max-w-full cursor-pointer justify-center rounded-2xl ${aspectClass}`}
                   onClick={commonErrorHandler(() =>
                     navigateToDetailPage(
@@ -223,6 +224,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
               </div>
               {/* 제목 */}
               <button
+                type="button"
                 className="relative mr-1 mb-4 ml-1 line-clamp-2 w-full cursor-pointer text-left text-base hover:underline sm:text-lg"
                 title={items.title}
                 onClick={commonErrorHandler(() =>

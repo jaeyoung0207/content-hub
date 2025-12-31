@@ -33,8 +33,16 @@ export const Login = () => {
   const [searchParams] = useSearchParams();
 
   // STATE, NONCE 값 생성
-  const STATE = useMemo(() => Math.random().toString(36).substring(2, 11), []);
-  const NONCE = useMemo(() => Math.random().toString(36).substring(2, 11), []);
+  const STATE = useMemo(() => {
+    const array = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(array);
+    return array[0].toString(36);
+  }, []);
+  const NONCE = useMemo(() => {
+    const array = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(array);
+    return array[0].toString(36);
+  }, []);
 
   // NAVER URL
   const NAVER_AUTH_URL = useMemo(() => {

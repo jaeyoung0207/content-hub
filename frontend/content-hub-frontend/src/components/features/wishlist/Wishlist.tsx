@@ -304,6 +304,7 @@ const DisplayWishlist = ({
               >
                 {/* 썸네일 이미지 */}
                 <button
+                  type="button"
                   className={`relative flex h-full w-full cursor-pointer justify-center ${aspectClass}`}
                   onClick={commonErrorHandler(() =>
                     navigateToDetailPage(
@@ -365,6 +366,7 @@ const DisplayWishlist = ({
 
               {/* 제목 */}
               <button
+                type="button"
                 className="mt-2 line-clamp-2 w-full cursor-pointer px-1 text-left text-base font-medium hover:underline sm:text-lg"
                 title={items.title || ''}
                 onClick={commonErrorHandler(() =>

@@ -105,7 +105,7 @@ export const StarRatingUi = <T extends FieldValues>({
         // 키보드 좌/우(상/하)로 0.5 증감, Home/End로 0/5로 이동
         const handleKeyDown = (e: React.KeyboardEvent) => {
           if (!isStarRatingEditable) return;
-          let next = realValue || 0; // NOSONAR
+          let next: number; // 다음 별점 값
           if (e.key === ARROW_RIGHT_KEY || e.key === ARROW_UP_KEY) {
             next = clamp((realValue ?? 0) + 0.5, 0, 5);
             e.preventDefault();

@@ -144,6 +144,7 @@ export const DisplaySearchResults = ({
                     className={`relative flex h-full w-full justify-center ${aspectClass}`}
                   >
                     <button
+                      type="button"
                       className="cursor-pointer"
                       onClick={commonErrorHandler(() => {
                         navigateToDetailPage(
@@ -176,6 +177,7 @@ export const DisplaySearchResults = ({
                 </div>
                 {/* 제목 */}
                 <button
+                  type="button"
                   onClick={commonErrorHandler(() => {
                     navigateToDetailPage(
                       navigate,
