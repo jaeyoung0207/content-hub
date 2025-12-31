@@ -55,10 +55,10 @@ function App() {
         <div className="pointer-events-auto">
           <ConfirmModalUi
             isOpen={isConfirmDialogOpen}
-            onOk={onOk!}
-            onCancel={onCancel!}
+            onOk={onOk}
+            onCancel={onCancel}
             title={title}
-            confirmMsg={confirmMsg!}
+            confirmMsg={confirmMsg}
           />
         </div>
       </div>

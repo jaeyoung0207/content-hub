@@ -44,8 +44,8 @@ export const useNaverLogin = () => {
   const getNaverLoginInfo = async (code: string, state: string) => {
     // 네이버 로그인 API 호출
     const response = await loginApi.getNaverLoginInfo({
-      code: code!,
-      state: state!,
+      code: code,
+      state: state,
     });
     const loginInfo = response.data;
     // 로그인 정보를 전역 상태에 저장

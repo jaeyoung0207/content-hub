@@ -15,8 +15,8 @@ import { isMobileOnly } from 'react-device-detect';
 export type DetailVideoInformationPropsType = {
   detailResult: DetailResponseType;
   contentMediaType: string;
-  setObserveTarget?: Dispatch<SetStateAction<HTMLDivElement | null>>;
-  displayCount?: number;
+  setObserveTarget?: Dispatch<SetStateAction<HTMLDivElement | null>>; // NOSONAR
+  displayCount?: number; // NOSONAR
 };
 
 /**
@@ -54,8 +54,7 @@ export const DetailVideoInformation = ({
           (isDetailTvType(detailResult, contentMediaType) ||
             isDetailMovieType(detailResult, contentMediaType)) && (
             <>
-              {detailResult.credits &&
-                detailResult.credits.cast &&
+              {detailResult.credits?.cast &&
                 detailResult.credits.cast.length !== 0 && (
                   <div className={commonClass}>
                     {/* 출연진 */}
@@ -67,8 +66,7 @@ export const DetailVideoInformation = ({
                     />
                   </div>
                 )}
-              {detailResult.credits &&
-                detailResult.credits.crew &&
+              {detailResult.credits?.crew &&
                 detailResult.credits.crew.length !== 0 && (
                   <div className={commonClass}>
                     {/* 제작진 */}

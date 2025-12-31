@@ -76,7 +76,7 @@ export const isSearchComicsType = (
 export const isRecommendationsTvType = (
   results: RecommendationContentResultType,
   displayMediaType: string
-): results is DetailRecommendationsTvResultsDto => {
+): results is DetailRecommendationsTvResultsDto => { // NOSONAR
   return (
     results &&
     (displayMediaType === getDisplayMediaType().aniCode ||

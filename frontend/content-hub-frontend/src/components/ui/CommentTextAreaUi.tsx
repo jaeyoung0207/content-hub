@@ -31,38 +31,32 @@ export const CommentTextAreaUi = <T extends FieldValues>({
   // i18n 번역 훅
   const { t } = useTranslation();
   return (
-    <>
-      <div className="flex justify-center">
-        <div className="w-88 sm:w-lg md:w-2xl lg:w-3xl">
-          <Controller
-            name={name}
-            render={({ field: { name, onBlur, onChange, value } }) => {
-              return (
-                <>
-                  <div className="block">
-                    {/* 텍스트 영역 */}
-                    <TextareaUi
-                      className={'mt-2'}
-                      textareaSize="lg"
-                      placeholder={t('info.requireComment')}
-                      name={name}
-                      value={value ?? ''}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      onClick={
-                        onClick ? commonErrorHandler(onClick) : undefined
-                      } // false일 때는 undefined로 설정
-                      ref={textAreaRef}
-                      maxLength={maxLength}
-                    />
-                  </div>
-                </>
-              );
-            }}
-            control={control}
-          ></Controller>
-        </div>
+    <div className="flex justify-center">
+      <div className="w-88 sm:w-lg md:w-2xl lg:w-3xl">
+        <Controller
+          name={name}
+          render={({ field: { name, onBlur, onChange, value } }) => {
+            return (
+              <div className="block">
+                {/* 텍스트 영역 */}
+                <TextareaUi
+                  className={'mt-2'}
+                  textareaSize="lg"
+                  placeholder={t('info.requireComment')}
+                  name={name}
+                  value={value ?? ''}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  onClick={onClick ? commonErrorHandler(onClick) : undefined} // false일 때는 undefined로 설정
+                  ref={textAreaRef}
+                  maxLength={maxLength}
+                />
+              </div>
+            );
+          }}
+          control={control}
+        ></Controller>
       </div>
-    </>
+    </div>
   );
 };

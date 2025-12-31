@@ -52,68 +52,66 @@ export const RadioButtonGroupUi = <T extends FieldValues>({
       : 'grid gap-1';
 
   return (
-    <>
-      <div>
-        {label && (
-          <div
-            id={groupLabelId}
-            className="mb-1 text-sm font-semibold md:text-base"
-          >
-            {label}
-          </div>
-        )}
-        <Controller
-          name={name}
-          control={control}
-          render={({ field: { onChange, value } }) => {
-            return (
-              <div
-                role="radiogroup"
-                aria-labelledby={label ? groupLabelId : undefined}
-                className={groupClass}
-              >
-                {/* 라디오 버튼 */}
-                {radioButtonList.map((items) => {
-                  const id = `${String(name)}-${items.value}`;
-                  const checked = value === items.value;
-                  return (
-                    <label
-                      key={items.value}
-                      htmlFor={id}
+    <div>
+      {label && (
+        <div
+          id={groupLabelId}
+          className="mb-1 text-sm font-semibold md:text-base"
+        >
+          {label}
+        </div>
+      )}
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value } }) => {
+          return (
+            <div
+              role="radiogroup"
+              aria-labelledby={label ? groupLabelId : undefined}
+              className={groupClass}
+            >
+              {/* 라디오 버튼 */}
+              {radioButtonList.map((items) => {
+                const id = `${String(name)}-${items.value}`;
+                const checked = value === items.value;
+                return (
+                  <label
+                    key={items.value}
+                    htmlFor={id}
+                    className={cn(
+                      'inline-flex cursor-pointer items-center gap-2 select-none'
+                    )}
+                  >
+                    <input
+                      id={id}
+                      type="radio"
+                      onChange={() => {
+                        onClickRadioButton?.(items.value);
+                        onChange(items.value);
+                      }}
+                      value={items.value}
+                      checked={checked}
+                      defaultValue={defaultValue}
+                      defaultChecked={defaultChecked}
                       className={cn(
-                        'inline-flex cursor-pointer items-center gap-2 select-none'
+                        'h-5 w-5 sm:h-4 sm:w-4',
+                        'rounded-full border border-black/20',
+                        'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                        'accent-primary'
                       )}
-                    >
-                      <input
-                        id={id}
-                        type="radio"
-                        onChange={() => {
-                          onClickRadioButton?.(items.value);
-                          onChange(items.value);
-                        }}
-                        value={items.value}
-                        checked={checked}
-                        defaultValue={defaultValue}
-                        defaultChecked={defaultChecked}
-                        className={cn(
-                          'h-5 w-5 sm:h-4 sm:w-4',
-                          'rounded-full border border-black/20',
-                          'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                          'accent-primary'
-                        )}
-                      />
-                      <span className="text-foreground text-sm md:text-base">
-                        {items.label}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            );
-          }}
-        />
-      </div>
-    </>
+                    />
+                    <span className="text-foreground text-sm md:text-base">
+                      {items.label}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          );
+        }}
+      />
+    </div>
   );
 };
 

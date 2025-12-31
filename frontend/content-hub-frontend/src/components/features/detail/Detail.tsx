@@ -51,7 +51,7 @@ const RecommendationContent = lazy(
  * @param apiId API ID
  * @param tabNo 탭 번호
  */
-export const Detail = memo(() => {
+export const Detail = memo(() => { // NOSONAR
   // URL 파라미터에서 값을 가져오는 useParams 훅
   const { contentMediaType } = useParams();
   const { apiId } = useParams();
@@ -119,11 +119,14 @@ export const Detail = memo(() => {
   const isComicsType =
     data && contentMediaType && isDetailComicsType(data, contentMediaType);
   // 작품 제목
-  const title = isTvType
-    ? data.name
-    : isMovieType || isComicsType
-      ? data.title
-      : 'No Title';
+  let title: string | undefined;
+  if (isTvType) {
+    title = data.name;
+  } else if (isMovieType || isComicsType) {
+    title = data.title;
+  } else {
+    title = 'No Title';
+  }
   // 장르
   const videoGenres =
     (isTvType || isMovieType) &&
@@ -138,26 +141,44 @@ export const Detail = memo(() => {
   // 상영 시간
   const movieRuntime =
     isMovieType && data.runtime ? data.runtime + t('info.minutes') : undefined;
+    
   // 작품 상태
-  const contentStatus =
-    data?.status &&
-    ((isTvType &&
-      (Object.keys(TV_RELEASE_STATUS).find(
-        (key) => key === data.status && key === 'Returning Series'
-      ) && data.nextEpisodeToAir?.airDate
-        ? t('info.onAir')
-        : (TV_RELEASE_STATUS[data.status] ?? t('info.unknown')))) ||
-      (isMovieType &&
-        (MOVIE_RELEASE_STATUS[data.status] ?? t('info.unknown'))) ||
-      (isComicsType &&
-        (COMICS_RELEASE_STATUS[data.status] ?? t('info.unknown'))));
+  const getContentStatus = () => {
+    if (!data?.status) {
+      return undefined;
+    }
+    const status = data.status;
+    // TV 방영 상태
+    if (isTvType) {
+      if (status === 'Returning Series' && data.nextEpisodeToAir?.airDate) {
+        return t('info.onAir');
+      } else {
+        return TV_RELEASE_STATUS[status] ?? t('info.unknown');
+      }
+    }
+    // 영화 상영 상태
+    else if (isMovieType) {
+      return MOVIE_RELEASE_STATUS[status] ?? t('info.unknown');
+    }
+    // 만화 연재 상태
+    else if (isComicsType) {
+      return COMICS_RELEASE_STATUS[status] ?? t('info.unknown');
+    }
+    return undefined;
+  };
+  const contentStatus = getContentStatus();
+
   // 총 권수
-  const comicsVolume =
-    isComicsType && data.volumes
-      ? data.status === 'RELEASING'
-        ? t('info.notEndedYet')
-        : data.volumes + t('info.volume')
-      : undefined;
+  let comicsVolume: string | undefined;
+  if (isComicsType && data.volumes) {
+    if (data.status === 'RELEASING') {
+      comicsVolume = t('info.notEndedYet');
+    } else {
+      comicsVolume = data.volumes + t('info.volume');
+    }
+  } else {
+    comicsVolume = undefined;
+  }
   // 출시일(방영 시작일, 개봉일, 연재 시작일)
   const releaseDateArray =
     (isTvType && data.firstAirDate?.split('-')) ||
@@ -166,23 +187,29 @@ export const Detail = memo(() => {
   const idValidateDateArray =
     Array.isArray(releaseDateArray) &&
     releaseDateArray.length === 3 &&
-    releaseDateArray.every((date) => !isNaN(Number(date)));
+    releaseDateArray.every((date) => !Number.isNaN(Number(date)));
   const convertedReleaseDate = idValidateDateArray
     ? convertDate(
-        Number(releaseDateArray[0]),
-        Number(releaseDateArray[1]),
-        Number(releaseDateArray[2])
-      )
+      Number(releaseDateArray[0]),
+      Number(releaseDateArray[1]),
+      Number(releaseDateArray[2])
+    )
     : undefined;
 
   // 포스터 URL (세로형 포스터 비율)
-  const posterSrc = data?.posterPath
-    ? contentMediaType === getContentMediaType().comicsCode
-      ? data.posterPath
-      : TMDB_API_IMAGE_DOMAIN +
+  let posterSrc: string;
+  if (data?.posterPath) {
+    if (isComicsType) {
+      posterSrc = data.posterPath;
+    } else {
+      posterSrc =
+        TMDB_API_IMAGE_DOMAIN +
         (isMobileOnly ? WIDTH_185 : WIDTH_300) +
-        data.posterPath
-    : COMMON_IMAGES.NO_IMAGE;
+        data.posterPath;
+    }
+  } else {
+    posterSrc = COMMON_IMAGES.NO_IMAGE;
+  }
 
   return (
     <div className="pt-16 pb-10 md:pt-20">
@@ -247,20 +274,12 @@ export const Detail = memo(() => {
               <div className="relative aspect-[3/4] w-3/4 md:w-full lg:w-4/5 xl:w-2/3 2xl:w-11/20">
                 <LazyImage
                   src={posterSrc}
-                  alt={
-                    isTvType
-                      ? data.name
-                      : isMovieType
-                        ? data.title
-                        : isComicsType
-                          ? data.title
-                          : ''
-                  }
+                  alt={title}
                   className={`h-full w-full rounded-2xl ${isComicsType ? 'bg-white object-contain' : 'object-cover'}`}
                 />
                 <div className="absolute right-3 bottom-2 z-10">
                   <WishlistUi
-                    contentMediaType={contentMediaType!}
+                    contentMediaType={contentMediaType}
                     apiId={Number(data.id)}
                     title={title!}
                     userId={user?.userId}
@@ -400,9 +419,7 @@ export const Detail = memo(() => {
                       <div className={subTitleStyle}>
                         {t('info.userStarRating') + t('info.colon')}
                       </div>
-                      <div>
-                        {userStarRating ? userStarRating : t('info.notExist')}
-                      </div>
+                      <div>{userStarRating || t('info.notExist')}</div>
                     </li>
                     {/* 볼 수 있는 곳 */}
                     {(isTvType || isMovieType) && data.link && (

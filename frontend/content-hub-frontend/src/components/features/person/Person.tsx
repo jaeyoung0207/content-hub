@@ -43,6 +43,16 @@ export const Person = memo(() => {
   // 소제목 스타일
   const subTitleStyle = 'mr-2 whitespace-nowrap font-medium text-foreground';
 
+  let imagePath: string;
+  if (data?.profilePath) {
+    imagePath =
+      TMDB_API_IMAGE_DOMAIN +
+      (isMobileOnly ? WIDTH_185 : WIDTH_300) +
+      data.profilePath;
+  } else {
+    imagePath = COMMON_IMAGES.NO_IMAGE;
+  }
+
   return (
     <div className="px-2 pt-20 pb-10 md:px-4 md:pt-24 lg:px-8">
       {
@@ -61,13 +71,7 @@ export const Person = memo(() => {
             <div className="md:col-span-1">
               <div className="relative mx-auto aspect-[2/3] w-3/4 md:w-full lg:w-4/5 xl:w-2/3 2xl:w-1/2">
                 <LazyImage
-                  src={
-                    data?.profilePath
-                      ? TMDB_API_IMAGE_DOMAIN +
-                        (isMobileOnly ? WIDTH_185 : WIDTH_300) +
-                        data?.profilePath
-                      : COMMON_IMAGES.NO_IMAGE
-                  }
+                  src={imagePath}
                   className="h-full w-full rounded-2xl object-cover"
                   alt={data.name}
                 />
@@ -228,11 +232,16 @@ const DisplayPersonCredits = memo(({ credits }: DisplayPersonCreditsType) => {
         // 연도 라벨(이전 항목과 동일하면 빈 문자열)
         const prevYear =
           index > 0 ? credits[index - 1]?.releaseYear : undefined;
-        const yearLabel = items.releaseYear
-          ? prevYear === items.releaseYear
-            ? ''
-            : items.releaseYear
-          : t('info.unknown');
+        let yearLabel: string;
+        if (items.releaseYear) {
+          if (prevYear === items.releaseYear) {
+            yearLabel = '';
+          } else {
+            yearLabel = items.releaseYear;
+          }
+        } else {
+          yearLabel = t('info.unknown');
+        }
 
         return (
           <div className="py-2" key={items.id + '_' + index}>

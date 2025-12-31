@@ -57,6 +57,12 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom', // 테스트를 실행할 환경으로 jsdom을 사용하도록 지정
       setupFiles: './src/test/setup.ts', // 테스트 실행 전에 설정 파일을 불러옴
       css: true, // CSS 관련 테스트 지원 활성화
+      // 커버리지 설정
+      coverage: {
+        provider: 'v8', // 커버리지 수집을 위해 V8 엔진 사용
+        reporter: ['text', 'lcov'], // SonarCloud는 lcov.info 파일 사용
+        reportsDirectory: './coverage',
+      },
     },
   };
 });

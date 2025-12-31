@@ -22,7 +22,7 @@ export const ErrorPageWithFullScreen = () => {
    * 페이지를 새로고침하여 홈으로 이동
    */
   const handleReload = () => {
-    window.location.href = '/';
+    globalThis.location.href = '/';
   };
 
   return (

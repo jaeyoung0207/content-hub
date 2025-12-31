@@ -167,17 +167,23 @@ export const DetailComments = ({
           const isLfOmit = commentArray.length > isOmitCommentLf;
           // 코멘트 생략 처리(글자 수)
           const isLengthOmit =
-            items.comment && items.comment!.length > isOmitCommentLength;
+            items.comment && items.comment.length > isOmitCommentLength;
           // 표시할 코멘트
-          const comment = !isOmitComment[index]
-            ? isLfOmit
-              ? commentArray.slice(0, isOmitCommentLf).join('\n') +
-                t('info.omissionString')
-              : isLengthOmit
-                ? items.comment?.substring(0, isOmitCommentLength) +
-                  t('info.omissionString')
-                : items.comment
-            : items.comment;
+          let comment;
+          if (isOmitComment[index]) {
+            comment = items.comment;
+          } else if (isLfOmit) {
+            comment =
+              commentArray.slice(0, isOmitCommentLf).join('\n') +
+              t('info.omissionString');
+          } else if (isLengthOmit) {
+            comment =
+              items.comment?.substring(0, isOmitCommentLength) +
+              t('info.omissionString');
+          } else {
+            comment = items.comment;
+          }
+
           return (
             <article
               key={items.commentId}
@@ -238,8 +244,8 @@ export const DetailComments = ({
               </div>
 
               {/* 코멘트 내용 */}
-              <div className="mr-1 text-sm whitespace-pre-line">
-                <div>{comment}</div>
+              <div className="mr-1 text-sm break-all whitespace-pre-line">
+                <div className="">{comment}</div>
                 {(isLfOmit || isLengthOmit) && (
                   <button
                     className="mt-2 cursor-pointer text-sm text-gray-600 underline"

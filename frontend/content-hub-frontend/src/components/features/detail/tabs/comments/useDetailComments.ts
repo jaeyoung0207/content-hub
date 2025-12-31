@@ -104,7 +104,7 @@ export const useDetailComments = (
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
   // 코멘트 번호 상태
-  const [commentId, setCommentNo] = useState<number>();
+  const [commentId, setCommentId] = useState<number>();
   // 코멘트 총 개수 상태
   const [totalElements, setTotalElements] = useState<number>(0);
   // 무한스크롤 div태그 관찰용 상태
@@ -489,15 +489,15 @@ export const useDetailComments = (
    * 삭제 버튼 클릭 시 처리
    */
   const handleDeleteOnClick = (commentId: number) => {
-    // 유저가 로그인하지 않은 경우
-    if (!user) {
-      // 로그인 확인 모달 열기
-      loginConfirmDialog('info.loginConfirmMsg2', navigate);
-    } else {
+    // 유저가 로그인한 경우
+    if (user) {
       // 코멘트 번호를 Ref에저장
       commentIdRef.current = commentId;
       // 삭제 확인 모달 열기
       setIsDeleteConfirmOpen(true);
+    } else {
+      // 로그인 확인 모달 열기
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
   };
 
@@ -531,15 +531,15 @@ export const useDetailComments = (
     if (isLoading) {
       return;
     }
-    // 유저가 로그인하지 않은 경우
-    if (!user) {
-      // 로그인 확인 모달 열기
-      loginConfirmDialog('info.loginConfirmMsg2', navigate);
-    } else {
+    // 유저가 로그인한 경우
+    if (user) {
       // 코멘트 저장 API 호출
       handleSubmit(async (data) => {
         await saveComment(data);
       })();
+    } else {
+      // 로그인 확인 모달 열기
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
   };
 
@@ -551,17 +551,17 @@ export const useDetailComments = (
     if (isLoading) {
       return;
     }
-    // 유저가 로그인하지 않은 경우
-    if (!user) {
-      // 로그인 확인 모달 열기
-      loginConfirmDialog('info.loginConfirmMsg2', navigate);
-    } else {
+    // 유저가 로그인한 경우
+    if (user) {
       // 코멘트 수정 API 호출
       handleSubmit(async (data) => {
         await updateComment(data);
       })();
       // 코멘트 수정 가능 상태를 false로 변경
       setIsCommentEditable(false);
+    } else {
+      // 로그인 확인 모달 열기
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
   };
 
@@ -570,27 +570,27 @@ export const useDetailComments = (
    * @param commentData
    */
   const handleEditComment = (commentData: DetailCommentsGetDataDto) => {
-    // 유저가 로그인하지 않은 경우
-    if (!user) {
-      // 로그인 확인 모달 열기
-      loginConfirmDialog('info.loginConfirmMsg2', navigate);
-    } else {
-      // 아직 isCommentEditable가 안바뀌었으므로 false로 판정
-      // 해당 코멘트관련 데이터 셋팅
-      if (!isCommentEditable) {
-        setValue('comment', commentData.comment!);
-        setValue('starRating', commentData.starRating!);
-        setCommentNo(commentData.commentId!);
-      }
+    // 유저가 로그인한 경우
+    if (user) {
       // 아직 isCommentEditable가 안바뀌었으므로 true로 판정
       // 셋팅 되었던 코멘트관련 데이터 삭제
-      else {
+      if (isCommentEditable) {
         setValue('comment', '');
         setValue('starRating', 0);
-        setCommentNo(undefined);
+        setCommentId(undefined);
+      }
+      // 아직 isCommentEditable가 안바뀌었으므로 false로 판정
+      // 해당 코멘트관련 데이터 셋팅
+      else {
+        setValue('comment', commentData.comment!);
+        setValue('starRating', commentData.starRating!);
+        setCommentId(commentData.commentId);
       }
       // 코멘트 수정 가능 상태 변경
       setIsCommentEditable(!isCommentEditable);
+    } else {
+      // 로그인 확인 모달 열기
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
   };
 
@@ -603,17 +603,17 @@ export const useDetailComments = (
     if (isLoading) {
       return;
     }
-    // 유저가 로그인하지 않은 경우
-    if (!user) {
-      // 로그인 확인 모달 열기
-      loginConfirmDialog('info.loginConfirmMsg2', navigate);
-    } else {
+    // 유저가 로그인한 경우
+    if (user) {
       // 코멘트 삭제 API 호출
       await deleteComment(commentId);
       // 로그인한 유저의 코멘트 여부 상태를 false로 변경
       setIsMyComment(false);
       // 코멘트 수정 가능 상태를 false로 변경
       setIsCommentEditable(false);
+    } else {
+      // 로그인 확인 모달 열기
+      loginConfirmDialog('info.loginConfirmMsg2', navigate);
     }
   };
 

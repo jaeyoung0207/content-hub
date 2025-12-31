@@ -57,13 +57,14 @@ export const queryClientConfig = new QueryClient({
  * AxiosError를 처리하고, 에러 메시지를 console, toast로 표시
  * @param error 에러 객체
  */
-const outputError = (error: Error) => {
+/* sonar:off */
+const outputError = (error: Error) => { // NOSONAR
   // 에러가 AxiosError인 경우
   if (isAxiosError(error)) {
-    // 에러페이지 또는 점검페이지의 경우 처리 종료(window.location.href 실행시 중복로딩하는 경우에 중복처리 방지)
+    // 에러페이지 또는 점검페이지의 경우 처리 종료(globalThis.location.href 실행시 중복로딩하는 경우에 중복처리 방지)
     if (
-      window.location.pathname.startsWith('/error') ||
-      window.location.pathname.startsWith('/maintenance')
+      globalThis.location.pathname.startsWith('/error') ||
+      globalThis.location.pathname.startsWith('/maintenance')
     ) {
       return;
     }
@@ -73,19 +74,23 @@ const outputError = (error: Error) => {
       // 네트워크 에러 코드
       const NETWORK_ERROR = 'ERR_NETWORK';
       // 에러 이름
-      const errorName =
-        axiosError.code === NETWORK_ERROR
-          ? ERROR_MESSAGE.NETWORK_ERROR.name
-          : axiosError.code
-            ? axiosError.code
-            : ERROR_MESSAGE.UNEXPECTED_ERROR.name;
+      let errorName: string;
+      if (axiosError.code === NETWORK_ERROR) {
+        errorName = ERROR_MESSAGE.NETWORK_ERROR.name;
+      } else if (axiosError.code) {
+        errorName = axiosError.code;
+      } else {
+        errorName = ERROR_MESSAGE.UNEXPECTED_ERROR.name;
+      }
       // 에러 메시지
-      const errorMsg =
-        axiosError.code === NETWORK_ERROR
-          ? ERROR_MESSAGE.NETWORK_ERROR.message
-          : axiosError.message
-            ? axiosError.message
-            : ERROR_MESSAGE.UNEXPECTED_ERROR.message;
+      let errorMsg: string;
+      if (axiosError.code === NETWORK_ERROR) {
+        errorMsg = ERROR_MESSAGE.NETWORK_ERROR.message;
+      } else if (axiosError.message) {
+        errorMsg = axiosError.message;
+      } else {
+        errorMsg = ERROR_MESSAGE.UNEXPECTED_ERROR.message;
+      }
       changeConsoleColor(formattingErrorMsg(errorName, errorMsg));
       toast.error(formattingErrorMsg(errorName, errorMsg), {
         toastId: 'unexpectedError', // 중복 토스트 방지
@@ -179,7 +184,7 @@ const outputError = (error: Error) => {
   }
   // Sentry 에러 보고
   (async () => {
-    (await Sentry).setTag('page', window.location.pathname);
+    (await Sentry).setTag('page', globalThis.location.pathname);
     (await Sentry).captureException(error);
   })();
 };
@@ -191,19 +196,19 @@ const outputError = (error: Error) => {
  */
 const redirectFromErrorCode = (status: number): boolean => {
   if (status === ERROR_CODE.UNAUTHORIZED.status) {
-    window.location.replace('/');
+    globalThis.location.replace('/');
     return true;
   } else if (status === ERROR_CODE.FORBIDDEN.status) {
     const message = i18n.t('error.forbiddenError');
-    window.location.replace(
+    globalThis.location.replace(
       `/error?status=${status}&message=${encodeURIComponent(message)}`
     );
     return true;
   } else if (status === ERROR_CODE.NOT_FOUND.status) {
-    window.location.replace('/error');
+    globalThis.location.replace('/error');
     return true;
   } else if (status === ERROR_CODE.SERVICE_UNAVAILABLE.status) {
-    window.location.replace('/maintenance');
+    globalThis.location.replace('/maintenance');
     return true;
   }
   return false;

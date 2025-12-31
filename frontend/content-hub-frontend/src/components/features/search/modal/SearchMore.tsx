@@ -28,7 +28,7 @@ export const SearchMore = memo(
       hasNextPage,
       isFetchingNextPage,
       handleModalClose,
-      onOverlayClick,
+      modalRef,
     } = useSearchMore(keyword, adultFlag, displayMediaType!);
 
     // 각 미디어 이름을 가져오는 함수
@@ -57,16 +57,12 @@ export const SearchMore = memo(
     return (
       <>
         {
-          <div
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-3 backdrop-blur-sm sm:p-6"
-            onClick={onOverlayClick}
-          >
+          <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-3 backdrop-blur-sm sm:p-6">
             <div
-              role="dialog"
               aria-modal="true"
               aria-label={t(getMediaName())}
+              ref={modalRef}
               className="relative h-[calc(100vh-6rem)] w-full max-w-screen-2xl overflow-y-auto rounded-xl bg-white shadow-2xl lg:h-[calc(100vh-3rem)]"
-              onClick={(e) => e.stopPropagation()}
             >
               <div className="px-4 py-4 sm:px-6 lg:px-8">
                 {/* 닫기 버튼 */}
@@ -80,7 +76,7 @@ export const SearchMore = memo(
                       mediaName={t(getMediaName())}
                       results={data.pages.flat()}
                       displayMediaType={displayMediaType!}
-                      keyword={keyword!}
+                      keyword={keyword}
                       isAdult={String(false)}
                       searchScreenType={SEARCH_SCREEN_TYPE.VIEW_MORE}
                     />

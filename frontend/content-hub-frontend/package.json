@@ -16,7 +16,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
-    "generate:api": "npx swagger-typescript-api generate -p ./api-docs.yaml -o ./src/api --axios --modular --module-name-first-tag --useTags --extract-enums --exportServices --exportModels --exportCore --cleanOutput"
+    "generate:api": "npx swagger-typescript-api generate -p ./api-docs.yaml -o ./src/api --axios --modular --module-name-first-tag --useTags --extract-enums --exportServices --exportModels --exportCore --cleanOutput",
+    "sonar": "sonar-scanner -Dsonar.projectKey=jaeyoung0207_content-hub -Dsonar.sources=src -Dsonar.host.url=https://sonarcloud.io"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

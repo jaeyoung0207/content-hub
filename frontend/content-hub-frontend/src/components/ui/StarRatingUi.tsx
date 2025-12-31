@@ -105,7 +105,7 @@ export const StarRatingUi = <T extends FieldValues>({
         // 키보드 좌/우(상/하)로 0.5 증감, Home/End로 0/5로 이동
         const handleKeyDown = (e: React.KeyboardEvent) => {
           if (!isStarRatingEditable) return;
-          let next = realValue || 0;
+          let next: number; // 다음 별점 값
           if (e.key === ARROW_RIGHT_KEY || e.key === ARROW_UP_KEY) {
             next = clamp((realValue ?? 0) + 0.5, 0, 5);
             e.preventDefault();
@@ -179,7 +179,8 @@ export const StarRatingUi = <T extends FieldValues>({
                       {/* 반 별 */}
                       {/* z-index를 통해 우선순위를 정해서 각 별 아이콘이 겹치지 않도록 함 */}
                       {/* 별의 표시영역을 가로/세로 절반으로 설정하고, overflow-hidden을 통해 넘치는 영역을 잘라냄 */}
-                      <div
+                      <button
+                        type="button"
                         className={cn(
                           'focus-visible:ring-primary absolute z-20 h-full w-1/2 overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                           isStarRatingEditable && 'cursor-pointer'
@@ -193,8 +194,6 @@ export const StarRatingUi = <T extends FieldValues>({
                         onClick={() =>
                           isStarRatingEditable && handleOnClick(halfStarRating)
                         }
-                        role="radio"
-                        aria-checked={realValue === halfStarRating}
                         tabIndex={-1}
                       >
                         {
@@ -205,7 +204,7 @@ export const StarRatingUi = <T extends FieldValues>({
                             />
                           )
                         }
-                      </div>
+                      </button>
 
                       {/* 빈 별 */}
                       {/* z-index를 통해 우선순위를 정해서 각 별 아이콘이 겹치지 않도록 함 */}
@@ -215,7 +214,8 @@ export const StarRatingUi = <T extends FieldValues>({
 
                       {/* 채워진 별 */}
                       {/* z-index를 통해 우선순위를 정해서 각 별 아이콘이 겹치지 않도록 함 */}
-                      <div
+                      <button
+                        type="button"
                         className={cn(
                           'focus-visible:ring-primary absolute z-10 h-full w-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                           isStarRatingEditable && 'cursor-pointer'
@@ -229,8 +229,6 @@ export const StarRatingUi = <T extends FieldValues>({
                         onClick={() =>
                           isStarRatingEditable && handleOnClick(fillStarRating)
                         }
-                        role="radio"
-                        aria-checked={realValue === fillStarRating}
                         tabIndex={-1}
                       >
                         {
@@ -241,7 +239,7 @@ export const StarRatingUi = <T extends FieldValues>({
                             />
                           )
                         }
-                      </div>
+                      </button>
                     </div>
                   );
                 })

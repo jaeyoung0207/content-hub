@@ -25,9 +25,6 @@ export const CloseButtonUi = ({
   ariaLabel = '닫기',
   stopPropagation = true,
 }: CloseButtonPropsType) => {
-  const handleWrapperClick = (e: MouseEvent) => {
-    if (stopPropagation) e.stopPropagation();
-  };
   const handleClick = (e: MouseEvent) => {
     if (stopPropagation) e.stopPropagation();
     if (!disabled) modalClose();
@@ -36,7 +33,6 @@ export const CloseButtonUi = ({
   return (
     <div
       className={cn('absolute right-2 mt-1 mr-1 flex lg:right-5', className)}
-      onClick={handleWrapperClick}
     >
       <button
         type="button"

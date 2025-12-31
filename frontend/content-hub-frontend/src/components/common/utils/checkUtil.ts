@@ -14,7 +14,9 @@ export const checkApiId = (apiId: number | undefined) => {
     const errorMsg = i18n.t('warn.noApiIdInfo');
     console.error(errorMsg);
     toast.error(errorMsg, { toastId: 'noContentInfo' });
+    return false;
   }
+  return true;
 };
 
 /**
@@ -26,7 +28,9 @@ export const checkPersonId = (personId: number | undefined) => {
     const errorMsg = i18n.t('warn.noPersonIdInfo');
     console.error(errorMsg);
     toast.error(errorMsg, { toastId: 'noPersonIdInfo' });
+    return false;
   }
+  return true;
 };
 
 /**
@@ -38,7 +42,9 @@ export const checkCharacterId = (characterId: number | undefined) => {
     const errorMsg = i18n.t('warn.noCharacterIdInfo');
     console.error(errorMsg);
     toast.error(errorMsg, { toastId: 'noCharacterIdInfo' });
+    return false;
   }
+  return true;
 };
 
 /**
@@ -50,5 +56,7 @@ export const checkStaffId = (staffId: number | undefined) => {
     const errorMsg = i18n.t('warn.noStaffIdInfo');
     console.error(errorMsg);
     toast.error(errorMsg, { toastId: 'noStaffIdInfo' });
+    return false;
   }
+  return true;
 };

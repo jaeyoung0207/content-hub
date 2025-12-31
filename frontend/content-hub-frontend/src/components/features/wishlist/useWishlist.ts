@@ -144,12 +144,12 @@ export const useWishlist = (): UseWishlistReturnType => {
           autoClose: 1000,
           style: { whiteSpace: 'pre-line' },
         });
-      } else {
-        toast.warning(t('info.notExistsInWishlist', { title: title }), {
-          autoClose: 1000,
-          style: { whiteSpace: 'pre-line' },
-        });
+        return;
       }
+      toast.warning(t('info.notExistsInWishlist', { title: title }), {
+        autoClose: 1000,
+        style: { whiteSpace: 'pre-line' },
+      });
     },
     onError: (_err, { title }) => {
       toast.error(t('error.failedToRemoveWishlist', { title: title }), {
@@ -243,7 +243,6 @@ export const useWishlist = (): UseWishlistReturnType => {
   useEffect(() => {
     if (!user) {
       navigate('/');
-      return;
     }
   }, [user, navigate]);
 
@@ -258,46 +257,31 @@ export const useWishlist = (): UseWishlistReturnType => {
         return;
       }
       // 각 ref에 현재 인덱스가 존재하고, 클릭한 타겟이 해당 ref 내부에 있는지 확인
-      const isAniWishlistOptionRef =
-        aniWishlistOptionRef.current &&
-        aniWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
-      const isDramaWishlistOptionRef =
-        dramaWishlistOptionRef.current &&
-        dramaWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
+      const isAniWishlistOptionRef = aniWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
+      const isDramaWishlistOptionRef = dramaWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
       const isDocumentaryWishlistOptionRef =
-        documentaryWishlistOptionRef.current &&
-        documentaryWishlistOptionRef.current[wishlistOptionIndex]?.contains(
+        documentaryWishlistOptionRef?.current[wishlistOptionIndex]?.contains(
           e.target as Node
         );
-      const isKidsWishlistOptionRef =
-        kidsWishlistOptionRef.current &&
-        kidsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
-      const isNewsWishlistOptionRef =
-        newsWishlistOptionRef.current &&
-        newsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
-      const isVarietyWishlistOptionRef =
-        varietyWishlistOptionRef.current &&
-        varietyWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
-      const isMovieWishlistOptionRef =
-        movieWishlistOptionRef.current &&
-        movieWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
-      const isComicsWishlistOptionRef =
-        comicsWishlistOptionRef.current &&
-        comicsWishlistOptionRef.current[wishlistOptionIndex]?.contains(
-          e.target as Node
-        );
+      const isKidsWishlistOptionRef = kidsWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
+      const isNewsWishlistOptionRef = newsWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
+      const isVarietyWishlistOptionRef = varietyWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
+      const isMovieWishlistOptionRef = movieWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
+      const isComicsWishlistOptionRef = comicsWishlistOptionRef?.current[
+        wishlistOptionIndex
+      ]?.contains(e.target as Node);
       // 어느 ref에도 해당하지 않으면 옵션 닫기
       if (
         !isAniWishlistOptionRef &&

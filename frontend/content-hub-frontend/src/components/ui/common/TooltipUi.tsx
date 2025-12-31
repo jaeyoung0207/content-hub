@@ -38,55 +38,56 @@ export const TooltipUi = ({
   maxW = 'xs',
 }: TooltipUiProps) => {
   // 배치
-  const basePos =
-    placement === 'bottom'
-      ? 'top-full'
-      : placement === 'top'
-        ? 'bottom-full'
-        : placement === 'left'
-          ? 'right-full'
-          : 'left-full';
+  let basePos;
+  if (placement === 'bottom') {
+    basePos = 'top-full';
+  } else if (placement === 'top') {
+    basePos = 'bottom-full';
+  } else if (placement === 'left') {
+    basePos = 'right-full';
+  } else {
+    basePos = 'left-full';
+  }
   // 정렬
-  const alignPos =
-    placement === 'top' || placement === 'bottom'
-      ? align === 'center'
-        ? 'left-1/2 -translate-x-1/2'
-        : align === 'start'
-          ? 'left-0'
-          : 'right-0'
-      : // left/right
-        align === 'center'
-        ? 'top-1/2 -translate-y-1/2'
-        : align === 'start'
-          ? 'top-0'
-          : 'bottom-0';
+  let alignPos;
+  if (placement === 'top' || placement === 'bottom') {
+    if (align === 'center') {
+      alignPos = 'left-1/2 -translate-x-1/2';
+    } else if (align === 'start') {
+      alignPos = 'left-0';
+    } else {
+      alignPos = 'right-0';
+    }
+  } else {
+    if (align === 'center') { // NOSONAR
+      alignPos = 'top-1/2 -translate-y-1/2';
+    } else if (align === 'start') {
+      alignPos = 'top-0';
+    } else {
+      alignPos = 'bottom-0';
+    }
+  }
   // 오프셋(여백) - Tailwind 정적 클래스만 사용
   const offsetMap: Record<Offset, string> = {
     none: '',
-    xs:
-      placement === 'bottom'
-        ? 'mt-0.5'
-        : placement === 'top'
-          ? 'mb-0.5'
-          : placement === 'left'
-            ? 'mr-0.5'
-            : 'ml-0.5',
-    sm:
-      placement === 'bottom'
-        ? 'mt-1'
-        : placement === 'top'
-          ? 'mb-1'
-          : placement === 'left'
-            ? 'mr-1'
-            : 'ml-1',
-    md:
-      placement === 'bottom'
-        ? 'mt-2'
-        : placement === 'top'
-          ? 'mb-2'
-          : placement === 'left'
-            ? 'mr-2'
-            : 'ml-2',
+    xs: (() => {
+      if (placement === 'bottom') return 'mt-0.5';
+      if (placement === 'top') return 'mb-0.5';
+      if (placement === 'left') return 'mr-0.5';
+      return 'ml-0.5';
+    })(),
+    sm: (() => {
+      if (placement === 'bottom') return 'mt-1';
+      if (placement === 'top') return 'mb-1';
+      if (placement === 'left') return 'mr-1';
+      return 'ml-1';
+    })(),
+    md: (() => {
+      if (placement === 'bottom') return 'mt-2';
+      if (placement === 'top') return 'mb-2';
+      if (placement === 'left') return 'mr-2';
+      return 'ml-2';
+    })(),
   };
   // 반응형 표시 제어
   const hideMap: Record<HideBelow, string> = {

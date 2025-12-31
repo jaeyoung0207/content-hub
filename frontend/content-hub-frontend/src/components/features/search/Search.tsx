@@ -137,7 +137,7 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
   const isOneSelectedAndNoResult = Object.values(searchTypeState).some(
     (value) =>
       value === true &&
-      !dataList.find(
+      !dataList.some(
         (item) =>
           item.displayFlg && item.dataResults && item.dataResults.length > 0
       )
@@ -149,54 +149,52 @@ export const Search = ({ keyword, isAdult }: SearchPropsType) => {
     .join('/');
 
   return (
-    <>
-      <div className="pt-20 pb-10 sm:pt-24">
-        {/* 섹션 간 간격 */}
-        <div className="space-y-10">
-          {/* 검색 결과 */}
-          {dataList.map((items) => {
-            return (
-              <div key={items.mediaName}>
-                {items.displayFlg &&
-                  !items.isLoading &&
-                  items.dataResults &&
-                  items.dataResults.length !== 0 && (
-                    // 각 미디어 검색결과 컴포넌트
-                    <DisplaySearchResults
-                      mediaName={items.mediaName}
-                      results={items.dataResults}
-                      isViewMore={items.isViewMore}
-                      displayMediaType={items.displayMediaType}
-                      keyword={keyword!}
-                      isAdult={isAdult!}
-                      searchScreenType={SEARCH_SCREEN_TYPE.MAIN}
-                    />
-                  )}
-              </div>
-            );
-          })}
-        </div>
-        {/* 로딩 중 메시지 */}
-        {(isVideoLoading || isComicsLoading) && (
-          <div className="mt-10">
-            <LoadingUi />
-            <div className="mt-6 text-center text-base sm:text-lg">
-              {t('info.beforeSearchMessage', { mediaTypes: mediaTypes })}
+    <div className="pt-20 pb-10 sm:pt-24">
+      {/* 섹션 간 간격 */}
+      <div className="space-y-10">
+        {/* 검색 결과 */}
+        {dataList.map((items) => {
+          return (
+            <div key={items.mediaName}>
+              {items.displayFlg &&
+                !items.isLoading &&
+                items.dataResults &&
+                items.dataResults.length !== 0 && (
+                  // 각 미디어 검색결과 컴포넌트
+                  <DisplaySearchResults
+                    mediaName={items.mediaName}
+                    results={items.dataResults}
+                    isViewMore={items.isViewMore}
+                    displayMediaType={items.displayMediaType}
+                    keyword={keyword}
+                    isAdult={isAdult!}
+                    searchScreenType={SEARCH_SCREEN_TYPE.MAIN}
+                  />
+                )}
             </div>
+          );
+        })}
+      </div>
+      {/* 로딩 중 메시지 */}
+      {(isVideoLoading || isComicsLoading) && (
+        <div className="mt-10">
+          <LoadingUi />
+          <div className="mt-6 text-center text-base sm:text-lg">
+            {t('info.beforeSearchMessage', { mediaTypes: mediaTypes })}
+          </div>
+        </div>
+      )}
+      {/* 검색 결과가 없을 때 표시할 메시지 */}
+      {!isVideoLoading &&
+        !isComicsLoading &&
+        (isSearchResultEmpty ||
+          isSelectedSearchTypeEmpty ||
+          isOneSelectedAndNoResult) && (
+          <div className="mt-20">
+            <NoDataMessageUi message={t('warn.noSearchData')} />
           </div>
         )}
-        {/* 검색 결과가 없을 때 표시할 메시지 */}
-        {!isVideoLoading &&
-          !isComicsLoading &&
-          (isSearchResultEmpty ||
-            isSelectedSearchTypeEmpty ||
-            isOneSelectedAndNoResult) && (
-            <div className="mt-20">
-              <NoDataMessageUi message={t('warn.noSearchData')} />
-            </div>
-          )}
-      </div>
-    </>
+    </div>
   );
 };
 

@@ -33,7 +33,6 @@ import { isMobileOnly } from 'react-device-detect';
  */
 type AutoCompletePropsType = {
   autoCompleteList?: string[]; // 자동완성 리스트
-  autoCompoleteRef?: RefObject<HTMLDivElement | null>; // 자동완성 박스 참조
   handleKeywordListOnClick: (item: string) => void; // 자동완성 리스트 아이템 클릭 핸들러
   currentIndex: number; // 현재 인덱스
   selectRef: RefObject<HTMLLIElement | null>; // 자동완성 검색어 선택 참조
@@ -180,8 +179,7 @@ export const Header = () => {
   // 닉네임 길이 제한
   const DISPLAY_LENGTH = 9;
   // 닉네임이 길이 제한을 초과하는지 여부
-  const isHideNickname =
-    userNickname && userNickname.length > DISPLAY_LENGTH ? true : false;
+  const isHideNickname = userNickname.length > DISPLAY_LENGTH;
   // 화면에 표시할 닉네임
   const displayUserNickname = isHideNickname
     ? userNickname.slice(0, DISPLAY_LENGTH) + OMISSION_TEXT
@@ -198,40 +196,56 @@ export const Header = () => {
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-3 sm:h-16">
           {isMobileOnly ? (
-            // 모바일 화면일 때 메뉴 아이콘
-            <div
-              className="cursor-pointer"
-              ref={menuRef}
-              onClick={commonErrorHandler(handleMenuIconOnClick)}
-            >
-              {isMenuOpen ? (
-                <div>
-                  <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 열림" />
-                  <div className="flex justify-center">
-                    {/* 메뉴 열림 상태일 때 표시할 내용 */}
-                    <div
-                      className={`absolute z-50 mt-2 w-auto gap-y-10 rounded border bg-white p-1 shadow-2xl ${isMobileOnly ? 'left-1' : 'left-30'}`}
-                    >
-                      {/* 홈 */}
+            <div>
+              {/* 모바일 화면일 때 메뉴 아이콘 */}
+              <button
+                type="button"
+                className="absolute cursor-pointer items-center justify-center w-8 h-8"
+                aria-label="메뉴 아이콘"
+                onClick={commonErrorHandler(handleMenuIconOnClick)}
+              />
+              <div className="cursor-pointer" ref={menuRef}>
+                {isMenuOpen ? (
+                  <div>
+                    <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 열림" />
+                    <div className="flex justify-center">
+                      {/* 메뉴 열림 상태일 때 표시할 내용 */}
                       <div
-                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                        onClick={commonErrorHandler(handleHomeOnClick)}
+                        className={`absolute z-50 mt-2 w-28 gap-y-10 rounded border bg-white p-1 shadow-2xl left-1`}
                       >
-                        {t('info.home')}
-                      </div>
-                      {/* 위시리스트 */}
-                      <div
-                        className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                        onClick={commonErrorHandler(handleWishlistOnClick)}
-                      >
-                        {t('info.wishlist')}
+                        {/* 홈 */}
+                        <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
+                          <button
+                            type="button"
+                            className="w-full cursor-pointer"
+                            onClick={() => { 
+                              commonErrorHandler(handleHomeOnClick)();
+                              handleMenuIconOnClick();
+                            }}
+                          >
+                            {t('info.home')}
+                          </button>
+                        </div>
+                        {/* 위시리스트 */}
+                        <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
+                          <button
+                            type="button"
+                            className="w-full cursor-pointer"
+                            onClick={() => { 
+                              commonErrorHandler(handleWishlistOnClick)();
+                              handleMenuIconOnClick();
+                            }}
+                          >
+                            {t('info.wishlist')}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 닫힘" />
-              )}
+                ) : (
+                  <TfiMenu className="h-8 w-8" aria-label="메뉴아이콘 닫힘" />
+                )}
+              </div>
             </div>
           ) : (
             // 데스크탑 화면일 때 아이콘들
@@ -402,7 +416,8 @@ export const Header = () => {
             {user ? (
               <div className="relative" ref={userOptionRef}>
                 {/* 유저 닉네임 */}
-                <div
+                <button
+                  type="button"
                   className="flex cursor-pointer items-center text-sm break-words text-yellow-600 md:text-base"
                   onClick={handleUserOptionToggle}
                   onMouseEnter={() =>
@@ -422,43 +437,45 @@ export const Header = () => {
                       className="top-full right-0 mt-2"
                     />
                   )}
-                </div>
+                </button>
                 {/* 유저 옵션 팝업 */}
                 {userOptionIsOpen && (
                   <div className="absolute right-0 z-50 mt-3 w-32 rounded border bg-white p-1 shadow-2xl">
-                    {/* <div> */}
                     {/* 마이페이지(코멘트 관리) */}
-                    <div
-                      className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                      onClick={commonErrorHandler(() => {
-                        const myCommentsUrl = myCommentsUrlQuery({
-                          userId: user.userId,
-                        });
-                        setUserOptionIsOpen(false);
-                        navigate(myCommentsUrl);
-                      })}
-                    >
-                      {t('info.myComments')}
+                    <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
+                      <button
+                        className="w-full cursor-pointer"
+                        onClick={commonErrorHandler(() => {
+                          const myCommentsUrl = myCommentsUrlQuery({
+                            userId: user.userId,
+                          });
+                          setUserOptionIsOpen(false);
+                          navigate(myCommentsUrl);
+                        })}
+                      >
+                        {t('info.myComments')}
+                      </button>
                     </div>
-                    {/* </div> */}
                     {/* 로그아웃 */}
-                    <div
-                      className="flex cursor-pointer justify-center px-4 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                      onClick={commonErrorHandler(handleLogoutOnClick)}
-                    >
-                      {t('info.logout')}
+                    <div className="py-1 text-sm text-gray-700 hover:bg-gray-200">
+                      <button
+                        className="w-full cursor-pointer"
+                        onClick={commonErrorHandler(handleLogoutOnClick)}
+                      >
+                        {t('info.logout')}
+                      </button>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
               // 로그인 버튼
-              <div
+              <button
                 className="text-foreground cursor-pointer text-base hover:opacity-80 sm:text-lg lg:text-2xl"
                 onClick={commonErrorHandler(() => handleLoginOnClick())}
               >
                 {t('info.login')}
-              </div>
+              </button>
             )}
           </div>
         </div>
@@ -488,32 +505,32 @@ const AutoCompleteBox = memo(
     // 강조 표시 스타일
     const highLightStyle = 'font-black text-blue-600';
     // 탭 문자
-    const tab = '\\t';
+    const tab = '\t';
 
     return (
       <>
         {autoCompleteList && autoCompleteList.length !== 0 && (
           <div
             className={`absolute inset-x-0 z-50 mt-2 h-auto w-full overflow-auto rounded border bg-white p-2 shadow-2xl`}
-            role="listbox"
           >
             {autoCompleteList.map((item, index) => {
               // 자동완성 리스트에서 검색어를 기준으로 배열화
               const keywordArray =
-                item.search(new RegExp(savedKeyword, 'gi')) !== -1
-                  ? item
-                      .replace(
-                        new RegExp(savedKeyword, 'gi'),
-                        tab.concat(savedKeyword).concat(tab)
-                      )
-                      .split(tab)
-                  : [item];
+                item.search(new RegExp(savedKeyword, 'gi')) === -1
+                  ? [item]
+                  : item
+                    .replaceAll(
+                      new RegExp(savedKeyword, 'gi'),
+                      tab.concat(savedKeyword).concat(tab)
+                    )
+                    .split(tab);
+
               // 현재 인덱스와 비교하여 활성화 상태 결정
               const isActive = index === currentIndex;
 
               return (
                 <ul
-                  key={index}
+                  key={index + '-' + item}
                   className={`mb-1 ${isActive ? 'bg-gray-200 hover:bg-gray-200' : ''} ${searchHistoryisOpen ? 'flex justify-between' : ''}`}
                   onMouseEnter={() => handleSetCurrentIndex(index)} // 현재 인덱스 설정
                   onMouseLeave={() => handleSetCurrentIndex(-1)} // 현재 인덱스 초기화
@@ -521,29 +538,34 @@ const AutoCompleteBox = memo(
                   <li
                     className={`${searchHistoryisOpen ? 'w-[85%]' : ''} cursor-pointer text-xs md:text-base`}
                     ref={isActive ? selectRef : null}
-                    onClick={commonErrorHandler(() =>
-                      handleKeywordListOnClick(item)
-                    )}
                   >
-                    {
-                      // 검색 기록이 표시되지 않은 상태에서 검색어가 포함된 부분을 강조 표시
-                      !searchHistoryisOpen ? (
-                        <>
-                          {keywordArray.map((text, textIndex) => {
-                            return (
-                              <span
-                                key={textIndex}
-                                className={`${text === savedKeyword ? highLightStyle : ''}`}
-                              >
-                                {text === savedKeyword ? savedKeyword : text}
-                              </span>
-                            );
-                          })}
-                        </>
-                      ) : (
-                        item
-                      )
-                    }
+                    <button
+                      className="w-full cursor-pointer text-left"
+                      onClick={commonErrorHandler(() =>
+                        handleKeywordListOnClick(item)
+                      )}
+                    >
+                      {
+                        // 검색 기록이 표시된 상태에서는 전체 아이템 표시
+                        searchHistoryisOpen ? (
+                          item
+                        ) : (
+                          // 검색 기록이 표시되지 않은 상태에서 검색어가 포함된 부분을 강조 표시
+                          <>
+                            {keywordArray.map((text, textIndex) => {
+                              return (
+                                <span
+                                  key={textIndex + '-' + text}
+                                  className={`${text === savedKeyword ? highLightStyle : ''}`}
+                                >
+                                  {text === savedKeyword ? savedKeyword : text}
+                                </span>
+                              );
+                            })}
+                          </>
+                        )
+                      }
+                    </button>
                   </li>
                   {
                     // 검색 기록이 표시된 상태에서 삭제 버튼 표시

@@ -10,7 +10,7 @@ import { freshOnMountOptions } from '@/components/common/config/queryOptions';
  */
 type UseSearchReturnType = {
   isVideoLoading?: boolean; // 로딩 중 여부
-  videoData?: SearchVideoResponseDto | undefined; // 비디오 검색 결과
+  videoData: SearchVideoResponseDto | undefined; // 비디오 검색 결과
 };
 
 /**

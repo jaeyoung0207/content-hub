@@ -1,5 +1,6 @@
 import {
   Dispatch,
+  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
@@ -37,7 +38,7 @@ type UseSearchConentModalReturnType = {
   isFetchingNextPage: boolean;
   setObserveTarget: Dispatch<SetStateAction<HTMLDivElement | null>>;
   handleModalClose: () => void;
-  onOverlayClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  modalRef: RefObject<HTMLDivElement | null>;
 };
 
 /**
@@ -74,6 +75,8 @@ export const useSearchMore = (
   const observerRef = useRef<IntersectionObserver | null>(null);
   // 전체 페이지 수를 저장하는 ref
   const totalPagesRef = useRef<number | undefined>(0);
+  // 모달 div태그 ref
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   // ================================================================================================== zustand
 
@@ -267,17 +270,6 @@ export const useSearchMore = (
     setSearchParams(searchParams); //  URL이 바뀌면 React Router가 감지해서 리렌더링 발생
   }, [searchParams, setSearchParams]);
 
-  /**
-   * 오버레이(모달 바깥 영역) 클릭 시 모달 닫기
-   */
-  const onOverlayClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      // 바깥 영역 클릭 시 닫기
-      if (e.currentTarget === e.target) handleModalClose();
-    },
-    [handleModalClose]
-  );
-
   // ================================================================================================== useEffect
 
   /**
@@ -322,18 +314,31 @@ export const useSearchMore = (
    */
   useEffect(() => {
     // ESC키 눌렀을 시 모달 종료
-    const handleOnEscKey = (e: KeyboardEvent) =>
-      e.key === ESC_KEY && handleModalClose();
+    const handleOnEscKey = (e: KeyboardEvent) => {
+      if (e.key === ESC_KEY) {
+        handleModalClose();
+      }
+    };
+    // 오버레이(모달 바깥 영역) 클릭 시 모달 종료
+    const handleOnClickOverlay = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        handleModalClose();
+      }
+    };
     // 배경 스크롤 막기
     document.body.style.overflow = 'hidden';
     // ESC 키다운 이벤트리스너 등록
     document.addEventListener('keydown', handleOnEscKey);
+    // 오버레이 클릭 이벤트리스너 등록
+    document.addEventListener('mousedown', handleOnClickOverlay);
 
     return () => {
       // 배경 스크롤 복원
       document.body.style.removeProperty('overflow');
       // ESC 키다운 이벤트리스너 제거
       document.removeEventListener('keydown', handleOnEscKey);
+      // 오버레이 클릭 이벤트리스너 제거
+      document.removeEventListener('mousedown', handleOnClickOverlay);
     };
   }, [handleModalClose]);
 
@@ -372,6 +377,6 @@ export const useSearchMore = (
     hasNextPage: hasNextPage,
     isFetchingNextPage: isFetchingNextPage,
     handleModalClose: handleModalClose,
-    onOverlayClick: onOverlayClick,
+    modalRef: modalRef,
   };
 };

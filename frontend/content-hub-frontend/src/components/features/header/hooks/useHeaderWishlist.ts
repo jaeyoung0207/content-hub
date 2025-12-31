@@ -62,16 +62,18 @@ export const useHeaderWishlist = (
    * 위시리스트 아이콘 클릭시 처리
    */
   const handleWishlistOnClick = useCallback(() => {
-    if (!userId) {
+    // 유저 ID가 있을 경우
+    if (userId) {
+      // 위시리스트 페이지로 이동
+      navigate(wishlistUrlQuery({ userId: userId }));
+    }
+    // 유저 ID가 없을 경우 다이얼로그 표시
+    else {
       setIsConfirmDialogOpen(true);
       setOnOk(handleConfirmOk);
       setOnCancel(handleConfirmCancel);
       setTitle(t('info.requiredLoginConfirmTitle'));
       setConfirmMsg(t('info.loginConfirmMsg2'));
-      return;
-    } else {
-      // 위시리스트 페이지로 이동
-      navigate(wishlistUrlQuery({ userId: userId }));
     }
   }, [
     navigate,

@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SonarCloud용 전체 히스토리
 
       # node 셋업
       - name: Setup Node
@@ -39,8 +41,17 @@ jobs:
         run: npm run lint
 
       # 테스트 실행
-      - name: Run Tests
-        run: npm run test:run  # vitest run (watch 모드 비활성화)
+      - name: Run Tests with Coverage
+        run: npm run test:run -- --coverage.enabled=true --coverage.reporter=lcov
+        
+      # Sonar Cloud Scan
+      - name: Sonar Cloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          # 프로젝트 루트 경로 설정
+          projectBaseDir: frontend/content-hub-frontend
       
       # 빌드
       - name: Build

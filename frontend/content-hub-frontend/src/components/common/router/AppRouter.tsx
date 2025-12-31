@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { Layout } from '@/components/features/common/Layout';
+import { Layout } from '@/components/common/layout/Layout';
 import { ErrorPageWithHalfScreen } from '@/components/common/error/ErrorPageWithHalfScreen';
 import { ErrorPageWithFullScreen } from '@/components/common/error/ErrorPageWithFullScreen';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { queryClientConfig } from '../config/queryClientConfig';
 import { Maintenance } from '../error/Maintenance';
 import { settings } from '../config/settings';
 import { LoadingUi } from '@/components/ui/common/LoadingUi';
-import { ProtectedRoute } from '@/components/features/common/ProtectedRoute';
+import { ProtectedRoute } from '@/components/common/layout/ProtectedRoute';
 
 // lazy loading
 const Home = lazy(() => import('@/components/features/home/Home'));
@@ -57,58 +57,56 @@ export const AppBrowserRouter = () => {
 const AppRouter = () => {
   // 점검중일 경우 점검페이지 표시
   if (settings.isMaintenanceMode) {
-    if (!window.location.pathname.startsWith('/maintenance')) {
-      window.location.href = '/maintenance';
+    if (!globalThis.location.pathname.startsWith('/maintenance')) {
+      globalThis.location.href = '/maintenance';
     }
     return <Maintenance />;
   }
   return (
-    <>
-      <ErrorBoundary fallback={<ErrorPageWithFullScreen />}>
-        <QueryClientProvider client={queryClientConfig}>
-          <Suspense fallback={<LoadingUi />}>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route
-                  path="/detail/:contentMediaType/:apiId"
-                  element={<Detail />}
-                />
-                <Route path="/person/:personId" element={<Person />} />
-                <Route
-                  path="/character/:comicsCreditsType/:creditsId"
-                  element={<Character />}
-                />
-                <Route
-                  path="/wishlist/:userId"
-                  element={
-                    <ProtectedRoute>
-                      <Wishlist />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/my/comments/:userId"
-                  element={
-                    <ProtectedRoute>
-                      <MyComments />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/login" element={<Login />} />
-                <Route path="/login/:provider" element={<LoginPopup />} />
-                <Route path="/naverLogin" element={<NaverLogin />} />
-                <Route path="/kakaoLogin" element={<KakaoLogin />} />
-                <Route path="/logout" element={<Logout />} />
-                <Route path="/error" element={<ErrorPageWithHalfScreen />} />
-                <Route path="*" element={<ErrorPageWithHalfScreen />} />
-              </Route>
-              <Route path="/maintenance" element={<Maintenance />} />
-            </Routes>
-          </Suspense>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </>
+    <ErrorBoundary fallback={<ErrorPageWithFullScreen />}>
+      <QueryClientProvider client={queryClientConfig}>
+        <Suspense fallback={<LoadingUi />}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route
+                path="/detail/:contentMediaType/:apiId"
+                element={<Detail />}
+              />
+              <Route path="/person/:personId" element={<Person />} />
+              <Route
+                path="/character/:comicsCreditsType/:creditsId"
+                element={<Character />}
+              />
+              <Route
+                path="/wishlist/:userId"
+                element={
+                  <ProtectedRoute>
+                    <Wishlist />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my/comments/:userId"
+                element={
+                  <ProtectedRoute>
+                    <MyComments />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/login/:provider" element={<LoginPopup />} />
+              <Route path="/naverLogin" element={<NaverLogin />} />
+              <Route path="/kakaoLogin" element={<KakaoLogin />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/error" element={<ErrorPageWithHalfScreen />} />
+              <Route path="*" element={<ErrorPageWithHalfScreen />} />
+            </Route>
+            <Route path="/maintenance" element={<Maintenance />} />
+          </Routes>
+        </Suspense>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };

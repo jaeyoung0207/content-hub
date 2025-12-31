@@ -9,9 +9,6 @@ import {
 import { LoadingUi } from '@/components/ui/common/LoadingUi';
 import { BsStarFill } from 'react-icons/bs';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
-import { checkApiId } from '@/components/common/utils/checkUtil';
-import { useNavigate } from 'react-router-dom';
-import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { LazyImage, NoDataMessageUi } from '@/components/ui/common';
 import { HIGHLIGHT_HOVER_COLOR } from '@/components/common/constants/tailwindStyles';
 import { WishlistUi } from '@/components/ui/WishlistUi';
@@ -20,6 +17,8 @@ import {
   useContentMediaTypeMapStore,
   useDisplayMediaTypeMapStore,
 } from '@/components/common/store/globalStateStore';
+import { useNavigate } from 'react-router-dom';
+import { navigateToDetailPage } from '@/components/common/utils/navigateUtil';
 
 /**
  * 각 랭킹 표시 컴포넌트 props 타입
@@ -48,36 +47,35 @@ export const Home = () => {
   const contentRankings = [
     {
       title: `${t('info.animation')} - ${t('info.top10')}`,
-      items: data && data.aniRankingList ? data.aniRankingList : [],
+      items: data?.aniRankingList ?? [],
     },
     {
       title: `${t('info.drama')} - ${t('info.top10')}`,
-      items: data && data.dramaRankingList ? data.dramaRankingList : [],
+      items: data?.dramaRankingList ?? [],
     },
     {
       title: `${t('info.movie')} - ${t('info.top10')}`,
-      items: data && data.movieRankingList ? data.movieRankingList : [],
+      items: data?.movieRankingList ?? [],
     },
     {
       title: `${t('info.documentary')} - ${t('info.top10')}`,
-      items:
-        data && data.documentaryRankingList ? data.documentaryRankingList : [],
+      items: data?.documentaryRankingList ?? [],
     },
     {
       title: `${t('info.kids')} - ${t('info.top10')}`,
-      items: data && data.kidsRankingList ? data.kidsRankingList : [],
+      items: data?.kidsRankingList ?? [],
     },
     {
       title: `${t('info.news')} - ${t('info.top10')}`,
-      items: data && data.newsRankingList ? data.newsRankingList : [],
+      items: data?.newsRankingList ?? [],
     },
     {
       title: `${t('info.variety')} - ${t('info.top10')}`,
-      items: data && data.varietyRankingList ? data.varietyRankingList : [],
+      items: data?.varietyRankingList ?? [],
     },
     {
       title: `${t('info.comics')} - ${t('info.top10')}`,
-      items: data && data.comicsRankingList ? data.comicsRankingList : [],
+      items: data?.comicsRankingList ?? [],
     },
   ];
 
@@ -104,7 +102,7 @@ export const Home = () => {
                     (ranking, index) =>
                       ranking.items.length > 0 && (
                         <DisplayRankings
-                          key={index}
+                          key={index + '-' + ranking.title}
                           title={ranking.title}
                           items={ranking.items}
                           user={user}
@@ -138,6 +136,7 @@ export default Home;
 const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
   // navigate 훅
   const navigate = useNavigate();
+
   // 썸네일 이미지 경로
   const thumbnailImagePath = TMDB_API_IMAGE_DOMAIN + WIDTH_300;
 
@@ -169,23 +168,18 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
           const thumbnailImageUrl = isComics
             ? items.thumbnailImageUrl
             : thumbnailImagePath + items.thumbnailImageUrl;
+          // 리뷰 개수
+          let reviewCount = '';
+          if (items.starRatingCount) {
+            const displayCount =
+              items.starRatingCount > 9999 ? '9999+' : items.starRatingCount;
+            reviewCount = ` (${displayCount})`;
+          }
 
           return (
             <div
-              key={index}
+              key={index + '-' + items.apiId!}
               className={`${HIGHLIGHT_HOVER_COLOR} cursor-pointer ${aspectClass}`}
-              onClick={commonErrorHandler(() => {
-                // apiId 체크
-                checkApiId(Number(items.apiId));
-                // 상세화면 URL 생성
-                const detailUrl = detailUrlQuery({
-                  contentMediaType: items.contentMediaType!,
-                  apiId: items.apiId,
-                  tabNo: 0,
-                });
-                // 상세화면 이동
-                navigate(detailUrl);
-              })}
             >
               {/* 순위 */}
               <div className="mb-1 flex justify-center text-sm font-bold sm:text-base">{`TOP ${items.rowNum}`}</div>
@@ -193,15 +187,23 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
               <div
                 className={`relative max-w-full overflow-hidden ${aspectClass} bg-white`}
               >
-                <div
-                  className={`relative flex max-h-full max-w-full justify-center rounded-2xl ${aspectClass}`}
+                <button
+                  type="button"
+                  className={`relative flex max-h-full max-w-full cursor-pointer justify-center rounded-2xl ${aspectClass}`}
+                  onClick={commonErrorHandler(() =>
+                    navigateToDetailPage(
+                      navigate,
+                      Number(items.apiId),
+                      items.contentMediaType!
+                    )
+                  )}
                 >
                   <LazyImage
                     src={thumbnailImageUrl || COMMON_IMAGES.NO_IMAGE}
                     alt={items.title}
                     className={`inset-0 h-full w-full rounded-2xl object-cover`}
                   />
-                </div>
+                </button>
                 {/* 위시리스트 버튼 */}
                 <div className={heartClass}>
                   <WishlistUi
@@ -210,7 +212,7 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
                     title={items.title!}
                     userId={user?.userId}
                     isWishlisted={items.wishlisted!}
-                    thumbnailImageUrl={items.thumbnailImageUrl!}
+                    thumbnailImageUrl={items.thumbnailImageUrl}
                     displayMediaType={items.displayMediaType}
                   />
                 </div>
@@ -218,15 +220,23 @@ const DisplayRankings = ({ title, items, user }: DisplayRankingsProps) => {
               {/* 평점 */}
               <div className="mt-1 flex items-center text-sm sm:text-base">
                 <BsStarFill className={'mr-2 text-red-500'} />
-                {`${items.starRatingAverage?.toFixed(1)} ${items.starRatingCount ? ' (' + (items.starRatingCount > 9999 ? '9999+' : items.starRatingCount) + ')' : ''}`}
+                {`${items.starRatingAverage?.toFixed(1)} ${reviewCount}`}
               </div>
               {/* 제목 */}
-              <div
-                className="relative mr-1 mb-4 ml-1 line-clamp-2 text-base sm:text-lg"
+              <button
+                type="button"
+                className="relative mr-1 mb-4 ml-1 line-clamp-2 w-full cursor-pointer text-left text-base hover:underline sm:text-lg"
                 title={items.title}
+                onClick={commonErrorHandler(() =>
+                  navigateToDetailPage(
+                    navigate,
+                    Number(items.apiId),
+                    items.contentMediaType!
+                  )
+                )}
               >
                 {items.title}
-              </div>
+              </button>
             </div>
           );
         })}

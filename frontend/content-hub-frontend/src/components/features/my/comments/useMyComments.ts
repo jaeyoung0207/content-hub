@@ -135,7 +135,6 @@ export const useMyComments = (): UseMyCommentsReturnType => {
   useEffect(() => {
     if (!user) {
       navigate('/');
-      return;
     }
   }, [user, navigate]);
 

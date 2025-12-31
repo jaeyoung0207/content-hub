@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { useWishlist } from './useWishlist';
 import { WishlistResponseDto } from '@/api/data-contracts';
 import { LoadingUi } from '@/components/ui/common/LoadingUi';
@@ -11,13 +10,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import { HIGHLIGHT_HOVER_COLOR } from '@/components/common/constants/tailwindStyles';
 import { commonErrorHandler } from '@/components/common/utils/errorUtil';
-import { checkApiId } from '@/components/common/utils/checkUtil';
-import { detailUrlQuery } from '@/components/common/utils/urlUtil';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { RefObject } from 'react';
 import { settings } from '@/components/common/config/settings';
 import { ButtonUi, LazyImage } from '@/components/ui/common';
 import { isMobileOnly, isTablet } from 'react-device-detect';
+import { navigateToDetailPage } from '@/components/common/utils/navigateUtil';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * DisplayWishlist 컴포넌트 props 타입
@@ -155,44 +154,57 @@ export const Wishlist = () => {
     },
   ];
 
-  return (
-    <div className="pt-20 pb-10 md:pt-24">
-      {isLoading ? (
+  // 공통 클래스
+  const commonClass = 'pt-20 pb-10 md:pt-24';
+  // 로딩 중일 때
+  if (isLoading) {
+    return (
+      <div className={commonClass}>
         <LoadingUi />
-      ) : !isDataEmpty ? (
-        <>
-          <div className="mb-5 text-3xl font-bold">{t('info.wishlist')}</div>
-          {wishlistItems.map((items) => {
-            return (
-              items.resultList &&
-              items.resultList.length !== 0 && (
-                <div key={items.mediaName}>
-                  <DisplayWishlist
-                    mediaName={items.mediaName}
-                    searchType={items.searchType}
-                    resultList={items.resultList}
-                    handleWishlistDeleteOnClick={handleWishlistDeleteOnClick}
-                    isExecuting={isExecuting}
-                    wishlistOptionIsOpen={wishlistOptionIsOpen}
-                    handleWishlistOptionOnClick={handleWishlistOptionOnClick}
-                    wishlistOptionRef={items.ref}
-                    wishlistContentMediaType={wishlistContentMediaType}
-                    wishlistOptionIndex={wishlistOptionIndex}
-                    handleOnClickOmitWishlist={handleOnClickOmitWishlist}
-                    isOmit={items.isOmit}
-                  />
-                </div>
-              )
-            );
-          })}
-        </>
-      ) : (
+      </div>
+    );
+  }
+  // 데이터가 없을 때
+  else if (isDataEmpty) {
+    return (
+      <div className={commonClass}>
         <div className="mt-25 flex items-center justify-center font-['Inter'] text-xl font-normal text-black lg:mt-60 lg:text-2xl">
           {t('info.noWishlist')}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+  // 데이터가 있을 때
+  else {
+    return (
+      <div className={commonClass}>
+        <div className="mb-5 text-3xl font-bold">{t('info.wishlist')}</div>
+        {wishlistItems.map((items) => {
+          return (
+            items.resultList &&
+            items.resultList.length !== 0 && (
+              <div key={items.mediaName}>
+                <DisplayWishlist
+                  mediaName={items.mediaName}
+                  searchType={items.searchType}
+                  resultList={items.resultList}
+                  handleWishlistDeleteOnClick={handleWishlistDeleteOnClick}
+                  isExecuting={isExecuting}
+                  wishlistOptionIsOpen={wishlistOptionIsOpen}
+                  handleWishlistOptionOnClick={handleWishlistOptionOnClick}
+                  wishlistOptionRef={items.ref}
+                  wishlistContentMediaType={wishlistContentMediaType}
+                  wishlistOptionIndex={wishlistOptionIndex}
+                  handleOnClickOmitWishlist={handleOnClickOmitWishlist}
+                  isOmit={items.isOmit}
+                />
+              </div>
+            )
+          );
+        })}
+      </div>
+    );
+  }
 };
 
 /**
@@ -224,26 +236,32 @@ const DisplayWishlist = ({
   handleOnClickOmitWishlist,
   isOmit,
 }: DisplayWishlistPropsType) => {
-  // navigate 훅
-  const navigate = useNavigate();
   // i18n
   const { t } = useTranslation();
+  // navigate 훅
+  const navigate = useNavigate();
 
   // 만화일 경우
   const isComics = searchType === SEARCH_TYPE.COMICS;
   // 항목별 남길 개수
-  const restCount =
-    searchType === SEARCH_TYPE.COMICS
-      ? isMobileOnly
-        ? settings.wishlistComicsOmissionMobileLength
-        : isTablet
-          ? settings.wishlistComicsOmissionTabletLength
-          : settings.wishlistComicsOmissionPcLength
-      : isMobileOnly
-        ? settings.wishlistVideoOmissionMobileLength
-        : isTablet
-          ? settings.wishlistVideoOmissionTabletLength
-          : settings.wishlistVideoOmissionPcLength;
+  let restCount: number;
+  if (isComics) {
+    if (isMobileOnly) {
+      restCount = settings.wishlistComicsOmissionMobileLength;
+    } else if (isTablet) {
+      restCount = settings.wishlistComicsOmissionTabletLength;
+    } else {
+      restCount = settings.wishlistComicsOmissionPcLength;
+    }
+  } else {
+    if (isMobileOnly) { // NOSONAR
+      restCount = settings.wishlistVideoOmissionMobileLength;
+    } else if (isTablet) {
+      restCount = settings.wishlistVideoOmissionTabletLength;
+    } else {
+      restCount = settings.wishlistVideoOmissionPcLength;
+    }
+  }
   // 표시할 항목 리스트
   const displayList = isOmit ? filterList(resultList, restCount) : resultList;
   // 썸네일 이미지 경로
@@ -273,18 +291,6 @@ const DisplayWishlist = ({
               key={items.apiId}
               className={`${HIGHLIGHT_HOVER_COLOR} cursor-pointer`}
               aria-label={items.title || 'wishlist item'}
-              onClick={commonErrorHandler(() => {
-                // apiId 체크
-                checkApiId(Number(items.apiId));
-                // 상세화면 URL 생성
-                const detailUrl = detailUrlQuery({
-                  contentMediaType: items.contentMediaType!,
-                  apiId: String(items.apiId),
-                  tabNo: 0,
-                });
-                // 상세화면 이동
-                navigate(detailUrl);
-              })}
             >
               {/* 썸네일 */}
               <div
@@ -297,15 +303,23 @@ const DisplayWishlist = ({
                 }}
               >
                 {/* 썸네일 이미지 */}
-                <div
-                  className={`relative flex h-full w-full justify-center ${aspectClass}`}
+                <button
+                  type="button"
+                  className={`relative flex h-full w-full cursor-pointer justify-center ${aspectClass}`}
+                  onClick={commonErrorHandler(() =>
+                    navigateToDetailPage(
+                      navigate,
+                      Number(items.apiId),
+                      items.contentMediaType!
+                    )
+                  )}
                 >
                   <LazyImage
                     src={thumbnail ?? COMMON_IMAGES.NO_IMAGE}
                     alt={items.title || 'thumbnail'}
                     className={`inset-0 h-full w-full rounded-2xl object-cover`}
                   />
-                </div>
+                </button>
 
                 {/* 옵션 버튼 */}
                 <button
@@ -351,12 +365,20 @@ const DisplayWishlist = ({
               </div>
 
               {/* 제목 */}
-              <div
-                className="mt-2 line-clamp-2 px-1 text-base font-medium sm:text-lg"
+              <button
+                type="button"
+                className="mt-2 line-clamp-2 w-full cursor-pointer px-1 text-left text-base font-medium hover:underline sm:text-lg"
                 title={items.title || ''}
+                onClick={commonErrorHandler(() =>
+                  navigateToDetailPage(
+                    navigate,
+                    Number(items.apiId),
+                    items.contentMediaType!
+                  )
+                )}
               >
                 {items.title}
-              </div>
+              </button>
             </div>
           );
         })}

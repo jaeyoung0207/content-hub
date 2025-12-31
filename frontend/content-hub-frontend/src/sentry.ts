@@ -10,7 +10,7 @@ export const sentryInit = async () => {
     // production에서만 Sentry를 동적으로 불러와 초기화
     import('@sentry/react').then((Sentry) => {
       // 앱 전체에서 처리되지 않은 모든 Promise 에러를 전역적으로 감지하여 Sentry로 전송
-      window.addEventListener('unhandledrejection', (event) => {
+      globalThis.addEventListener('unhandledrejection', (event) => {
         Sentry.captureException(event.reason);
       });
       // Sentry 초기화
@@ -28,7 +28,9 @@ export const sentryInit = async () => {
         // 개발 환경에서는 Sentry가 이벤트를 전송하지 않도록 설정
         environment: import.meta.env.MODE,
         // 성능 추적을 위한 샘플링 비율을 설정
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 1,
+        replaysSessionSampleRate: 0.1,
+        replaysOnErrorSampleRate: 0.1,
       });
     });
   }
