@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Block API endpoints
+Disallow: /api/
+
+# Block authenticated pages
+Disallow: /wishlist/
+Disallow: /my/
+
+# Block functional pages
+Disallow: /login
+Disallow: /logout
+Disallow: /naverLogin
+Disallow: /kakaoLogin
+Disallow: /error
+Disallow: /maintenance
+
+Sitemap: https://content-hub.info/sitemap.xml
