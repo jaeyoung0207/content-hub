@@ -1,12 +1,69 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <title>Content Hub</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon_CH.png" />
+    
+    <!-- Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>미디어 통합검색 사이트</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Content Hub - 콘텐츠 검색 플랫폼" />
+    <meta name="description" content="애니메이션, 영화, 드라마 등 다양한 미디어 콘텐츠를 한 곳에서 검색하고 위시리스트·평점·리뷰로 관리할 수 있는 통합 플랫폼입니다." />
+    <meta name="keywords" content="콘텐츠 검색, Content Hub" />
+    <meta name="author" content="CJY" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://content-hub.info/" />
+    <meta property="og:title" content="Content Hub - 콘텐츠 검색 플랫폼" />
+    <meta property="og:description" content="애니메이션, 영화, 드라마 등 다양한 미디어 콘텐츠를 한 곳에서 검색하고 위시리스트·평점·리뷰로 관리할 수 있는 통합 플랫폼입니다." />
+    <meta property="og:image" content="https://content-hub.info/favicon_CH_1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="Content Hub" />
+
+    <!-- Canonical URL -->
+    <!-- 고유 주소를 확정하여 중복 페이지 문제 방지 -->
+    <link rel="canonical" href="https://content-hub.info/" />
+    
+    <!-- Preconnect for Performance -->
+    <!-- 폰트 서버와 사전 연결 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- 폰트 서버 IP주소 사전 확인 (구형 브라우저 보험용) -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <!-- 검색엔진이 페이지 내용을 더 정확하게 이해하도록 도움 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name":  "Content Hub",
+      "url": "https://content-hub.info/",
+      "description": "애니메이션, 영화, 드라마 등 다양한 미디어 콘텐츠를 한 곳에서 검색하고 위시리스트·평점·리뷰로 관리할 수 있는 통합 플랫폼입니다.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://content-hub.info/search?keyword={search_term_string}&isAdult=false",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body class="overflow-auto">
+    <!-- 검색엔진을 위한 Noscript 대체 콘텐츠 -->
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>Content Hub</h1>
+        <p>애니메이션, 영화, 드라마 등 다양한 미디어 콘텐츠를 한 곳에서 검색하고 위시리스트·평점·리뷰로 관리할 수 있는 통합 플랫폼입니다.</p>
+        <p>이 사이트를 이용하시려면 JavaScript를 활성화해주세요.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

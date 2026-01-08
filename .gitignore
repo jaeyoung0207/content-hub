@@ -84,6 +84,7 @@ replay_pid*
 /frontend/**/.env.production
 /frontend/**/.env.staging
 /frontend/**/*.log
+/frontend/**/.scannerwork/
 
 # ================================================
 # 기타 폴더
