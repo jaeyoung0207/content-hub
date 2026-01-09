@@ -10,7 +10,6 @@ Content Hub는 영화, 드라마, 만화 등 다양한 미디어 콘텐츠를 �
 - TMDB API, AniList API 기반 미디어 콘텐츠 검색
 - 영화, TV 시리즈, 만화 등 다양한 미디어 타입 지원
 - 위시리스트 관리
-- 다국어 지원 (한국어/영어)
 - 소셜 로그인 (Kakao, Naver)
 
 ## 기술 스택
@@ -18,8 +17,8 @@ Content Hub는 영화, 드라마, 만화 등 다양한 미디어 콘텐츠를 �
 ### Backend
 - **언어**: Java 21
 - **프레임워크**: Spring Boot 3.4.4
-- **데이터베이스**: PostgreSQL 17
-- **캐시**: Redis
+- **데이터베이스**: PostgreSQL 17, Redis 8.4.0
+- **캐시**: Caffein Cache
 - **빌드 도구**: Gradle
 - **코드 품질**:  SonarCloud
 
@@ -30,6 +29,8 @@ Content Hub는 영화, 드라마, 만화 등 다양한 미디어 콘텐츠를 �
 - **UI**:  TailwindCSS
 - **테스트**: Vitest
 - **모니터링**: Sentry
+- **자동 포맷팅**: prettier
+- **코드 품질**: SonarCloud, eslint
 
 ### DevOps
 - **컨테이너**: Docker, Docker Compose
@@ -49,7 +50,7 @@ content-hub/
 │   └── content-hub-frontend/     # React 애플리케이션
 ├── docs/
 │   └── 04_git/                   # Git 컨벤션 문서
-├── . github/
+├── .github/
 │   ├── workflows/                # CI/CD 워크플로우
 │   ├── ISSUE_TEMPLATE/           # 이슈 템플릿
 │   └── PULL_REQUEST_TEMPLATE. md  # PR 템플릿
@@ -92,14 +93,14 @@ cd backend/content-hub-backend/content-hub
 ### 프론트엔드
 ```bash
 cd frontend/content-hub-frontend
-npm run test: run    # 테스트 실행
+npm run test        # 테스트 실행
 npm run lint        # ESLint 검사
 ```
 
 ## CI/CD
 
 - **Backend CI**:  코드 푸시 시 자동 테스트 & SonarCloud 분석
-- **Frontend CI**: 코드 푸시 시 자동 테스트 & ESLint 검사
+- **Frontend CI**: 코드 푸시 시 자동 테스트 & ESLint 검사 및 SonarCloud 분석
 - **Deploy**: `main` 브랜치 푸시 시 EC2 자동 배포
   - 변경 감지 기반 선택적 배포 (Backend/Frontend/Full)
 
@@ -117,4 +118,3 @@ npm run lint        # ESLint 검사
 - [이슈 트래커](https://github.com/jaeyoung0207/content-hub/issues)
 - [토론](https://github.com/jaeyoung0207/content-hub/discussions)
 
----
