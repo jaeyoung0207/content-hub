@@ -8,6 +8,7 @@ import {
 } from '../store/globalStateStore';
 import { LoginUserResponseDto } from '@/api/data-contracts';
 import { clearUserData } from './clearUtil';
+import { toast } from 'react-toastify';
 
 // Sentry 동적 import
 const Sentry = import('@sentry/react');
@@ -72,20 +73,24 @@ export const setLoginInfo = async (
   provider: string
 ) => {
   // 로그인 정보가 없으면 유저정보 클리어 후 종료
-  if (!loginInfo.userInfo) {
+  if (!loginInfo.userInfo || !loginInfo.accessToken || !loginInfo.jwt || !loginInfo.expireDate) {
     clearUserData();
+    console.error('로그인 정보가 불완전합니다: ', loginInfo);
+    toast.error('로그인 정보가 불완전합니다. 다시 로그인 해주세요.', {
+      toastId: 'incompleteLoginInfo',
+    });
     return;
   }
-  // 유저정보를 전역상태저장
+  // 유저정보 전역 상태 저장
   useUserStore.getState().setUser(loginInfo.userInfo);
-  // provider 전역상태저장
+  // 액세스 토큰 전역 상태 저장
+  useUserStore.getState().setAccessToken(loginInfo.accessToken);
+  // JWT 전역 상태 저장
+  useUserStore.getState().setJwt(loginInfo.jwt);
+  // 만료시각 전역 상태 저장
+  useUserStore.getState().setExpireDate(loginInfo.expireDate);
+  // provider 전역 상태 저장
   useProviderStore.getState().setProvider(provider as LOGIN_PROVIDER);
-  // 액세스 토큰을 sessionStorage에 저장
-  sessionStorage.setItem('accessToken', loginInfo.accessToken!);
-  // JWT를 sessionStorage에 저장
-  sessionStorage.setItem('jwt', loginInfo.jwt!);
-  // 만료시각을 sessionStorage에 저장
-  sessionStorage.setItem('expireDate', loginInfo.expireDate!);
   // Sentry에 유저 정보 설정
   (await Sentry).setUser({
     id: loginInfo.userInfo.userId,

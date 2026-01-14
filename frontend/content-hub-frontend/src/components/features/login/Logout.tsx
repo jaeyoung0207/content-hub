@@ -20,8 +20,8 @@ export const Logout = () => {
   const navigate = useNavigate();
   // provider 전역 상태 저장 훅
   const { provider } = useProviderStore();
-  // user 전역 상태 저장 훅
-  const { user } = useUserStore();
+  // user, accessToken 전역 상태 저장 훅
+  const { user, accessToken } = useUserStore();
   // 로그인 API 인스턴스 생성
   const loginApi = new LoginApi();
 
@@ -39,8 +39,6 @@ export const Logout = () => {
         const providerId = user!.id!;
         // 유저 ID
         const userId = user!.userId!;
-        // 접근토큰 취득
-        const accessToken = sessionStorage.getItem('accessToken');
         // 접근토큰이나 provider가 존재하지 않는 경우는 처리 종료
         if (!accessToken || !provider) {
           return;

@@ -14,6 +14,12 @@ import { persist } from 'zustand/middleware';
 type UseUserStoreType = {
   user: LoginUserInfoDto | null;
   setUser: (user: LoginUserInfoDto) => void;
+  accessToken: string | null;
+  setAccessToken: (accessToken: string) => void;
+  jwt: string | null;
+  setJwt: (jwt: string) => void;
+  expireDate: string | null;
+  setExpireDate: (expireDate: string) => void;
   clearUser: () => void;
 };
 
@@ -110,6 +116,12 @@ type UseDisplayMediaTypeMapStoreType = {
 export const useUserStore = create<UseUserStoreType>((set) => ({
   user: null,
   setUser: (user) => set(() => ({ user })),
+  accessToken: null,
+  setAccessToken: (accessToken) => set(() => ({ accessToken })),
+  jwt: null,
+  setJwt: (jwt) => set(() => ({ jwt })),
+  expireDate: null,
+  setExpireDate: (expireDate) => set(() => ({ expireDate })),
   clearUser: () => set(() => ({ user: null })),
 }));
 

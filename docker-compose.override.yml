@@ -1,6 +1,8 @@
 
 services:
   frontend:
+    environment:
+      - TZ=Asia/Seoul
     ports:
       - "80:80"
       - "443:443"          # HTTPS 외부 노출
@@ -13,6 +15,8 @@ services:
        # 로그 추가
        - ./logs/frontend:/var/log/nginx
   backend:
+    environment:
+      - TZ=Asia/Seoul
     env_file:
       - ./backend/env/.env.prod
     ports:
@@ -29,8 +33,12 @@ services:
       retries: 3
       start_period: 40s
   db:
+    environment:
+      - TZ=Asia/Seoul
     ports: []            # 외부 노출 제거
     restart: "unless-stopped"
   redis:
+    environment:
+      - TZ=Asia/Seoul
     ports: []            # 외부 노출 제거
     restart: "unless-stopped"

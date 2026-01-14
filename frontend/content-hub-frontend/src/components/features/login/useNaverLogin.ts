@@ -49,7 +49,7 @@ export const useNaverLogin = () => {
     });
     const loginInfo = response.data;
     // 로그인 정보를 전역 상태에 저장
-    setLoginInfo(loginInfo, LOGIN_PROVIDER.NAVER);
+    await setLoginInfo(loginInfo, LOGIN_PROVIDER.NAVER);
     return loginInfo;
   };
 
@@ -71,14 +71,17 @@ export const useNaverLogin = () => {
       return;
     }
     // 네이버 로그인 인증 및 유저 정보 조회 API 요청
-    getNaverLoginInfo(code, state).catch((err) => {
-      console.error('네이버 로그인 실패', err);
-      toast.error(t('error.loginError'), {
-        toastId: 'naverLoginError',
+    getNaverLoginInfo(code, state)
+      .then(() => {
+        // 리다이렉트 URL이 있다면 해당 URL로 이동
+        afterLoginRedirect(navigate);
+      })
+      .catch((err) => {
+        console.error('네이버 로그인 실패', err);
+        toast.error(t('error.loginError'), {
+          toastId: 'naverLoginError',
+        });
+        navigate('/login');
       });
-      navigate('/login');
-    });
-    // 리다이렉트 URL이 있다면 해당 URL로 이동
-    afterLoginRedirect(navigate);
   }, []);
 };

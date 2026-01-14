@@ -12,6 +12,7 @@ import { clearUserData } from '../utils/clearUtil';
 import { AxiosErrorType } from '../config/queryClientConfig';
 import { useProviderStore, useUserStore } from '../store/globalStateStore';
 import { setLoginInfo } from '../utils/loginUtil';
+import { toast } from 'react-toastify';
 
 // Sentry 동적 import
 const Sentry = import('@sentry/react');
@@ -30,20 +31,16 @@ export const httpClientRequestInterceptor = async (
   if (request.url?.startsWith('/api/login/')) {
     return request;
   }
-  // 유저정보
-  const { user } = useUserStore.getState();
+  // 유저정보, JWT, 만료시각
+  const { user, jwt, expireDate } = useUserStore.getState();
   // provider 정보
   const { provider } = useProviderStore.getState();
-  // 접근토큰
-  const jwt = sessionStorage.getItem('jwt');
-  // 접근토큰이 없고 유저정보가 있는 경우 처리 종료
+  // JWT가 없고 유저정보가 있는 경우 처리 종료
   if (!jwt && user) {
     // 유저정보 클리어
     clearUserData();
     return request;
   }
-  // 만료시각
-  const expireDate = sessionStorage.getItem('expireDate');
   // 현재시각
   const now = dayjs();
   // 접근토큰 만료 확인
@@ -82,6 +79,13 @@ export const httpClientRequestInterceptor = async (
         // 유저정보 클리어
         clearUserData();
         console.error('토큰 갱신 처리 중 에러 발생: ', error);
+        toast.error('로그인이 만료되었습니다. 다시 로그인 해주세요.', {
+          toastId: 'tokenRefreshError',
+        });
+        // 2초 정도 대기 후 페이지 이동 (사용자가 읽을 시간 확보)
+        setTimeout(() => {
+          globalThis.location.href = '/login';
+        }, 2000);
       }
       finally {
         // 토큰 갱신 Promise 초기화
