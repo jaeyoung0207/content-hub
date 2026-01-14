@@ -75,7 +75,13 @@ export const setLoginInfo = async (
   // 로그인 정보가 없으면 유저정보 클리어 후 종료
   if (!loginInfo.userInfo || !loginInfo.accessToken || !loginInfo.jwt || !loginInfo.expireDate) {
     clearUserData();
-    console.error('로그인 정보가 불완전합니다: ', loginInfo);
+    console.error('로그인 정보가 불완전합니다.', {
+      hasUserInfo: !!loginInfo.userInfo,
+      hasAccessToken: !!loginInfo.accessToken,
+      hasJwt: !!loginInfo.jwt,
+      hasExpireDate: !!loginInfo.expireDate,
+      userId: loginInfo.userInfo?.userId,
+    });
     toast.error('로그인 정보가 불완전합니다. 다시 로그인 해주세요.', {
       toastId: 'incompleteLoginInfo',
     });

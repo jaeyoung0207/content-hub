@@ -12,7 +12,6 @@ import { clearUserData } from '../utils/clearUtil';
 import { AxiosErrorType } from '../config/queryClientConfig';
 import { useProviderStore, useUserStore } from '../store/globalStateStore';
 import { setLoginInfo } from '../utils/loginUtil';
-import { toast } from 'react-toastify';
 
 // Sentry 동적 import
 const Sentry = import('@sentry/react');
@@ -79,13 +78,6 @@ export const httpClientRequestInterceptor = async (
         // 유저정보 클리어
         clearUserData();
         console.error('토큰 갱신 처리 중 에러 발생: ', error);
-        toast.error('로그인이 만료되었습니다. 다시 로그인 해주세요.', {
-          toastId: 'tokenRefreshError',
-        });
-        // 2초 정도 대기 후 페이지 이동 (사용자가 읽을 시간 확보)
-        setTimeout(() => {
-          globalThis.location.href = '/login';
-        }, 2000);
       }
       finally {
         // 토큰 갱신 Promise 초기화

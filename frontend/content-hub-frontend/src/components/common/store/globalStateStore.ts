@@ -122,7 +122,12 @@ export const useUserStore = create<UseUserStoreType>((set) => ({
   setJwt: (jwt) => set(() => ({ jwt })),
   expireDate: null,
   setExpireDate: (expireDate) => set(() => ({ expireDate })),
-  clearUser: () => set(() => ({ user: null })),
+  clearUser: () => set(() => ({ 
+    user: null,
+    accessToken: null,
+    jwt: null,
+    expireDate: null,
+  })),
 }));
 
 /**
