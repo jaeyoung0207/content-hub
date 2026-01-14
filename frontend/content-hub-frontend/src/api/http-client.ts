@@ -26,6 +26,7 @@ import type {
   ResponseType,
 } from 'axios'; // add custom config
 import axios from 'axios';
+import { useUserStore } from '@/components/common/store/globalStateStore'; // add custom config
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -214,7 +215,7 @@ export class HttpClient<SecurityDataType = unknown> {
       body = JSON.stringify(body);
     }
 
-    const jwt = sessionStorage.getItem('jwt'); // add custom config
+    const jwt = useUserStore.getState().jwt; // add custom config
     const xsrfToken = getXsrfTokenFromCookie(); // add custom config
     return this.instance.request({
       ...requestParams,

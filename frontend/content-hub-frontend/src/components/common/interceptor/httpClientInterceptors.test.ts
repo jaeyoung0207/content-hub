@@ -38,7 +38,11 @@ vi.mock('@/components/common/utils/clearUtil', () => ({
   clearUserData: vi.fn(),
 }));
 
-describe('HttpClient Request Interceptors(NAVER)', () => {
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe('httpClientRequestInterceptor(NAVER)', () => {
   beforeEach(() => {
     // 초기 상태 설정
     useUserStore.setState({
@@ -46,6 +50,9 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
         name: 'name',
         nickname: 'nickname',
       },
+      accessToken: 'access_token',
+      jwt: 'jwt',
+      expireDate: dayjs().subtract(1, 'hour').toISOString(), // 만료된 토큰
       clearUser: vi.fn(),
     });
     useProviderStore.setState({
@@ -81,6 +88,11 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
       headers: {},
     } as InternalAxiosRequestConfig;
 
+    // JWT 제거
+    useUserStore.setState({
+      jwt: null,
+    });
+
     // 실제 인터셉터 호출
     httpClientRequestInterceptor(requestConfig, axios);
 
@@ -90,21 +102,13 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
   });
 
   it('JWT 만료 시 네이버 로그인 업데이트 API 호출', async () => {
-    // 세션 초기화 및 만료된 JWT 설정
-    sessionStorage.setItem('accessToken', 'old-access');
-    sessionStorage.setItem('jwt', 'old-jwt');
-    sessionStorage.setItem(
-      'expireDate',
-      dayjs().subtract(1, 'hour').toISOString()
-    ); // 만료됨
-
-    // 새로운 토큰 정보 모의 응답 설정
+    // 새로운 토큰 정보
     const mockNewToken = {
       accessToken: 'new-access',
       jwt: 'new-jwt',
       expireDate: dayjs().add(1, 'hour').toISOString(), //
     };
-
+    // 모의 응답 설정
     const axiosMock = vi.spyOn(axios, 'get').mockResolvedValueOnce({
       data: mockNewToken,
     });
@@ -129,13 +133,7 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
   });
 
   it('JWT 만료 시 로그인 업데이트 API 호출 실패 시 clearUserData 호출', async () => {
-    // 세션 초기화 및 만료된 JWT 설정
-    sessionStorage.setItem('accessToken', 'old-access');
-    sessionStorage.setItem('jwt', 'old-jwt');
-    sessionStorage.setItem(
-      'expireDate',
-      dayjs().subtract(1, 'hour').toISOString()
-    ); // 만료됨
+    // 모의 응답 설정
     const axiosMock = vi.spyOn(axios, 'get').mockResolvedValueOnce({
       data: null,
     });
@@ -159,13 +157,7 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
   });
 
   it('로그인 갱신 API 호출 중 에러 발생 시 clearUserData 호출', async () => {
-    // 세션 초기화 및 만료된 JWT 설정
-    sessionStorage.setItem('accessToken', 'old-access');
-    sessionStorage.setItem('jwt', 'old-jwt');
-    sessionStorage.setItem(
-      'expireDate',
-      dayjs().subtract(1, 'hour').toISOString()
-    ); // 만료됨
+    // 모의 응답 설정
     const axiosMock = vi.spyOn(axios, 'get').mockRejectedValueOnce(new Error('Network Error'));
     const requestUrl = '/api/home/rankings';
     const requestConfig = {
@@ -174,34 +166,33 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
       headers: {},
     } as InternalAxiosRequestConfig;
 
-    // 실제 인터셉터 호출
-    httpClientRequestInterceptor(requestConfig, axios);
+    // 콘솔 에러 모킹
+    const consoleErrorMock = vi.spyOn(console, 'error');
 
+    // 실제 인터셉터 호출
+    await httpClientRequestInterceptor(requestConfig, axios);
+
+    // 검증
     await waitFor(() => {
-      // 검증
       expect(axiosMock).toHaveBeenCalledWith(
         expect.stringContaining('/api/login/updateNaverLoginInfo')
       );
       expect(clearUserData).toHaveBeenCalled();
+      expect(consoleErrorMock).toHaveBeenCalledWith(
+        '토큰 갱신 처리 중 에러 발생: ',
+        expect.any(Error)
+      );
     });
   });
 
   it('로그인 갱신 중복 방지 확인', async () => {
-    // 세션 초기화 및 만료된 JWT 설정
-    sessionStorage.setItem('accessToken', 'old-access');
-    sessionStorage.setItem('jwt', 'old-jwt');
-    sessionStorage.setItem(
-      'expireDate',
-      dayjs().subtract(1, 'hour').toISOString()
-    ); // 만료됨
-
-    // 새로운 토큰 정보 모의 응답 설정
+    // 새로운 토큰 정보
     const mockNewToken = {
       accessToken: 'new-access',
       jwt: 'new-jwt',
       expireDate: dayjs().add(1, 'hour').toISOString(), //
     };
-
+    // 모의 응답 설정
     const axiosMock = vi.spyOn(axios, 'get').mockResolvedValue({
       data: mockNewToken,
     });
@@ -228,7 +219,7 @@ describe('HttpClient Request Interceptors(NAVER)', () => {
 
 });
 
-describe('HttpClient Request Interceptors(KAKAO)', () => {
+describe('httpClientRequestInterceptor(KAKAO)', () => {
   beforeEach(() => {
     // 초기 상태 설정
     useUserStore.setState({
@@ -236,6 +227,9 @@ describe('HttpClient Request Interceptors(KAKAO)', () => {
         name: 'name',
         nickname: 'nickname',
       },
+      accessToken: 'access_token',
+      jwt: 'jwt',
+      expireDate: dayjs().subtract(1, 'hour').toISOString(), // 만료된 토큰
       clearUser: vi.fn(),
     });
     useProviderStore.setState({
@@ -247,21 +241,13 @@ describe('HttpClient Request Interceptors(KAKAO)', () => {
   });
 
   it('JWT 만료 시 카카오 로그인 업데이트 API 호출', async () => {
-    // 세션 초기화 및 만료된 JWT 설정
-    sessionStorage.setItem('accessToken', 'old-access');
-    sessionStorage.setItem('jwt', 'old-jwt');
-    sessionStorage.setItem(
-      'expireDate',
-      dayjs().subtract(1, 'hour').toISOString()
-    ); // 만료됨
-
-    // 새로운 토큰 정보 모의 응답 설정
+    // 새로운 토큰 정보
     const mockNewToken = {
       accessToken: 'new-access',
       jwt: 'new-jwt',
       expireDate: dayjs().add(1, 'hour').toISOString(), //
     };
-
+    // 모의 응답 설정
     const axiosMock = vi.spyOn(axios, 'get').mockResolvedValueOnce({
       data: mockNewToken,
     });
@@ -287,7 +273,88 @@ describe('HttpClient Request Interceptors(KAKAO)', () => {
   });
 });
 
-describe('HttpClient Response Interceptors', () => {
+describe('httpClientRequestInterceptor(토큰 만료 아님)', () => {
+  beforeEach(() => {
+    // 초기 상태 설정
+    useUserStore.setState({
+      user: {
+        name: 'name',
+        nickname: 'nickname',
+      },
+      accessToken: 'access-token',
+      jwt: 'jwt',
+      expireDate: dayjs().add(1, 'hour').toISOString(), // 만료되지 않은 토큰
+      clearUser: vi.fn(),
+    });
+    useProviderStore.setState({
+      provider: 'NAVER',
+    });
+  });
+
+  it('토큰 만료되지 않았을 때는 토큰 갱신 로직 스킵', async () => {
+    const requestUrl = '/api/home/rankings';
+    const requestConfig = {
+      url: requestUrl,
+      method: 'GET',
+      headers: {},
+    } as InternalAxiosRequestConfig;
+    // 토큰 정보
+    const mockToken = {
+      accessToken: 'access-token',
+      jwt: 'jwt',
+      expireDate: dayjs().add(1, 'hour').toISOString(), // 만료되지 않음
+    };
+    // 모의 응답 설정
+    const axiosMock = vi.spyOn(axios, 'get').mockResolvedValueOnce({
+      data: mockToken,
+    });
+    // 실제 인터셉터 호출
+    await httpClientRequestInterceptor(requestConfig, axios);
+    // 검증
+    await waitFor(() => {
+      expect(axiosMock).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('httpClientRequestInterceptor(UNKNOWN 프로바이더)', () => {
+  beforeEach(() => {
+    // 초기 상태 설정
+    useUserStore.setState({
+      user: {
+        name: 'name',
+        nickname: 'nickname',
+      },
+      accessToken: 'access-token',
+      jwt: 'jwt',
+      expireDate: dayjs().subtract(1, 'hour').toISOString(), // 만료된 토큰
+      clearUser: vi.fn(),
+    });
+    useProviderStore.setState({
+      provider: 'UNKNOWN', // 네이버/카카오 이외의 프로바이더
+    });
+  });
+
+  it('네이버/카카오 이외의 프로바이더일 때 토큰 갱신 로직 스킵', async () => {
+    const requestUrl = '/api/home/rankings';
+    const requestConfig = {
+      url: requestUrl,
+      method: 'GET',
+      headers: {},
+    } as InternalAxiosRequestConfig;
+
+    // 실제 인터셉터 호출
+    await httpClientRequestInterceptor(requestConfig, axios);
+
+    await waitFor(() => {
+      expect(requestConfig).toBeDefined();
+      expect(requestConfig.url).toBe(requestUrl);
+      expect(clearUserData).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe('httpClientResponseInterceptor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
@@ -311,7 +378,9 @@ describe('HttpClient Response Interceptors', () => {
       expect(mockResponse.data).toEqual({ message: 'success' });
     });
   });
+});
 
+describe('httpClientResponseErrorInterceptor', () => {
   it('401 응답 시 인터셉터가 에러를 감지하고 데이터를 비우는지 확인', async () => {
     const mockError = {
       response: {
@@ -359,6 +428,30 @@ describe('HttpClient Response Interceptors', () => {
 
     await waitFor(() => {
       expect(clearUserData).toHaveBeenCalled();
+    });
+  });
+
+  it('다른 에러 응답 시에는 clearUserData가 호출되지 않는지 확인', async () => {
+    const mockError = {
+      response: {
+        data: {
+          status: 500,
+          message: 'Internal Server Error',
+          name: 'InternalServerError',
+        },
+        config: {
+          url: '/api/home/rankings',
+          method: 'GET',
+          headers: {},
+        },
+      },
+    } as AxiosError<AxiosErrorType>;
+
+    // 실제 인터셉터 호출
+    await httpClientResponseErrorInterceptor(mockError);
+
+    await waitFor(() => {
+      expect(clearUserData).not.toHaveBeenCalled();
     });
   });
 });

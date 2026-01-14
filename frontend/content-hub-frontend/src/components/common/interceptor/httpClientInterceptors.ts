@@ -30,20 +30,16 @@ export const httpClientRequestInterceptor = async (
   if (request.url?.startsWith('/api/login/')) {
     return request;
   }
-  // 유저정보
-  const { user } = useUserStore.getState();
+  // 유저정보, JWT, 만료시각
+  const { user, jwt, expireDate } = useUserStore.getState();
   // provider 정보
   const { provider } = useProviderStore.getState();
-  // 접근토큰
-  const jwt = sessionStorage.getItem('jwt');
-  // 접근토큰이 없고 유저정보가 있는 경우 처리 종료
+  // JWT가 없고 유저정보가 있는 경우 처리 종료
   if (!jwt && user) {
     // 유저정보 클리어
     clearUserData();
     return request;
   }
-  // 만료시각
-  const expireDate = sessionStorage.getItem('expireDate');
   // 현재시각
   const now = dayjs();
   // 접근토큰 만료 확인

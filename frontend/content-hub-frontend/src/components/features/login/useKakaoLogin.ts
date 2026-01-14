@@ -49,7 +49,7 @@ export const useKakaoLogin = () => {
     });
     const loginInfo = response.data;
     // 로그인 정보를 전역 상태에 저장
-    setLoginInfo(loginInfo, LOGIN_PROVIDER.KAKAO);
+    await setLoginInfo(loginInfo, LOGIN_PROVIDER.KAKAO);
     return loginInfo;
   };
 
@@ -66,14 +66,17 @@ export const useKakaoLogin = () => {
       return;
     }
     // 카카오 로그인 인증 및 유저 정보 조회 API 호출
-    getKakaoLoginInfo(code).catch((err) => {
-      console.error('카카오 로그인 실패', err);
-      toast.error(t('error.loginError'), {
-        toastId: 'kakaoLoginError',
+    getKakaoLoginInfo(code)
+      .then(() => {
+        // 리다이렉트 URL이 있다면 해당 URL로 이동
+        afterLoginRedirect(navigate);
+      })
+      .catch((err) => {
+        console.error('카카오 로그인 실패', err);
+        toast.error(t('error.loginError'), {
+          toastId: 'kakaoLoginError',
+        });
+        navigate('/login');
       });
-      navigate('/login');
-    });
-    // 리다이렉트 URL이 있다면 해당 URL로 이동
-    afterLoginRedirect(navigate);
   }, []);
 };

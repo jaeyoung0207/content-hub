@@ -16,7 +16,12 @@ import {
 } from '@/api/data-contracts';
 
 describe('useUserStore', () => {
-  beforeEach(() => useUserStore.setState({ user: null }));
+  beforeEach(() => useUserStore.setState({ 
+    user: null,
+    accessToken: null,
+    jwt: null,
+    expireDate: null,
+  }));
   it('초기값은 user: null', () => {
     expect(useUserStore.getState().user).toBeNull();
   });
@@ -25,10 +30,26 @@ describe('useUserStore', () => {
     useUserStore.getState().setUser(dummyUser);
     expect(useUserStore.getState().user).toEqual(dummyUser);
   });
+  it('setAccessToken로 accessToken 값이 된다', () => {
+    useUserStore.getState().setAccessToken('access-token');
+    expect(useUserStore.getState().accessToken).toBe('access-token');
+  });
+  it('setJwt로 jwt 값이 된다', () => {
+    useUserStore.getState().setJwt('jwt-token');
+    expect(useUserStore.getState().jwt).toBe('jwt-token');
+  });
+  it('setExpireDate로 expireDate 값이 된다', () => {
+    const expireDate = new Date().toISOString();
+    useUserStore.getState().setExpireDate(expireDate);
+    expect(useUserStore.getState().expireDate).toBe(expireDate);
+  });
   it('clearUser로 user 값이 null', () => {
     useUserStore.getState().setUser({ userId: 1 } as LoginUserInfoDto);
     useUserStore.getState().clearUser();
     expect(useUserStore.getState().user).toBeNull();
+    expect(useUserStore.getState().accessToken).toBeNull();
+    expect(useUserStore.getState().jwt).toBeNull();
+    expect(useUserStore.getState().expireDate).toBeNull();
   });
 });
 
