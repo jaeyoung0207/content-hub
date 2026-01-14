@@ -8,8 +8,11 @@ import { waitFor } from "@testing-library/react";
 import * as clearUtil from './clearUtil';
 import { LoginUserResponseDto } from "@/api/data-contracts";
 import { toast } from "react-toastify";
+import * as Sentry from '@sentry/react';
 
-const Sentry = import('@sentry/react');
+vi.mock('@sentry/react', () => ({
+  setUser: vi.fn(),
+}));
 
 describe('afterLoginRedirect', () => {
     it('리다이렉트 URL이 있다면 해당 URL로 이동', () => {
@@ -88,13 +91,6 @@ describe('setLoginInfo', () => {
         vi.spyOn(globalStateStore, 'useProviderStore').mockReturnValue({
             setProvider: setProviderMock,
         });
-        // Sentry 모킹
-        const setUserSentryMock = vi.fn();
-        async function mockSentry() {
-            vi.spyOn((await Sentry).default, 'setUser').mockImplementation(setUserSentryMock);
-        }
-        mockSentry();
-
         // 함수 호출
         setLoginInfo(mockLoginInfo, provider);
         // 검증
@@ -105,7 +101,7 @@ describe('setLoginInfo', () => {
             expect(setJwtMock).toHaveBeenCalledWith(mockLoginInfo.jwt);
             expect(setExpireDateMock).toHaveBeenCalledWith(mockLoginInfo.expireDate);
             expect(setProviderMock).toHaveBeenCalledWith(provider);
-            expect(setUserSentryMock).toHaveBeenCalledWith({
+            expect(Sentry.setUser).toHaveBeenCalledWith({
                 id: mockLoginInfo.userInfo!.userId,
                 username: mockLoginInfo.userInfo!.nickname,
             });
